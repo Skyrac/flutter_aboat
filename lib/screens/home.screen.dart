@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:talkaboat/services/repositories/mediacenter.repository.dart';
+import 'package:talkaboat/services/repositories/podcast.repository.dart';
 import 'package:talkaboat/themes/colors.dart';
+import 'package:talkaboat/widgets/episode-preview.widget.dart';
 import 'package:talkaboat/widgets/library-preview.widget.dart';
 
 import '../models/podcasts/podcast.model.dart';
@@ -17,11 +19,31 @@ class HomeScreen extends StatelessWidget {
     return libraryPreviews;
   }
 
+  Widget createEpisodePreview(BuildContext context) {
+    var episodeList = PodcastRepository.getEpisodesMock(1);
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Padding(
+          padding: const EdgeInsets.only(left: 10),
+          child: Text('Made for you!',
+              style: TextStyle(
+                  fontSize: 32, color: Theme.of(context).primaryColor))),
+      Container(
+          height: 280,
+          child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (ctx, index) {
+                return EpisodePreviewWidget(episode: episodeList[index]);
+              },
+              itemCount: episodeList.length))
+    ]);
+  }
+
   Widget createLibraryPreviewGrid() {
     return Container(
-        height: 400,
+        height: 300,
         padding: const EdgeInsets.all(10),
         child: GridView.count(
+          primary: false,
           childAspectRatio: 5 / 2,
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
@@ -33,12 +55,15 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-        child: Container(
+        child: SingleChildScrollView(
+            child: Container(
       child: Column(
         children: [
           HomeAppBarWidget(),
           SizedBox(height: 5),
-          createLibraryPreviewGrid()
+          createLibraryPreviewGrid(),
+          SizedBox(height: 20),
+          createEpisodePreview(context)
         ],
       ),
       decoration: BoxDecoration(
@@ -47,6 +72,6 @@ class HomeScreen extends StatelessWidget {
         DefaultColors.secondaryColor.shade900,
         DefaultColors.secondaryColor.shade900
       ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
-    ));
+    )));
   }
 }

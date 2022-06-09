@@ -1,21 +1,16 @@
 class Episode {
-  var aboat_id;
-  var podcast_id;
-  var id;
-  var link;
-  var audio;
-  var Image;
-  var title;
-  var Podcast;
-  var thumbnail;
-  var transcript;
-  var description;
-  var pub_date_ms;
-  var guid_from_rss;
-  var listennotes_url;
-  var audio_length_sec;
-  var explicit_content;
-  var maybe_audio_invalid;
-  var listennotes_edit_url;
-  var PlayTime;
+  final int aboat_id;
+  final String audio;
+  final String Image;
+  final String description;
+  final int audio_length_sec;
+  final String title;
+
+  const Episode(
+      {required this.aboat_id,
+      required this.audio,
+      required this.Image,
+      required this.description,
+      required this.audio_length_sec,
+      required this.title});
 }

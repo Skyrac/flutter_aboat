@@ -18,7 +18,27 @@ class MediacenterRepository {
           aboatId: 2,
           image:
               'https://d3t3ozftmdmh3i.cloudfront.net/production/podcast_uploaded/14163336/14163336-1617293886597-924340d44fdbf.jpg',
-          title: 'Test Podcast 2')
+          title: 'Test Podcast 2'),
+      Podcast(
+          aboatId: 1,
+          image:
+              'https://static-cdn.sr.se/images/4826/3524003_1152_1152.jpg?preset=api-itunes-presentation-image',
+          title: 'Test Podcast 1'),
+      Podcast(
+          aboatId: 2,
+          image:
+              'https://d3t3ozftmdmh3i.cloudfront.net/production/podcast_uploaded/14163336/14163336-1617293886597-924340d44fdbf.jpg',
+          title: 'Test Podcast 2'),
+      Podcast(
+          aboatId: 1,
+          image:
+              'https://static-cdn.sr.se/images/4826/3524003_1152_1152.jpg?preset=api-itunes-presentation-image',
+          title: 'Test Podcast 1'),
+      Podcast(
+          aboatId: 2,
+          image:
+              'https://d3t3ozftmdmh3i.cloudfront.net/production/podcast_uploaded/14163336/14163336-1617293886597-924340d44fdbf.jpg',
+          title: 'Test Podcast 2'),
     ];
   }
 
