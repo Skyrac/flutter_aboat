@@ -9,7 +9,9 @@ import '../models/podcasts/podcast.model.dart';
 import '../widgets/home-app-bar.widget.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  HomeScreen(this.setEpisode);
+
+  Function setEpisode;
 
   List<Widget> createListOfCategories() {
     List<Podcast> podcasts = MediacenterRepository.getLibraryMock();
@@ -19,12 +21,12 @@ class HomeScreen extends StatelessWidget {
     return libraryPreviews;
   }
 
-  Widget createEpisodePreview(BuildContext context) {
+  Widget createEpisodePreview(BuildContext context, String title) {
     var episodeList = PodcastRepository.getEpisodesMock(1);
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Padding(
           padding: const EdgeInsets.only(left: 10),
-          child: Text('Made for you!',
+          child: Text(title,
               style: TextStyle(
                   fontSize: 32, color: Theme.of(context).primaryColor))),
       Container(
@@ -32,7 +34,7 @@ class HomeScreen extends StatelessWidget {
           child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemBuilder: (ctx, index) {
-                return EpisodePreviewWidget(episode: episodeList[index]);
+                return EpisodePreviewWidget(episodeList[index], setEpisode);
               },
               itemCount: episodeList.length))
     ]);
@@ -62,8 +64,8 @@ class HomeScreen extends StatelessWidget {
           HomeAppBarWidget(),
           SizedBox(height: 5),
           createLibraryPreviewGrid(),
-          SizedBox(height: 20),
-          createEpisodePreview(context)
+          createEpisodePreview(context, 'Made for you!'),
+          createEpisodePreview(context, 'Favorites')
         ],
       ),
       decoration: BoxDecoration(
