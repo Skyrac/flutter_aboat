@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:just_audio/just_audio.dart';
-import 'package:talkaboat/injection/injector.dart';
 import 'package:talkaboat/models/podcasts/episode.model.dart';
 import 'package:talkaboat/screens/home.screen.dart';
 import 'package:talkaboat/screens/library.screen.dart';
@@ -29,7 +27,6 @@ class _AppScreenState extends State<AppScreen> {
 
   @override
   initState() {
-    getIt<AudioPlayer>();
     super.initState();
     Tabs = [HomeScreen(setEpisode), PlaylistScreen(), LibraryScreen()];
   }

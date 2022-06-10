@@ -44,6 +44,8 @@ dependencies:
   equatable: ^2.0.3
   json_annotation: ^4.5.0
   auto_route: ^4.0.1
+  get: ^4.6.5
+  get_storage: ^2.0.3
 
 
 dev_dependencies:
