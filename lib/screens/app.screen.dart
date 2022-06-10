@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:talkaboat/injection/injector.dart';
 import 'package:talkaboat/models/podcasts/episode.model.dart';
 import 'package:talkaboat/screens/home.screen.dart';
 import 'package:talkaboat/screens/library.screen.dart';
@@ -16,7 +17,7 @@ class AppScreen extends StatefulWidget {
 
 class _AppScreenState extends State<AppScreen> {
   var Tabs;
-  AudioPlayer audioPlayer = new AudioPlayer();
+
   int currentTabIndex = 0;
   Episode? episode;
 
@@ -28,6 +29,7 @@ class _AppScreenState extends State<AppScreen> {
 
   @override
   initState() {
+    getIt<AudioPlayer>();
     super.initState();
     Tabs = [HomeScreen(setEpisode), PlaylistScreen(), LibraryScreen()];
   }
@@ -37,7 +39,7 @@ class _AppScreenState extends State<AppScreen> {
     return Scaffold(
       body: Tabs[currentTabIndex],
       bottomNavigationBar: Column(mainAxisSize: MainAxisSize.min, children: [
-        MiniPlayerWidget(episode: episode, audioPlayer: audioPlayer),
+        MiniPlayerWidget(episode: episode),
         BottomNavigationBar(
           currentIndex: currentTabIndex,
           onTap: (currentIndex) {

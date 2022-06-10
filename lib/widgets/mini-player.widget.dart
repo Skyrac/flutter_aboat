@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
+import '../injection/injector.dart';
 import '../models/podcasts/episode.model.dart';
 import '../themes/colors.dart';
 
 class MiniPlayerWidget extends StatefulWidget {
-  const MiniPlayerWidget(
-      {Key? key, required this.episode, required this.audioPlayer})
-      : super(key: key);
+  MiniPlayerWidget({Key? key, required this.episode}) : super(key: key);
   final Episode? episode;
-  final AudioPlayer audioPlayer;
+  AudioPlayer audioPlayer = getIt<AudioPlayer>();
 
   Future<bool> togglePlayState() async {
     //TODO: Add Start Time

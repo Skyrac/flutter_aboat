@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:talkaboat/injection/injector.dart';
 import 'package:talkaboat/screens/app.screen.dart';
 import 'package:talkaboat/themes/default.theme.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await configureDependencies();
   runApp(const MyApp());
 }
 
