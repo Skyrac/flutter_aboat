@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:talkaboat/models/podcasts/episode.model.dart';
+import 'package:talkaboat/services/audio/audio-handler.services.dart';
 import 'package:talkaboat/themes/colors.dart';
+
+import '../injection/injector.dart';
 
 class EpisodePreviewWidget extends StatelessWidget {
   EpisodePreviewWidget(this.episode, this.setEpisode);
   Episode episode;
   Function setEpisode;
-
+  late final audioHandler = getIt<AudioPlayerHandler>();
   @override
   Widget build(BuildContext context) {
     return Padding(
