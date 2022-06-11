@@ -12,7 +12,7 @@ class EpisodePreviewWidget extends StatelessWidget {
   late final audioHandler = getIt<AudioPlayerHandler>();
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return episode == null ? SizedBox() : Padding(
         padding: const EdgeInsets.all(10),
         child: InkWell(
             onTap: () {
@@ -28,17 +28,17 @@ class EpisodePreviewWidget extends StatelessWidget {
                         child: Container(
                             height: 200,
                             width: 200,
-                            child: Image.network(episode.Image,
+                            child: Image.network(episode.image!,
                                 fit: BoxFit.cover))),
                     Padding(
                         padding: const EdgeInsets.only(left: 5, right: 5),
-                        child: Text(episode.title,
+                        child: Text(episode.title!,
                             style: TextStyle(
                                 color: DefaultColors.primaryColor,
                                 fontSize: 24))),
                     Padding(
                         padding: const EdgeInsets.only(left: 5, right: 5),
-                        child: Text(episode.description,
+                        child: Text(episode.description!,
                             style: TextStyle(
                                 color: DefaultColors.primaryColor,
                                 fontSize: 18)))

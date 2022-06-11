@@ -46,6 +46,9 @@ dependencies:
   auto_route: ^4.0.1
   get: ^4.6.5
   get_storage: ^2.0.3
+  dio: ^4.0.6
+  flutter_hooks: ^0.18.4
+  hooks_riverpod: ^1.0.4
 
 
 dev_dependencies:
