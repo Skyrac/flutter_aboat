@@ -1,3 +1,4 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:talkaboat/models/podcasts/episode.model.dart';
 import 'package:talkaboat/services/audio/audio-handler.services.dart';
@@ -16,6 +17,18 @@ class EpisodePreviewWidget extends StatelessWidget {
         padding: const EdgeInsets.all(10),
         child: InkWell(
             onTap: () {
+              final Map<String, dynamic> someMap = {
+                "episodeId": episode.aboatId,
+                "podcastId": episode.podcast?.aboatId,
+              };
+              final mediaItem =  MediaItem(id: episode.audio!,
+                  album: episode.podcast != null
+                      && episode.podcast!.title != null
+                      ? episode.podcast!.title! : '',
+                  artUri: Uri.parse(episode.image!),
+                  title: episode.title!,
+                  extras: someMap);
+              audioHandler.updateQueue(List.generate(1, (index) => mediaItem));
               setEpisode(episode);
             },
             child: ClipRRect(

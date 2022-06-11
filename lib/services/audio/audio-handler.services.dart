@@ -28,7 +28,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   // ignore: close_sinks
   final BehaviorSubject<List<MediaItem>> _recentSubject =
       BehaviorSubject.seeded(<MediaItem>[]);
-  final _mediaLibrary = MediaLibrary();
+  // final _mediaLibrary = MediaLibrary();
   final _player = AudioPlayer();
   final _playlist = ConcatenatingAudioSource(children: []);
   @override
@@ -126,7 +126,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
       playbackState.add(playbackState.value.copyWith(speed: speed));
     });
     // Load and broadcast the initial queue
-    await updateQueue(_mediaLibrary.items[MediaLibrary.albumsRootId]!);
+    // await updateQueue(_mediaLibrary.items[MediaLibrary.albumsRootId]!);
     // For Android 11, record the most recent item so it can be resumed.
     mediaItem
         .whereType<MediaItem>()
@@ -174,34 +174,34 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   List<AudioSource> _itemsToSources(List<MediaItem> mediaItems) =>
       mediaItems.map(_itemToSource).toList();
 
-  @override
-  Future<List<MediaItem>> getChildren(String parentMediaId,
-      [Map<String, dynamic>? options]) async {
-    switch (parentMediaId) {
-      case AudioService.recentRootId:
-        // When the user resumes a media session, tell the system what the most
-        // recently played item was.
-        return _recentSubject.value;
-      default:
-        // Allow client to browse the media library.
-        return _mediaLibrary.items[parentMediaId]!;
-    }
-  }
+  // @override
+  // Future<List<MediaItem>> getChildren(String parentMediaId,
+  //     [Map<String, dynamic>? options]) async {
+  //   switch (parentMediaId) {
+  //     case AudioService.recentRootId:
+  //       // When the user resumes a media session, tell the system what the most
+  //       // recently played item was.
+  //       return _recentSubject.value;
+  //     default:
+  //       // Allow client to browse the media library.
+  //       return _mediaLibrary.items[parentMediaId]!;
+  //   }
+  // }
 
-  @override
-  ValueStream<Map<String, dynamic>> subscribeToChildren(String parentMediaId) {
-    switch (parentMediaId) {
-      case AudioService.recentRootId:
-        final stream = _recentSubject.map((_) => <String, dynamic>{});
-        return _recentSubject.hasValue
-            ? stream.shareValueSeeded(<String, dynamic>{})
-            : stream.shareValue();
-      default:
-        return Stream.value(_mediaLibrary.items[parentMediaId])
-            .map((_) => <String, dynamic>{})
-            .shareValue();
-    }
-  }
+  // @override
+  // ValueStream<Map<String, dynamic>> subscribeToChildren(String parentMediaId) {
+  //   switch (parentMediaId) {
+  //     case AudioService.recentRootId:
+  //       final stream = _recentSubject.map((_) => <String, dynamic>{});
+  //       return _recentSubject.hasValue
+  //           ? stream.shareValueSeeded(<String, dynamic>{})
+  //           : stream.shareValue();
+  //     default:
+  //       return Stream.value(_mediaLibrary.items[parentMediaId])
+  //           .map((_) => <String, dynamic>{})
+  //           .shareValue();
+  //   }
+  // }
 
   @override
   Future<void> addQueueItem(MediaItem mediaItem) async {
@@ -219,9 +219,15 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   }
 
   @override
-  Future<void> updateQueue(List<MediaItem> queue) async {
+  Future<void> updateQueue(List<MediaItem> queue, {bool autoPlay = true}) async {
+    await _player.pause();
     await _playlist.clear();
     await _playlist.addAll(_itemsToSources(queue));
+
+    await _player.setAudioSource(_playlist);
+    if(autoPlay) {
+      await _player.play();
+    }
   }
 
   @override
