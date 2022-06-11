@@ -30,7 +30,7 @@ class HomeScreen extends HookConsumerWidget  {
     final configs = ref.watch(episodeProvider);
     return
       configs.when(
-        loading: () => const CircularProgressIndicator(),
+        loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Text('Error: $error'),
         data: (episodeList) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Padding(
@@ -39,7 +39,7 @@ class HomeScreen extends HookConsumerWidget  {
                   style: TextStyle(
                       fontSize: 32, color: Theme.of(context).primaryColor))),
           Container(
-              height: 280,
+              height: 300,
               child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (ctx, index) {

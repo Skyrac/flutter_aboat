@@ -20,29 +20,36 @@ class EpisodePreviewWidget extends StatelessWidget {
             },
             child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Container(
-                            height: 200,
-                            width: 200,
-                            child: Image.network(episode.image!,
-                                fit: BoxFit.cover))),
-                    Padding(
-                        padding: const EdgeInsets.only(left: 5, right: 5),
-                        child: Text(episode.title!,
-                            style: TextStyle(
-                                color: DefaultColors.primaryColor,
-                                fontSize: 24))),
-                    Padding(
-                        padding: const EdgeInsets.only(left: 5, right: 5),
-                        child: Text(episode.description!,
-                            style: TextStyle(
-                                color: DefaultColors.primaryColor,
-                                fontSize: 18)))
-                  ],
+
+                child: Container(
+                  width: 200,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+
+                    children: [
+                      ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Container(
+                              height: 200,
+                              child: Image.network(episode.image!,
+                                  fit: BoxFit.cover))),
+                      Padding(
+                          padding: const EdgeInsets.only(left: 5, right: 5, top:5),
+                          child: Text(episode.title!,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
+                              style: TextStyle(
+                                  color: DefaultColors.primaryColor,
+                                  fontSize: 24))),
+                      // Padding(
+                      //     padding: const EdgeInsets.only(left: 5, right: 5),
+                      //     child: Text(episode.description!,
+                      //
+                      //         style: TextStyle(
+                      //             color: DefaultColors.primaryColor,
+                      //             fontSize: 18)))
+                    ],
+                  ),
                 ))));
   }
 }

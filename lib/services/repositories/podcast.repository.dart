@@ -6,9 +6,9 @@ class PodcastRepository {
   PodcastRepository._() {}
   static Future<List<Episode?>> getEpisodesMock(int podcastId) async {
     try {
-      var response = await Dio().get('https://api.talkaboat.online/v1/podcast/3855/episodes/asc/0/10');
+      var response = await Dio().get<String>('https://api.talkaboat.online/v1/podcast/3855/episodes/asc/0/10');
       print(response);
-      var l = jsonDecode(response.data);
+      var l = jsonDecode(response.data!);
       List<Episode> episodes =
       List<Episode>.from(l.map((model) => Episode.fromJson(model)));
       return episodes;
