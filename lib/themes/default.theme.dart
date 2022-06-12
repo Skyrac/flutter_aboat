@@ -7,9 +7,7 @@ class DefaultTheme {
     return ThemeData(
         primaryColor: DefaultColors.primaryColor,
         cardColor: DefaultColors.secondaryColor.shade800,
-        iconTheme: IconThemeData(
-          color: DefaultColors.primaryColor.shade100
-        ),
+        iconTheme: IconThemeData(color: DefaultColors.primaryColor.shade100),
         textTheme: TextTheme(
           titleLarge: TextStyle(color: DefaultColors.secondaryColor),
           titleMedium: TextStyle(color: DefaultColors.secondaryColor),
@@ -17,32 +15,27 @@ class DefaultTheme {
           labelLarge: TextStyle(color: DefaultColors.secondaryColor),
           labelMedium: TextStyle(color: DefaultColors.secondaryColor),
           labelSmall: TextStyle(color: DefaultColors.secondaryColor),
-        headlineLarge: TextStyle(color: DefaultColors.secondaryColor),
+          headlineLarge: TextStyle(color: DefaultColors.secondaryColor),
           headlineMedium: TextStyle(color: DefaultColors.secondaryColor),
-            headlineSmall: TextStyle(color: DefaultColors.secondaryColor),
+          headlineSmall: TextStyle(color: DefaultColors.secondaryColor),
           displayLarge: TextStyle(color: DefaultColors.secondaryColor),
           displayMedium: TextStyle(color: DefaultColors.secondaryColor),
           displaySmall: TextStyle(color: DefaultColors.secondaryColor),
-            bodyLarge: TextStyle(color: DefaultColors.secondaryColor),
+          bodyLarge: TextStyle(color: DefaultColors.secondaryColor),
           bodyMedium: TextStyle(color: DefaultColors.secondaryColor),
           bodySmall: TextStyle(color: DefaultColors.secondaryColor),
-
         ),
         inputDecorationTheme: InputDecorationTheme(
           labelStyle: TextStyle(color: DefaultColors.primaryColor.shade100),
-              hintStyle: TextStyle(color: DefaultColors.primaryColor.shade200),
-
-
+          hintStyle: TextStyle(color: DefaultColors.primaryColor.shade200),
         ),
-
         backgroundColor: Colors.transparent,
         bottomAppBarColor: DefaultColors.secondaryColor,
         scaffoldBackgroundColor: Colors.transparent,
         appBarTheme: const AppBarTheme(
-            backgroundColor: Colors.transparent,
+          backgroundColor: Colors.transparent,
           elevation: 0.0,
         ),
-
         fontFamily: 'Montserrat', //3
         bottomNavigationBarTheme: BottomNavigationBarThemeData(
             backgroundColor: DefaultColors.primaryColor.shade900,

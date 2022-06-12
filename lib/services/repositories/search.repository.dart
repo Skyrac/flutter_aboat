@@ -1,16 +1,20 @@
 import 'dart:convert';
-import '../../models/podcasts/episode.model.dart';
+
 import 'package:dio/dio.dart';
+import 'package:talkaboat/models/search/search_result.model.dart';
+
+import '../../models/podcasts/episode.model.dart';
 
 class SearchRepository {
   SearchRepository._() {}
   static Future<List<Episode?>> searchPodcasts(String query) async {
     try {
-      var response = await Dio().get<String>('https://api.talkaboat.online/v1/podcast/3855/episodes/asc/0/10');
+      var response = await Dio().get<String>(
+          'https://api.talkaboat.online/v1/podcast/3855/episodes/asc/0/10');
       print(response);
       var l = jsonDecode(response.data!);
       List<Episode> episodes =
-      List<Episode>.from(l.map((model) => Episode.fromJson(model)));
+          List<Episode>.from(l.map((model) => Episode.fromJson(model)));
       return episodes;
     } catch (e) {
       print(e);
@@ -18,15 +22,18 @@ class SearchRepository {
     return List.generate(0, (index) => null);
   }
 
-  static Future<List<String?>?> searchSuggestion(String query) async {
+  static Future<List<SearchResult>?> searchSuggestion(String query) async {
     try {
-      var response = await Dio().get<String>('https://api.talkaboat.online/v1/podcast/search/typeahead/$query');
-      List<String?>? l = List.from(jsonDecode(response.data!));
-      return l;
+      var response = await Dio().get<String>(
+          'https://api.talkaboat.online/v1/podcast/search/typeahead/$query/detail');
+      var list = List<SearchResult>.from(json
+          .decode(response.data!)
+          .map((data) => SearchResult.fromJson(data)));
+      return list;
     } catch (e) {
       print(e);
     }
-    return List.generate(0, (index) => '');
+    return null;
   }
 
 //https://api.talkaboat.online/v1/podcast/3855/desc/0/10
