@@ -6,9 +6,12 @@ class DefaultTheme {
   static ThemeData get defaultTheme {
     return ThemeData(
         primaryColor: DefaultColors.primaryColor,
+        iconTheme: IconThemeData(
+          color: DefaultColors.primaryColor.shade100
+        ),
         backgroundColor: DefaultColors.primaryColor.shade900,
-        bottomAppBarColor: DefaultColors.primaryColor.shade900,
-        scaffoldBackgroundColor: DefaultColors.primaryColor.shade800,
+        bottomAppBarColor: DefaultColors.secondaryColor,
+        scaffoldBackgroundColor: Colors.transparent,
         appBarTheme: const AppBarTheme(
             backgroundColor: Colors.transparent, elevation: 0.0),
         fontFamily: 'Montserrat', //3

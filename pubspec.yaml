@@ -49,6 +49,8 @@ dependencies:
   dio: ^4.0.6
   flutter_hooks: ^0.18.4
   hooks_riverpod: ^1.0.4
+  cached_network_image: ^3.2.1
+  curved_navigation_bar: ^1.0.3
 
 
 dev_dependencies:

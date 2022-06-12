@@ -27,7 +27,7 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
     Size deviceSize = MediaQuery.of(context).size;
     return AnimatedContainer(
         duration: const Duration(milliseconds: 500),
-        color: DefaultColors.secondaryColor,
+        color: Theme.of(context).bottomAppBarColor,
         width: deviceSize.width,
         height: 50,
         child: PlayerControlWidget());

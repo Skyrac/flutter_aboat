@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:talkaboat/models/podcasts/episode.model.dart';
 import 'package:talkaboat/services/audio/audio-handler.services.dart';
 import 'package:talkaboat/themes/colors.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import '../injection/injector.dart';
 
@@ -17,6 +18,7 @@ class EpisodePreviewWidget extends StatelessWidget {
         padding: const EdgeInsets.all(10),
         child: InkWell(
             onTap: () async {
+              setEpisode(episode);
               final Map<String, dynamic> someMap = {
                 "episodeId": episode.aboatId,
                 "podcastId": episode.podcast?.aboatId,
@@ -29,7 +31,7 @@ class EpisodePreviewWidget extends StatelessWidget {
                   title: episode.title!,
                   extras: someMap);
               await audioHandler.updateQueue(List.generate(1, (index) => mediaItem));
-              setEpisode(episode);
+
             },
             child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
@@ -44,8 +46,13 @@ class EpisodePreviewWidget extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10),
                           child: Container(
                               height: 200,
-                              child: Image.network(episode.image!,
-                                  fit: BoxFit.cover))),
+                              child: CachedNetworkImage(imageUrl: episode.image!,
+                                  fit: BoxFit.cover,
+                                placeholder: (_, __) => const CircularProgressIndicator(),
+                                // progressIndicatorBuilder: (context, url, downloadProgress) =>
+                                //     CircularProgressIndicator(value: downloadProgress.progress),
+                                errorWidget: (context, url, error) => const Icon(Icons.error),
+                              ))),
                       Padding(
                           padding: const EdgeInsets.only(left: 5, right: 5, top:5),
                           child: Text(episode.title!,
