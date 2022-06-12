@@ -29,10 +29,7 @@ class HomeScreen extends HookConsumerWidget  {
   Widget createEpisodePreview(BuildContext context, String title, WidgetRef ref) {
     final configs = ref.watch(episodeProvider);
     return
-      configs.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Text('Error: $error'),
-        data: (episodeList) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+     Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Padding(
               padding: const EdgeInsets.only(left: 10),
               child: Text(title,
@@ -40,14 +37,16 @@ class HomeScreen extends HookConsumerWidget  {
                       fontSize: 32, color: Theme.of(context).primaryColor))),
           Container(
               height: 300,
-              child: ListView.builder(
+              child:       configs.when(
+    loading: () => const Center(child: CircularProgressIndicator()),
+    error: (error, stack) => Text('Error: $error'),
+    data: (episodeList) => ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (ctx, index) {
                     return EpisodePreviewWidget(episodeList[index]!, setEpisode);
                   },
-                  itemCount: episodeList.length))
-        ])
-      );
+                  itemCount: episodeList.length)))
+        ]);
 
   }
 

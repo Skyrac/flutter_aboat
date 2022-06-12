@@ -18,6 +18,8 @@ class _SearchAndFilterScreenState extends State<SearchAndFilterScreen> {
     super.dispose();
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,7 +47,6 @@ class _SearchAndFilterScreenState extends State<SearchAndFilterScreen> {
                 height: 10,
                 child: Icon(
                   Icons.home,
-                  color: Colors.black,
                 ),
               ),
               hintText: "Search podcasts...",

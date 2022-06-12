@@ -48,7 +48,7 @@ class EpisodePreviewWidget extends StatelessWidget {
                               height: 200,
                               child: CachedNetworkImage(imageUrl: episode.image!,
                                   fit: BoxFit.cover,
-                                placeholder: (_, __) => const CircularProgressIndicator(),
+                                placeholder: (_, __) => const Center(child: const CircularProgressIndicator()),
                                 // progressIndicatorBuilder: (context, url, downloadProgress) =>
                                 //     CircularProgressIndicator(value: downloadProgress.progress),
                                 errorWidget: (context, url, error) => const Icon(Icons.error),

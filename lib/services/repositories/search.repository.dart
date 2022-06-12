@@ -18,11 +18,10 @@ class SearchRepository {
     return List.generate(0, (index) => null);
   }
 
-  static Future<List<String>> searchSuggestion(String query) async {
+  static Future<List<String?>?> searchSuggestion(String query) async {
     try {
       var response = await Dio().get<String>('https://api.talkaboat.online/v1/podcast/search/typeahead/$query');
-      print(response);
-      List<String> l = List.from(jsonDecode(response.data!));
+      List<String?>? l = List.from(jsonDecode(response.data!));
       return l;
     } catch (e) {
       print(e);
