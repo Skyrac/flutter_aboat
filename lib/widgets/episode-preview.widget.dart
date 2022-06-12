@@ -16,7 +16,7 @@ class EpisodePreviewWidget extends StatelessWidget {
     return episode == null ? SizedBox() : Padding(
         padding: const EdgeInsets.all(10),
         child: InkWell(
-            onTap: () {
+            onTap: () async {
               final Map<String, dynamic> someMap = {
                 "episodeId": episode.aboatId,
                 "podcastId": episode.podcast?.aboatId,
@@ -28,7 +28,7 @@ class EpisodePreviewWidget extends StatelessWidget {
                   artUri: Uri.parse(episode.image!),
                   title: episode.title!,
                   extras: someMap);
-              audioHandler.updateQueue(List.generate(1, (index) => mediaItem));
+              await audioHandler.updateQueue(List.generate(1, (index) => mediaItem));
               setEpisode(episode);
             },
             child: ClipRRect(

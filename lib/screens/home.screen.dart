@@ -10,9 +10,9 @@ import '../models/podcasts/episode.model.dart';
 import '../widgets/home-app-bar.widget.dart';
 
 class HomeScreen extends HookConsumerWidget  {
-  HomeScreen(this.setEpisode);
+  HomeScreen(this.setEpisode, {Key? key}) : super(key: key);
 
-  Function setEpisode;
+  final Function setEpisode;
 
   // List<Widget> createListOfCategories() {
   //   // List<Podcast> podcasts = MediacenterRepository.getLibraryMock();

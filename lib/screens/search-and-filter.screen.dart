@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 
 import '../widgets/podcast-search.widget.dart';
 
-class SearchScreen extends StatefulWidget {
-  const SearchScreen({Key? key}) : super(key: key);
+class SearchAndFilterScreen extends StatefulWidget {
+  const SearchAndFilterScreen({Key? key}) : super(key: key);
 
   @override
-  State<SearchScreen> createState() => _SearchScreenState();
+  State<SearchAndFilterScreen> createState() => _SearchAndFilterScreenState();
 }
 
-class _SearchScreenState extends State<SearchScreen> {
+class _SearchAndFilterScreenState extends State<SearchAndFilterScreen> {
   final _controller = TextEditingController();
 
   @override
@@ -22,13 +22,13 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Search'),
+        title: Text('Search and Filter'),
       ),
       body: Column(
         children: <Widget>[
           TextField(
             controller: _controller,
-            onTap: () async {
+            onTap: () {
               // placeholder for our places search later
               showSearch(
                 context: context,
