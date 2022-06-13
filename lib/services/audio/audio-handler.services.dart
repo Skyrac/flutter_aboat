@@ -167,7 +167,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     AudioService.position
         .listen((event) async => await positionUpdate(event, mediaItem.value));
     playbackState.listen((PlaybackState state) async =>
-        await receiveUpdate(state, mediaItem.value));
+        await receiveUpdate(state, mediaItem.value, _player.position));
     await _player.setAudioSource(_playlist);
   }
 

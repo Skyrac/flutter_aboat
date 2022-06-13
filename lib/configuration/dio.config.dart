@@ -12,7 +12,8 @@ Dio dio = Dio(options);
 
 void configDio() {
   dio.interceptors.add(InterceptorsWrapper(onRequest: (options, handler) {
-    print("DOING REQUEST");
+    print("Request: ${options.path}");
+
     final token = getIt<UserService>().token;
     options.headers['Authorization'] = "Bearer $token";
     print(options.headers["Authorization"]);
@@ -27,6 +28,7 @@ void configDio() {
     // If you want to reject the request with a error message,
     // you can reject a `DioError` object eg: `handler.reject(dioError)`
   }, onError: (DioError e, handler) {
+    print("Request: ${e.response}");
     // Do something with response error
     return handler.next(e); //continue
     // If you want to resolve the request with some custom data，

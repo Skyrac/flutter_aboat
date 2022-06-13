@@ -5,44 +5,43 @@ class TrackingRepository {
 
   static const API = "/v1/media";
 
-  static dynamic createRequestData(String owner, String asset, int playTime) {
+  static dynamic createRequestData(int owner, int asset, int playTime) {
     return {"Owner": owner, "Asset": asset, "PlayTime": playTime};
   }
 
-  static Future<void> Play(String owner, String asset, int playTime) async {
+  static Future<void> Play(int owner, int asset, int playTime) async {
     var data = createRequestData(owner, asset, playTime);
-    var response = await dio.post<String>('$API/play');
+    var response = await dio.post<String>('$API/play', data: data);
     print(response.data);
   }
 
-  static Future<void> Pause(String owner, String asset, int playTime) async {
+  static Future<void> Pause(int owner, int asset, int playTime) async {
     var data = createRequestData(owner, asset, playTime);
-    var response = await dio.post<String>('$API/pause');
+    var response = await dio.post<String>('$API/pause', data: data);
     print(response.data);
   }
 
-  static Future<void> Stop(String owner, String asset, int playTime) async {
+  static Future<void> Stop(int owner, int asset, int playTime) async {
     var data = createRequestData(owner, asset, playTime);
-    var response = await dio.post<String>('$API/stop');
+    var response = await dio.post<String>('$API/stop', data: data);
     print(response.data);
   }
 
-  static Future<void> Mute(String owner, String asset, int playTime) async {
+  static Future<void> Mute(int owner, int asset, int playTime) async {
     var data = createRequestData(owner, asset, playTime);
-    var response = await dio.post<String>('$API/mute');
+    var response = await dio.post<String>('$API/mute', data: data);
     print(response.data);
   }
 
-  static Future<void> Unmute(String owner, String asset, int playTime) async {
+  static Future<void> Unmute(int owner, int asset, int playTime) async {
     var data = createRequestData(owner, asset, playTime);
-    var response = await dio.post<String>('$API/unmute');
+    var response = await dio.post<String>('$API/unmute', data: data);
     print(response.data);
   }
 
-  static Future<void> Heartbeat(
-      String owner, String asset, int playTime) async {
+  static Future<void> Heartbeat(int owner, int asset, int playTime) async {
     var data = createRequestData(owner, asset, playTime);
-    var response = await dio.post<String>('$API/heartbeat');
+    var response = await dio.post<String>('$API/heartbeat', data: data);
     print(response.data);
   }
 }

@@ -44,4 +44,11 @@ class UserService {
     }
     return false;
   }
+
+  logout() async {
+    print("Logout");
+    // token = "";
+    userInfo = null;
+    // await prefs.setString(TOKEN_IDENTIFIER, "");
+  }
 }

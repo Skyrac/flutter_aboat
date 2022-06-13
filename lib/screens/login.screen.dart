@@ -9,7 +9,8 @@ import '../themes/login-and-register.background.dart';
 import '../widgets/login-app-bar.widget.dart';
 
 class LoginScreen extends StatelessWidget {
-  LoginScreen({Key? key}) : super(key: key);
+  LoginScreen(this.refreshParent, {Key? key}) : super(key: key);
+  final Function refreshParent;
   var isLogin = true;
   final emailController = TextEditingController();
   final pinController = TextEditingController();
@@ -28,6 +29,7 @@ class LoginScreen extends StatelessWidget {
       final userService = getIt<UserService>();
       print(userService);
       if (await getIt<UserService>().emailLogin(email, pin)) {
+        refreshParent();
         Navigator.pop(context);
       }
     }
