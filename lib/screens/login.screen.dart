@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:talkaboat/services/repositories/user.repository.dart';
 import 'package:talkaboat/utils/extensions.dart';
 
+import '../injection/injector.dart';
+import '../services/user/user.service.dart';
 import '../themes/colors.dart';
 import '../themes/login-and-register.background.dart';
 import '../widgets/login-app-bar.widget.dart';
@@ -19,6 +21,18 @@ class LoginScreen extends StatelessWidget {
     }
   }
 
+  Future<void> sendLogin(BuildContext context) async {
+    final pin = pinController.text;
+    final email = emailController.text;
+    if (pin.length > 6 && email.isValidEmail()) {
+      final userService = getIt<UserService>();
+      print(userService);
+      if (await getIt<UserService>().emailLogin(email, pin)) {
+        Navigator.pop(context);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -33,7 +47,6 @@ class LoginScreen extends StatelessWidget {
       child: Scaffold(
           body: Stack(
         children: [
-          const LoginAppBarWidget(),
           LoginAndRegisterBackground(
             child: Container(
                 child: Column(
@@ -82,6 +95,9 @@ class LoginScreen extends StatelessWidget {
                       padding: const EdgeInsets.only(left: 10, right: 10),
                       child: TextField(
                         controller: pinController,
+                        onSubmitted: (_) async {
+                          await sendLogin(context);
+                        },
                         decoration: const InputDecoration(labelText: "Pin"),
                       ),
                     ),
@@ -110,10 +126,15 @@ class LoginScreen extends StatelessWidget {
                             Color.fromARGB(255, 255, 177, 41)
                           ])),
                       padding: const EdgeInsets.all(0),
-                      child: const Text(
-                        "LOGIN",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                      child: InkWell(
+                        onTap: () async {
+                          await sendLogin(context);
+                        },
+                        child: const Text(
+                          "LOGIN",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ),
                   ),
@@ -138,6 +159,12 @@ class LoginScreen extends StatelessWidget {
               ],
             )),
           ),
+          const Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              height: 80,
+              child: LoginAppBarWidget()),
         ],
       )),
     ));

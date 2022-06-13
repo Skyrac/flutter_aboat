@@ -4,9 +4,12 @@ import 'package:talkaboat/injection/injector.dart';
 import 'package:talkaboat/screens/app.screen.dart';
 import 'package:talkaboat/themes/default.theme.dart';
 
+import 'configuration/dio.config.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await configureDependencies();
+  configDio();
   runApp(const ProviderScope(child: MyApp()));
 }
 

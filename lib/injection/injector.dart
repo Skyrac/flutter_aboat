@@ -1,6 +1,7 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:get_it/get_it.dart';
 import 'package:talkaboat/services/audio/audio-handler.services.dart';
+import 'package:talkaboat/services/user/user.service.dart';
 
 final getIt = GetIt.instance;
 
@@ -12,5 +13,5 @@ Future<void> configureDependencies() async {
         androidNotificationChannelName: 'Talkaboat Audio',
         androidNotificationOngoing: true,
       )));
-  print("test");
+  getIt.registerSingleton(await UserService.init());
 }
