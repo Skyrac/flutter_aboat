@@ -4,7 +4,7 @@ import 'package:talkaboat/services/user/user.service.dart';
 import '../injection/injector.dart';
 
 var options = BaseOptions(
-  baseUrl: 'https:/api.talkaboat.online/',
+  baseUrl: 'https://api.talkaboat.online/',
   connectTimeout: 5000,
   receiveTimeout: 3000,
 );
@@ -12,6 +12,7 @@ Dio dio = Dio(options);
 
 void configDio() {
   dio.interceptors.add(InterceptorsWrapper(onRequest: (options, handler) {
+    print("DOING REQUEST");
     final token = getIt<UserService>().token;
     options.headers['Authorization'] = "Bearer $token";
     print(options.headers["Authorization"]);

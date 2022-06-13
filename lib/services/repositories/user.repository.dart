@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:talkaboat/configuration/dio.config.dart';
+import 'package:talkaboat/models/user/user-info.model.dart';
 
 class UserRepository {
   UserRepository._();
@@ -22,6 +24,12 @@ class UserRepository {
         'https://api.talkaboat.online/v1/user/login/email',
         data: {"address": email, "signature": pin});
     var convertedData = json.decode(response.data!)["token"];
+    return convertedData;
+  }
+
+  static Future<UserInfo> getUserInfo() async {
+    var response = await dio.get<String>('/v1/user/profile');
+    var convertedData = UserInfo.fromJson(json.decode(response.data!));
     return convertedData;
   }
 }
