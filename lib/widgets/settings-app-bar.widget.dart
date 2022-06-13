@@ -24,7 +24,7 @@ class SettingsAppBarWidget extends StatelessWidget {
                       type: PageTransitionType.fade,
                       duration: const Duration(milliseconds: 300),
                       reverseDuration: const Duration(milliseconds: 200),
-                      child: const LoginScreen()));
+                      child: LoginScreen()));
             },
           ),
         )

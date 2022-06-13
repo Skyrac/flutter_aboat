@@ -1,12 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:talkaboat/services/repositories/user.repository.dart';
+import 'package:talkaboat/utils/extensions.dart';
 
 import '../themes/colors.dart';
 import '../themes/login-and-register.background.dart';
 import '../widgets/login-app-bar.widget.dart';
 
 class LoginScreen extends StatelessWidget {
-  const LoginScreen({Key? key}) : super(key: key);
-  final isLogin = true;
+  LoginScreen({Key? key}) : super(key: key);
+  var isLogin = true;
+  final emailController = TextEditingController();
+  final pinController = TextEditingController();
+
+  Future<void> sendPinRequest() async {
+    final email = emailController.text;
+    if (email.isValidEmail()) {
+      await UserRepository.requestEmailLogin(email);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -27,32 +39,55 @@ class LoginScreen extends StatelessWidget {
                 child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(height: size.height * 0.03),
+                SizedBox(height: size.height * 0.06),
                 Container(
                   alignment: Alignment.center,
                   margin: const EdgeInsets.symmetric(horizontal: 40),
-                  child: const TextField(
-                    decoration: InputDecoration(labelText: "Username"),
+                  child: Card(
+                    color: DefaultColors.secondaryColorAlphaBlend.shade900,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 10, right: 10),
+                      child: TextField(
+                        controller: emailController,
+                        onSubmitted: (_) async {
+                          await sendPinRequest();
+                        },
+                        decoration: InputDecoration(labelText: "E-Mail"),
+                      ),
+                    ),
                   ),
                 ),
-                SizedBox(height: size.height * 0.03),
+
+                SizedBox(height: size.height * 0.01),
                 Container(
                   alignment: Alignment.center,
-                  margin: const EdgeInsets.symmetric(horizontal: 40),
-                  child: const TextField(
-                    decoration: InputDecoration(labelText: "Password"),
-                    obscureText: true,
-                  ),
-                ),
-                Container(
-                  alignment: Alignment.centerRight,
                   margin:
                       const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-                  child: const Text(
-                    "Forgot your password?",
-                    style: TextStyle(fontSize: 12, color: Color(0XFF2661FA)),
+                  child: InkWell(
+                    onTap: () async {
+                      await sendPinRequest();
+                    },
+                    child: const Text("Request E-Mail with pin",
+                        style:
+                            TextStyle(fontSize: 12, color: Color(0XFF2661FA))),
                   ),
                 ),
+                SizedBox(height: size.height * 0.01),
+                Container(
+                  alignment: Alignment.center,
+                  margin: const EdgeInsets.symmetric(horizontal: 40),
+                  child: Card(
+                    color: DefaultColors.secondaryColorAlphaBlend.shade900,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 10, right: 10),
+                      child: TextField(
+                        controller: pinController,
+                        decoration: const InputDecoration(labelText: "Pin"),
+                      ),
+                    ),
+                  ),
+                ),
+
                 SizedBox(height: size.height * 0.05),
                 Container(
                   alignment: Alignment.centerRight,
