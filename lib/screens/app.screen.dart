@@ -19,6 +19,14 @@ class AppScreen extends StatefulWidget {
 
 class _AppScreenState extends State<AppScreen> {
   var Tabs;
+  String _currentPage = "Home";
+  List<String> pageKeys = ["Home", "Search", "Playlist", "Library"];
+  final Map<String, GlobalKey<NavigatorState>> _navigatorKeys = {
+    "Home": GlobalKey<NavigatorState>(),
+    "Search": GlobalKey<NavigatorState>(),
+    "Playlist": GlobalKey<NavigatorState>(),
+    "Library": GlobalKey<NavigatorState>(),
+  };
 
   int currentTabIndex = 0;
   Episode? episode;
@@ -31,14 +39,37 @@ class _AppScreenState extends State<AppScreen> {
     return this.episode;
   }
 
+  void _selectTab(String tabItem, int index) {
+    if (tabItem == _currentPage) {
+      _navigatorKeys[tabItem]?.currentState?.popUntil((route) => route.isFirst);
+    } else {
+      setState(() {
+        _currentPage = pageKeys[index];
+        currentTabIndex = index;
+      });
+    }
+  }
+
+  Widget _buildOffstageNavigator(String tabItem) {
+    return Offstage(
+        offstage: _currentPage != tabItem,
+        child: Navigator(
+          key: _navigatorKeys[tabItem],
+          onGenerateRoute: (routeSettings) {
+            return MaterialPageRoute(
+                builder: (context) => Tabs[currentTabIndex]);
+          },
+        ));
+  }
+
   @override
   initState() {
     super.initState();
     Tabs = [
       HomeScreen(setEpisode),
-      SearchAndFilterScreen(),
-      PlaylistScreen(),
-      LibraryScreen()
+      const SearchAndFilterScreen(),
+      const PlaylistScreen(),
+      const LibraryScreen()
     ];
   }
 
@@ -51,52 +82,55 @@ class _AppScreenState extends State<AppScreen> {
         DefaultColors.secondaryColor.shade900,
         DefaultColors.secondaryColor.shade900
       ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
-      child: Scaffold(
-          body: Tabs[currentTabIndex],
-          bottomNavigationBar:
-              Column(mainAxisSize: MainAxisSize.min, children: [
-            MiniPlayerWidget(episode: episode),
-            CurvedNavigationBar(
-                backgroundColor: episode == null
-                    ? Colors.transparent
-                    : Theme.of(context).bottomAppBarColor,
-                color:
-                    Theme.of(context).bottomNavigationBarTheme.backgroundColor!,
-                buttonBackgroundColor: Theme.of(context)
-                    .bottomNavigationBarTheme
-                    .selectedItemColor,
-                animationCurve: Curves.easeInOut,
-                animationDuration: Duration(milliseconds: 600),
-                height: 50,
-                index: currentTabIndex,
-                onTap: (index) {
-                  setState(() {
-                    currentTabIndex = index;
-                  });
-                },
-                items: <Widget>[
-                  Icon(Icons.home, size: 30),
-                  Icon(Icons.search, size: 30),
-                  Icon(Icons.playlist_add, size: 30),
-                  Icon(Icons.library_books, size: 30)
-                ]),
-            // BottomNavigationBar(
-            //   currentIndex: currentTabIndex,
-            //   onTap: (currentIndex) {
-            //     currentTabIndex = currentIndex;
-            //     setState(() {});
-            //   },
-            //   items: [
-            //     BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home', backgroundColor: Theme.of(context).bottomNavigationBarTheme.backgroundColor),
-            //     BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search', backgroundColor: Theme.of(context).bottomNavigationBarTheme.backgroundColor),
-            //     BottomNavigationBarItem(
-            //         icon: Icon(Icons.playlist_add), label: 'Playlist', backgroundColor: Theme.of(context).bottomNavigationBarTheme.backgroundColor),
-            //
-            //     BottomNavigationBarItem(
-            //         icon: Icon(Icons.library_books), label: 'Library', backgroundColor: Theme.of(context).bottomNavigationBarTheme.backgroundColor)
-            //   ],
-            // )
-          ])),
+      child: WillPopScope(
+        onWillPop: () async {
+          final isFirstRouteInCurrentTab =
+              await _navigatorKeys[_currentPage]?.currentState?.maybePop();
+          if (isFirstRouteInCurrentTab != null && isFirstRouteInCurrentTab) {
+            if (_currentPage != "Home") {
+              _selectTab("Home", 1);
+
+              return false;
+            }
+          }
+          // let system handle back button if we're on the first route
+          return isFirstRouteInCurrentTab != null && isFirstRouteInCurrentTab;
+        },
+        child: Scaffold(
+            body: Stack(children: <Widget>[
+              _buildOffstageNavigator("Home"),
+              _buildOffstageNavigator("Search"),
+              _buildOffstageNavigator("Playlist"),
+              _buildOffstageNavigator("Library"),
+            ]),
+            bottomNavigationBar:
+                Column(mainAxisSize: MainAxisSize.min, children: [
+              MiniPlayerWidget(episode: episode),
+              CurvedNavigationBar(
+                  backgroundColor: episode == null
+                      ? Colors.transparent
+                      : Theme.of(context).bottomAppBarColor,
+                  color: Theme.of(context)
+                      .bottomNavigationBarTheme
+                      .backgroundColor!,
+                  buttonBackgroundColor: Theme.of(context)
+                      .bottomNavigationBarTheme
+                      .selectedItemColor,
+                  animationCurve: Curves.easeInOut,
+                  animationDuration: const Duration(milliseconds: 600),
+                  height: 50,
+                  index: currentTabIndex,
+                  onTap: (index) {
+                    _selectTab(pageKeys[index], index);
+                  },
+                  items: const <Widget>[
+                    Icon(Icons.home, size: 30),
+                    Icon(Icons.search, size: 30),
+                    Icon(Icons.playlist_add, size: 30),
+                    Icon(Icons.library_books, size: 30)
+                  ]),
+            ])),
+      ),
     );
   }
 }

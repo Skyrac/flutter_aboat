@@ -3,8 +3,9 @@ import 'package:audio_session/audio_session.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../../models/podcasts/episode.model.dart';
 import '../../utils/common.dart';
-import 'MediaLibrary.dart';
+import 'audio-tracking.services.dart';
 
 /// An [AudioHandler] for playing a list of podcast episodes.
 ///
@@ -15,6 +16,7 @@ abstract class AudioPlayerHandler implements AudioHandler {
   ValueStream<double> get volume;
   Future<void> setVolume(double volume);
   ValueStream<double> get speed;
+  Future<void> updateEpisodeQueue(List<Episode> episodes);
 }
 
 /// The implementation of [AudioPlayerHandler].
@@ -162,6 +164,10 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
         .pipe(queue);
     // Load the playlist.
     _playlist.addAll(queue.value.map(_itemToSource).toList());
+    AudioService.position
+        .listen((event) async => await positionUpdate(event, mediaItem.value));
+    playbackState.listen((PlaybackState state) async =>
+        await receiveUpdate(state, mediaItem.value));
     await _player.setAudioSource(_playlist);
   }
 
@@ -219,15 +225,38 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   }
 
   @override
-  Future<void> updateQueue(List<MediaItem> queue, {bool autoPlay = true}) async {
+  Future<void> updateQueue(List<MediaItem> queue,
+      {bool autoPlay = true}) async {
     await _player.pause();
     await _playlist.clear();
     await _playlist.addAll(_itemsToSources(queue));
 
     await _player.setAudioSource(_playlist);
-    if(autoPlay) {
+    if (autoPlay) {
       await _player.play();
     }
+  }
+
+  MediaItem convertEpisodeToMediaItem(Episode episode) {
+    final Map<String, dynamic> extraMap = {
+      "episodeId": episode.aboatId,
+      "podcastId": episode.podcast?.aboatId,
+    };
+    final mediaItem = MediaItem(
+        id: episode.audio!,
+        duration: Duration(seconds: episode.audioLengthSec!),
+        album: episode.podcast != null && episode.podcast!.title != null
+            ? episode.podcast!.title!
+            : '',
+        artUri: Uri.parse(episode.image!),
+        title: episode.title!,
+        extras: extraMap);
+    return mediaItem;
+  }
+
+  Future<void> updateEpisodeQueue(List<Episode> episodes) async {
+    await updateQueue(
+        episodes.map((episode) => convertEpisodeToMediaItem(episode)).toList());
   }
 
   @override

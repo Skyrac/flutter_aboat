@@ -11,14 +11,18 @@ class SearchAndFilterScreen extends StatefulWidget {
 
 class _SearchAndFilterScreenState extends State<SearchAndFilterScreen> {
   final _controller = TextEditingController();
-
+  PodcastSearch? search = null;
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
   }
 
-
+  @override
+  void deactivate() {
+    print("deactivate");
+    super.deactivate();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,12 +35,13 @@ class _SearchAndFilterScreenState extends State<SearchAndFilterScreen> {
           TextField(
             controller: _controller,
             onTap: () {
+              search = PodcastSearch();
               // placeholder for our places search later
               showSearch(
                 context: context,
                 // we haven't created AddressSearch class
                 // this should be extending SearchDelegate
-                delegate: PodcastSearch(),
+                delegate: search!,
               );
             },
             // with some styling

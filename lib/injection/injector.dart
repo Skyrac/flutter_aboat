@@ -8,8 +8,8 @@ Future<void> configureDependencies() async {
   getIt.registerSingleton<AudioPlayerHandler>(await AudioService.init(
       builder: () => AudioPlayerHandlerImpl(),
       config: const AudioServiceConfig(
-        androidNotificationChannelId: 'com.ryanheise.myapp.channel.audio',
-        androidNotificationChannelName: 'Audio playback',
+        androidNotificationChannelId: 'com.aboat.talkaboat.channel.audio',
+        androidNotificationChannelName: 'Talkaboat Audio',
         androidNotificationOngoing: true,
       )));
   print("test");

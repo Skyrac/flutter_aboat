@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:talkaboat/models/search/search_result.model.dart';
 import 'package:talkaboat/screens/podcast-detail.screen.dart';
 
@@ -109,11 +110,13 @@ class PodcastSearch extends SearchDelegate<String?> {
         onTap: () {
           Navigator.push(
               context,
-              MaterialPageRoute(
-                  builder: (context) =>
-                      PodcastDetailScreen(podcastSearchResult: entry)));
-          // Navigator.push(
-          //     context, MaterialPageRoute(builder: (context) => DetailPage()));
+              PageTransition(
+                  alignment: Alignment.bottomCenter,
+                  curve: Curves.bounceOut,
+                  type: PageTransitionType.rightToLeftWithFade,
+                  duration: const Duration(milliseconds: 500),
+                  reverseDuration: const Duration(milliseconds: 500),
+                  child: PodcastDetailScreen(podcastSearchResult: entry)));
         },
       );
 
