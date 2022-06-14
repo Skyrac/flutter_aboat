@@ -40,5 +40,14 @@ class PodcastRepository {
     return list;
   }
 
+  static Future<List<Episode>> getEpisodesOfPodcast(
+      int id, String? sort, int? amount) async {
+    amount ??= -1;
+    var response = await dio.get<String>('$API/$id/episodes/$sort/0/$amount');
+    var list = List<Episode>.from(
+        json.decode(response.data!).map((data) => Episode.fromJson(data)));
+    return list;
+  }
+
   //https://api.talkaboat.online/v1/podcast/3855/desc/0/10
 }

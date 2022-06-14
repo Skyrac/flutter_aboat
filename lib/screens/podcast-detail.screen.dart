@@ -152,7 +152,8 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                 }
                 return const Center(child: CircularProgressIndicator());
               },
-              future: PodcastRepository.getEpisodesMock(1),
+              future: PodcastRepository.getEpisodesOfPodcast(
+                  widget.podcastSearchResult!.id!, "asc", -1),
             )));
   }
 }
