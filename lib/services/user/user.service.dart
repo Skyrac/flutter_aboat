@@ -1,13 +1,18 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:talkaboat/models/podcasts/podcast.model.dart';
 import 'package:talkaboat/models/user/user-info.model.dart';
 
+import '../repositories/podcast.repository.dart';
 import '../repositories/user.repository.dart';
 
 class UserService {
   String token = "";
   UserInfo? userInfo;
+  List<Podcast>? library;
   late final prefs;
   static const String TOKEN_IDENTIFIER = "aboat_token";
+
+  get isConnected => token.isNotEmpty && userInfo != null;
 
   setInitialValues() async {
     prefs = await SharedPreferences.getInstance();
@@ -50,5 +55,12 @@ class UserService {
     // token = "";
     userInfo = null;
     // await prefs.setString(TOKEN_IDENTIFIER, "");
+  }
+
+  Future<List<Podcast>> getLibrary() async {
+    print("Try accessing library");
+    var newLibrary = await PodcastRepository.getUserLibrary();
+    library = newLibrary;
+    return newLibrary;
   }
 }

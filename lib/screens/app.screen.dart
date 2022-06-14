@@ -70,8 +70,8 @@ class _AppScreenState extends State<AppScreen> {
     Tabs = [
       HomeScreen(setEpisode),
       const SearchAndFilterScreen(),
-      const PlaylistScreen(),
-      const LibraryScreen()
+      PlaylistScreen(),
+      LibraryScreen()
     ];
   }
 

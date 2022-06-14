@@ -49,5 +49,13 @@ class PodcastRepository {
     return list;
   }
 
+  static Future<List<Podcast>> getUserLibrary() async {
+    var response = await dio.get<String>('$API/library/detail');
+    print(response.data);
+    var list = List<Podcast>.from(
+        json.decode(response.data!).map((data) => Podcast.fromJson(data)));
+    return list;
+  }
+
   //https://api.talkaboat.online/v1/podcast/3855/desc/0/10
 }

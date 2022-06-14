@@ -7,10 +7,14 @@ import '../screens/podcast-detail.screen.dart';
 
 class PodcastListWidget extends StatefulWidget {
   PodcastListWidget(
-      {Key? key, required this.searchResults, required this.direction})
+      {Key? key,
+      required this.searchResults,
+      required this.direction,
+      this.trailing})
       : super(key: key);
   final List<SearchResult?> searchResults;
   final Axis direction;
+  final Function? trailing;
   @override
   State<PodcastListWidget> createState() => _PodcastListWidgetState();
 }
@@ -125,8 +129,9 @@ class _PodcastListWidgetState extends State<PodcastListWidget> {
           maxLines: 2,
           style: const TextStyle(color: Colors.white),
         ),
-        trailing: const Icon(Icons.keyboard_arrow_right,
-            color: Colors.white, size: 30.0),
+        trailing: widget.trailing == null
+            ? const SizedBox()
+            : widget.trailing!(context, entry),
         onTap: () {
           Navigator.push(
               context,
@@ -139,6 +144,13 @@ class _PodcastListWidgetState extends State<PodcastListWidget> {
                   child: PodcastDetailScreen(podcastSearchResult: entry)));
         },
       );
+  buildPopupMenu(BuildContext context, SearchResult entry) =>
+      <PopupMenuEntry<String>>[
+        const PopupMenuItem<String>(
+          value: 'remove',
+          child: Card(child: Text('Remove')),
+        ),
+      ];
 
   @override
   Widget build(BuildContext context) {
