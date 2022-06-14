@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:talkaboat/models/podcasts/episode.model.dart';
 import 'package:talkaboat/models/search/search_result.model.dart';
+import 'package:talkaboat/services/audio/audio-handler.services.dart';
 import 'package:talkaboat/services/repositories/podcast.repository.dart';
 
+import '../injection/injector.dart';
 import '../themes/colors.dart';
 import '../widgets/episode-preview.widget.dart';
 import '../widgets/podcast-detail-sliver.widget.dart';
@@ -17,6 +19,7 @@ class PodcastDetailScreen extends StatefulWidget {
 }
 
 class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
+  final audioPlayer = getIt<AudioPlayerHandler>();
   Widget topContent(context) => Stack(
         children: <Widget>[
           Container(
@@ -90,11 +93,18 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
   //       ),
   //     ));
 
+  selectEpisode(int index, List<Episode> data) async {
+    // print("Select Episode $index");
+    await audioPlayer.updateEpisodeQueue(data, index: index);
+  }
+
   Widget buildEpisodes(List<Episode> data) => SliverList(
         delegate: SliverChildBuilderDelegate(
           (BuildContext context, int index) {
             var episode = data[index];
-            return EpisodePreviewWidget(episode, Axis.vertical);
+            var episodeIndex = index;
+            return EpisodePreviewWidget(episode, Axis.vertical,
+                () => selectEpisode(episodeIndex, data));
             return Card(
               margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
               child: Container(
@@ -141,7 +151,8 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                         slivers: [
                           SliverPersistentHeader(
                             delegate: PodcastDetailSliver(
-                                expandedHeight: size.height * 0.5),
+                                expandedHeight: size.height * 0.5,
+                                podcast: widget.podcastSearchResult!),
                             pinned: true,
                           ),
                           buildEpisodes(data),

@@ -1,4 +1,5 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:talkaboat/models/podcasts/episode.model.dart';
 import 'package:talkaboat/screens/home.screen.dart';
@@ -36,7 +37,6 @@ class _AppScreenState extends State<AppScreen> {
 
   Episode? setEpisode(Episode episode) {
     this.episode = episode;
-    print(episode);
     setState(() {});
     return this.episode;
   }

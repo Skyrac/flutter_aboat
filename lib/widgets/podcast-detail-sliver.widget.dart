@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 
+import '../models/search/search_result.model.dart';
 import '../themes/colors.dart';
 
 class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
   final double expandedHeight;
+  final SearchResult podcast;
 
-  const PodcastDetailSliver({
-    required this.expandedHeight,
-  });
+  const PodcastDetailSliver(
+      {required this.expandedHeight, required this.podcast});
 
   @override
   Widget build(
@@ -34,7 +35,8 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
   double disappear(double shrinkOffset) => 1 - shrinkOffset / expandedHeight;
 
   Widget buildAppBar(double shrinkOffset) => AppBar(
-        title: Text("Some Title sadadsadsa"),
+        title: Text(podcast.title!),
+        backgroundColor: DefaultColors.secondaryColorAlphaBlend.shade900,
         centerTitle: true,
       );
 
@@ -47,15 +49,13 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
               height: expandedHeight,
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: NetworkImage("https://picsum.photos/200"),
+                  image: NetworkImage(podcast.image!),
                   fit: BoxFit.cover,
                 ),
               )),
           Container(
             height: expandedHeight,
             padding: const EdgeInsets.all(40.0),
-            decoration: BoxDecoration(
-                color: DefaultColors.secondaryColorAlphaBlend.shade900),
             child: Center(
               child: Text(
                 "",

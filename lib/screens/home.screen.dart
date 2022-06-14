@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:talkaboat/services/repositories/podcast.repository.dart';
 import 'package:talkaboat/themes/colors.dart';
-import 'package:talkaboat/widgets/episode-preview.widget.dart';
 
 import '../models/podcasts/episode.model.dart';
 import '../models/search/search_result.model.dart';
@@ -57,7 +56,7 @@ class HomeScreen extends HookConsumerWidget {
           child: Text(title,
               style: TextStyle(
                   fontSize: 32, color: Theme.of(context).primaryColor))),
-      Container(
+      SizedBox(
           height: 200,
           child: FutureBuilder(
             builder: (context, snapshot) {
@@ -66,7 +65,7 @@ class HomeScreen extends HookConsumerWidget {
                   return Center(
                     child: Text(
                       '${snapshot.error} occurred',
-                      style: TextStyle(fontSize: 18),
+                      style: const TextStyle(fontSize: 18),
                     ),
                   );
                 } else if (snapshot.hasData && snapshot.data != null) {

@@ -12,36 +12,30 @@ class TrackingRepository {
   static Future<void> Play(int owner, int asset, int playTime) async {
     var data = createRequestData(owner, asset, playTime);
     var response = await dio.post<String>('$API/play', data: data);
-    print(response.data);
   }
 
   static Future<void> Pause(int owner, int asset, int playTime) async {
     var data = createRequestData(owner, asset, playTime);
     var response = await dio.post<String>('$API/pause', data: data);
-    print(response.data);
   }
 
   static Future<void> Stop(int owner, int asset, int playTime) async {
     var data = createRequestData(owner, asset, playTime);
     var response = await dio.post<String>('$API/stop', data: data);
-    print(response.data);
   }
 
   static Future<void> Mute(int owner, int asset, int playTime) async {
     var data = createRequestData(owner, asset, playTime);
     var response = await dio.post<String>('$API/mute', data: data);
-    print(response.data);
   }
 
   static Future<void> Unmute(int owner, int asset, int playTime) async {
     var data = createRequestData(owner, asset, playTime);
     var response = await dio.post<String>('$API/unmute', data: data);
-    print(response.data);
   }
 
   static Future<void> Heartbeat(int owner, int asset, int playTime) async {
     var data = createRequestData(owner, asset, playTime);
     var response = await dio.post<String>('$API/heartbeat', data: data);
-    print(response.data);
   }
 }

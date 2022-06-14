@@ -4,14 +4,18 @@ import 'package:talkaboat/models/search/search_result.model.dart';
 class Episode extends SearchResult {
   int? aboatId;
   int? podcastId;
+  @override
   int? id;
   String? link;
   String? audio;
+  @override
   String? image;
+  @override
   String? title;
   Podcast? podcast;
   String? thumbnail;
   String? transcript;
+  @override
   String? description;
   int? pubDateMs;
   int? audioLengthSec;
@@ -57,8 +61,9 @@ class Episode extends SearchResult {
     playTime = json['playTime'];
   }
 
+  @override
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['aboat_id'] = aboatId;
     data['podcast_id'] = podcastId;
     data['id'] = aboatId;

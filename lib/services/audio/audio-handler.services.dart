@@ -16,7 +16,7 @@ abstract class AudioPlayerHandler implements AudioHandler {
   ValueStream<double> get volume;
   Future<void> setVolume(double volume);
   ValueStream<double> get speed;
-  Future<void> updateEpisodeQueue(List<Episode> episodes);
+  Future<void> updateEpisodeQueue(List<Episode> episodes, {int index = 0});
 
   void setEpisodeRefreshFunction(Function setEpisode) {}
 }
@@ -229,12 +229,16 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
 
   @override
   Future<void> updateQueue(List<MediaItem> queue,
-      {bool autoPlay = true}) async {
+      {bool autoPlay = true, int index = 0}) async {
     await _player.pause();
     await _playlist.clear();
     await _playlist.addAll(_itemsToSources(queue));
 
     await _player.setAudioSource(_playlist);
+    var continueTime = queue[index].extras!["playTime"];
+    print(continueTime ?? 0);
+    print(index);
+    await _player.seek(Duration(seconds: continueTime ?? 0), index: index);
     if (autoPlay) {
       await _player.play();
     }
@@ -244,6 +248,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     final Map<String, dynamic> extraMap = {
       "episodeId": episode.aboatId,
       "podcastId": episode.podcast?.aboatId,
+      "playTime": episode.playTime
     };
     final mediaItem = MediaItem(
         id: episode.audio!,
@@ -257,10 +262,12 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     return mediaItem;
   }
 
-  Future<void> updateEpisodeQueue(List<Episode> episodes) async {
+  Future<void> updateEpisodeQueue(List<Episode> episodes,
+      {int index = 0}) async {
     this.episodes = episodes;
     await updateQueue(
-        episodes.map((episode) => convertEpisodeToMediaItem(episode)).toList());
+        episodes.map((episode) => convertEpisodeToMediaItem(episode)).toList(),
+        index: index);
   }
 
   @override

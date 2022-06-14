@@ -15,10 +15,10 @@ class Reward {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['total'] = this.total;
-    data['vested'] = this.vested;
-    data['unvested'] = this.unvested;
-    data['listeningTime'] = this.listeningTime;
+    data['total'] = total;
+    data['vested'] = vested;
+    data['unvested'] = unvested;
+    data['listeningTime'] = listeningTime;
     return data;
   }
 }

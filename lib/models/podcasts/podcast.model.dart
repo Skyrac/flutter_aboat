@@ -4,7 +4,9 @@ import 'episode.model.dart';
 
 class Podcast extends SearchResult {
   int? aboatId;
+  @override
   int? id;
+  @override
   String? image;
   List<dynamic>? genreIds;
   String? thumbnail;
@@ -17,6 +19,7 @@ class Podcast extends SearchResult {
   String? type;
   String? email;
   List<Episode>? episodes;
+  @override
   String? title;
   String? country;
   String? website;
@@ -24,6 +27,7 @@ class Podcast extends SearchResult {
   int? itunesId;
   String? publisher;
   bool? isClaimed;
+  @override
   String? description;
   int? totalEpisodes;
   bool? explicitContent;
@@ -92,36 +96,37 @@ class Podcast extends SearchResult {
     earliestPubDateMs = json['earliest_pub_date_ms'];
   }
 
+  @override
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['aboat_id'] = this.aboatId;
-    data['id'] = this.aboatId;
-    data['image'] = this.image;
-    data['genre_ids'] = this.genreIds;
-    data['thumbnail'] = this.thumbnail;
-    data['title_original'] = this.titleOriginal;
-    data['listennotes_url'] = this.listennotesUrl;
-    data['title_highlighted'] = this.titleHighlighted;
-    data['publisher_original'] = this.publisherOriginal;
-    data['publisher_highlighted'] = this.publisherHighlighted;
-    data['rss'] = this.rss;
-    data['type'] = this.type;
-    data['email'] = this.email;
-    if (this.episodes != null) {
-      data['episodes'] = this.episodes!.map((v) => v.toJson()).toList();
+    data['aboat_id'] = aboatId;
+    data['id'] = aboatId;
+    data['image'] = image;
+    data['genre_ids'] = genreIds;
+    data['thumbnail'] = thumbnail;
+    data['title_original'] = titleOriginal;
+    data['listennotes_url'] = listennotesUrl;
+    data['title_highlighted'] = titleHighlighted;
+    data['publisher_original'] = publisherOriginal;
+    data['publisher_highlighted'] = publisherHighlighted;
+    data['rss'] = rss;
+    data['type'] = type;
+    data['email'] = email;
+    if (episodes != null) {
+      data['episodes'] = episodes!.map((v) => v.toJson()).toList();
     }
-    data['title'] = this.title;
-    data['country'] = this.country;
-    data['website'] = this.website;
-    data['language'] = this.language;
-    data['itunes_id'] = this.itunesId;
-    data['publisher'] = this.publisher;
-    data['is_claimed'] = this.isClaimed;
-    data['description'] = this.description;
-    data['total_episodes'] = this.totalEpisodes;
-    data['explicit_content'] = this.explicitContent;
-    data['latest_pub_date_ms'] = this.latestPubDateMs;
-    data['earliest_pub_date_ms'] = this.earliestPubDateMs;
+    data['title'] = title;
+    data['country'] = country;
+    data['website'] = website;
+    data['language'] = language;
+    data['itunes_id'] = itunesId;
+    data['publisher'] = publisher;
+    data['is_claimed'] = isClaimed;
+    data['description'] = description;
+    data['total_episodes'] = totalEpisodes;
+    data['explicit_content'] = explicitContent;
+    data['latest_pub_date_ms'] = latestPubDateMs;
+    data['earliest_pub_date_ms'] = earliestPubDateMs;
     return data;
   }
 }

@@ -33,16 +33,16 @@ class UserInfo {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['userName'] = this.userName;
-    data['email'] = this.email;
-    data['verified'] = this.verified;
-    data['addresses'] = this.addresses;
-    data['rewards'] = this.rewards;
-    data['referrer'] = this.referrer;
-    data['ambassador'] = this.ambassador;
-    data['userBadge'] = this.userBadge;
-    data['artist'] = this.artist;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['userName'] = userName;
+    data['email'] = email;
+    data['verified'] = verified;
+    data['addresses'] = addresses;
+    data['rewards'] = rewards;
+    data['referrer'] = referrer;
+    data['ambassador'] = ambassador;
+    data['userBadge'] = userBadge;
+    data['artist'] = artist;
     return data;
   }
 }

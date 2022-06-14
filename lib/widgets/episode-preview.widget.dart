@@ -7,10 +7,12 @@ import 'package:talkaboat/themes/colors.dart';
 import '../injection/injector.dart';
 
 class EpisodePreviewWidget extends StatelessWidget {
-  EpisodePreviewWidget(this.episode, this.direction, {Key? key})
+  EpisodePreviewWidget(this.episode, this.direction, this.onPlayEpisode,
+      {Key? key})
       : super(key: key);
   Episode episode;
   Axis direction;
+  Function onPlayEpisode;
   late final audioHandler = getIt<AudioPlayerHandler>();
   Widget makeCard(context, Episode entry) => Card(
         elevation: 8.0,
@@ -31,8 +33,9 @@ class EpisodePreviewWidget extends StatelessWidget {
       padding: const EdgeInsets.all(10),
       child: InkWell(
           onTap: () async {
-            await audioHandler
-                .updateEpisodeQueue(List.generate(1, (index) => entry));
+            onPlayEpisode();
+            // await audioHandler
+            //     .updateEpisodeQueue(List.generate(1, (index) => entry));
           },
           child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
@@ -98,7 +101,7 @@ class EpisodePreviewWidget extends StatelessWidget {
               const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         subtitle: Text(
-          entry.description!,
+          removeAllHtmlTags(entry.description!),
           overflow: TextOverflow.ellipsis,
           maxLines: 2,
           style: const TextStyle(color: Colors.white),
@@ -106,10 +109,18 @@ class EpisodePreviewWidget extends StatelessWidget {
         trailing: const Icon(Icons.keyboard_arrow_right,
             color: Colors.white, size: 30.0),
         onTap: () async {
-          await audioHandler
-              .updateEpisodeQueue(List.generate(1, (index) => entry));
+          onPlayEpisode();
+          // await audioHandler
+          //     .updateEpisodeQueue(List.generate(1, (index) => entry));
         },
       );
+
+  String removeAllHtmlTags(String htmlText) {
+    RegExp exp = RegExp(r"<[^>]*>", multiLine: true, caseSensitive: true);
+
+    return htmlText.replaceAll(exp, '');
+  }
+
   @override
   Widget build(BuildContext context) {
     return episode == null ? SizedBox() : makeCard(context, episode);
