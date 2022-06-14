@@ -5,8 +5,10 @@ import 'package:talkaboat/screens/home.screen.dart';
 import 'package:talkaboat/screens/library.screen.dart';
 import 'package:talkaboat/screens/playlist.screen.dart';
 import 'package:talkaboat/screens/search-and-filter.screen.dart';
+import 'package:talkaboat/services/audio/audio-handler.services.dart';
 import 'package:talkaboat/widgets/mini-player.widget.dart';
 
+import '../injection/injector.dart';
 import '../themes/colors.dart';
 
 class AppScreen extends StatefulWidget {
@@ -73,8 +75,11 @@ class _AppScreenState extends State<AppScreen> {
     ];
   }
 
+  final audioPlayerHandler = getIt<AudioPlayerHandler>();
+
   @override
   Widget build(BuildContext context) {
+    audioPlayerHandler.setEpisodeRefreshFunction(setEpisode);
     return Container(
       decoration: BoxDecoration(
           gradient: LinearGradient(colors: [

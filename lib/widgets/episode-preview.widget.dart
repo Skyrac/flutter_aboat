@@ -7,9 +7,8 @@ import 'package:talkaboat/themes/colors.dart';
 import '../injection/injector.dart';
 
 class EpisodePreviewWidget extends StatelessWidget {
-  EpisodePreviewWidget(this.episode, this.setEpisode);
+  EpisodePreviewWidget(this.episode, {Key? key}) : super(key: key);
   Episode episode;
-  Function setEpisode;
   late final audioHandler = getIt<AudioPlayerHandler>();
   @override
   Widget build(BuildContext context) {
@@ -19,27 +18,25 @@ class EpisodePreviewWidget extends StatelessWidget {
             padding: const EdgeInsets.all(10),
             child: InkWell(
                 onTap: () async {
-                  setEpisode(episode);
                   await audioHandler
                       .updateEpisodeQueue(List.generate(1, (index) => episode));
                 },
                 child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
-                    child: Container(
+                    child: SizedBox(
                       width: 200,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           ClipRRect(
                               borderRadius: BorderRadius.circular(10),
-                              child: Container(
+                              child: SizedBox(
                                   height: 200,
                                   child: CachedNetworkImage(
                                     imageUrl: episode.image!,
                                     fit: BoxFit.cover,
                                     placeholder: (_, __) => const Center(
-                                        child:
-                                            const CircularProgressIndicator()),
+                                        child: CircularProgressIndicator()),
                                     // progressIndicatorBuilder: (context, url, downloadProgress) =>
                                     //     CircularProgressIndicator(value: downloadProgress.progress),
                                     errorWidget: (context, url, error) =>

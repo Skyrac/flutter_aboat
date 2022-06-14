@@ -41,11 +41,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
                           userService.userInfo!.userName!,
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                         const SizedBox(height: 5),
                         Text(
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
                           "Cabin Boy",
                           style: Theme.of(context).textTheme.labelMedium,
                         )

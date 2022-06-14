@@ -1,13 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:talkaboat/models/podcasts/episode.model.dart';
 import 'package:talkaboat/models/search/search_result.model.dart';
 
+import '../services/repositories/podcast.repository.dart';
 import '../themes/colors.dart';
+import '../utils/image_widget.dart';
+import '../widgets/episode-list.widget.dart';
+import '../widgets/podcast-detail-sliver.widget.dart';
 
-class PodcastDetailScreen extends StatelessWidget {
+class PodcastDetailScreen extends StatefulWidget {
   final SearchResult? podcastSearchResult;
   const PodcastDetailScreen({Key? key, this.podcastSearchResult})
       : super(key: key);
 
+  @override
+  State<PodcastDetailScreen> createState() => _PodcastDetailScreenState();
+}
+
+class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
   Widget topContent(context) => Stack(
         children: <Widget>[
           Container(
@@ -15,7 +25,7 @@ class PodcastDetailScreen extends StatelessWidget {
               height: MediaQuery.of(context).size.height * 0.5,
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: NetworkImage(podcastSearchResult!.image!),
+                  image: NetworkImage(widget.podcastSearchResult!.image!),
                   fit: BoxFit.cover,
                 ),
               )),
@@ -26,7 +36,10 @@ class PodcastDetailScreen extends StatelessWidget {
             decoration: BoxDecoration(
                 color: DefaultColors.secondaryColorAlphaBlend.shade900),
             child: Center(
-              child: Text(podcastSearchResult!.title!),
+              child: Text(
+                widget.podcastSearchResult!.title!,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
             ),
           ),
           Positioned(
@@ -41,9 +54,75 @@ class PodcastDetailScreen extends StatelessWidget {
           )
         ],
       );
+
+  // buildImages() => SliverToBoxAdapter(
+  //         child: Container(
+  //       height: 800,
+  //       child: FutureBuilder(
+  //         builder: (context, snapshot) {
+  //           if (snapshot.connectionState == ConnectionState.done) {
+  //             if (snapshot.hasError) {
+  //               return Center(
+  //                 child: Text(
+  //                   '${snapshot.error} occurred',
+  //                   style: TextStyle(fontSize: 18),
+  //                 ),
+  //               );
+  //             } else if (snapshot.hasData && snapshot.data != null) {
+  //               // Extracting data from snapshot object
+  //               final data = snapshot.data as List<Episode>?;
+  //               if (data != null && data.isNotEmpty) {
+  //                 var searchResults = data;
+  //                 return GridView.builder(
+  //                     gridDelegate:
+  //                         const SliverGridDelegateWithFixedCrossAxisCount(
+  //                             crossAxisCount: 2),
+  //                     primary: false,
+  //                     shrinkWrap: true,
+  //                     itemCount: searchResults.length,
+  //                     itemBuilder: (context, index) =>
+  //                         EpisodePreviewWidget(searchResults[index]));
+  //               }
+  //             }
+  //           }
+  //           return const Center(child: CircularProgressIndicator());
+  //         },
+  //         future: PodcastRepository.getEpisodesMock(10),
+  //       ),
+  //     ));
+
+  Widget buildImages() => SliverGrid(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+        ),
+        delegate: SliverChildBuilderDelegate(
+          (context, index) => ImageWidget(index: index),
+          childCount: 20,
+        ),
+      );
+
   @override
   Widget build(BuildContext context) {
-    print(podcastSearchResult!.id);
+    final size = MediaQuery.of(context).size;
+    return Scaffold(
+        body: Container(
+      decoration: BoxDecoration(
+          gradient: LinearGradient(colors: [
+        DefaultColors.primaryColor.shade900,
+        DefaultColors.secondaryColor.shade900,
+        DefaultColors.secondaryColor.shade900
+      ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
+      child: CustomScrollView(
+        slivers: [
+          SliverPersistentHeader(
+            delegate:
+                CustomSliverAppBarDelegate(expandedHeight: size.height * 0.5),
+            pinned: true,
+          ),
+          buildImages(),
+        ],
+      ),
+    ));
     return Scaffold(
         body: Container(
       decoration: BoxDecoration(
@@ -53,7 +132,38 @@ class PodcastDetailScreen extends StatelessWidget {
         DefaultColors.secondaryColor.shade900
       ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
       child: Column(
-        children: [topContent(context)],
+        children: [
+          topContent(context),
+          Expanded(
+            child: OverflowBox(
+              maxHeight: MediaQuery.of(context).size.height * 0.5,
+              child: FutureBuilder(
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    if (snapshot.hasError) {
+                      return Center(
+                        child: Text(
+                          '${snapshot.error} occurred',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      );
+                    } else if (snapshot.hasData && snapshot.data != null) {
+                      // Extracting data from snapshot object
+                      final data = snapshot.data as List<Episode>?;
+                      if (data != null && data.isNotEmpty) {
+                        var searchResults = data;
+                        return EpisodeListWidget(
+                            direction: Axis.vertical, episodes: searchResults);
+                      }
+                    }
+                  }
+                  return const Center(child: CircularProgressIndicator());
+                },
+                future: PodcastRepository.getEpisodesMock(10),
+              ),
+            ),
+          )
+        ],
       ),
     ));
   }

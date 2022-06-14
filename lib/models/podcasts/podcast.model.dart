@@ -1,30 +1,30 @@
+import 'package:talkaboat/models/search/search_result.model.dart';
+
 import 'episode.model.dart';
 
-class Podcast {
+class Podcast extends SearchResult {
   int? aboatId;
-  String? id;
-  Null? image;
-  Null? genreIds;
-  Null? thumbnail;
-  Null? titleOriginal;
-  Null? listennotesUrl;
-  Null? titleHighlighted;
-  Null? publisherOriginal;
-  Null? publisherHighlighted;
-  Null? listenScoreGlobalRank;
-  Null? rss;
-  Null? type;
-  Null? email;
-  Null? extra;
+  int? id;
+  String? image;
+  List<dynamic>? genreIds;
+  String? thumbnail;
+  String? titleOriginal;
+  String? listennotesUrl;
+  String? titleHighlighted;
+  String? publisherOriginal;
+  String? publisherHighlighted;
+  String? rss;
+  String? type;
+  String? email;
   List<Episode>? episodes;
-  Null? title;
-  Null? country;
-  Null? website;
-  Null? language;
+  String? title;
+  String? country;
+  String? website;
+  String? language;
   int? itunesId;
-  Null? publisher;
+  String? publisher;
   bool? isClaimed;
-  Null? description;
+  String? description;
   int? totalEpisodes;
   bool? explicitContent;
   int? latestPubDateMs;
@@ -32,7 +32,7 @@ class Podcast {
 
   Podcast(
       {this.aboatId,
-      this.id,
+      super.id,
       this.image,
       this.genreIds,
       this.thumbnail,
@@ -41,11 +41,9 @@ class Podcast {
       this.titleHighlighted,
       this.publisherOriginal,
       this.publisherHighlighted,
-      this.listenScoreGlobalRank,
       this.rss,
       this.type,
       this.email,
-      this.extra,
       this.episodes,
       this.title,
       this.country,
@@ -62,7 +60,7 @@ class Podcast {
 
   Podcast.fromJson(Map<String, dynamic> json) {
     aboatId = json['aboat_id'];
-    id = json['id'];
+    id = json['aboat_id'];
     image = json['image'];
     genreIds = json['genre_ids'];
     thumbnail = json['thumbnail'];
@@ -71,15 +69,13 @@ class Podcast {
     titleHighlighted = json['title_highlighted'];
     publisherOriginal = json['publisher_original'];
     publisherHighlighted = json['publisher_highlighted'];
-    listenScoreGlobalRank = json['listen_score_global_rank'];
     rss = json['rss'];
     type = json['type'];
     email = json['email'];
-    extra = json['extra'];
     if (json['episodes'] != null) {
       episodes = <Episode>[];
       json['episodes'].forEach((v) {
-        episodes!.add(new Episode.fromJson(v));
+        episodes!.add(Episode.fromJson(v));
       });
     }
     title = json['title'];
@@ -99,7 +95,7 @@ class Podcast {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['aboat_id'] = this.aboatId;
-    data['id'] = this.id;
+    data['id'] = this.aboatId;
     data['image'] = this.image;
     data['genre_ids'] = this.genreIds;
     data['thumbnail'] = this.thumbnail;
@@ -108,11 +104,9 @@ class Podcast {
     data['title_highlighted'] = this.titleHighlighted;
     data['publisher_original'] = this.publisherOriginal;
     data['publisher_highlighted'] = this.publisherHighlighted;
-    data['listen_score_global_rank'] = this.listenScoreGlobalRank;
     data['rss'] = this.rss;
     data['type'] = this.type;
     data['email'] = this.email;
-    data['extra'] = this.extra;
     if (this.episodes != null) {
       data['episodes'] = this.episodes!.map((v) => v.toJson()).toList();
     }

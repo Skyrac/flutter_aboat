@@ -5,7 +5,9 @@ import 'package:talkaboat/themes/colors.dart';
 import 'package:talkaboat/widgets/episode-preview.widget.dart';
 
 import '../models/podcasts/episode.model.dart';
+import '../models/search/search_result.model.dart';
 import '../widgets/home-app-bar.widget.dart';
+import '../widgets/podcast-list.widget.dart';
 
 class HomeScreen extends HookConsumerWidget {
   HomeScreen(this.setEpisode, {Key? key}) : super(key: key);
@@ -41,10 +43,47 @@ class HomeScreen extends HookConsumerWidget {
               data: (episodeList) => ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (ctx, index) {
-                    return EpisodePreviewWidget(
-                        episodeList[index]!, setEpisode);
+                    return EpisodePreviewWidget(episodeList[index]!);
                   },
                   itemCount: episodeList.length)))
+    ]);
+  }
+
+  Widget createPodcastPreviewByGenre(
+      BuildContext context, String title, int genre, WidgetRef ref) {
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Padding(
+          padding: const EdgeInsets.only(left: 10),
+          child: Text(title,
+              style: TextStyle(
+                  fontSize: 32, color: Theme.of(context).primaryColor))),
+      Container(
+          height: 200,
+          child: FutureBuilder(
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text(
+                      '${snapshot.error} occurred',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  );
+                } else if (snapshot.hasData && snapshot.data != null) {
+                  // Extracting data from snapshot object
+                  final data = snapshot.data as List<SearchResult>?;
+                  if (data != null && data.isNotEmpty) {
+                    var searchResults = data;
+                    return PodcastListWidget(
+                        direction: Axis.horizontal,
+                        searchResults: searchResults);
+                  }
+                }
+              }
+              return const Center(child: CircularProgressIndicator());
+            },
+            future: PodcastRepository.getRandomPodcast(10),
+          ))
     ]);
   }
 
@@ -77,9 +116,12 @@ class HomeScreen extends HookConsumerWidget {
         children: [
           const HomeAppBarWidget(),
           const SizedBox(height: 5),
+          createPodcastPreviewByGenre(context, 'Made for you!', 14, ref),
+          const SizedBox(height: 20),
+          createPodcastPreviewByGenre(context, 'Favorites!', 21, ref),
           // createLibraryPreviewGrid(),
-          createEpisodePreview(context, 'Made for you!', ref),
-          createEpisodePreview(context, 'Favorites', ref)
+          // createEpisodePreview(context, 'Made for you!', ref),
+          // createEpisodePreview(context, 'Favorites', ref)
         ],
       ),
     )));

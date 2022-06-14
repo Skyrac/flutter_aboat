@@ -17,6 +17,8 @@ abstract class AudioPlayerHandler implements AudioHandler {
   Future<void> setVolume(double volume);
   ValueStream<double> get speed;
   Future<void> updateEpisodeQueue(List<Episode> episodes);
+
+  void setEpisodeRefreshFunction(Function setEpisode) {}
 }
 
 /// The implementation of [AudioPlayerHandler].
@@ -27,6 +29,7 @@ abstract class AudioPlayerHandler implements AudioHandler {
 class AudioPlayerHandlerImpl extends BaseAudioHandler
     with SeekHandler
     implements AudioPlayerHandler {
+  List<Episode>? episodes;
   // ignore: close_sinks
   final BehaviorSubject<List<MediaItem>> _recentSubject =
       BehaviorSubject.seeded(<MediaItem>[]);
@@ -164,10 +167,13 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
         .pipe(queue);
     // Load the playlist.
     _playlist.addAll(queue.value.map(_itemToSource).toList());
-    AudioService.position
-        .listen((event) async => await positionUpdate(event, mediaItem.value));
-    playbackState.listen((PlaybackState state) async =>
-        await receiveUpdate(state, mediaItem.value, _player.position));
+    AudioService.position.listen((event) async => await positionUpdate(
+        event, mediaItem.value, episodes![_player.currentIndex!]));
+    playbackState.listen((PlaybackState state) async => await receiveUpdate(
+        state,
+        mediaItem.value,
+        _player.position,
+        episodes == null ? null : episodes![_player.currentIndex!]));
     await _player.setAudioSource(_playlist);
   }
 
@@ -255,6 +261,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   }
 
   Future<void> updateEpisodeQueue(List<Episode> episodes) async {
+    this.episodes = episodes;
     await updateQueue(
         episodes.map((episode) => convertEpisodeToMediaItem(episode)).toList());
   }
@@ -339,5 +346,11 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
       speed: _player.speed,
       queueIndex: queueIndex,
     ));
+  }
+
+  @override
+  void setEpisodeRefreshFunction(Function setEpisodeFunction) {
+    setEpisode = setEpisodeFunction;
+    print(setEpisode);
   }
 }
