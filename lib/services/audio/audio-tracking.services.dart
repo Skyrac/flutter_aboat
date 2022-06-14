@@ -29,7 +29,7 @@ Future<void> receiveUpdate(PlaybackState state, MediaItem? currentMediaItem,
 }
 
 Future<void> positionUpdate(
-    Duration position, MediaItem? currentMediaItem, Episode episode) async {
+    Duration position, MediaItem? currentMediaItem) async {
   if (currentMediaItem != null) {
     heartbeatCounter++;
     if (heartbeatCounter > heartbeatLimit) {

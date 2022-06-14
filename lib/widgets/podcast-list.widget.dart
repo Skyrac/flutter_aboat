@@ -72,7 +72,7 @@ class _PodcastListWidgetState extends State<PodcastListWidget> {
                               children: [
                                 CachedNetworkImage(
                                   imageUrl: entry.image!,
-                                  fit: BoxFit.fill,
+                                  fit: BoxFit.cover,
                                   placeholder: (_, __) => const Center(
                                       child: CircularProgressIndicator()),
                                   // progressIndicatorBuilder: (context, url, downloadProgress) =>

@@ -26,28 +26,28 @@ class HomeScreen extends HookConsumerWidget {
     return PodcastRepository.getEpisodesMock(0);
   });
 
-  Widget createEpisodePreview(
-      BuildContext context, String title, WidgetRef ref) {
-    final configs = ref.watch(episodeProvider);
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Padding(
-          padding: const EdgeInsets.only(left: 10),
-          child: Text(title,
-              style: TextStyle(
-                  fontSize: 32, color: Theme.of(context).primaryColor))),
-      Container(
-          height: 300,
-          child: configs.when(
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, stack) => Text('Error: $error'),
-              data: (episodeList) => ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (ctx, index) {
-                    return EpisodePreviewWidget(episodeList[index]!);
-                  },
-                  itemCount: episodeList.length)))
-    ]);
-  }
+  // Widget createEpisodePreview(
+  //     BuildContext context, String title, WidgetRef ref) {
+  //   final configs = ref.watch(episodeProvider);
+  //   return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+  //     Padding(
+  //         padding: const EdgeInsets.only(left: 10),
+  //         child: Text(title,
+  //             style: TextStyle(
+  //                 fontSize: 32, color: Theme.of(context).primaryColor))),
+  //     Container(
+  //         height: 300,
+  //         child: configs.when(
+  //             loading: () => const Center(child: CircularProgressIndicator()),
+  //             error: (error, stack) => Text('Error: $error'),
+  //             data: (episodeList) => ListView.builder(
+  //                 scrollDirection: Axis.horizontal,
+  //                 itemBuilder: (ctx, index) {
+  //                   return EpisodePreviewWidget(episodeList[index]!);
+  //                 },
+  //                 itemCount: episodeList.length)))
+  //   ]);
+  // }
 
   Widget createPodcastPreviewByGenre(
       BuildContext context, String title, int genre, WidgetRef ref) {

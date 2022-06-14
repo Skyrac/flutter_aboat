@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
-class CustomSliverAppBarDelegate extends SliverPersistentHeaderDelegate {
+import '../themes/colors.dart';
+
+class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
   final double expandedHeight;
 
-  const CustomSliverAppBarDelegate({
+  const PodcastDetailSliver({
     required this.expandedHeight,
   });
 
@@ -11,12 +13,11 @@ class CustomSliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
     const size = 60;
-    final top = expandedHeight / 2 - shrinkOffset / 3 - size;
-
+    final top = expandedHeight / 1.1 - shrinkOffset / 3 - size;
     return Stack(
       fit: StackFit.expand,
       children: [
-        buildBackground(shrinkOffset),
+        buildBackground(shrinkOffset, context),
         buildAppBar(shrinkOffset),
         Positioned(
           top: top,
@@ -32,21 +33,38 @@ class CustomSliverAppBarDelegate extends SliverPersistentHeaderDelegate {
 
   double disappear(double shrinkOffset) => 1 - shrinkOffset / expandedHeight;
 
-  Widget buildAppBar(double shrinkOffset) => Opacity(
-        opacity: appear(shrinkOffset),
-        child: AppBar(
-          title: Text("Some Title"),
-          centerTitle: true,
-        ),
+  Widget buildAppBar(double shrinkOffset) => AppBar(
+        title: Text("Some Title sadadsadsa"),
+        centerTitle: true,
       );
 
-  Widget buildBackground(double shrinkOffset) => Opacity(
-        opacity: disappear(shrinkOffset),
-        child: Image.network(
-          'https://picsum.photos/200',
-          fit: BoxFit.cover,
-        ),
-      );
+  Widget buildBackground(double shrinkOffset, context) => Opacity(
+      opacity: disappear(shrinkOffset),
+      child: Stack(
+        children: <Widget>[
+          Container(
+              padding: const EdgeInsets.only(left: 10.0),
+              height: expandedHeight,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: NetworkImage("https://picsum.photos/200"),
+                  fit: BoxFit.cover,
+                ),
+              )),
+          Container(
+            height: expandedHeight,
+            padding: const EdgeInsets.all(40.0),
+            decoration: BoxDecoration(
+                color: DefaultColors.secondaryColorAlphaBlend.shade900),
+            child: Center(
+              child: Text(
+                "",
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            ),
+          ),
+        ],
+      ));
 
   Widget buildFloating(double shrinkOffset) => Opacity(
         opacity: disappear(shrinkOffset),

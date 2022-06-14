@@ -165,16 +165,13 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
         .map((sequence) =>
             sequence.map((source) => _mediaItemExpando[source]!).toList())
         .pipe(queue);
-    // Load the playlist.
-    _playlist.addAll(queue.value.map(_itemToSource).toList());
-    AudioService.position.listen((event) async => await positionUpdate(
-        event, mediaItem.value, episodes![_player.currentIndex!]));
+    AudioService.position
+        .listen((event) async => await positionUpdate(event, mediaItem.value));
     playbackState.listen((PlaybackState state) async => await receiveUpdate(
         state,
         mediaItem.value,
         _player.position,
         episodes == null ? null : episodes![_player.currentIndex!]));
-    await _player.setAudioSource(_playlist);
   }
 
   AudioSource _itemToSource(MediaItem mediaItem) {
@@ -323,8 +320,9 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     playbackState.add(playbackState.value.copyWith(
       controls: [
         MediaControl.skipToPrevious,
+        MediaControl.rewind,
         if (playing) MediaControl.pause else MediaControl.play,
-        MediaControl.stop,
+        MediaControl.fastForward,
         MediaControl.skipToNext,
       ],
       systemActions: const {
