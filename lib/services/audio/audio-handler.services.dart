@@ -236,8 +236,6 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
 
     await _player.setAudioSource(_playlist);
     var continueTime = queue[index].extras!["playTime"];
-    print(continueTime ?? 0);
-    print(index);
     await _player.seek(Duration(seconds: continueTime ?? 0), index: index);
     if (autoPlay) {
       await _player.play();

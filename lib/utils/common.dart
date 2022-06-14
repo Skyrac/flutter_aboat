@@ -44,7 +44,7 @@ class _SeekBarState extends State<SeekBar> {
     super.didChangeDependencies();
 
     _sliderThemeData = SliderTheme.of(context).copyWith(
-      trackHeight: 2.0,
+      trackHeight: 5.0,
     );
   }
 
@@ -57,49 +57,57 @@ class _SeekBarState extends State<SeekBar> {
     if (_dragValue != null && !_dragging) {
       _dragValue = null;
     }
+    final size = MediaQuery.of(context).size;
     return Stack(
       children: [
-        SliderTheme(
-          data: _sliderThemeData.copyWith(
-            thumbShape: HiddenThumbComponentShape(),
-            activeTrackColor: Colors.blue.shade100,
-            inactiveTrackColor: Colors.grey.shade300,
-          ),
-          child: ExcludeSemantics(
-            child: Slider(
-              min: 0.0,
-              max: widget.duration.inMilliseconds.toDouble(),
-              value: min(widget.bufferedPosition.inMilliseconds.toDouble(),
-                  widget.duration.inMilliseconds.toDouble()),
-              onChanged: (value) {},
+        //Background Slider Layout
+        Positioned(
+          width: size.width * 0.85,
+          child: SliderTheme(
+            data: _sliderThemeData.copyWith(
+              thumbShape: HiddenThumbComponentShape(),
+              activeTrackColor: Colors.blue.shade100,
+              inactiveTrackColor: Colors.grey.shade300,
+            ),
+            child: ExcludeSemantics(
+              child: Slider(
+                min: 0.0,
+                max: widget.duration.inMilliseconds.toDouble(),
+                value: min(widget.bufferedPosition.inMilliseconds.toDouble(),
+                    widget.duration.inMilliseconds.toDouble()),
+                onChanged: (value) {},
+              ),
             ),
           ),
         ),
-        SliderTheme(
-          data: _sliderThemeData.copyWith(
-            inactiveTrackColor: Colors.transparent,
-          ),
-          child: Slider(
-            min: 0.0,
-            max: widget.duration.inMilliseconds.toDouble(),
-            value: value,
-            onChanged: (value) {
-              if (!_dragging) {
-                _dragging = true;
-              }
-              setState(() {
-                _dragValue = value;
-              });
-              if (widget.onChanged != null) {
-                widget.onChanged!(Duration(milliseconds: value.round()));
-              }
-            },
-            onChangeEnd: (value) {
-              if (widget.onChangeEnd != null) {
-                widget.onChangeEnd!(Duration(milliseconds: value.round()));
-              }
-              _dragging = false;
-            },
+        SizedBox(
+          width: size.width * 0.85,
+          child: SliderTheme(
+            data: _sliderThemeData.copyWith(
+              inactiveTrackColor: Colors.blue.shade100,
+            ),
+            child: Slider(
+              min: 0.0,
+              max: widget.duration.inMilliseconds.toDouble(),
+              value: value,
+              onChanged: (value) {
+                if (!_dragging) {
+                  _dragging = true;
+                }
+                setState(() {
+                  _dragValue = value;
+                });
+                if (widget.onChanged != null) {
+                  widget.onChanged!(Duration(milliseconds: value.round()));
+                }
+              },
+              onChangeEnd: (value) {
+                if (widget.onChangeEnd != null) {
+                  widget.onChangeEnd!(Duration(milliseconds: value.round()));
+                }
+                _dragging = false;
+              },
+            ),
           ),
         ),
         Positioned(
@@ -110,7 +118,10 @@ class _SeekBarState extends State<SeekBar> {
                       .firstMatch("$_remaining")
                       ?.group(1) ??
                   '$_remaining',
-              style: Theme.of(context).textTheme.caption),
+              style: Theme.of(context)
+                  .textTheme
+                  .labelSmall
+                  ?.copyWith(color: Colors.black, fontWeight: FontWeight.bold)),
         ),
       ],
     );
