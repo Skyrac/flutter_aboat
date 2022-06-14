@@ -51,10 +51,14 @@ class PodcastRepository {
 
   static Future<List<Podcast>> getUserLibrary() async {
     var response = await dio.get<String>('$API/library/detail');
-    print(response.data);
     var list = List<Podcast>.from(
         json.decode(response.data!).map((data) => Podcast.fromJson(data)));
     return list;
+  }
+
+  static Future<bool> removeFromLibrary(int id) async {
+    var response = await dio.post<bool>('$API/library/remove/$id');
+    return response.data!;
   }
 
   //https://api.talkaboat.online/v1/podcast/3855/desc/0/10

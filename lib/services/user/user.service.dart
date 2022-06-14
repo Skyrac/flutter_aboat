@@ -8,7 +8,7 @@ import '../repositories/user.repository.dart';
 class UserService {
   String token = "";
   UserInfo? userInfo;
-  List<Podcast>? library;
+  List<Podcast> library = List.empty();
   late final prefs;
   static const String TOKEN_IDENTIFIER = "aboat_token";
 
@@ -51,16 +51,21 @@ class UserService {
   }
 
   logout() async {
-    print("Logout");
-    // token = "";
+    token = "";
     userInfo = null;
-    // await prefs.setString(TOKEN_IDENTIFIER, "");
+    await prefs.setString(TOKEN_IDENTIFIER, "");
   }
 
   Future<List<Podcast>> getLibrary() async {
-    print("Try accessing library");
     var newLibrary = await PodcastRepository.getUserLibrary();
     library = newLibrary;
     return newLibrary;
+  }
+
+  Future<List<Podcast>> removeFromLibrary(int id) async {
+    if (await PodcastRepository.removeFromLibrary(id)) {
+      library.removeWhere((item) => item.aboatId == id);
+    }
+    return library;
   }
 }

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:talkaboat/models/podcasts/podcast.model.dart';
 import 'package:talkaboat/models/search/search_result.model.dart';
 import 'package:talkaboat/widgets/podcast-list.widget.dart';
 
 import '../injection/injector.dart';
 import '../services/user/user.service.dart';
+import 'login.screen.dart';
 
 class LibraryScreen extends StatefulWidget {
   LibraryScreen({Key? key}) : super(key: key);
@@ -26,9 +28,10 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   buildPopupButton(context, entry) => PopupMenuButton(
         child: Icon(Icons.more_vert, color: Theme.of(context).iconTheme.color),
-        onSelected: (value) {
+        onSelected: (value) async {
           switch (value) {
             case "remove":
+              await userService.removeFromLibrary(entry.id);
               print("remove ${entry.id}");
               break;
           }
@@ -41,7 +44,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print("render");
     return SafeArea(
         child: Scaffold(
             body: userService.isConnected
@@ -55,7 +57,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                             return Center(
                               child: Text(
                                 '${snapshot.error} occurred',
-                                style: TextStyle(fontSize: 18),
+                                style: const TextStyle(fontSize: 18),
                               ),
                             );
                           } else if (snapshot.hasData &&
@@ -76,6 +78,43 @@ class _LibraryScreenState extends State<LibraryScreen> {
                       future: userService.getLibrary(),
                     ),
                   )
-                : Text("Not logged In")));
+                : Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 30),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: Card(
+                          child: InkWell(
+                            onTap: (() {
+                              Navigator.push(
+                                  context,
+                                  PageTransition(
+                                      alignment: Alignment.bottomCenter,
+                                      curve: Curves.bounceOut,
+                                      type: PageTransitionType.fade,
+                                      duration:
+                                          const Duration(milliseconds: 300),
+                                      reverseDuration:
+                                          const Duration(milliseconds: 200),
+                                      child:
+                                          LoginScreen(() => setState(() {}))));
+                            }),
+                            child: Container(
+                                height: 80,
+                                width: MediaQuery.of(context).size.width,
+                                child: Center(
+                                  child: Text(
+                                    "Login",
+                                    style:
+                                        Theme.of(context).textTheme.titleLarge,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                )),
+                          ),
+                        ),
+                      ),
+                    ),
+                  )));
   }
 }
