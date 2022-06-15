@@ -190,9 +190,9 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                   PageTransition(
                       alignment: Alignment.bottomCenter,
                       curve: Curves.bounceOut,
-                      type: PageTransitionType.fade,
-                      duration: const Duration(milliseconds: 300),
-                      reverseDuration: const Duration(milliseconds: 200),
+                      type: PageTransitionType.rightToLeftWithFade,
+                      duration: const Duration(milliseconds: 500),
+                      reverseDuration: const Duration(milliseconds: 400),
                       child: PlaylistDetailScreen(playlist: entry)));
             }),
             child: ListTile(
