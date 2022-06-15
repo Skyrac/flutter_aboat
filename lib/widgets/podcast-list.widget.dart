@@ -2,8 +2,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
+import '../injection/injector.dart';
 import '../models/search/search_result.model.dart';
 import '../screens/podcast-detail.screen.dart';
+import '../services/user/user.service.dart';
 
 class PodcastListWidget extends StatefulWidget {
   PodcastListWidget(
@@ -20,6 +22,34 @@ class PodcastListWidget extends StatefulWidget {
 }
 
 class _PodcastListWidgetState extends State<PodcastListWidget> {
+  final userService = getIt<UserService>();
+  popupMenu(BuildContext context, SearchResult entry) =>
+      <PopupMenuEntry<String>>[
+        PopupMenuItem<String>(
+          value: 'toggleLibrary',
+          child: userService.isInLibrary(entry.id!)
+              ? Card(child: Text('Remove from Library'))
+              : Card(child: Text('Add to Library')),
+        ),
+      ];
+
+  buildPopupButton(context, entry) => PopupMenuButton(
+        child: Card(
+            child: Icon(Icons.more_vert,
+                color: Theme.of(context).iconTheme.color)),
+        onSelected: (value) async {
+          print(value);
+          switch (value) {
+            case "toggleLibrary":
+              await userService.toggleLibraryEntry(entry.id);
+              break;
+          }
+        },
+        itemBuilder: (BuildContext context) {
+          return popupMenu(context, entry);
+        },
+      );
+
   Widget makeListBuilder(context, List<SearchResult?> data) => ListView.builder(
       itemCount: data.length,
       scrollDirection: widget.direction,
@@ -48,54 +78,62 @@ class _PodcastListWidgetState extends State<PodcastListWidget> {
 
   Widget makeHorizontalListTile(context, SearchResult entry) => Padding(
       padding: const EdgeInsets.all(10),
-      child: InkWell(
-          onTap: () {
-            Navigator.push(
-                context,
-                PageTransition(
-                    alignment: Alignment.bottomCenter,
-                    curve: Curves.bounceOut,
-                    type: PageTransitionType.rightToLeftWithFade,
-                    duration: const Duration(milliseconds: 500),
-                    reverseDuration: const Duration(milliseconds: 500),
-                    child: PodcastDetailScreen(podcastSearchResult: entry)));
-          },
-          child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: SizedBox(
-                width: 120,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: SizedBox(
-                            height: 120,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CachedNetworkImage(
-                                  imageUrl: entry.image!,
-                                  fit: BoxFit.cover,
-                                  placeholder: (_, __) => const Center(
-                                      child: CircularProgressIndicator()),
-                                  // progressIndicatorBuilder: (context, url, downloadProgress) =>
-                                  //     CircularProgressIndicator(value: downloadProgress.progress),
-                                  errorWidget: (context, url, error) =>
-                                      const Icon(Icons.error),
-                                ),
-                              ],
-                            ))),
-                    Padding(
-                        padding:
-                            const EdgeInsets.only(left: 5, right: 5, top: 5),
-                        child: Text(entry.title!,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 2,
-                            style: Theme.of(context).textTheme.titleMedium))
-                  ],
-                ),
-              ))));
+      child: Stack(children: [
+        InkWell(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  PageTransition(
+                      alignment: Alignment.bottomCenter,
+                      curve: Curves.bounceOut,
+                      type: PageTransitionType.rightToLeftWithFade,
+                      duration: const Duration(milliseconds: 500),
+                      reverseDuration: const Duration(milliseconds: 500),
+                      child: PodcastDetailScreen(podcastSearchResult: entry)));
+            },
+            child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: SizedBox(
+                  width: 120,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: SizedBox(
+                              height: 120,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  CachedNetworkImage(
+                                    imageUrl: entry.image!,
+                                    fit: BoxFit.cover,
+                                    placeholder: (_, __) => const Center(
+                                        child: CircularProgressIndicator()),
+                                    // progressIndicatorBuilder: (context, url, downloadProgress) =>
+                                    //     CircularProgressIndicator(value: downloadProgress.progress),
+                                    errorWidget: (context, url, error) =>
+                                        const Icon(Icons.error),
+                                  ),
+                                ],
+                              ))),
+                      Padding(
+                          padding:
+                              const EdgeInsets.only(left: 5, right: 5, top: 5),
+                          child: Text(entry.title!,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
+                              style: Theme.of(context).textTheme.titleMedium))
+                    ],
+                  ),
+                ))),
+        Positioned(
+            right: 0,
+            top: 0,
+            child: widget.trailing == null
+                ? buildPopupButton(context, entry)
+                : widget.trailing!(context, entry)),
+      ]));
 
   Widget makeVerticalListTile(context, SearchResult entry) => ListTile(
         contentPadding:
@@ -144,13 +182,6 @@ class _PodcastListWidgetState extends State<PodcastListWidget> {
                   child: PodcastDetailScreen(podcastSearchResult: entry)));
         },
       );
-  buildPopupMenu(BuildContext context, SearchResult entry) =>
-      <PopupMenuEntry<String>>[
-        const PopupMenuItem<String>(
-          value: 'remove',
-          child: Card(child: Text('Remove')),
-        ),
-      ];
 
   @override
   Widget build(BuildContext context) {

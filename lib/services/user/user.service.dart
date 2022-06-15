@@ -13,6 +13,7 @@ class UserService {
   static const String TOKEN_IDENTIFIER = "aboat_token";
 
   get isConnected => token.isNotEmpty && userInfo != null;
+  isInLibrary(int id) => library.any((element) => element.aboatId == id);
 
   setInitialValues() async {
     prefs = await SharedPreferences.getInstance();
@@ -67,5 +68,19 @@ class UserService {
       library.removeWhere((item) => item.aboatId == id);
     }
     return library;
+  }
+
+  Future<List<Podcast>> addToLibrary(int id) async {
+    if (await PodcastRepository.addToLibrary(id)) {
+      return await getLibrary();
+    }
+    return library;
+  }
+
+  Future<List<Podcast>> toggleLibraryEntry(id) async {
+    if (isInLibrary(id)) {
+      return await removeFromLibrary(id);
+    }
+    return await addToLibrary(id);
   }
 }

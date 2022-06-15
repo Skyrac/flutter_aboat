@@ -61,5 +61,10 @@ class PodcastRepository {
     return response.data!;
   }
 
+  static Future<bool> addToLibrary(int id) async {
+    var response = await dio.post<bool>('$API/library/add/$id');
+    return response.data!;
+  }
+
   //https://api.talkaboat.online/v1/podcast/3855/desc/0/10
 }
