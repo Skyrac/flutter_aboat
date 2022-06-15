@@ -2,6 +2,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:talkaboat/models/podcasts/podcast.model.dart';
 import 'package:talkaboat/models/user/user-info.model.dart';
 
+import '../../models/playlist/playlist.model.dart';
 import '../repositories/podcast.repository.dart';
 import '../repositories/user.repository.dart';
 
@@ -9,6 +10,7 @@ class UserService {
   String token = "";
   UserInfo? userInfo;
   List<Podcast> library = List.empty();
+  List<Playlist> playlist = List.empty();
   late final prefs;
   static const String TOKEN_IDENTIFIER = "aboat_token";
 
@@ -57,6 +59,15 @@ class UserService {
     await prefs.setString(TOKEN_IDENTIFIER, "");
   }
 
+  //#region Playlist
+  Future<List<Playlist>> getPlaylists() async {
+    var newPlaylists = await PodcastRepository.getPlaylists();
+    playlist = newPlaylists;
+    return newPlaylists;
+  }
+  //#endregion
+
+  //#region Library
   Future<List<Podcast>> getLibrary() async {
     var newLibrary = await PodcastRepository.getUserLibrary();
     library = newLibrary;
@@ -83,4 +94,6 @@ class UserService {
     }
     return await addToLibrary(id);
   }
+  //#endregion
+
 }

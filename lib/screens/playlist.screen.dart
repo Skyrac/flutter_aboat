@@ -1,6 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:talkaboat/screens/settings.screen.dart';
+import 'package:talkaboat/models/playlist/playlist.model.dart';
 import 'package:talkaboat/services/user/user.service.dart';
 
 import '../injection/injector.dart';
@@ -63,24 +64,77 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                     tooltip: '',
                     onPressed: () {
                       showAlert(context);
-                      return;
-                      Navigator.push(
-                          context,
-                          PageTransition(
-                              alignment: Alignment.bottomCenter,
-                              curve: Curves.bounceOut,
-                              type: PageTransitionType.rightToLeftWithFade,
-                              duration: const Duration(milliseconds: 500),
-                              reverseDuration:
-                                  const Duration(milliseconds: 500),
-                              child: const SettingsScreen()));
                     },
                   ),
                 )
               ],
             ),
-            body: userService.isConnected ? SizedBox() : createLoginButton()));
+            body: userService.isConnected
+                ? createPlaylistView()
+                : createLoginButton()));
   }
+
+  createPlaylistView() => FutureBuilder(
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasError) {
+              return Center(
+                child: Text(
+                  '${snapshot.error} occurred',
+                  style: const TextStyle(fontSize: 18),
+                ),
+              );
+            } else if (snapshot.hasData && snapshot.data != null) {
+              // Extracting data from snapshot object
+              final data = snapshot.data as List<Playlist>;
+              if (data.isNotEmpty) {
+                return buildPlaylistListView(data);
+              }
+            }
+          }
+          return const Center(child: CircularProgressIndicator());
+        },
+        future: userService.getPlaylists(),
+      );
+
+  buildPlaylistListView(List<Playlist> data) => ListView.builder(
+      itemCount: data.length,
+      scrollDirection: Axis.vertical,
+      itemBuilder: (BuildContext context, int index) {
+        final item = data[index];
+        return buildPlaylistTile(context, item);
+      });
+
+  buildPlaylistTile(context, Playlist item) => ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Card(
+          child: InkWell(
+            onTap: (() {}),
+            child: ListTile(
+              leading: Container(
+                height: 60,
+                width: 60,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: CachedNetworkImage(
+                      imageUrl: item.image == null || item.image!.isEmpty
+                          ? 'https://picsum.photos/200'
+                          : item.image!,
+                      placeholder: (_, __) =>
+                          const Center(child: CircularProgressIndicator()),
+                      // progressIndicatorBuilder: (context, url, downloadProgress) =>
+                      //     CircularProgressIndicator(value: downloadProgress.progress),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
+                      fit: BoxFit.cover),
+                ),
+              ),
+              title: Text(item.name!),
+              subtitle: Text("Tracks: ${item.tracks?.length}"),
+            ),
+          ),
+        ),
+      );
 
   void showAlert(BuildContext context) {
     showDialog(
@@ -94,13 +148,13 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                       hintText: "Name your new Playlist",
                       labelText: "Playlist-Name",
                       labelStyle: Theme.of(context).textTheme.labelLarge,
-                      enabledBorder: UnderlineInputBorder(
+                      enabledBorder: const UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.blue),
                       ),
-                      focusedBorder: UnderlineInputBorder(
+                      focusedBorder: const UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.green),
                       ),
-                      border: UnderlineInputBorder(
+                      border: const UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.red),
                       ))),
               actions: [

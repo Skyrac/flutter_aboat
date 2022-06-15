@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:talkaboat/services/repositories/podcast.repository.dart';
-import 'package:talkaboat/services/state/home-state.service.dart';
+import 'package:talkaboat/services/state/state.service.dart';
 import 'package:talkaboat/themes/colors.dart';
 
 import '../injection/injector.dart';
@@ -17,7 +17,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final homeState = getIt<HomeStateService>();
+  final homeState = getIt<StateService>();
 
   // List<Widget> createListOfCategories() {
   Widget createPodcastPreviewByGenre(

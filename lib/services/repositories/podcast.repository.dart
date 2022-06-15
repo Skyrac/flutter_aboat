@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:talkaboat/configuration/dio.config.dart';
+import 'package:talkaboat/models/playlist/playlist.model.dart';
 
 import '../../models/podcasts/episode.model.dart';
 import '../../models/podcasts/podcast.model.dart';
@@ -64,6 +65,13 @@ class PodcastRepository {
   static Future<bool> addToLibrary(int id) async {
     var response = await dio.post<bool>('$API/library/add/$id');
     return response.data!;
+  }
+
+  static Future<List<Playlist>> getPlaylists() async {
+    var response = await dio.get<String>('$API/playlist');
+    var list = List<Playlist>.from(
+        json.decode(response.data!).map((data) => Playlist.fromJson(data)));
+    return list;
   }
 
   //https://api.talkaboat.online/v1/podcast/3855/desc/0/10
