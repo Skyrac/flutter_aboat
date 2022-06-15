@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:talkaboat/models/playlist/playlist.model.dart';
+import 'package:talkaboat/screens/playlist-detail.screen.dart';
 import 'package:talkaboat/services/user/user.service.dart';
 
 import '../injection/injector.dart';
@@ -183,7 +184,17 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
         borderRadius: BorderRadius.circular(10),
         child: Card(
           child: InkWell(
-            onTap: (() {}),
+            onTap: (() {
+              Navigator.push(
+                  context,
+                  PageTransition(
+                      alignment: Alignment.bottomCenter,
+                      curve: Curves.bounceOut,
+                      type: PageTransitionType.fade,
+                      duration: const Duration(milliseconds: 300),
+                      reverseDuration: const Duration(milliseconds: 200),
+                      child: PlaylistDetailScreen(playlist: entry)));
+            }),
             child: ListTile(
               leading: Container(
                 height: 60,
