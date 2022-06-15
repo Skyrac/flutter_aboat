@@ -11,6 +11,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await configureDependencies();
   configDio();
+
   await getIt<UserService>().getCoreData();
   runApp(const ProviderScope(child: MyApp()));
 }

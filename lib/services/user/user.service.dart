@@ -41,6 +41,10 @@ class UserService {
 
   Future<bool> getUserInfo() async {
     userInfo = await UserRepository.getUserInfo();
+    if (userInfo == null || userInfo!.userName == null) {
+      logout();
+      return false;
+    }
     return true;
   }
 

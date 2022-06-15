@@ -28,9 +28,13 @@ class UserRepository {
   }
 
   static Future<UserInfo> getUserInfo() async {
-    var response = await dio.get<String>('/v1/user/profile');
-    var convertedData = UserInfo.fromJson(json.decode(response.data!));
-    return convertedData;
+    try {
+      var response = await dio.get<String>('/v1/user/profile');
+      var convertedData = UserInfo.fromJson(json.decode(response.data!));
+      return convertedData;
+    } catch (exception) {
+      return UserInfo();
+    }
   }
 }
 //hitziger.fabian@live.de

@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:talkaboat/models/playlist/playlist.model.dart';
 
+import '../models/podcasts/episode.model.dart';
 import '../themes/colors.dart';
 
 class PlaylistDetailScreen extends StatefulWidget {
@@ -74,73 +75,54 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
         final entry = widget.playlist.tracks![index];
         final episode = entry.episode!;
         print(episode.image);
-        return Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: Card(
-              child: SizedBox(
-                  height: 80,
-                  width: MediaQuery.of(context).size.width - 100,
-                  child: Center(
-                    child: ListTile(
-                      leading: Container(
-                        height: 60,
-                        width: 60,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: CachedNetworkImage(
-                              imageUrl: episode.image == null ||
-                                      episode.image!.isEmpty
-                                  ? 'https://picsum.photos/200'
-                                  : episode.image!,
-                              placeholder: (_, __) => const Center(
-                                  child: CircularProgressIndicator()),
-                              // progressIndicatorBuilder: (context, url, downloadProgress) =>
-                              //     CircularProgressIndicator(value: downloadProgress.progress),
-                              errorWidget: (context, url, error) =>
-                                  const Icon(Icons.error),
-                              fit: BoxFit.cover),
-                        ),
+        return createEpisodeWidget(context, episode);
+      });
+
+  createEpisodeWidget(BuildContext context, Episode episode) => Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: Card(
+            child: SizedBox(
+                height: 80,
+                width: MediaQuery.of(context).size.width - 100,
+                child: Center(
+                  child: ListTile(
+                    leading: Container(
+                      height: 60,
+                      width: 60,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10.0),
                       ),
-                      title: Text(
-                        episode.title!,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 2,
-                      ),
-                      subtitle: Text(
-                        episode.podcast!.title!,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: CachedNetworkImage(
+                            imageUrl:
+                                episode.image == null || episode.image!.isEmpty
+                                    ? 'https://picsum.photos/200'
+                                    : episode.image!,
+                            placeholder: (_, __) => const Center(
+                                child: CircularProgressIndicator()),
+                            // progressIndicatorBuilder: (context, url, downloadProgress) =>
+                            //     CircularProgressIndicator(value: downloadProgress.progress),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error),
+                            fit: BoxFit.cover),
                       ),
                     ),
-                  )),
-            ),
+                    title: Text(
+                      episode.title!,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                    ),
+                    subtitle: Text(
+                      episode.podcast!.title!,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                  ),
+                )),
           ),
-        );
-        Container(
-          height: 60,
-          child: ListTile(
-            leading: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: CachedNetworkImage(
-                  imageUrl: episode.image == null || episode.image!.isEmpty
-                      ? 'https://picsum.photos/200'
-                      : episode.image!,
-                  placeholder: (_, __) =>
-                      const Center(child: CircularProgressIndicator()),
-                  // progressIndicatorBuilder: (context, url, downloadProgress) =>
-                  //     CircularProgressIndicator(value: downloadProgress.progress),
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
-                  fit: BoxFit.cover),
-            ),
-            title: Text(
-              episode.title!,
-            ),
-          ),
-        );
-      });
+        ),
+      );
 }
