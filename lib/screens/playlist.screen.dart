@@ -17,6 +17,80 @@ class PlaylistScreen extends StatefulWidget {
 class _PlaylistScreenState extends State<PlaylistScreen> {
   final userService = getIt<UserService>();
 
+  popupMenu(BuildContext context, Playlist entry) => <PopupMenuEntry<String>>[
+        PopupMenuItem<String>(
+          value: 'toggleLibrary',
+          child: Card(
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                Icon(
+                  Icons.edit,
+                  size: 20,
+                  color: Theme.of(context).iconTheme.color,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Text('Rename'),
+                )
+              ])),
+        ),
+        PopupMenuItem<String>(
+          value: 'toggleLibrary',
+          child: Card(
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                Icon(
+                  Icons.copy,
+                  size: 20,
+                  color: Theme.of(context).iconTheme.color,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Text('Copy'),
+                )
+              ])),
+        ),
+        PopupMenuItem<String>(
+          value: 'toggleLibrary',
+          child: Card(
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                Icon(
+                  Icons.delete,
+                  size: 20,
+                  color: Theme.of(context).iconTheme.color,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Text('Delete'),
+                )
+              ])),
+        ),
+      ];
+
+  buildPopupButton(context, entry) => PopupMenuButton(
+        child: Card(
+            child: Icon(Icons.more_vert,
+                color: Theme.of(context).iconTheme.color)),
+        onSelected: (value) async {
+          print(value);
+          switch (value) {
+            case "toggleLibrary":
+              await userService.toggleLibraryEntry(entry.id);
+              break;
+          }
+        },
+        itemBuilder: (BuildContext context) {
+          return popupMenu(context, entry);
+        },
+      );
+
   createLoginButton() => Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 30),
@@ -105,7 +179,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
         return buildPlaylistTile(context, item);
       });
 
-  buildPlaylistTile(context, Playlist item) => ClipRRect(
+  buildPlaylistTile(context, Playlist entry) => ClipRRect(
         borderRadius: BorderRadius.circular(10),
         child: Card(
           child: InkWell(
@@ -117,9 +191,9 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
-                      imageUrl: item.image == null || item.image!.isEmpty
+                      imageUrl: entry.image == null || entry.image!.isEmpty
                           ? 'https://picsum.photos/200'
-                          : item.image!,
+                          : entry.image!,
                       placeholder: (_, __) =>
                           const Center(child: CircularProgressIndicator()),
                       // progressIndicatorBuilder: (context, url, downloadProgress) =>
@@ -129,8 +203,9 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                       fit: BoxFit.cover),
                 ),
               ),
-              title: Text(item.name!),
-              subtitle: Text("Tracks: ${item.tracks?.length}"),
+              title: Text(entry.name!),
+              subtitle: Text("Tracks: ${entry.tracks?.length}"),
+              trailing: buildPopupButton(context, entry),
             ),
           ),
         ),
