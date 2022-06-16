@@ -86,12 +86,30 @@ class UserService {
     return playlist;
   }
 
-  Future<Playlist> removeFromPlaylist(
+  Future<Playlist> removeFromPlaylistByTrackId(
       int playlistId, int playlistTrackId) async {
     var newPlaylist = await PodcastRepository.removeEpisodeFromPlaylist(
         playlistId, playlistTrackId);
     var playlist = playlists[playlists
         .indexWhere((element) => element.playlistId == newPlaylist.playlistId)];
+    playlist.tracks!
+        .sort((trackA, trackB) => trackA.position!.compareTo(trackB.position!));
+    playlist.tracks = newPlaylist.tracks;
+    return playlist;
+  }
+
+  Future<Playlist> removeFromPlaylistByEpisodeId(
+      int playlistId, int episodeId) async {
+    var playlist = playlists[
+        playlists.indexWhere((element) => element.playlistId == playlistId)];
+    var track = playlist.tracks
+        ?.firstWhere((element) => element.episodeId == episodeId);
+    if (track == null) {
+      return playlist;
+    }
+    var newPlaylist = await PodcastRepository.removeEpisodeFromPlaylist(
+        playlistId, track.playlistTrackId!);
+
     playlist.tracks!
         .sort((trackA, trackB) => trackA.position!.compareTo(trackB.position!));
     playlist.tracks = newPlaylist.tracks;

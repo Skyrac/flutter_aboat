@@ -31,7 +31,7 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
         onSelected: (value) async {
           switch (value) {
             case "remove":
-              await userService.removeFromPlaylist(
+              await userService.removeFromPlaylistByTrackId(
                   entry.playlistId!, entry.playlistTrackId!);
               break;
           }

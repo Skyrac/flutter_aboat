@@ -44,6 +44,10 @@ class Playlist {
     return data;
   }
 
+  bool containsEpisode(int episodeId) {
+    return tracks!.any((element) => element.episodeId == episodeId);
+  }
+
   getDateTime() {
     return Jiffy(created!).yMMMd; // DateTime.parse(created!).
   }
