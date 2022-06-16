@@ -2,10 +2,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:talkaboat/injection/injector.dart';
 import 'package:talkaboat/models/playlist/playlist.model.dart';
+import 'package:talkaboat/models/playlist/track.model.dart';
 import 'package:talkaboat/services/audio/audio-handler.services.dart';
 import 'package:talkaboat/services/user/user.service.dart';
 
-import '../models/podcasts/episode.model.dart';
 import '../themes/colors.dart';
 
 class PlaylistDetailScreen extends StatefulWidget {
@@ -19,6 +19,29 @@ class PlaylistDetailScreen extends StatefulWidget {
 class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
   final userService = getIt<UserService>();
   final audioHandler = getIt<AudioPlayerHandler>();
+  popupMenu(BuildContext context, Track entry) => <PopupMenuEntry<String>>[
+        PopupMenuItem<String>(
+            value: 'remove', child: Card(child: Text('Remove from Playlist'))),
+      ];
+
+  buildPopupButton(context, Track entry) => PopupMenuButton(
+        child: Card(
+            child: Icon(Icons.more_vert,
+                color: Theme.of(context).iconTheme.color)),
+        onSelected: (value) async {
+          switch (value) {
+            case "remove":
+              await userService.removeFromPlaylist(
+                  entry.playlistId!, entry.playlistTrackId!);
+              break;
+          }
+          setState(() {});
+        },
+        itemBuilder: (BuildContext context) {
+          return popupMenu(context, entry);
+        },
+      );
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -117,8 +140,26 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                         "Created: ${widget.playlist.getDateTime()}",
                         style: Theme.of(context).textTheme.labelMedium,
                       )
-                    ])
+                    ]),
                   ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: IconButton(
+                    icon: Center(
+                      child: Icon(
+                        Icons.play_arrow_rounded,
+                        size: 40,
+                      ),
+                    ),
+                    onPressed: (() async {
+                      await audioHandler.updateEpisodeQueue(
+                          widget.playlist.tracks!
+                              .map((track) => track.episode!)
+                              .toList(),
+                          index: 0);
+                    }),
+                  ),
                 )
               ],
             ),
@@ -145,12 +186,11 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
       itemBuilder: (BuildContext context, int index) {
         final entry = widget.playlist.tracks![index];
         final episode = entry.episode!;
-        return createEpisodeWidget(context, episode, index);
+        return createEpisodeWidget(context, entry, index);
       });
 
-  createEpisodeWidget(BuildContext context, Episode episode, int index) =>
-      Padding(
-        key: ValueKey(episode),
+  createEpisodeWidget(BuildContext context, Track track, int index) => Padding(
+        key: ValueKey(track),
         padding: const EdgeInsets.all(8.0),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(10),
@@ -168,6 +208,7 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                           index: index);
                     }),
                     child: ListTile(
+                      trailing: buildPopupButton(context, track),
                       leading: Container(
                         height: 60,
                         width: 60,
@@ -177,10 +218,10 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(10),
                           child: CachedNetworkImage(
-                              imageUrl: episode.image == null ||
-                                      episode.image!.isEmpty
+                              imageUrl: track.episode!.image == null ||
+                                      track.episode!.image!.isEmpty
                                   ? 'https://picsum.photos/200'
-                                  : episode.image!,
+                                  : track.episode!.image!,
                               placeholder: (_, __) => const Center(
                                   child: CircularProgressIndicator()),
                               // progressIndicatorBuilder: (context, url, downloadProgress) =>
@@ -191,12 +232,12 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                         ),
                       ),
                       title: Text(
-                        episode.title!,
+                        track.episode!.title!,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 2,
                       ),
                       subtitle: Text(
-                        episode.podcast!.title!,
+                        track.episode!.podcast!.title!,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                       ),

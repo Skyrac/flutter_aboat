@@ -82,5 +82,20 @@ class PodcastRepository {
     return convertedData;
   }
 
+  static Future<Playlist> removeEpisodeFromPlaylist(
+      int playlistId, int playlistTrackId) async {
+    var response = await dio
+        .delete<String>('$API/playlist/$playlistId/delete/$playlistTrackId');
+    var convertedData = Playlist.fromJson(json.decode(response.data!));
+    return convertedData;
+  }
+
+  static Future<Playlist> addToPlaylist(int playlistId, int episodeId) async {
+    var response =
+        await dio.post<String>('$API/playlist/$playlistId/add/$episodeId');
+    var convertedData = Playlist.fromJson(json.decode(response.data!));
+    return convertedData;
+  }
+
   //https://api.talkaboat.online/v1/podcast/3855/desc/0/10
 }

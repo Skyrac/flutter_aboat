@@ -86,6 +86,28 @@ class UserService {
     return playlist;
   }
 
+  Future<Playlist> removeFromPlaylist(
+      int playlistId, int playlistTrackId) async {
+    var newPlaylist = await PodcastRepository.removeEpisodeFromPlaylist(
+        playlistId, playlistTrackId);
+    var playlist = playlists[playlists
+        .indexWhere((element) => element.playlistId == newPlaylist.playlistId)];
+    playlist.tracks!
+        .sort((trackA, trackB) => trackA.position!.compareTo(trackB.position!));
+    playlist.tracks = newPlaylist.tracks;
+    return playlist;
+  }
+
+  Future<Playlist> addToPlaylist(int playlistId, int episodeId) async {
+    var newPlaylist =
+        await PodcastRepository.addToPlaylist(playlistId, episodeId);
+    var playlist = playlists[playlists
+        .indexWhere((element) => element.playlistId == newPlaylist.playlistId)];
+    playlist.tracks!
+        .sort((trackA, trackB) => trackA.position!.compareTo(trackB.position!));
+    playlist.tracks = newPlaylist.tracks;
+    return playlist;
+  }
   //#endregion
 
   //#region Library
@@ -115,6 +137,7 @@ class UserService {
     }
     return await addToLibrary(id);
   }
+
   //#endregion
 
 }
