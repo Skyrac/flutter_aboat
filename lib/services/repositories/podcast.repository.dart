@@ -74,5 +74,13 @@ class PodcastRepository {
     return list;
   }
 
+  static Future<Playlist> changeEpisodePositionInPlaylist(
+      int podcastId, int trackId, int position) async {
+    var response = await dio
+        .put<String>('$API/playlist/$podcastId/update/$trackId/$position');
+    var convertedData = Playlist.fromJson(json.decode(response.data!));
+    return convertedData;
+  }
+
   //https://api.talkaboat.online/v1/podcast/3855/desc/0/10
 }

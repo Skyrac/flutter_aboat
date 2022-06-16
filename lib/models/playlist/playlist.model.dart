@@ -1,3 +1,4 @@
+import 'package:jiffy/jiffy.dart';
 import 'package:talkaboat/models/playlist/track.model.dart';
 
 class Playlist {
@@ -41,5 +42,9 @@ class Playlist {
     data['created'] = created;
     data['modified'] = modified;
     return data;
+  }
+
+  getDateTime() {
+    return Jiffy(created!).yMMMd; // DateTime.parse(created!).
   }
 }

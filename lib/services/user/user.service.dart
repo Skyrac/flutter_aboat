@@ -10,7 +10,7 @@ class UserService {
   String token = "";
   UserInfo? userInfo;
   List<Podcast> library = List.empty();
-  List<Playlist> playlist = List.empty();
+  List<Playlist> playlists = List.empty();
   late final prefs;
   static const String TOKEN_IDENTIFIER = "aboat_token";
 
@@ -66,9 +66,26 @@ class UserService {
   //#region Playlist
   Future<List<Playlist>> getPlaylists() async {
     var newPlaylists = await PodcastRepository.getPlaylists();
-    playlist = newPlaylists;
+    for (final playlist in newPlaylists) {
+      playlist.tracks!.sort(
+          (trackA, trackB) => trackA.position!.compareTo(trackB.position!));
+    }
+    playlists = newPlaylists;
     return newPlaylists;
   }
+
+  Future<Playlist> changePlaylistPosition(
+      int podcastId, int trackId, int position) async {
+    var newPlaylist = await PodcastRepository.changeEpisodePositionInPlaylist(
+        podcastId, trackId, position);
+    var playlist = playlists[playlists
+        .indexWhere((element) => element.playlistId == newPlaylist.playlistId)];
+    playlist.tracks!
+        .sort((trackA, trackB) => trackA.position!.compareTo(trackB.position!));
+    playlist.tracks = newPlaylist.tracks;
+    return playlist;
+  }
+
   //#endregion
 
   //#region Library

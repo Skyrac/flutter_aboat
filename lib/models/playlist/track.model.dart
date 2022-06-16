@@ -26,6 +26,11 @@ class Track {
     position = json['position'];
   }
 
+  @override
+  String toString() {
+    return "$position: ${episode!.title}";
+  }
+
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['playlistTrack_Id'] = playlistTrackId;
