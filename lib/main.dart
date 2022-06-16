@@ -1,8 +1,11 @@
+import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:talkaboat/injection/injector.dart';
 import 'package:talkaboat/screens/app.screen.dart';
 import 'package:talkaboat/services/user/user.service.dart';
+import 'package:talkaboat/themes/colors.dart';
 import 'package:talkaboat/themes/default.theme.dart';
 
 import 'configuration/dio.config.dart';
@@ -21,11 +24,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: DefaultTheme.defaultTheme,
-      debugShowCheckedModeBanner: false,
-      home: const AppScreen(title: 'Talkaboat'),
-    );
+        title: 'Flutter Demo',
+        theme: DefaultTheme.defaultTheme,
+        debugShowCheckedModeBanner: false,
+        home: AnimatedSplashScreen(
+            duration: 3000,
+            splash: Icons.home,
+            nextScreen: const AppScreen(title: 'Talkaboat'),
+            splashTransition: SplashTransition.fadeTransition,
+            pageTransitionType: PageTransitionType.fade,
+            backgroundColor: DefaultColors.secondaryColor));
   }
 }
 //

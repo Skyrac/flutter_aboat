@@ -56,6 +56,7 @@ dependencies:
   shared_preferences: ^2.0.15
   dio_cache_interceptor: ^3.2.7
   jiffy: ^5.0.0
+  animated_splash_screen: ^1.2.0
 
 simple_animations: ^1.3.3
 
