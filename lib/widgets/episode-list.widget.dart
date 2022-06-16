@@ -17,6 +17,27 @@ class EpisodeListWidget extends StatefulWidget {
 class _EpisodeListWidgetState extends State<EpisodeListWidget> {
   late final audioHandler = getIt<AudioPlayerHandler>();
 
+  popupMenu(BuildContext context, Episode entry) => <PopupMenuEntry<String>>[
+        PopupMenuItem<String>(
+            value: 'remove', child: Card(child: Text('Remove from Playlist'))),
+      ];
+
+  buildPopupButton(context, Episode entry) => PopupMenuButton(
+        child: Card(
+            child: Icon(Icons.more_vert,
+                color: Theme.of(context).iconTheme.color)),
+        onSelected: (value) async {
+          switch (value) {
+            case "add":
+              break;
+          }
+          setState(() {});
+        },
+        itemBuilder: (BuildContext context) {
+          return popupMenu(context, entry);
+        },
+      );
+
   Widget makeListBuilder(context, List<Episode?> data) => ListView.builder(
       itemCount: data.length,
       scrollDirection: widget.direction,
@@ -87,44 +108,45 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget> {
                 ),
               ))));
 
-  Widget makeVerticalListTile(context, Episode entry) => ListTile(
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-        leading: SizedBox(
-          width: 60,
-          height: 100,
-          child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: SizedBox(
-                  child: CachedNetworkImage(
-                imageUrl: entry.image == null ? '' : entry.image!,
-                fit: BoxFit.fill,
-                placeholder: (_, __) =>
-                    const Center(child: CircularProgressIndicator()),
-                // progressIndicatorBuilder: (context, url, downloadProgress) =>
-                //     CircularProgressIndicator(value: downloadProgress.progress),
-                errorWidget: (context, url, error) => const Icon(Icons.error),
-              ))),
+  Widget makeVerticalListTile(context, Episode entry) => Center(
+        child: ListTile(
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+          leading: SizedBox(
+            width: 60,
+            height: 100,
+            child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: SizedBox(
+                    child: CachedNetworkImage(
+                  imageUrl: entry.image == null ? '' : entry.image!,
+                  fit: BoxFit.fill,
+                  placeholder: (_, __) =>
+                      const Center(child: CircularProgressIndicator()),
+                  // progressIndicatorBuilder: (context, url, downloadProgress) =>
+                  //     CircularProgressIndicator(value: downloadProgress.progress),
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                ))),
+          ),
+          title: Text(
+            entry.title!,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 2,
+            style: const TextStyle(
+                color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+          subtitle: Text(
+            entry.description!,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 2,
+            style: const TextStyle(color: Colors.white),
+          ),
+          trailing: buildPopupButton(context, entry),
+          onTap: () async {
+            await audioHandler
+                .updateEpisodeQueue(List.generate(1, (index) => entry));
+          },
         ),
-        title: Text(
-          entry.title!,
-          overflow: TextOverflow.ellipsis,
-          maxLines: 2,
-          style:
-              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-        subtitle: Text(
-          entry.description!,
-          overflow: TextOverflow.ellipsis,
-          maxLines: 2,
-          style: const TextStyle(color: Colors.white),
-        ),
-        trailing: const Icon(Icons.keyboard_arrow_right,
-            color: Colors.white, size: 30.0),
-        onTap: () async {
-          await audioHandler
-              .updateEpisodeQueue(List.generate(1, (index) => entry));
-        },
       );
 
   @override

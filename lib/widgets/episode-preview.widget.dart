@@ -6,14 +6,40 @@ import 'package:talkaboat/themes/colors.dart';
 
 import '../injection/injector.dart';
 
-class EpisodePreviewWidget extends StatelessWidget {
+class EpisodePreviewWidget extends StatefulWidget {
   EpisodePreviewWidget(this.episode, this.direction, this.onPlayEpisode,
       {Key? key})
       : super(key: key);
   Episode episode;
   Axis direction;
   Function onPlayEpisode;
+
+  @override
+  State<EpisodePreviewWidget> createState() => _EpisodePreviewWidgetState();
+}
+
+class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
   late final audioHandler = getIt<AudioPlayerHandler>();
+
+  popupMenu(BuildContext context, Episode entry) => <PopupMenuEntry<String>>[
+        PopupMenuItem<String>(
+            value: 'add', child: Card(child: Text('Add to playlist'))),
+      ];
+
+  buildPopupButton(context, Episode entry) => PopupMenuButton(
+        child: Icon(Icons.more_vert, color: Theme.of(context).iconTheme.color),
+        onSelected: (value) async {
+          switch (value) {
+            case "add":
+              break;
+          }
+          setState(() {});
+        },
+        itemBuilder: (BuildContext context) {
+          return popupMenu(context, entry);
+        },
+      );
+
   Widget makeCard(context, Episode entry) => Card(
         elevation: 8.0,
         margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
@@ -22,7 +48,7 @@ class EpisodePreviewWidget extends StatelessWidget {
           child: Container(
             decoration:
                 const BoxDecoration(color: Color.fromRGBO(64, 75, 96, .9)),
-            child: direction == Axis.horizontal
+            child: widget.direction == Axis.horizontal
                 ? makeHorizontalListTile(context, entry)
                 : makeVerticalListTile(context, entry),
           ),
@@ -33,7 +59,7 @@ class EpisodePreviewWidget extends StatelessWidget {
       padding: const EdgeInsets.all(10),
       child: InkWell(
           onTap: () async {
-            onPlayEpisode();
+            widget.onPlayEpisode();
             // await audioHandler
             //     .updateEpisodeQueue(List.generate(1, (index) => entry));
           },
@@ -106,10 +132,9 @@ class EpisodePreviewWidget extends StatelessWidget {
           maxLines: 2,
           style: const TextStyle(color: Colors.white),
         ),
-        trailing: const Icon(Icons.keyboard_arrow_right,
-            color: Colors.white, size: 30.0),
+        trailing: buildPopupButton(context, entry),
         onTap: () async {
-          onPlayEpisode();
+          widget.onPlayEpisode();
           // await audioHandler
           //     .updateEpisodeQueue(List.generate(1, (index) => entry));
         },
@@ -123,13 +148,15 @@ class EpisodePreviewWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return episode == null ? SizedBox() : makeCard(context, episode);
+    return widget.episode == null
+        ? SizedBox()
+        : makeCard(context, widget.episode);
     Padding(
         padding: const EdgeInsets.all(10),
         child: InkWell(
             onTap: () async {
-              await audioHandler
-                  .updateEpisodeQueue(List.generate(1, (index) => episode));
+              await audioHandler.updateEpisodeQueue(
+                  List.generate(1, (index) => widget.episode));
             },
             child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
@@ -143,7 +170,7 @@ class EpisodePreviewWidget extends StatelessWidget {
                           child: SizedBox(
                               height: 200,
                               child: CachedNetworkImage(
-                                imageUrl: episode.image!,
+                                imageUrl: widget.episode.image!,
                                 fit: BoxFit.cover,
                                 placeholder: (_, __) => const Center(
                                     child: CircularProgressIndicator()),
@@ -155,7 +182,7 @@ class EpisodePreviewWidget extends StatelessWidget {
                       Padding(
                           padding:
                               const EdgeInsets.only(left: 5, right: 5, top: 5),
-                          child: Text(episode.title!,
+                          child: Text(widget.episode.title!,
                               overflow: TextOverflow.ellipsis,
                               maxLines: 2,
                               style: TextStyle(
