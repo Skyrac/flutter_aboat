@@ -120,10 +120,10 @@ class _PlayerControlWidgetState extends State<PlayerControlWidget>
                 height: 36.0,
                 child: const CircularProgressIndicator(),
               );
-            } else if (playing != true) {
-              _controller.stop();
-            } else {
+            } else if (playing == true && userService.isConnected) {
               _controller.repeat();
+            } else {
+              _controller.stop();
             }
             return Row(
               children: [
