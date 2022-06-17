@@ -21,6 +21,7 @@ class MiniPlayerWidget extends StatefulWidget {
 class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
   Episode? currentEpisode;
   late final audioHandler = getIt<AudioPlayerHandler>();
+  late AnimationController _controller;
 
   /// A stream reporting the combined state of the current media item and its
   /// current position.

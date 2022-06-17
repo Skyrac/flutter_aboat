@@ -7,6 +7,7 @@ class DefaultTheme {
     return ThemeData(
         primaryColor: DefaultColors.primaryColor,
         cardColor: DefaultColors.secondaryColor.shade800,
+        brightness: Brightness.dark,
         iconTheme: IconThemeData(color: DefaultColors.primaryColor.shade100),
         textTheme: TextTheme(
           titleLarge: TextStyle(color: DefaultColors.secondaryColor),

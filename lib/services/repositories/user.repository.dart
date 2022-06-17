@@ -4,6 +4,8 @@ import 'package:dio/dio.dart';
 import 'package:talkaboat/configuration/dio.config.dart';
 import 'package:talkaboat/models/user/user-info.model.dart';
 
+import '../../models/rewards/reward.model.dart';
+
 class UserRepository {
   UserRepository._();
 
@@ -34,6 +36,16 @@ class UserRepository {
       return convertedData;
     } catch (exception) {
       return UserInfo();
+    }
+  }
+
+  static Future<Reward> getUserRewards() async {
+    try {
+      var response = await dio.get<String>('/v1/user/reward');
+      var convertedData = Reward.fromJson(json.decode(response.data!));
+      return convertedData;
+    } catch (exception) {
+      return Reward();
     }
   }
 }

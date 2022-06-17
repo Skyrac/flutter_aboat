@@ -1,5 +1,6 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:talkaboat/injection/injector.dart';
@@ -12,6 +13,11 @@ import 'configuration/dio.config.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      systemNavigationBarColor:
+          DefaultColors.primaryColor.shade900, // navigation bar color
+      statusBarColor: DefaultColors.secondaryColor.shade900 // status bar color
+      ));
   await configureDependencies();
   configDio();
 
@@ -28,12 +34,13 @@ class MyApp extends StatelessWidget {
         theme: DefaultTheme.defaultTheme,
         debugShowCheckedModeBanner: false,
         home: AnimatedSplashScreen(
-            duration: 3000,
-            splash: Icons.home,
+            duration: 2000,
+            splash: const Image(
+                width: 250, image: AssetImage('assets/images/talkaboat.png')),
             nextScreen: const AppScreen(title: 'Talkaboat'),
             splashTransition: SplashTransition.fadeTransition,
             pageTransitionType: PageTransitionType.fade,
-            backgroundColor: DefaultColors.secondaryColor));
+            backgroundColor: DefaultColors.secondaryColor.shade900));
   }
 }
 //

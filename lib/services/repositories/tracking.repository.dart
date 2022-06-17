@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:talkaboat/services/user/user.service.dart';
 
 import '../../configuration/dio.config.dart';
 import '../../injection/injector.dart';
+import '../../models/rewards/reward.model.dart';
 
 class TrackingRepository {
   TrackingRepository._();
@@ -19,6 +22,8 @@ class TrackingRepository {
     }
     var data = createRequestData(owner, asset, playTime);
     var response = await dio.post<String>('$API/play', data: data);
+    var convertedData = Reward.fromJson(json.decode(response.data!));
+    userService.updateRewards(convertedData);
   }
 
   static Future<void> Pause(int owner, int asset, int playTime) async {
@@ -27,6 +32,8 @@ class TrackingRepository {
     }
     var data = createRequestData(owner, asset, playTime);
     var response = await dio.post<String>('$API/pause', data: data);
+    var convertedData = Reward.fromJson(json.decode(response.data!));
+    userService.updateRewards(convertedData);
   }
 
   static Future<void> Stop(int owner, int asset, int playTime) async {
@@ -35,6 +42,8 @@ class TrackingRepository {
     }
     var data = createRequestData(owner, asset, playTime);
     var response = await dio.post<String>('$API/stop', data: data);
+    var convertedData = Reward.fromJson(json.decode(response.data!));
+    userService.updateRewards(convertedData);
   }
 
   static Future<void> Mute(int owner, int asset, int playTime) async {
@@ -43,6 +52,8 @@ class TrackingRepository {
     }
     var data = createRequestData(owner, asset, playTime);
     var response = await dio.post<String>('$API/mute', data: data);
+    var convertedData = Reward.fromJson(json.decode(response.data!));
+    userService.updateRewards(convertedData);
   }
 
   static Future<void> Unmute(int owner, int asset, int playTime) async {
@@ -51,6 +62,8 @@ class TrackingRepository {
     }
     var data = createRequestData(owner, asset, playTime);
     var response = await dio.post<String>('$API/unmute', data: data);
+    var convertedData = Reward.fromJson(json.decode(response.data!));
+    userService.updateRewards(convertedData);
   }
 
   static Future<void> Heartbeat(int owner, int asset, int playTime) async {
@@ -59,5 +72,7 @@ class TrackingRepository {
     }
     var data = createRequestData(owner, asset, playTime);
     var response = await dio.post<String>('$API/heartbeat', data: data);
+    var convertedData = Reward.fromJson(json.decode(response.data!));
+    userService.updateRewards(convertedData);
   }
 }

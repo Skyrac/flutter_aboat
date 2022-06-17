@@ -3,6 +3,7 @@ import 'package:talkaboat/models/podcasts/podcast.model.dart';
 import 'package:talkaboat/models/user/user-info.model.dart';
 
 import '../../models/playlist/playlist.model.dart';
+import '../../models/rewards/reward.model.dart';
 import '../repositories/podcast.repository.dart';
 import '../repositories/user.repository.dart';
 
@@ -11,10 +12,18 @@ class UserService {
   UserInfo? userInfo;
   List<Podcast> library = List.empty();
   List<Playlist> playlists = List.empty();
+  Reward rewards = Reward();
   late final prefs;
   static const String TOKEN_IDENTIFIER = "aboat_token";
 
   get isConnected => token.isNotEmpty && userInfo != null;
+  Stream<Reward> rewardStream() async* {
+    while (true) {
+      await Future.delayed(Duration(milliseconds: 500));
+      yield rewards;
+    }
+  }
+
   isInLibrary(int id) => library.any((element) => element.aboatId == id);
 
   setInitialValues() async {
@@ -27,6 +36,10 @@ class UserService {
     }
   }
 
+  updateRewards(Reward newRewards) {
+    rewards = newRewards;
+  }
+
   static Future<UserService> init() async {
     var userService = UserService();
     await userService.setInitialValues();
@@ -36,6 +49,9 @@ class UserService {
   getCoreData() async {
     if (token.isNotEmpty) {
       await getUserInfo();
+      if (userInfo != null) {
+        rewards = await UserRepository.getUserRewards();
+      }
     }
   }
 
