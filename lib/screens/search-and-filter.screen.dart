@@ -15,6 +15,7 @@ class SearchAndFilterScreen extends StatefulWidget {
 class _SearchAndFilterScreenState extends State<SearchAndFilterScreen> {
   final _controller = TextEditingController();
   PodcastSearch? search = null;
+  List<String> selectedLanguages = [];
   @override
   void dispose() {
     _controller.dispose();
@@ -39,7 +40,8 @@ class _SearchAndFilterScreenState extends State<SearchAndFilterScreen> {
             padding: const EdgeInsets.all(20),
             child: InkWell(
               onTap: (() {
-                search = PodcastSearch();
+                search = PodcastSearch(
+                    selectedLanguages: selectedLanguages, genreIds: []);
                 // placeholder for our places search later
                 showSearch(
                   context: context,
@@ -81,6 +83,7 @@ class _SearchAndFilterScreenState extends State<SearchAndFilterScreen> {
               borderRadius: BorderRadius.circular(10),
               child: DropdownSearch<String>.multiSelection(
                 items: podcastLanguages,
+                selectedItems: selectedLanguages,
                 clearButtonProps: ClearButtonProps(isVisible: true),
                 dropdownDecoratorProps: DropDownDecoratorProps(
                   dropdownSearchDecoration: InputDecoration(
@@ -89,13 +92,6 @@ class _SearchAndFilterScreenState extends State<SearchAndFilterScreen> {
                     fillColor: Theme.of(context).inputDecorationTheme.fillColor,
                   ),
                 ),
-                validator: (List<String>? items) {
-                  if (items == null || items.isEmpty)
-                    return 'required filed';
-                  else if (items.length > 3)
-                    return 'only 1 to 3 items are allowed';
-                  return null;
-                },
                 dropdownButtonProps: DropdownButtonProps(isVisible: true),
                 dropdownBuilder: multiSelectedUsers,
                 popupProps: PopupPropsMultiSelection.dialog(
@@ -104,7 +100,9 @@ class _SearchAndFilterScreenState extends State<SearchAndFilterScreen> {
                     searchFieldProps: TextFieldProps(
                         decoration:
                             InputDecoration(hintText: "Search Language"))),
-                onChanged: print,
+                onChanged: ((items) {
+                  selectedLanguages = items;
+                }),
               ),
             ),
           )
@@ -120,6 +118,7 @@ class _SearchAndFilterScreenState extends State<SearchAndFilterScreen> {
           child: InkWell(
             onTap: (() {
               selectedItems.remove(e);
+              selectedLanguages.remove(e);
               setState(() {});
             }),
             child: Padding(

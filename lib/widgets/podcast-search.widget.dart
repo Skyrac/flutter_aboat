@@ -10,6 +10,9 @@ import '../themes/colors.dart';
 class PodcastSearch extends SearchDelegate<String?> {
   List<SearchResult> searchResults = List.empty();
   String previousSearch = "";
+  final List<String> selectedLanguages;
+  final List<int> genreIds;
+  PodcastSearch({required this.selectedLanguages, required this.genreIds});
 
   @override
   String get searchFieldLabel => "Search podcasts...";
@@ -124,7 +127,9 @@ class PodcastSearch extends SearchDelegate<String?> {
                       }
                       return const CircularProgressIndicator();
                     },
-                    future: SearchRepository.searchSuggestion(query),
+                    future: SearchRepository.searchSuggestion(query,
+                        languages: selectedLanguages.join(","),
+                        genres: genreIds.join(",")),
                   )
                 : PodcastListWidget(
                     direction: Axis.vertical,
