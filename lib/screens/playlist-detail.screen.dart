@@ -58,11 +58,15 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
         child: Scaffold(
           body: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [createHeader(context), createTrackView(context)],
+            child: SizedBox(
+              height: size.height,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Flex(
+                  direction: Axis.vertical,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [createHeader(context), createTrackView(context)],
+                ),
               ),
             ),
           ),
@@ -167,29 +171,67 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
         ),
       ));
 
-  createTrackView(BuildContext context) => ReorderableListView.builder(
-      onReorder: (oldIndex, newIndex) async {
-        if (newIndex == oldIndex) {
-          return;
-        }
-        if (newIndex > oldIndex) newIndex--;
-        final track = widget.playlist.tracks!.removeAt(oldIndex);
-        widget.playlist.tracks!.insert(newIndex, track);
-        setState(() {});
-        await userService.changePlaylistPosition(
-            widget.playlist.playlistId!, track.playlistTrackId!, newIndex);
-        setState(() {});
-      },
-      shrinkWrap: true,
-      itemCount: widget.playlist.tracks!.length,
-      scrollDirection: Axis.vertical,
-      itemBuilder: (BuildContext context, int index) {
-        final entry = widget.playlist.tracks![index];
-        final episode = entry.episode!;
-        return createEpisodeWidget(context, entry, index);
-      });
+  createTrackView(BuildContext context) => Expanded(
+        child: ReorderableListView.builder(
+            onReorder: (oldIndex, newIndex) async {
+              if (newIndex == oldIndex) {
+                return;
+              }
+              if (newIndex > oldIndex) newIndex--;
+              final track = widget.playlist.tracks!.removeAt(oldIndex);
+              widget.playlist.tracks!.insert(newIndex, track);
+              setState(() {});
+              await userService.changePlaylistPosition(
+                  widget.playlist.playlistId!,
+                  track.playlistTrackId!,
+                  newIndex);
+              setState(() {});
+            },
+            itemCount: widget.playlist.tracks!.length,
+            scrollDirection: Axis.vertical,
+            itemBuilder: (BuildContext context, int index) {
+              final entry = widget.playlist.tracks![index];
+              final episode = entry.episode!;
+              return createEpisodeWidgets(context, entry, index);
+            }),
+      );
 
-  createEpisodeWidget(BuildContext context, Track track, int index) => Padding(
+  createEpisodeWidget(BuildContext context, Track track, int index) => ListTile(
+        trailing: buildPopupButton(context, track),
+        leading: Container(
+          height: 60,
+          width: 60,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: CachedNetworkImage(
+                imageUrl: track.episode!.image == null ||
+                        track.episode!.image!.isEmpty
+                    ? 'https://picsum.photos/200'
+                    : track.episode!.image!,
+                placeholder: (_, __) =>
+                    const Center(child: CircularProgressIndicator()),
+                // progressIndicatorBuilder: (context, url, downloadProgress) =>
+                //     CircularProgressIndicator(value: downloadProgress.progress),
+                errorWidget: (context, url, error) => const Icon(Icons.error),
+                fit: BoxFit.cover),
+          ),
+        ),
+        title: Text(
+          track.episode!.title!,
+          overflow: TextOverflow.ellipsis,
+          maxLines: 2,
+        ),
+        subtitle: Text(
+          track.episode!.podcast!.title!,
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
+        ),
+      );
+
+  createEpisodeWidgets(BuildContext context, Track track, int index) => Padding(
         key: ValueKey(track),
         padding: const EdgeInsets.all(8.0),
         child: ClipRRect(

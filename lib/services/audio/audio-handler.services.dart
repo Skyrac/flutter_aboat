@@ -330,12 +330,12 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
         MediaControl.fastForward,
         MediaControl.skipToNext,
       ],
-      systemActions: const {
+      systemActions: {
         MediaAction.seek,
         MediaAction.seekForward,
         MediaAction.seekBackward,
       },
-      androidCompactActionIndices: const [0, 1, 3],
+      androidCompactActionIndices: const [0, 2, 4],
       processingState: const {
         ProcessingState.idle: AudioProcessingState.idle,
         ProcessingState.loading: AudioProcessingState.loading,

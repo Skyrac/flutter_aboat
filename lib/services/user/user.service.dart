@@ -68,7 +68,8 @@ class UserService {
     token = await UserRepository.emailLogin(email, pin);
     prefs.setString(TOKEN_IDENTIFIER, token);
     if (token.isNotEmpty) {
-      return await getUserInfo();
+      await getCoreData();
+      return userInfo != null;
     }
     return false;
   }
