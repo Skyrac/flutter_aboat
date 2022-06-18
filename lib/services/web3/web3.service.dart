@@ -30,7 +30,6 @@ class Web3Service {
   }
 
   setUri(String uri) {
-    print(uri);
     this.connectionUri = uri;
   }
 }

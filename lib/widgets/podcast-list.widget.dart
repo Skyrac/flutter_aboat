@@ -38,7 +38,6 @@ class _PodcastListWidgetState extends State<PodcastListWidget> {
             child: Icon(Icons.more_vert,
                 color: Theme.of(context).iconTheme.color)),
         onSelected: (value) async {
-          print(value);
           switch (value) {
             case "toggleLibrary":
               await userService.toggleLibraryEntry(entry.id);

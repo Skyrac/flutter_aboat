@@ -354,6 +354,5 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   @override
   void setEpisodeRefreshFunction(Function setEpisodeFunction) {
     setEpisode = setEpisodeFunction;
-    print(setEpisode);
   }
 }

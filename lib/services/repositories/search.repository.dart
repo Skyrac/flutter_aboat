@@ -11,7 +11,6 @@ class SearchRepository {
     try {
       var response = await Dio().get<String>(
           'https://api.talkaboat.online/v1/podcast/3855/episodes/asc/0/10');
-      print(response);
       var l = jsonDecode(response.data!);
       List<Episode> episodes =
           List<Episode>.from(l.map((model) => Episode.fromJson(model)));
@@ -22,7 +21,8 @@ class SearchRepository {
     return List.generate(0, (index) => null);
   }
 
-  static Future<List<SearchResult>?> searchSuggestion(String query) async {
+  static Future<List<SearchResult>?> searchSuggestion(String query,
+      {String? languages, String? genres}) async {
     try {
       var response = await Dio().get<String>(
           'https://api.talkaboat.online/v1/podcast/search/typeahead/$query/detail');

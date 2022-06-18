@@ -27,7 +27,6 @@ class LoginScreen extends StatelessWidget {
     final email = emailController.text;
     if (pin.length > 6 && email.isValidEmail()) {
       final userService = getIt<UserService>();
-      print(userService);
       if (await getIt<UserService>().emailLogin(email, pin)) {
         refreshParent();
         Navigator.pop(context);

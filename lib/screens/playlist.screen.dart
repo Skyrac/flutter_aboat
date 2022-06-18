@@ -17,10 +17,11 @@ class PlaylistScreen extends StatefulWidget {
 
 class _PlaylistScreenState extends State<PlaylistScreen> {
   final userService = getIt<UserService>();
+  final playlistCreationController = TextEditingController();
 
   popupMenu(BuildContext context, Playlist entry) => <PopupMenuEntry<String>>[
         PopupMenuItem<String>(
-          value: 'toggleLibrary',
+          value: 'rename',
           child: Card(
               child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -38,7 +39,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
               ])),
         ),
         PopupMenuItem<String>(
-          value: 'toggleLibrary',
+          value: 'copy',
           child: Card(
               child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -56,7 +57,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
               ])),
         ),
         PopupMenuItem<String>(
-          value: 'toggleLibrary',
+          value: 'delete',
           child: Card(
               child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -75,15 +76,16 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
         ),
       ];
 
-  buildPopupButton(context, entry) => PopupMenuButton(
+  buildPopupButton(context, Playlist entry) => PopupMenuButton(
         child: Card(
             child: Icon(Icons.more_vert,
                 color: Theme.of(context).iconTheme.color)),
         onSelected: (value) async {
-          print(value);
           switch (value) {
-            case "toggleLibrary":
-              await userService.toggleLibraryEntry(entry.id);
+            case "delete":
+              if (await userService.removePlaylist(entry.playlistId!)) {
+                setState(() {});
+              }
               break;
           }
         },
@@ -230,6 +232,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
               title: const Text("New Playlist..."),
               elevation: 8,
               content: TextField(
+                  controller: playlistCreationController,
                   decoration: InputDecoration(
                       hintText: "Name your new Playlist",
                       labelText: "Playlist-Name",
@@ -245,14 +248,18 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                       ))),
               actions: [
                 TextButton(
-                    onPressed: (() {
-                      print("created");
-                      Navigator.pop(context);
+                    onPressed: (() async {
+                      if (await userService
+                          .createPlaylist(playlistCreationController.text)) {
+                        setState(() {
+                          playlistCreationController.text = "";
+                          Navigator.pop(context);
+                        });
+                      }
                     }),
                     child: Text("Create")),
                 TextButton(
                     onPressed: (() {
-                      print("Cancelled");
                       Navigator.pop(context);
                     }),
                     child: Text("Cancel"))

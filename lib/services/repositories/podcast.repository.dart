@@ -14,7 +14,6 @@ class PodcastRepository {
     try {
       var response = await Dio().get<String>(
           'https://api.talkaboat.online/v1/podcast/3855/episodes/asc/0/10');
-      print(response);
       var l = jsonDecode(response.data!);
       List<Episode> episodes =
           List<Episode>.from(l.map((model) => Episode.fromJson(model)));
@@ -27,7 +26,6 @@ class PodcastRepository {
 
   static Future<List<Podcast>> getRandomPodcast(int amount) async {
     var response = await dio.get<String>('$API/random/$amount');
-    print(response);
     var list = List<Podcast>.from(
         json.decode(response.data!).map((data) => Podcast.fromJson(data)));
     return list;
@@ -95,6 +93,22 @@ class PodcastRepository {
         await dio.post<String>('$API/playlist/$playlistId/add/$episodeId');
     var convertedData = Playlist.fromJson(json.decode(response.data!));
     return convertedData;
+  }
+
+  static Future<Playlist> createPlaylist(String name,
+      {List<Episode>? tracks, String? image}) async {
+    tracks ??= List<Episode>.empty();
+    image ??= "";
+    var dataToSend = {"name": name, "image": image, "tracks": tracks};
+    var response = await dio.post<String>('$API/playlist', data: dataToSend);
+    var convertedData = Playlist.fromJson(json.decode(response.data!));
+    return convertedData;
+  }
+
+  static Future<bool?> removePlaylist(int playlistId) async {
+    var response = await dio.delete<bool>('$API/playlist/$playlistId');
+
+    return response.data;
   }
 
   //https://api.talkaboat.online/v1/podcast/3855/desc/0/10

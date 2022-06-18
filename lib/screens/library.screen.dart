@@ -32,7 +32,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
           switch (value) {
             case "remove":
               await userService.removeFromLibrary(entry.id);
-              print("remove ${entry.id}");
               break;
           }
           setState(() {});

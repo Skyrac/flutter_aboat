@@ -122,7 +122,6 @@ class _PlaylistBottomSheetState extends State<PlaylistBottomSheet> {
         child: Card(
           child: InkWell(
             onTap: (() async {
-              print(entry.containsEpisode(episodeToAdd.aboatId!));
               entry.containsEpisode(episodeToAdd.aboatId!)
                   ? await userService.removeFromPlaylistByEpisodeId(
                       entry.playlistId!, episodeToAdd.aboatId!)

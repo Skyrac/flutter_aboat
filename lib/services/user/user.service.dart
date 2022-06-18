@@ -32,7 +32,6 @@ class UserService {
     var secToken = prefs.getString(TOKEN_IDENTIFIER);
     if (secToken != null) {
       token = secToken;
-      print("Security Token: $token");
     }
   }
 
@@ -171,6 +170,32 @@ class UserService {
       return await removeFromLibrary(id);
     }
     return await addToLibrary(id);
+  }
+
+  Future<bool> createPlaylist(String text) async {
+    if (text.isEmpty) {
+      return false;
+    }
+    var newPlaylist = await PodcastRepository.createPlaylist(text);
+    if (newPlaylist.name != null &&
+        newPlaylist.name!.isNotEmpty &&
+        !playlists
+            .any((playlist) => playlist.playlistId == newPlaylist.playlistId)) {
+      playlists.add(newPlaylist);
+      return true;
+    }
+    return false;
+  }
+
+  Future<bool> removePlaylist(int playlistId) async {
+    if (playlists.any((element) => element.playlistId == playlistId)) {
+      var result = await PodcastRepository.removePlaylist(playlistId);
+      if (result != null && result) {
+        playlists.removeWhere((element) => element.playlistId == playlistId);
+        return result;
+      }
+    }
+    return false;
   }
 
   //#endregion
