@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:talkaboat/models/podcasts/podcast.model.dart';
 import 'package:talkaboat/models/user/user-info.model.dart';
@@ -9,7 +11,7 @@ import '../repositories/user.repository.dart';
 
 class UserService {
   String token = "";
-  UserInfo? userInfo;
+  UserInfoData? userInfo;
   List<Podcast> library = List.empty();
   List<Playlist> playlists = List.empty();
   Reward rewards = Reward();
@@ -25,11 +27,42 @@ class UserService {
     }
   }
 
+  Future<UserCredential> signInWithGoogle() async {
+    // Trigger the authentication flow
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser?.authentication;
+
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+
+    // Once signed in, return the UserCredential
+    return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
+
   isInLibrary(int id) => library.any((element) => element.aboatId == id);
 
   setInitialValues() async {
     prefs = await SharedPreferences.getInstance();
-
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      if (user == null) {
+        print('User is currently signed out!');
+      } else {
+        print('User is signed in!');
+      }
+    });
+    FirebaseAuth.instance.idTokenChanges().listen((User? user) {
+      if (user == null) {
+        print('User is currently signed out!');
+      } else {
+        print('User is signed in!');
+      }
+    });
     var secToken = prefs.getString(TOKEN_IDENTIFIER);
     if (secToken != null) {
       token = secToken;

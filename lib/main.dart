@@ -1,5 +1,6 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -11,9 +12,11 @@ import 'package:talkaboat/themes/colors.dart';
 import 'package:talkaboat/themes/default.theme.dart';
 
 import 'configuration/dio.config.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       systemNavigationBarColor:
           DefaultColors.primaryColor.shade900, // navigation bar color
@@ -22,13 +25,16 @@ void main() async {
   CachedNetworkImage.logLevel = CacheManagerLogLevel.debug;
   await configureDependencies();
   configDio();
-
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   await getIt<UserService>().getCoreData();
   runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

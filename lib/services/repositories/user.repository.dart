@@ -29,13 +29,13 @@ class UserRepository {
     return convertedData;
   }
 
-  static Future<UserInfo> getUserInfo() async {
+  static Future<UserInfoData> getUserInfo() async {
     try {
       var response = await dio.get<String>('/v1/user/profile');
-      var convertedData = UserInfo.fromJson(json.decode(response.data!));
+      var convertedData = UserInfoData.fromJson(json.decode(response.data!));
       return convertedData;
     } catch (exception) {
-      return UserInfo();
+      return UserInfoData();
     }
   }
 

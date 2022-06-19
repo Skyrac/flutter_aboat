@@ -1,4 +1,4 @@
-class UserInfo {
+class UserInfoData {
   String? userName;
   String? email;
   bool? verified;
@@ -9,7 +9,7 @@ class UserInfo {
   int? userBadge;
   bool? artist;
 
-  UserInfo(
+  UserInfoData(
       {this.userName,
       this.email,
       this.verified,
@@ -20,7 +20,7 @@ class UserInfo {
       this.userBadge,
       this.artist});
 
-  UserInfo.fromJson(Map<String, dynamic> json) {
+  UserInfoData.fromJson(Map<String, dynamic> json) {
     userName = json['userName'];
     email = json['email'];
     verified = json['verified'];
