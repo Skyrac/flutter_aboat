@@ -1,4 +1,5 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -18,6 +19,7 @@ void main() async {
           DefaultColors.primaryColor.shade900, // navigation bar color
       statusBarColor: DefaultColors.secondaryColor.shade900 // status bar color
       ));
+  CachedNetworkImage.logLevel = CacheManagerLogLevel.debug;
   await configureDependencies();
   configDio();
 

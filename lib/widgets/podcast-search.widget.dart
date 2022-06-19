@@ -1,3 +1,4 @@
+import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
 import 'package:talkaboat/models/search/search_result.model.dart';
 import 'package:talkaboat/services/user/user.service.dart';
@@ -9,10 +10,18 @@ import '../themes/colors.dart';
 
 class PodcastSearch extends SearchDelegate<String?> {
   List<SearchResult> searchResults = List.empty();
+  final debouncer =
+      Debouncer<String>(Duration(milliseconds: 500), initialValue: "");
   String previousSearch = "";
   final List<String> selectedLanguages;
   final List<int> genreIds;
   PodcastSearch({required this.selectedLanguages, required this.genreIds});
+
+  Future<List<SearchResult>?> queryChanged(String query) async {
+    debouncer.value = query;
+    return SearchRepository.searchSuggestion(query,
+        languages: selectedLanguages.join(","), genres: genreIds.join(","));
+  }
 
   @override
   String get searchFieldLabel => "Search podcasts...";
@@ -103,9 +112,10 @@ class PodcastSearch extends SearchDelegate<String?> {
               DefaultColors.secondaryColor.shade900
             ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
             child: shouldSearch
-                ? FutureBuilder(
+                ? FutureBuilder<List<SearchResult>?>(
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.done) {
+                        print(snapshot);
                         if (snapshot.hasError) {
                           return Center(
                             child: Text(
@@ -113,7 +123,9 @@ class PodcastSearch extends SearchDelegate<String?> {
                               style: TextStyle(fontSize: 18),
                             ),
                           );
-                        } else if (snapshot.hasData && snapshot.data != null) {
+                        } else if (snapshot.hasData &&
+                            snapshot.data != null &&
+                            snapshot.data!.isNotEmpty) {
                           // Extracting data from snapshot object
                           final data = snapshot.data as List<SearchResult>?;
                           if (data != null && data.isNotEmpty) {
@@ -123,13 +135,21 @@ class PodcastSearch extends SearchDelegate<String?> {
                                 searchResults: searchResults,
                                 trailing: buildPopupButton);
                           }
+                        } else {
+                          return Center(
+                              child: SizedBox(
+                            width: 200,
+                            child: Text(
+                              "No results found for \"$query\"! Try another set of filters or search query.",
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                          ));
                         }
                       }
-                      return const CircularProgressIndicator();
+                      return const Center(child: CircularProgressIndicator());
                     },
-                    future: SearchRepository.searchSuggestion(query,
-                        languages: selectedLanguages.join(","),
-                        genres: genreIds.join(",")),
+                    future: queryChanged(query),
                   )
                 : PodcastListWidget(
                     direction: Axis.vertical,

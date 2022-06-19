@@ -13,6 +13,7 @@ class UserService {
   List<Podcast> library = List.empty();
   List<Playlist> playlists = List.empty();
   Reward rewards = Reward();
+  Map<int, List<Podcast>> podcastProposalsHomeScreen = {};
   late final prefs;
   static const String TOKEN_IDENTIFIER = "aboat_token";
 
@@ -51,7 +52,12 @@ class UserService {
       if (userInfo != null) {
         rewards = await UserRepository.getUserRewards();
       }
+      //TODO: Vorschläge basierend auf den Vorzügen des Nutzers laden
     }
+    var podcasts = await PodcastRepository.getRandomPodcast(30);
+    podcastProposalsHomeScreen[0] = podcasts.take(10).toList();
+    podcastProposalsHomeScreen[1] = podcasts.skip(10).take(10).toList();
+    podcastProposalsHomeScreen[2] = podcasts.skip(20).take(10).toList();
   }
 
   Future<bool> getUserInfo() async {

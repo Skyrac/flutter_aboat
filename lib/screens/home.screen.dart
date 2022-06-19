@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:talkaboat/models/podcasts/podcast.model.dart';
 import 'package:talkaboat/services/repositories/podcast.repository.dart';
 import 'package:talkaboat/services/state/state.service.dart';
+import 'package:talkaboat/services/user/user.service.dart';
 import 'package:talkaboat/themes/colors.dart';
 
 import '../injection/injector.dart';
-import '../models/search/search_result.model.dart';
 import '../widgets/home-app-bar.widget.dart';
 import '../widgets/podcast-list.widget.dart';
 
@@ -18,6 +19,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final homeState = getIt<StateService>();
+  final userService = getIt<UserService>();
 
   // List<Widget> createListOfCategories() {
   Widget createPodcastPreviewByGenre(
@@ -30,11 +32,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   fontSize: 32, color: Theme.of(context).primaryColor))),
       SizedBox(
           height: 200,
-          child: homeState.map[genre] != null &&
-                  homeState.map[genre]!.isNotEmpty
+          child: userService.podcastProposalsHomeScreen.containsKey(genre)
               ? PodcastListWidget(
                   direction: Axis.horizontal,
-                  searchResults: homeState.map[genre]!)
+                  searchResults: userService.podcastProposalsHomeScreen[genre]!)
               : FutureBuilder(
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.done) {
@@ -47,10 +48,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                       } else if (snapshot.hasData && snapshot.data != null) {
                         // Extracting data from snapshot object
-                        final data = snapshot.data as List<SearchResult>?;
+                        final data = snapshot.data as List<Podcast>?;
                         if (data != null && data.isNotEmpty) {
-                          var searchResults = data;
-                          homeState.map[genre] = data;
+                          userService.podcastProposalsHomeScreen[genre] = data;
                           return PodcastListWidget(
                               direction: Axis.horizontal,
                               searchResults: homeState.map[genre]!);
@@ -80,9 +80,9 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           const HomeAppBarWidget(),
           const SizedBox(height: 5),
-          createPodcastPreviewByGenre(context, 'Made for you!', 14),
+          createPodcastPreviewByGenre(context, 'Made for you!', 0),
           const SizedBox(height: 20),
-          createPodcastPreviewByGenre(context, 'Favorites!', 21),
+          createPodcastPreviewByGenre(context, 'Favorites!', 1),
           // createLibraryPreviewGrid(),
           // createEpisodePreview(context, 'Made for you!', ref),
           // createEpisodePreview(context, 'Favorites', ref)
