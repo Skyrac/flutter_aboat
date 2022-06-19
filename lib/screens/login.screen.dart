@@ -8,11 +8,21 @@ import '../themes/colors.dart';
 import '../themes/login-and-register.background.dart';
 import '../widgets/login-app-bar.widget.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   LoginScreen(this.refreshParent, {Key? key}) : super(key: key);
   final Function refreshParent;
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   var isLogin = true;
+  var sentEmail = false;
+  final userService = getIt<UserService>();
+
   final emailController = TextEditingController();
+
   final pinController = TextEditingController();
 
   Future<void> sendPinRequest() async {
@@ -28,15 +38,73 @@ class LoginScreen extends StatelessWidget {
     if (pin.length > 6 && email.isValidEmail()) {
       final userService = getIt<UserService>();
       if (await getIt<UserService>().emailLogin(email, pin)) {
-        refreshParent();
+        widget.refreshParent();
         Navigator.pop(context);
       }
     }
   }
 
+  createEmailPinRequestWidget(String labelText, Function callback,
+          TextEditingController textController, String buttonText) =>
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 40),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Expanded(
+              flex: 3,
+              child: Container(
+                alignment: Alignment.center,
+                child: Card(
+                  color: DefaultColors.secondaryColorAlphaBlend.shade900,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 10, right: 10),
+                    child: TextField(
+                      controller: textController,
+                      onSubmitted: (_) async {
+                        callback();
+                      },
+                      decoration: InputDecoration(labelText: labelText),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Flexible(
+              child: Card(
+                color: DefaultColors.secondaryColorAlphaBlend.shade900,
+                child: InkWell(
+                  onTap: () => callback(),
+                  child: Container(
+                    height: 60,
+                    alignment: Alignment.center,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 10, right: 10),
+                      child: Text(
+                        buttonText,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+
+  requestEmail() async {
+    setState(() {
+      sentEmail = true;
+    });
+    await sendPinRequest();
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    print(sentEmail);
     return SafeArea(
         child: Container(
       decoration: BoxDecoration(
@@ -54,109 +122,30 @@ class LoginScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(height: size.height * 0.06),
-                Container(
-                  alignment: Alignment.center,
-                  margin: const EdgeInsets.symmetric(horizontal: 40),
-                  child: Card(
-                    color: DefaultColors.secondaryColorAlphaBlend.shade900,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 10, right: 10),
-                      child: TextField(
-                        controller: emailController,
-                        onSubmitted: (_) async {
-                          await sendPinRequest();
-                        },
-                        decoration: InputDecoration(labelText: "E-Mail"),
-                      ),
-                    ),
-                  ),
-                ),
-
+                sentEmail
+                    ? createEmailPinRequestWidget("Pin", () async {
+                        await sendLogin(context);
+                      }, pinController, "Login")
+                    : createEmailPinRequestWidget(
+                        "E-Mail", requestEmail, emailController, "Request Pin"),
                 SizedBox(height: size.height * 0.01),
-                Container(
-                  alignment: Alignment.center,
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+                Card(
+                  color: DefaultColors.secondaryColorAlphaBlend.shade900,
                   child: InkWell(
-                    onTap: () async {
-                      await sendPinRequest();
-                    },
-                    child: const Text("Request E-Mail with pin",
-                        style:
-                            TextStyle(fontSize: 12, color: Color(0XFF2661FA))),
-                  ),
-                ),
-                SizedBox(height: size.height * 0.01),
-                Container(
-                  alignment: Alignment.center,
-                  margin: const EdgeInsets.symmetric(horizontal: 40),
-                  child: Card(
-                    color: DefaultColors.secondaryColorAlphaBlend.shade900,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 10, right: 10),
-                      child: TextField(
-                        controller: pinController,
-                        onSubmitted: (_) async {
-                          await sendLogin(context);
-                        },
-                        decoration: const InputDecoration(labelText: "Pin"),
-                      ),
-                    ),
-                  ),
-                ),
-
-                SizedBox(height: size.height * 0.05),
-                Container(
-                  alignment: Alignment.centerRight,
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-                  child: RaisedButton(
-                    onPressed: () {},
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(80.0)),
-                    textColor: Colors.white,
-                    padding: const EdgeInsets.all(0),
+                    onTap: () => userService.signInWithGoogle(),
                     child: Container(
+                      height: 60,
                       alignment: Alignment.center,
-                      height: 50.0,
-                      width: size.width * 0.5,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(80.0),
-                          gradient: const LinearGradient(colors: [
-                            Color.fromARGB(255, 255, 136, 34),
-                            Color.fromARGB(255, 255, 177, 41)
-                          ])),
-                      padding: const EdgeInsets.all(0),
-                      child: InkWell(
-                        onTap: () async {
-                          await sendLogin(context);
-                        },
-                        child: const Text(
-                          "LOGIN",
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 10, right: 10),
+                        child: Text(
+                          "Google Login",
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
                   ),
                 ),
-                // Container(
-                //   alignment: Alignment.centerRight,
-                //   margin: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-                //   child: GestureDetector(
-                //     onTap: () => {
-                //       Navigator.push(context,
-                //           MaterialPageRoute(builder: (context) => RegisterScreen()))
-                //     },
-                //     child: Text(
-                //       "Don't Have an Account? Sign up",
-                //       style: TextStyle(
-                //           fontSize: 12,
-                //           fontWeight: FontWeight.bold,
-                //           color: Color(0xFF2661FA)),
-                //     ),
-                //   ),
-                // )
               ],
             )),
           ),
