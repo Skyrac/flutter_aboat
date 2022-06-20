@@ -323,55 +323,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "6.1.2"
-  firebase:
-    dependency: transitive
-    description:
-      name: firebase
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "9.0.3"
-  firebase_analytics:
-    dependency: "direct main"
-    description:
-      name: firebase_analytics
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "9.1.10"
-  firebase_analytics_platform_interface:
-    dependency: transitive
-    description:
-      name: firebase_analytics_platform_interface
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.1.8"
-  firebase_analytics_web:
-    dependency: transitive
-    description:
-      name: firebase_analytics_web
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.4.0+15"
-  firebase_app_check:
-    dependency: "direct main"
-    description:
-      name: firebase_app_check
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.6+14"
-  firebase_app_check_platform_interface:
-    dependency: transitive
-    description:
-      name: firebase_app_check_platform_interface
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.4+8"
-  firebase_app_check_web:
-    dependency: transitive
-    description:
-      name: firebase_app_check_web
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.5+14"
   firebase_auth:
     dependency: "direct main"
     description:
@@ -414,48 +365,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.6.5"
-  firebase_messaging:
-    dependency: "direct main"
-    description:
-      name: firebase_messaging
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "11.4.2"
-  firebase_messaging_platform_interface:
-    dependency: transitive
-    description:
-      name: firebase_messaging_platform_interface
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.5.2"
-  firebase_messaging_web:
-    dependency: transitive
-    description:
-      name: firebase_messaging_web
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.4.2"
-  firebase_performance:
-    dependency: "direct main"
-    description:
-      name: firebase_performance
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.8.0+14"
-  firebase_performance_platform_interface:
-    dependency: transitive
-    description:
-      name: firebase_performance_platform_interface
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.1+8"
-  firebase_performance_web:
-    dependency: transitive
-    description:
-      name: firebase_performance_web
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.0+14"
   fixnum:
     dependency: transitive
     description:
