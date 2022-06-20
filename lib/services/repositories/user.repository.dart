@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:talkaboat/configuration/dio.config.dart';
+import 'package:talkaboat/models/response.model.dart';
 import 'package:talkaboat/models/user/user-info.model.dart';
 
 import '../../models/rewards/reward.model.dart';
@@ -22,11 +23,15 @@ class UserRepository {
   }
 
   static Future<String> emailLogin(String email, String pin) async {
-    var response = await Dio().post<String>(
-        'https://api.talkaboat.online/v1/user/login/email',
-        data: {"address": email, "signature": pin});
-    var convertedData = json.decode(response.data!)["token"];
-    return convertedData;
+    try {
+      var response = await Dio().post<String>(
+          'https://api.talkaboat.online/v1/user/login/email',
+          data: {"address": email, "signature": pin});
+      var convertedData = json.decode(response.data!)["token"];
+      return convertedData;
+    } catch (exception) {
+      return "";
+    }
   }
 
   static Future<UserInfoData> getUserInfo() async {
@@ -46,6 +51,29 @@ class UserRepository {
       return convertedData;
     } catch (exception) {
       return Reward();
+    }
+  }
+
+  static Future<ResponseModel> firebaseLogin(String userIdToken) async {
+    try {
+      var response = await dio.post<String>('/v1/user/login/firebase',
+          data: '"$userIdToken"');
+      var convertedData = ResponseModel.fromJson(json.decode(response.data!));
+      return convertedData;
+    } catch (exception) {
+      return ResponseModel();
+    }
+  }
+
+  static Future<ResponseModel> firebaseVerify(
+      String userIdToken, String pin) async {
+    try {
+      var response = await dio.post<String>('/v1/user/login/firebase/$pin',
+          data: '"$userIdToken"');
+      var convertedData = ResponseModel.fromJson(json.decode(response.data!));
+      return convertedData;
+    } catch (exception) {
+      return ResponseModel();
     }
   }
 }

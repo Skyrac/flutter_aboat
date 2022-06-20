@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1063546575410-sish2bnl6fttqld5n57mkkkdt2nak0a3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.aboat.talkaboat",
+            "certificate_hash": "1bfb4924b9a63df8abbba65d545f36844b238006"
+          }
+        },
+        {
           "client_id": "1063546575410-e5qq2io7pe8ni4vmfdsam02d0hq9dqd8.apps.googleusercontent.com",
           "client_type": 3
         }

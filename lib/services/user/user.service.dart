@@ -5,18 +5,22 @@ import 'package:talkaboat/models/podcasts/podcast.model.dart';
 import 'package:talkaboat/models/user/user-info.model.dart';
 
 import '../../models/playlist/playlist.model.dart';
+import '../../models/response.model.dart';
 import '../../models/rewards/reward.model.dart';
 import '../repositories/podcast.repository.dart';
 import '../repositories/user.repository.dart';
 
 class UserService {
   String token = "";
+  String firebaseToken = "";
   UserInfoData? userInfo;
   List<Podcast> library = List.empty();
   List<Playlist> playlists = List.empty();
   Reward rewards = Reward();
   Map<int, List<Podcast>> podcastProposalsHomeScreen = {};
+  ResponseModel? lastConnectionState;
   late final prefs;
+  var isSignin = false;
   static const String TOKEN_IDENTIFIER = "aboat_token";
 
   get isConnected => token.isNotEmpty && userInfo != null;
@@ -27,8 +31,9 @@ class UserService {
     }
   }
 
-  Future<UserCredential> signInWithGoogle() async {
+  Future<bool> signInWithGoogle() async {
     // Trigger the authentication flow
+    isSignin = true;
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
     // Obtain the auth details from the request
@@ -41,31 +46,47 @@ class UserService {
       idToken: googleAuth?.idToken,
     );
 
-    // Once signed in, return the UserCredential
-    return await FirebaseAuth.instance.signInWithCredential(credential);
+    var firebaseCredential =
+        await FirebaseAuth.instance.signInWithCredential(credential);
+    var user = firebaseCredential.user;
+    if (user != null) {
+      await loginWithFirebaseToken(user);
+    }
+    isSignin = false;
+    return lastConnectionState != null &&
+        lastConnectionState!.text != null &&
+        lastConnectionState!.text! == "connected";
   }
 
   isInLibrary(int id) => library.any((element) => element.aboatId == id);
 
   setInitialValues() async {
     prefs = await SharedPreferences.getInstance();
-    FirebaseAuth.instance.authStateChanges().listen((User? user) {
-      if (user == null) {
-        print('User is currently signed out!');
-      } else {
-        print('User is signed in!');
+    FirebaseAuth.instance.idTokenChanges().listen((User? user) async {
+      if (isSignin) {
+        return;
       }
-    });
-    FirebaseAuth.instance.idTokenChanges().listen((User? user) {
       if (user == null) {
-        print('User is currently signed out!');
+        token = "";
+        firebaseToken = "";
+        await prefs.setString(TOKEN_IDENTIFIER, null);
       } else {
-        print('User is signed in!');
+        await loginWithFirebaseToken(user);
       }
     });
     var secToken = prefs.getString(TOKEN_IDENTIFIER);
     if (secToken != null) {
       token = secToken;
+    }
+  }
+
+  loginWithFirebaseToken(User user) async {
+    var userIdToken = await user.getIdToken(true);
+    firebaseToken = userIdToken;
+    lastConnectionState = await UserRepository.firebaseLogin(userIdToken);
+    if (lastConnectionState!.data != null &&
+        lastConnectionState!.data!.isNotEmpty) {
+      token = lastConnectionState!.data!;
     }
   }
 
@@ -102,10 +123,24 @@ class UserService {
     return true;
   }
 
+  //#region Login/Logout
   Future<bool> emailLogin(String email, String pin) async {
     token = await UserRepository.emailLogin(email, pin);
     prefs.setString(TOKEN_IDENTIFIER, token);
     if (token.isNotEmpty) {
+      await getCoreData();
+      return userInfo != null;
+    }
+    return false;
+  }
+
+  Future<bool> firebaseVerify(String pin) async {
+    if (firebaseToken.isEmpty) {
+      return false;
+    }
+    var response = await UserRepository.firebaseVerify(firebaseToken, pin);
+    prefs.setString(TOKEN_IDENTIFIER, response.data);
+    if (response.data != null && response.data!.isNotEmpty) {
       await getCoreData();
       return userInfo != null;
     }
@@ -117,6 +152,7 @@ class UserService {
     userInfo = null;
     await prefs.setString(TOKEN_IDENTIFIER, "");
   }
+  //#endregion
 
   //#region Playlist
   Future<List<Playlist>> getPlaylists() async {

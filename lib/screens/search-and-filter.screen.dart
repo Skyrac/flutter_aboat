@@ -1,7 +1,5 @@
-import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:talkaboat/themes/colors.dart';
-import 'package:talkaboat/utils/podcast-languages.const.dart';
 
 import '../widgets/podcast-search.widget.dart';
 
@@ -77,35 +75,35 @@ class _SearchAndFilterScreenState extends State<SearchAndFilterScreen> {
             "Filter",
             style: Theme.of(context).textTheme.titleLarge,
           ),
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: DropdownSearch<String>.multiSelection(
-                items: podcastLanguages,
-                selectedItems: selectedLanguages,
-                clearButtonProps: ClearButtonProps(isVisible: true),
-                dropdownDecoratorProps: DropDownDecoratorProps(
-                  dropdownSearchDecoration: InputDecoration(
-                    labelText: 'Languages',
-                    filled: true,
-                    fillColor: Theme.of(context).inputDecorationTheme.fillColor,
-                  ),
-                ),
-                dropdownButtonProps: DropdownButtonProps(isVisible: true),
-                dropdownBuilder: multiSelectedUsers,
-                popupProps: PopupPropsMultiSelection.dialog(
-                    showSearchBox: true,
-                    showSelectedItems: true,
-                    searchFieldProps: TextFieldProps(
-                        decoration:
-                            InputDecoration(hintText: "Search Language"))),
-                onChanged: ((items) {
-                  selectedLanguages = items;
-                }),
-              ),
-            ),
-          )
+          // Padding(
+          //   padding: const EdgeInsets.all(20),
+          //   child: ClipRRect(
+          //     borderRadius: BorderRadius.circular(10),
+          //     child: DropdownSearch<String>.multiSelection(
+          //       items: podcastLanguages,
+          //       selectedItems: selectedLanguages,
+          //       clearButtonProps: ClearButtonProps(isVisible: true),
+          //       dropdownDecoratorProps: DropDownDecoratorProps(
+          //         dropdownSearchDecoration: InputDecoration(
+          //           labelText: 'Languages',
+          //           filled: true,
+          //           fillColor: Theme.of(context).inputDecorationTheme.fillColor,
+          //         ),
+          //       ),
+          //       dropdownButtonProps: DropdownButtonProps(isVisible: true),
+          //       dropdownBuilder: multiSelectedUsers,
+          //       popupProps: PopupPropsMultiSelection.dialog(
+          //           showSearchBox: true,
+          //           showSelectedItems: true,
+          //           searchFieldProps: TextFieldProps(
+          //               decoration:
+          //                   InputDecoration(hintText: "Search Language"))),
+          //       onChanged: ((items) {
+          //         selectedLanguages = items;
+          //       }),
+          //     ),
+          //   ),
+          // )
         ],
       ),
     );
