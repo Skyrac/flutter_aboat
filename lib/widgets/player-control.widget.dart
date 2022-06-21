@@ -131,7 +131,7 @@ class _PlayerControlWidgetState extends State<PlayerControlWidget>
                     stream: userService.rewardStream(),
                     builder: (context, snapshot) {
                       return Text(
-                        "${snapshot.data?.total?.round()}",
+                        "${snapshot.data == null || snapshot.data!.total == null ? 0 : snapshot.data?.total?.round()}",
                         style: Theme.of(context)
                             .textTheme
                             .labelMedium

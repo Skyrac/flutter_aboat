@@ -1,8 +1,8 @@
 class Reward {
-  double? total;
-  double? vested;
-  double? unvested;
-  double? listeningTime;
+  num? total;
+  num? vested;
+  num? unvested;
+  num? listeningTime;
 
   Reward({this.total, this.vested, this.unvested, this.listeningTime});
 
