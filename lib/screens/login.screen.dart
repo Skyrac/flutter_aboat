@@ -22,6 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
   var isLoading = false;
   var isLogin = true;
   var sentEmail = false;
+  var dialog;
   var socialLoginPinVerification = TextEditingController();
   var socialLoginNewUser = TextEditingController();
   final userService = getIt<UserService>();
@@ -117,13 +118,41 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   verifySocialLoginPin() async {
+    if (isLoading) {
+      return;
+    }
+    setState(() {
+      isLoading = true;
+    });
     if (await userService.firebaseVerify(socialLoginPinVerification.text)) {
       setState(() {
+        Navigator.of(context, rootNavigator: true).pop();
         Navigator.pop(context);
         widget.refreshParent();
-        Navigator.pop(context);
       });
     }
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  registerSocialLogin() async {
+    if (isLoading) {
+      return;
+    }
+    setState(() {
+      isLoading = true;
+    });
+    if (await userService.firebaseRegister(socialLoginNewUser.text, true)) {
+      setState(() {
+        Navigator.of(context, rootNavigator: true).pop();
+        Navigator.pop(context);
+        widget.refreshParent();
+      });
+    }
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -151,8 +180,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         ? createEmailPinRequestWidget("Pin", () async {
                             await sendLogin(context);
                           }, pinController, "Login")
-                        : createEmailPinRequestWidget("E-Mail", requestEmail,
-                            emailController, "Request Pin"),
+                        : createEmailPinRequestWidget(
+                            "E-Mail", requestEmail, emailController, "Get Pin"),
                     SizedBox(height: size.height * 0.01),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 100),
@@ -185,18 +214,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                   verifySocialLoginPin);
                             } else if (userService.lastConnectionState?.text ==
                                 "new_account") {
-                              ShowSnackBar(context,
-                                  "Please create a new account with given E-Mail");
-                              // showAlert(
-                              //     context,
-                              //     socialLoginPinVerification,
-                              //     "Enter Username",
-                              //     "Username",
-                              //     "",
-                              //     () async => {});
+                              showAlert(
+                                  context,
+                                  socialLoginNewUser,
+                                  "Enter Username",
+                                  "Username",
+                                  "",
+                                  registerSocialLogin);
                             }
                           }
-                          ShowSnackBar(context, "test 1");
                           setState(() {
                             isLoading = false;
                           });
@@ -233,7 +259,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void showAlert(BuildContext context, TextEditingController controller,
       String title, String? label, String? hint, Function submitFunction) {
-    showDialog(
+    dialog = showDialog(
         context: context,
         builder: (context) => AlertDialog(
               backgroundColor: Theme.of(context).dialogBackgroundColor,

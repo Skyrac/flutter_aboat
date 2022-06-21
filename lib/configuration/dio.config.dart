@@ -5,9 +5,9 @@ import 'package:talkaboat/services/user/user.service.dart';
 import '../injection/injector.dart';
 
 var options = BaseOptions(
-  baseUrl: 'https://api.talkaboat.online/',
-  connectTimeout: 60000,
-  receiveTimeout: 120000,
+  baseUrl: 'https://talkaboat.azurewebsites.net/',
+  connectTimeout: 10000,
+  receiveTimeout: 15000,
 );
 
 var cacheOptions = CacheOptions(

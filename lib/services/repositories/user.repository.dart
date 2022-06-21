@@ -76,5 +76,23 @@ class UserRepository {
       return ResponseModel();
     }
   }
+
+  static Future<ResponseModel> firebaseRegister(
+      String userIdToken, String username, bool newsletter) async {
+    try {
+      var response =
+          await dio.post<String>('/v1/user/register/firebase/', data: {
+        "Address": "Social: $username",
+        "Signature": userIdToken,
+        "UserName": username,
+        "Newsletter": newsletter
+      });
+      print(response.data);
+      var convertedData = ResponseModel.fromJson(json.decode(response.data!));
+      return convertedData;
+    } catch (exception) {
+      return ResponseModel();
+    }
+  }
 }
 //hitziger.fabian@live.de

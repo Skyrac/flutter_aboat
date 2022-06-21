@@ -33,29 +33,34 @@ class UserService {
 
   Future<bool> signInWithGoogle() async {
     // Trigger the authentication flow
-    isSignin = true;
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    try {
+      isSignin = true;
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-    // Obtain the auth details from the request
-    final GoogleSignInAuthentication? googleAuth =
-        await googleUser?.authentication;
+      // Obtain the auth details from the request
+      final GoogleSignInAuthentication? googleAuth =
+          await googleUser?.authentication;
 
-    // Create a new credential
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken,
-    );
+      // Create a new credential
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth?.accessToken,
+        idToken: googleAuth?.idToken,
+      );
 
-    var firebaseCredential =
-        await FirebaseAuth.instance.signInWithCredential(credential);
-    var user = firebaseCredential.user;
-    if (user != null) {
-      await loginWithFirebaseToken(user);
+      var firebaseCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+      var user = firebaseCredential.user;
+      if (user != null) {
+        await loginWithFirebaseToken(user);
+      }
+      isSignin = false;
+      return lastConnectionState != null &&
+          lastConnectionState!.text != null &&
+          lastConnectionState!.text! == "connected";
+    } catch (exception) {
+      isSignin = false;
+      return false;
     }
-    isSignin = false;
-    return lastConnectionState != null &&
-        lastConnectionState!.text != null &&
-        lastConnectionState!.text! == "connected";
   }
 
   isInLibrary(int id) => library.any((element) => element.aboatId == id);
@@ -87,6 +92,7 @@ class UserService {
     if (lastConnectionState!.data != null &&
         lastConnectionState!.data!.isNotEmpty) {
       token = lastConnectionState!.data!;
+      await getCoreData();
     }
   }
 
@@ -140,10 +146,28 @@ class UserService {
     }
     var response = await UserRepository.firebaseVerify(firebaseToken, pin);
     prefs.setString(TOKEN_IDENTIFIER, response.data);
+    token = response.data ?? "";
     if (response.data != null && response.data!.isNotEmpty) {
       await getCoreData();
       return userInfo != null;
     }
+    return false;
+  }
+
+  Future<bool> firebaseRegister(String username, bool newsletter) async {
+    if (firebaseToken.isEmpty) {
+      return false;
+    }
+    try {
+      var response = await UserRepository.firebaseRegister(
+          firebaseToken, username, newsletter);
+      prefs.setString(TOKEN_IDENTIFIER, response.data);
+      token = response.data ?? "";
+      if (response.data != null && response.data!.isNotEmpty) {
+        await getCoreData();
+        return userInfo != null;
+      }
+    } catch (ex) {}
     return false;
   }
 

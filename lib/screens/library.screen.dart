@@ -71,8 +71,16 @@ class _LibraryScreenState extends State<LibraryScreen> {
                               );
                             }
                           }
+                        } else {
+                          return const Center(
+                              child: CircularProgressIndicator());
                         }
-                        return const Center(child: CircularProgressIndicator());
+                        return Center(
+                            child: Text(
+                          "You don't have any bookmarked podcasts.\n\nYou can bookmark podcasts when searching by clicking the vertical aligned ... at the right side of each podcast.",
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ));
                       },
                       future: userService.getLibrary(),
                     ),

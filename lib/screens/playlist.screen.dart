@@ -168,8 +168,15 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                 return buildPlaylistListView(data);
               }
             }
+          } else {
+            return const Center(child: CircularProgressIndicator());
           }
-          return const Center(child: CircularProgressIndicator());
+          return Center(
+              child: Text(
+            "You don't have any Playlists. Press + in the top right corner to create one.",
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodyLarge,
+          ));
         },
         future: userService.getPlaylists(),
       );
