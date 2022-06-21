@@ -48,7 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> sendLogin(BuildContext context) async {
     final pin = pinController.text;
     final email = emailController.text;
-    if (pin.length > 6 && email.isValidEmail()) {
+    if (pin.length > 3 && email.isValidEmail()) {
       setState(() {
         isLoading = true;
       });

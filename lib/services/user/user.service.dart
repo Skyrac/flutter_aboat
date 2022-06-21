@@ -174,6 +174,7 @@ class UserService {
   logout() async {
     token = "";
     userInfo = null;
+    rewards = Reward();
     await prefs.setString(TOKEN_IDENTIFIER, "");
   }
   //#endregion
