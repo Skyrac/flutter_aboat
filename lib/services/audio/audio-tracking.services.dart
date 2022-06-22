@@ -4,10 +4,12 @@ import 'package:talkaboat/services/repositories/tracking.repository.dart';
 
 int heartbeatCounter = 0;
 const heartbeatLimit = 30;
+MediaItem? currentlyPlayingMediaItem;
 Function? setEpisode;
 
 Future<void> receiveUpdate(PlaybackState state, MediaItem? currentMediaItem,
     Duration position, Episode? episode) async {
+  currentlyPlayingMediaItem = currentMediaItem;
   if (currentMediaItem != null) {
     var playTime = position.inSeconds;
     int podcastId = currentMediaItem.extras!["podcastId"];
@@ -28,6 +30,7 @@ Future<void> receiveUpdate(PlaybackState state, MediaItem? currentMediaItem,
 
 Future<void> positionUpdate(
     Duration position, MediaItem? currentMediaItem) async {
+  currentlyPlayingMediaItem = currentMediaItem;
   if (currentMediaItem != null) {
     heartbeatCounter++;
     if (heartbeatCounter > heartbeatLimit) {

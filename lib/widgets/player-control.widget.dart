@@ -1,9 +1,12 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:talkaboat/screens/media_player.screen.dart';
 import 'package:talkaboat/services/audio/audio-handler.services.dart';
 
 import '../injection/injector.dart';
 import '../models/rewards/reward.model.dart';
+import '../services/state/state.service.dart';
 import '../services/user/user.service.dart';
 import '../utils/common.dart';
 
@@ -19,6 +22,7 @@ class _PlayerControlWidgetState extends State<PlayerControlWidget>
   late final audioHandler = getIt<AudioPlayerHandler>();
   late AnimationController _controller;
   final userService = getIt<UserService>();
+  final stateService = getIt<StateService>();
   @override
   void initState() {
     _controller = AnimationController(
@@ -44,16 +48,25 @@ class _PlayerControlWidgetState extends State<PlayerControlWidget>
         IconButton(
           icon: const Icon(Icons.volume_up),
           onPressed: () {
-            showSliderDialog(
-              context: context,
-              title: "Adjust volume",
-              divisions: 10,
-              min: 0.0,
-              max: 1.0,
-              value: audioHandler.volume.value,
-              stream: audioHandler.volume,
-              onChanged: audioHandler.setVolume,
-            );
+            Navigator.push(
+                context,
+                PageTransition(
+                    alignment: Alignment.bottomCenter,
+                    curve: Curves.bounceOut,
+                    type: PageTransitionType.rightToLeftWithFade,
+                    duration: const Duration(milliseconds: 500),
+                    reverseDuration: const Duration(milliseconds: 500),
+                    child: MediaPlayerScreen()));
+            // showSliderDialog(
+            //   context: context,
+            //   title: "Adjust volume",
+            //   divisions: 10,
+            //   min: 0.0,
+            //   max: 1.0,
+            //   value: audioHandler.volume.value,
+            //   stream: audioHandler.volume,
+            //   onChanged: audioHandler.setVolume,
+            // );
           },
         ),
         StreamBuilder<QueueState>(

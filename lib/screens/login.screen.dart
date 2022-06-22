@@ -195,6 +195,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           });
 
                           if (await userService.signInWithGoogle()) {
+                            ShowSnackBar(context, "Successfully signed in");
                             widget.refreshParent();
                             Navigator.pop(context);
                             return;
@@ -214,6 +215,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   verifySocialLoginPin);
                             } else if (userService.lastConnectionState?.text ==
                                 "new_account") {
+                              ShowSnackBar(context, "Please create a new user");
                               showAlert(
                                   context,
                                   socialLoginNewUser,
@@ -221,7 +223,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                   "Username",
                                   "",
                                   registerSocialLogin);
+                            } else {
+                              ShowSnackBar(context,
+                                  "Unresolved response. Please contact an admin.");
                             }
+                          } else {
+                            ShowSnackBar(
+                                context, "Unable to verify your login.");
                           }
                           setState(() {
                             isLoading = false;

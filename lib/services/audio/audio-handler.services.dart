@@ -42,6 +42,13 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   final BehaviorSubject<double> speed = BehaviorSubject.seeded(1.0);
   final _mediaItemExpando = Expando<MediaItem>();
 
+  bool isListeningPodcast() {
+    var podcastId = currentlyPlayingMediaItem?.extras!["podcastId"];
+    var episodeId = currentlyPlayingMediaItem?.extras!["episodeId"];
+
+    return false;
+  }
+
   /// A stream of the current effective sequence from just_audio.
   Stream<List<IndexedAudioSource>> get _effectiveSequence => Rx.combineLatest3<
               List<IndexedAudioSource>?,

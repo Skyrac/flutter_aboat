@@ -8,6 +8,7 @@ import 'package:talkaboat/widgets/player-control.widget.dart';
 import '../injection/injector.dart';
 import '../models/podcasts/episode.model.dart';
 import '../services/audio/media.state.dart';
+import '../services/state/state.service.dart';
 import '../utils/common.dart';
 
 class MiniPlayerWidget extends StatefulWidget {
@@ -21,7 +22,14 @@ class MiniPlayerWidget extends StatefulWidget {
 class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
   Episode? currentEpisode;
   late final audioHandler = getIt<AudioPlayerHandler>();
+  final stateHandler = getIt<StateService>();
   late AnimationController _controller;
+
+  @override
+  initState() {
+    super.initState();
+    stateHandler.setMiniplayerFunction(() => setState(() {}));
+  }
 
   /// A stream reporting the combined state of the current media item and its
   /// current position.
