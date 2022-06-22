@@ -4,6 +4,7 @@ import 'package:page_transition/page_transition.dart';
 
 import '../injection/injector.dart';
 import '../models/search/search_result.model.dart';
+import '../screens/login.screen.dart';
 import '../screens/podcast-detail.screen.dart';
 import '../services/user/user.service.dart';
 
@@ -40,7 +41,19 @@ class _PodcastListWidgetState extends State<PodcastListWidget> {
         onSelected: (value) async {
           switch (value) {
             case "toggleLibrary":
-              await userService.toggleLibraryEntry(entry.id);
+              if (!userService.isConnected) {
+                Navigator.push(
+                    context,
+                    PageTransition(
+                        alignment: Alignment.bottomCenter,
+                        curve: Curves.bounceOut,
+                        type: PageTransitionType.rightToLeftWithFade,
+                        duration: const Duration(milliseconds: 500),
+                        reverseDuration: const Duration(milliseconds: 500),
+                        child: LoginScreen(() => setState(() {}))));
+              } else {
+                await userService.toggleLibraryEntry(entry.id);
+              }
               break;
           }
         },

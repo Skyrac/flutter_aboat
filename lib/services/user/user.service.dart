@@ -65,6 +65,13 @@ class UserService {
 
   isInLibrary(int id) => library.any((element) => element.aboatId == id);
 
+  getLibraryEntries(int amount) {
+    if (library.length < amount) {
+      amount = library.length;
+    }
+    return library.take(amount);
+  }
+
   setInitialValues() async {
     prefs = await SharedPreferences.getInstance();
     FirebaseAuth.instance.idTokenChanges().listen((User? user) async {
@@ -111,6 +118,7 @@ class UserService {
       await getUserInfo();
       if (userInfo != null) {
         rewards = await UserRepository.getUserRewards();
+        await getLibrary();
       }
       //TODO: Vorschläge basierend auf den Vorzügen des Nutzers laden
     }
@@ -175,6 +183,7 @@ class UserService {
     token = "";
     userInfo = null;
     rewards = Reward();
+    library = List.empty();
     await prefs.setString(TOKEN_IDENTIFIER, "");
   }
   //#endregion

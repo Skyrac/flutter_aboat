@@ -6,6 +6,7 @@ import 'package:talkaboat/screens/home.screen.dart';
 import 'package:talkaboat/screens/library.screen.dart';
 import 'package:talkaboat/screens/playlist.screen.dart';
 import 'package:talkaboat/screens/search-and-filter.screen.dart';
+import 'package:talkaboat/screens/social/social_entry.screen.dart';
 import 'package:talkaboat/services/audio/audio-handler.services.dart';
 import 'package:talkaboat/widgets/mini-player.widget.dart';
 
@@ -23,12 +24,13 @@ class AppScreen extends StatefulWidget {
 class _AppScreenState extends State<AppScreen> {
   var Tabs;
   String _currentPage = "Home";
-  List<String> pageKeys = ["Home", "Search", "Playlist", "Library"];
+  List<String> pageKeys = ["Home", "Search", "Playlist", "Library", "Social"];
   final Map<String, GlobalKey<NavigatorState>> _navigatorKeys = {
     "Home": GlobalKey<NavigatorState>(),
     "Search": GlobalKey<NavigatorState>(),
     "Playlist": GlobalKey<NavigatorState>(),
     "Library": GlobalKey<NavigatorState>(),
+    "Social": GlobalKey<NavigatorState>(),
   };
 
   int currentTabIndex = 0;
@@ -71,7 +73,8 @@ class _AppScreenState extends State<AppScreen> {
       HomeScreen(setEpisode),
       const SearchAndFilterScreen(),
       PlaylistScreen(),
-      LibraryScreen()
+      LibraryScreen(),
+      SocialEntryScreen()
     ];
   }
 
@@ -107,6 +110,7 @@ class _AppScreenState extends State<AppScreen> {
               _buildOffstageNavigator("Search"),
               _buildOffstageNavigator("Playlist"),
               _buildOffstageNavigator("Library"),
+              _buildOffstageNavigator("Social"),
             ]),
             bottomNavigationBar:
                 Column(mainAxisSize: MainAxisSize.min, children: [
@@ -132,7 +136,8 @@ class _AppScreenState extends State<AppScreen> {
                     Icon(Icons.home, size: 30),
                     Icon(Icons.search, size: 30),
                     Icon(Icons.playlist_add, size: 30),
-                    Icon(Icons.library_books, size: 30)
+                    Icon(Icons.library_books, size: 30),
+                    Icon(Icons.people, size: 30)
                   ]),
             ])),
       ),

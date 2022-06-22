@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:talkaboat/models/podcasts/episode.model.dart';
+import 'package:talkaboat/screens/login.screen.dart';
 import 'package:talkaboat/services/audio/audio-handler.services.dart';
 import 'package:talkaboat/services/user/user.service.dart';
 
@@ -33,14 +35,26 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
         onSelected: (value) async {
           switch (value) {
             case "add":
-              showModalBottomSheet(
-                  isScrollControlled: true,
-                  shape: const RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(20))),
-                  context: context,
-                  builder: (context) =>
-                      PlaylistBottomSheet(episodeToAdd: entry));
+              if (!userService.isConnected) {
+                Navigator.push(
+                    context,
+                    PageTransition(
+                        alignment: Alignment.bottomCenter,
+                        curve: Curves.bounceOut,
+                        type: PageTransitionType.rightToLeftWithFade,
+                        duration: const Duration(milliseconds: 500),
+                        reverseDuration: const Duration(milliseconds: 500),
+                        child: LoginScreen(() => setState(() {}))));
+              } else {
+                showModalBottomSheet(
+                    isScrollControlled: true,
+                    shape: const RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.vertical(top: Radius.circular(20))),
+                    context: context,
+                    builder: (context) =>
+                        PlaylistBottomSheet(episodeToAdd: entry));
+              }
               break;
           }
           setState(() {});

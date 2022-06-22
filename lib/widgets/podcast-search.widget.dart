@@ -1,10 +1,12 @@
 import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:talkaboat/models/search/search_result.model.dart';
 import 'package:talkaboat/services/user/user.service.dart';
 import 'package:talkaboat/widgets/podcast-list.widget.dart';
 
 import '../injection/injector.dart';
+import '../screens/login.screen.dart';
 import '../services/repositories/search.repository.dart';
 import '../themes/colors.dart';
 
@@ -53,7 +55,19 @@ class PodcastSearch extends SearchDelegate<String?> {
         onSelected: (value) async {
           switch (value) {
             case "toggleLibrary":
-              await userService.toggleLibraryEntry(entry.id);
+              if (!userService.isConnected) {
+                Navigator.push(
+                    context,
+                    PageTransition(
+                        alignment: Alignment.bottomCenter,
+                        curve: Curves.bounceOut,
+                        type: PageTransitionType.rightToLeftWithFade,
+                        duration: const Duration(milliseconds: 500),
+                        reverseDuration: const Duration(milliseconds: 500),
+                        child: LoginScreen(() => {})));
+              } else {
+                await userService.toggleLibraryEntry(entry.id);
+              }
               break;
           }
         },

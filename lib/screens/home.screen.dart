@@ -4,6 +4,7 @@ import 'package:talkaboat/services/repositories/podcast.repository.dart';
 import 'package:talkaboat/services/state/state.service.dart';
 import 'package:talkaboat/services/user/user.service.dart';
 import 'package:talkaboat/themes/colors.dart';
+import 'package:talkaboat/widgets/library-preview.widget.dart';
 
 import '../injection/injector.dart';
 import '../widgets/home-app-bar.widget.dart';
@@ -80,14 +81,37 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           const HomeAppBarWidget(),
           const SizedBox(height: 5),
+          createLibraryPreview(),
+          const SizedBox(height: 20),
           createPodcastPreviewByGenre(context, 'Made for you!', 0),
           const SizedBox(height: 20),
           createPodcastPreviewByGenre(context, 'Favorites!', 1),
-          // createLibraryPreviewGrid(),
+
           // createEpisodePreview(context, 'Made for you!', ref),
           // createEpisodePreview(context, 'Favorites', ref)
         ],
       ),
     )));
+  }
+
+  createLibraryPreview() {
+    if (!userService.isConnected || userService.library.length <= 0) {
+      return Container();
+    }
+    var libraryEntries = userService.getLibraryEntries(6);
+    var height = double.parse((libraryEntries.length / 2 * 120).toString());
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        height: height,
+        child: Wrap(
+          spacing: 10,
+          children: [
+            for (var entry in libraryEntries)
+              LibraryPreviewWidget(podcast: entry)
+          ],
+        ),
+      ),
+    );
   }
 }
