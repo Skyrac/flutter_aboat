@@ -117,15 +117,50 @@ class _LoginScreenState extends State<LoginScreen> {
     await sendPinRequest();
   }
 
+  socialButtonPressed(SocialLogin socialLogin) async {
+    setState(() {
+      isLoading = true;
+    });
+
+    if (await userService.socialLogin(socialLogin, context)) {
+      ShowSnackBar(context, "Successfully signed in");
+      widget.refreshParent();
+      Navigator.pop(context);
+      return;
+    }
+
+    setState(() {
+      isLoading = false;
+    });
+    if (userService.lastConnectionState != null &&
+        userService.lastConnectionState?.text != null) {
+      if (userService.lastConnectionState?.text == "not_connected") {
+        ShowSnackBar(context, "Check your E-Mail and Verify the Pin");
+        showAlert(context, socialLoginPinVerification, "Verify Pin", "Pin", "",
+            verifySocialLoginPin);
+      } else if (userService.lastConnectionState?.text == "new_account") {
+        ShowSnackBar(context, "Please create a new user");
+        showAlert(context, socialLoginNewUser, "Enter Username", "Username", "",
+            registerSocialLogin);
+      } else {
+        ShowSnackBar(context, "Unresolved response. Please contact an admin.");
+      }
+    } else {
+      ShowSnackBar(context, "Unable to verify your login.");
+    }
+  }
+
   verifySocialLoginPin() async {
     if (isLoading) {
       return;
     }
+    print(socialLoginPinVerification.text);
     setState(() {
       isLoading = true;
     });
     if (await userService.firebaseVerify(socialLoginPinVerification.text)) {
       setState(() {
+        isLoading = false;
         Navigator.of(context, rootNavigator: true).pop();
         Navigator.pop(context);
         widget.refreshParent();
@@ -190,50 +225,19 @@ class _LoginScreenState extends State<LoginScreen> {
                         mode: SocialLoginButtonMode.single,
                         text: "Google Sign In",
                         onPressed: () async {
-                          setState(() {
-                            isLoading = true;
-                          });
-
-                          if (await userService.signInWithGoogle()) {
-                            ShowSnackBar(context, "Successfully signed in");
-                            widget.refreshParent();
-                            Navigator.pop(context);
-                            return;
-                          }
-                          if (userService.lastConnectionState != null &&
-                              userService.lastConnectionState?.text != null) {
-                            if (userService.lastConnectionState?.text ==
-                                "not_connected") {
-                              ShowSnackBar(context,
-                                  "Check your E-Mail and Verify the Pin");
-                              showAlert(
-                                  context,
-                                  socialLoginPinVerification,
-                                  "Verify Pin",
-                                  "Pin",
-                                  "",
-                                  verifySocialLoginPin);
-                            } else if (userService.lastConnectionState?.text ==
-                                "new_account") {
-                              ShowSnackBar(context, "Please create a new user");
-                              showAlert(
-                                  context,
-                                  socialLoginNewUser,
-                                  "Enter Username",
-                                  "Username",
-                                  "",
-                                  registerSocialLogin);
-                            } else {
-                              ShowSnackBar(context,
-                                  "Unresolved response. Please contact an admin.");
-                            }
-                          } else {
-                            ShowSnackBar(
-                                context, "Unable to verify your login.");
-                          }
-                          setState(() {
-                            isLoading = false;
-                          });
+                          await socialButtonPressed(SocialLogin.Google);
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 100),
+                      child: SocialLoginButton(
+                        buttonType: SocialLoginButtonType.facebook,
+                        mode: SocialLoginButtonMode.single,
+                        text: "Facebook Sign In",
+                        onPressed: () async {
+                          print("Facebook Login");
+                          await socialButtonPressed(SocialLogin.Facebook);
                         },
                       ),
                     ),

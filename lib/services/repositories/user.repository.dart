@@ -55,21 +55,19 @@ class UserRepository {
   }
 
   static Future<ResponseModel> firebaseLogin(String userIdToken) async {
-    try {
-      var response = await dio.post<String>('/v1/user/login/firebase',
-          data: '"$userIdToken"');
-      var convertedData = ResponseModel.fromJson(json.decode(response.data!));
-      return convertedData;
-    } catch (exception) {
-      return ResponseModel();
-    }
+    var data = ResponseModel(status: 0, text: userIdToken);
+    var response =
+        await dio.post<String>('/v1/user/login/firebase', data: data);
+    var convertedData = ResponseModel.fromJson(json.decode(response.data!));
+    return convertedData;
   }
 
   static Future<ResponseModel> firebaseVerify(
       String userIdToken, String pin) async {
     try {
-      var response = await dio.post<String>('/v1/user/login/firebase/$pin',
-          data: '"$userIdToken"');
+      var data = ResponseModel(status: 0, text: userIdToken);
+      var response =
+          await dio.post<String>('/v1/user/login/firebase/$pin', data: data);
       var convertedData = ResponseModel.fromJson(json.decode(response.data!));
       return convertedData;
     } catch (exception) {
