@@ -14,6 +14,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "1063546575410-j07tkmcsdc65bnmhgkorp4d91l3kk5g5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.aboat.talkaboat",
+            "certificate_hash": "44bfef3758bece158ef6172240a75e00cba56d37"
+          }
+        },
+        {
+          "client_id": "1063546575410-nij0nbs5hj6o0n9q553ffpb2i3kpgb4u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.aboat.talkaboat",
+            "certificate_hash": "ae63196bca17393ee1b6a68ad706ec4e3652a708"
+          }
+        },
+        {
           "client_id": "1063546575410-sish2bnl6fttqld5n57mkkkdt2nak0a3.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
