@@ -13,7 +13,7 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
   @override
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
-    const size = 60;
+    const size = 200;
     final top = expandedHeight / 1.1 - shrinkOffset / 3 - size;
     return Stack(
       fit: StackFit.expand,
@@ -68,11 +68,31 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
 
   Widget buildFloating(double shrinkOffset) => Opacity(
         opacity: disappear(shrinkOffset),
-        child: Card(
-          child: Row(
+        child: SizedBox(
+          height: 200,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Expanded(child: buildButton(text: 'Share', icon: Icons.share)),
-              Expanded(child: buildButton(text: 'Like', icon: Icons.thumb_up)),
+              SizedBox(
+                width: 240,
+                child: ClipRRect(
+                    borderRadius: BorderRadius.circular(200),
+                    child: Card(
+                        child: buildButton(text: 'Donate', icon: Icons.money))),
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                      child: buildButton(text: 'Share', icon: Icons.share)),
+                  Expanded(
+                      child: buildButton(text: 'Like', icon: Icons.thumb_up)),
+                  Expanded(
+                      child: buildButton(text: 'Claim', icon: Icons.rv_hookup)),
+                ],
+              ),
             ],
           ),
         ),

@@ -46,8 +46,9 @@ class _PlayerControlWidgetState extends State<PlayerControlWidget>
       mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
-          icon: const Icon(Icons.volume_up),
+          icon: const Icon(Icons.arrow_upward),
           onPressed: () {
+            return;
             Navigator.push(
                 context,
                 PageTransition(

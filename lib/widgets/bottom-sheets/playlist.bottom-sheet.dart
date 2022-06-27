@@ -17,6 +17,7 @@ class PlaylistBottomSheet extends StatefulWidget {
 }
 
 class _PlaylistBottomSheetState extends State<PlaylistBottomSheet> {
+  final playlistCreationController = TextEditingController();
   final userService = getIt<UserService>();
   final playlistSearchController = TextEditingController();
   @override
@@ -41,7 +42,9 @@ class _PlaylistBottomSheetState extends State<PlaylistBottomSheet> {
               controller: controller,
               children: [
                 TextButton(
-                    onPressed: (() {}),
+                    onPressed: (() {
+                      showAlert(context);
+                    }),
                     child: Row(
                       children: const [
                         Icon(Icons.create),
@@ -54,6 +57,9 @@ class _PlaylistBottomSheetState extends State<PlaylistBottomSheet> {
                 ),
                 TextField(
                     controller: playlistSearchController,
+                    onChanged: ((_) {
+                      setState(() {});
+                    }),
                     decoration: InputDecoration(
                         hintText: "",
                         labelText: "Search Playlist...",
@@ -90,12 +96,19 @@ class _PlaylistBottomSheetState extends State<PlaylistBottomSheet> {
                         );
                       } else if (snapshot.hasData) {
                         // Extracting data from snapshot object
-                        buildPlaylistListView(context, widget.episodeToAdd);
+                        return buildPlaylistListView(
+                            context, widget.episodeToAdd);
                       }
+                      return const Center(
+                        child:
+                            Text("No playlists found. Create a new playlist!"),
+                      );
                     }
                     return userService.playlists.isNotEmpty
                         ? buildPlaylistListView(context, widget.episodeToAdd)
-                        : const Center(child: CircularProgressIndicator());
+                        : const Center(
+                            child: Text(
+                                "No playlists found. Create a new playlist!"));
                   },
                   future: userService.getPlaylists(),
                 ),
@@ -107,7 +120,9 @@ class _PlaylistBottomSheetState extends State<PlaylistBottomSheet> {
 
   buildPlaylistListView(BuildContext context, Episode episodeToAdd) {
     var items = <Widget>[];
-    for (final entry in userService.playlists) {
+    for (final entry in userService.playlists.where((element) =>
+        playlistSearchController.text.isEmpty ||
+        element.name!.contains(playlistSearchController.text))) {
       items.add(buildPlaylistTile(context, entry, episodeToAdd));
     }
     return SingleChildScrollView(
@@ -177,7 +192,7 @@ class _PlaylistBottomSheetState extends State<PlaylistBottomSheet> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "${entry.name} dasdkj sakdj aslkdknj askl kasdnjasd klsajn dlkasnd askdj ",
+                                  "${entry.name}",
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
                                   style:
@@ -215,4 +230,47 @@ class _PlaylistBottomSheetState extends State<PlaylistBottomSheet> {
           ),
         ),
       );
+
+  void showAlert(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              backgroundColor: Theme.of(context).dialogBackgroundColor,
+              title: const Text("New Playlist..."),
+              elevation: 8,
+              content: TextField(
+                  controller: playlistCreationController,
+                  decoration: InputDecoration(
+                      hintText: "Name your new Playlist",
+                      labelText: "Playlist-Name",
+                      labelStyle: Theme.of(context).textTheme.labelLarge,
+                      enabledBorder: const UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.blue),
+                      ),
+                      focusedBorder: const UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.green),
+                      ),
+                      border: const UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.red),
+                      ))),
+              actions: [
+                TextButton(
+                    onPressed: (() async {
+                      if (await userService
+                          .createPlaylist(playlistCreationController.text)) {
+                        setState(() {
+                          playlistCreationController.text = "";
+                          Navigator.pop(context);
+                        });
+                      }
+                    }),
+                    child: Text("Create")),
+                TextButton(
+                    onPressed: (() {
+                      Navigator.pop(context);
+                    }),
+                    child: Text("Cancel"))
+              ],
+            ));
+  }
 }

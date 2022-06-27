@@ -155,6 +155,30 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                                 podcast: widget.podcastSearchResult!),
                             pinned: true,
                           ),
+                          SliverToBoxAdapter(
+                            child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 15, horizontal: 10),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: Card(
+                                      child: InkWell(
+                                    onTap: (() {
+                                      //TODO: Open Description Modal/Bottom Sheet
+                                    }),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        widget.podcastSearchResult
+                                                ?.description ??
+                                            '',
+                                        maxLines: 3,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  )),
+                                )),
+                          ),
                           buildEpisodes(data),
                         ],
                       );
