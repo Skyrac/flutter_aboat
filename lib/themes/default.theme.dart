@@ -32,6 +32,8 @@ class DefaultTheme {
         ),
         backgroundColor: Colors.transparent,
         bottomAppBarColor: DefaultColors.secondaryColor,
+        dialogTheme: DialogTheme(
+            backgroundColor: DefaultColors.secondaryColorAlphaBlend.shade600),
         dialogBackgroundColor: DefaultColors.secondaryColorAlphaBlend.shade600,
         scaffoldBackgroundColor: Colors.transparent,
         appBarTheme: const AppBarTheme(

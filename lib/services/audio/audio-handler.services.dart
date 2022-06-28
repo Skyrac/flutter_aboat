@@ -17,7 +17,8 @@ abstract class AudioPlayerHandler implements AudioHandler {
   Future<void> setVolume(double volume);
   ValueStream<double> get speed;
   Future<void> updateEpisodeQueue(List<Episode> episodes, {int index = 0});
-
+  bool isListeningEpisode(episodeId);
+  bool isListeningPodcast(podcastId);
   void setEpisodeRefreshFunction(Function setEpisode) {}
 }
 
@@ -42,11 +43,16 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   final BehaviorSubject<double> speed = BehaviorSubject.seeded(1.0);
   final _mediaItemExpando = Expando<MediaItem>();
 
-  bool isListeningPodcast() {
-    var podcastId = currentlyPlayingMediaItem?.extras!["podcastId"];
-    var episodeId = currentlyPlayingMediaItem?.extras!["episodeId"];
+  bool isListeningPodcast(podcastId) {
+    var currentlyPlayingPodcastId =
+        currentlyPlayingMediaItem?.extras!["podcastId"];
+    return currentlyPlayingPodcastId == podcastId;
+  }
 
-    return false;
+  bool isListeningEpisode(episodeId) {
+    var currentlyPlayingEpisodeId =
+        currentlyPlayingMediaItem?.extras!["episodeId"];
+    return currentlyPlayingEpisodeId == episodeId;
   }
 
   /// A stream of the current effective sequence from just_audio.
@@ -250,14 +256,18 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   }
 
   MediaItem convertEpisodeToMediaItem(Episode episode) {
+    var playTime = episode.playTime!;
+    if (episode.audioLengthSec! < episode.playTime! + 20) {
+      playTime = 0;
+    }
     final Map<String, dynamic> extraMap = {
       "episodeId": episode.aboatId,
       "podcastId": episode.podcast?.aboatId,
-      "playTime": episode.playTime
+      "playTime": playTime
     };
     final mediaItem = MediaItem(
         id: episode.audio!,
-        duration: Duration(seconds: episode.audioLengthSec!),
+        duration: Duration(seconds: episode.audioLengthSec! as int),
         album: episode.podcast != null && episode.podcast!.title != null
             ? episode.podcast!.title!
             : '',

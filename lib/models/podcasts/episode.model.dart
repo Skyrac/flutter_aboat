@@ -18,10 +18,10 @@ class Episode extends SearchResult {
   @override
   String? description;
   int? pubDateMs;
-  int? audioLengthSec;
+  num? audioLengthSec;
   bool? explicitContent;
   bool? maybeAudioInvalid;
-  int? playTime;
+  num? playTime;
 
   Episode(
       {this.aboatId,

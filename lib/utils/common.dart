@@ -14,6 +14,10 @@ class PositionData {
   PositionData(this.position, this.bufferedPosition, this.duration);
 }
 
+String formatTime(int seconds) {
+  return '${(Duration(seconds: seconds))}'.split('.')[0].padLeft(8, '0');
+}
+
 class SeekBar extends StatefulWidget {
   final Duration duration;
   final Duration position;
