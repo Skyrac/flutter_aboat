@@ -4,6 +4,8 @@ import 'package:talkaboat/services/audio/audio-handler.services.dart';
 import 'package:talkaboat/services/state/state.service.dart';
 import 'package:talkaboat/services/user/user.service.dart';
 
+import '../services/audio/podcast.service.dart';
+
 final getIt = GetIt.instance;
 
 Future<void> configureDependencies() async {
@@ -15,5 +17,6 @@ Future<void> configureDependencies() async {
         androidNotificationOngoing: true,
       )));
   getIt.registerSingleton(await UserService.init());
+  getIt.registerSingleton(PodcastService());
   getIt.registerSingleton(await StateService());
 }

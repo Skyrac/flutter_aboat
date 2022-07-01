@@ -20,6 +20,8 @@ abstract class AudioPlayerHandler implements AudioHandler {
   bool isListeningEpisode(episodeId);
   bool isListeningPodcast(podcastId);
   void setEpisodeRefreshFunction(Function setEpisode) {}
+
+  void togglePlaybackState() {}
 }
 
 /// The implementation of [AudioPlayerHandler].
@@ -53,6 +55,10 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     var currentlyPlayingEpisodeId =
         currentlyPlayingMediaItem?.extras!["episodeId"];
     return currentlyPlayingEpisodeId == episodeId;
+  }
+
+  void togglePlaybackState() {
+    _player.playing ? pause() : play();
   }
 
   /// A stream of the current effective sequence from just_audio.

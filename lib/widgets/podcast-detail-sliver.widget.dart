@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/search/search_result.model.dart';
 import '../themes/colors.dart';
+import 'bottom-sheets/claim.bottom-sheet.dart';
 
 class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
   final double expandedHeight;
@@ -24,7 +25,7 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
           top: top,
           left: 20,
           right: 20,
-          child: buildFloating(shrinkOffset),
+          child: buildFloating(shrinkOffset, context),
         ),
       ],
     );
@@ -66,7 +67,7 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
         ],
       ));
 
-  Widget buildFloating(double shrinkOffset) => Opacity(
+  Widget buildFloating(double shrinkOffset, BuildContext context) => Opacity(
         opacity: disappear(shrinkOffset),
         child: SizedBox(
           height: 200,
@@ -78,7 +79,10 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                 child: ClipRRect(
                     borderRadius: BorderRadius.circular(200),
                     child: Card(
-                        child: buildButton(text: 'Donate', icon: Icons.money))),
+                        child: buildButton(
+                            text: 'Donate',
+                            icon: Icons.money,
+                            onClick: () => {}))),
               ),
               const SizedBox(
                 height: 15,
@@ -86,11 +90,27 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
               Row(
                 children: [
                   Expanded(
-                      child: buildButton(text: 'Share', icon: Icons.share)),
+                      child: buildButton(
+                          text: 'Share', icon: Icons.share, onClick: () => {})),
                   Expanded(
-                      child: buildButton(text: 'Like', icon: Icons.thumb_up)),
+                      child: buildButton(
+                          text: 'Like',
+                          icon: Icons.thumb_up,
+                          onClick: () => {})),
                   Expanded(
-                      child: buildButton(text: 'Claim', icon: Icons.rv_hookup)),
+                      child: buildButton(
+                          text: 'Claim',
+                          icon: Icons.rv_hookup,
+                          onClick: () => {
+                                showModalBottomSheet(
+                                    isScrollControlled: true,
+                                    shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.vertical(
+                                            top: Radius.circular(20))),
+                                    context: context,
+                                    builder: (context) =>
+                                        const ClaimBottomSheet())
+                              })),
                 ],
               ),
             ],
@@ -98,10 +118,10 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
         ),
       );
 
-  Widget buildButton({
-    required String text,
-    required IconData icon,
-  }) =>
+  Widget buildButton(
+          {required String text,
+          required IconData icon,
+          required Function onClick}) =>
       TextButton(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -111,7 +131,9 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
             Text(text, style: TextStyle(fontSize: 20)),
           ],
         ),
-        onPressed: () {},
+        onPressed: () {
+          onClick();
+        },
       );
 
   @override

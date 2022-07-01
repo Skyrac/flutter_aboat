@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:talkaboat/models/podcasts/episode.model.dart';
 import 'package:talkaboat/models/search/search_result.model.dart';
 import 'package:talkaboat/services/audio/audio-handler.services.dart';
-import 'package:talkaboat/services/repositories/podcast.repository.dart';
+import 'package:talkaboat/services/audio/podcast.service.dart';
 
 import '../injection/injector.dart';
 import '../themes/colors.dart';
@@ -20,6 +20,9 @@ class PodcastDetailScreen extends StatefulWidget {
 
 class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
   final audioPlayer = getIt<AudioPlayerHandler>();
+  final podcastService = getIt<PodcastService>();
+  var sort = "asc";
+  var isDescOpen = false;
   Widget topContent(context) => Stack(
         children: <Widget>[
           Container(
@@ -57,45 +60,13 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
         ],
       );
 
-  // buildImages() => SliverToBoxAdapter(
-  //         child: Container(
-  //       height: 800,
-  //       child: FutureBuilder(
-  //         builder: (context, snapshot) {
-  //           if (snapshot.connectionState == ConnectionState.done) {
-  //             if (snapshot.hasError) {
-  //               return Center(
-  //                 child: Text(
-  //                   '${snapshot.error} occurred',
-  //                   style: TextStyle(fontSize: 18),
-  //                 ),
-  //               );
-  //             } else if (snapshot.hasData && snapshot.data != null) {
-  //               // Extracting data from snapshot object
-  //               final data = snapshot.data as List<Episode>?;
-  //               if (data != null && data.isNotEmpty) {
-  //                 var searchResults = data;
-  //                 return GridView.builder(
-  //                     gridDelegate:
-  //                         const SliverGridDelegateWithFixedCrossAxisCount(
-  //                             crossAxisCount: 2),
-  //                     primary: false,
-  //                     shrinkWrap: true,
-  //                     itemCount: searchResults.length,
-  //                     itemBuilder: (context, index) =>
-  //                         EpisodePreviewWidget(searchResults[index]));
-  //               }
-  //             }
-  //           }
-  //           return const Center(child: CircularProgressIndicator());
-  //         },
-  //         future: PodcastRepository.getEpisodesMock(10),
-  //       ),
-  //     ));
-
   selectEpisode(int index, List<Episode> data) async {
-    // print("Select Episode $index");
-    await audioPlayer.updateEpisodeQueue(data, index: index);
+    var selectedEpisode = data[index];
+    if (audioPlayer.isListeningEpisode(selectedEpisode.aboatId)) {
+      audioPlayer.togglePlaybackState();
+    } else {
+      await audioPlayer.updateEpisodeQueue(data, index: index);
+    }
   }
 
   Widget buildEpisodes(List<Episode> data) => SliverList(
@@ -105,18 +76,6 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
             var episodeIndex = index;
             return EpisodePreviewWidget(episode, Axis.vertical,
                 () => selectEpisode(episodeIndex, data));
-            return Card(
-              margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-              child: Container(
-                color: Colors.blue[100 * (index % 9 + 1)],
-                height: 80,
-                alignment: Alignment.center,
-                child: Text(
-                  "${episode.title}",
-                  style: const TextStyle(fontSize: 30),
-                ),
-              ),
-            );
           },
           childCount: data.length, // 1000 list items
         ),
@@ -133,62 +92,89 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
               DefaultColors.secondaryColor.shade900,
               DefaultColors.secondaryColor.shade900
             ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
-            child: FutureBuilder(
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  if (snapshot.hasError) {
-                    return Center(
-                      child: Text(
-                        '${snapshot.error} occurred',
-                        style: TextStyle(fontSize: 18),
-                      ),
-                    );
-                  } else if (snapshot.hasData && snapshot.data != null) {
-                    // Extracting data from snapshot object
-                    final data = snapshot.data as List<Episode>?;
-                    if (data != null && data.isNotEmpty) {
-                      return CustomScrollView(
-                        slivers: [
-                          SliverPersistentHeader(
-                            delegate: PodcastDetailSliver(
-                                expandedHeight: size.height * 0.5,
-                                podcast: widget.podcastSearchResult!),
-                            pinned: true,
+            child: CustomScrollView(
+              slivers: [
+                SliverPersistentHeader(
+                  delegate: PodcastDetailSliver(
+                      expandedHeight: size.height * 0.5,
+                      podcast: widget.podcastSearchResult!),
+                  pinned: true,
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                      child: Column(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: Card(
+                                child: InkWell(
+                              onTap: (() {
+                                setState(() {
+                                  isDescOpen = !isDescOpen;
+                                });
+                              }),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  widget.podcastSearchResult?.description ?? '',
+                                  maxLines: isDescOpen ? 9999 : 3,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            )),
                           ),
-                          SliverToBoxAdapter(
-                            child: Padding(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 15, horizontal: 10),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(20),
-                                  child: Card(
-                                      child: InkWell(
-                                    onTap: (() {
-                                      //TODO: Open Description Modal/Bottom Sheet
-                                    }),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        widget.podcastSearchResult
-                                                ?.description ??
-                                            '',
-                                        maxLines: 3,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  )),
-                                )),
-                          ),
-                          buildEpisodes(data),
+                          Padding(
+                            padding: EdgeInsets.only(top: 15, bottom: 5),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                InkWell(
+                                  onTap: (() {
+                                    setState(() {
+                                      sort = sort == "asc" ? "desc" : "asc";
+                                    });
+                                  }),
+                                  child: RotatedBox(
+                                    quarterTurns: sort == "asc" ? 0 : 2,
+                                    child: Icon(Icons.sort),
+                                  ),
+                                )
+                              ],
+                            ),
+                          )
                         ],
-                      );
+                      )),
+                ),
+                FutureBuilder(
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.done) {
+                      if (snapshot.hasError) {
+                        return SliverToBoxAdapter(
+                          child: Center(
+                            child: Text(
+                              '${snapshot.error} occurred',
+                              style: TextStyle(fontSize: 18),
+                            ),
+                          ),
+                        );
+                      } else if (snapshot.hasData && snapshot.data != null) {
+                        // Extracting data from snapshot object
+                        final data = snapshot.data as List<Episode>?;
+                        if (data != null && data.isNotEmpty) {
+                          return buildEpisodes(data);
+                        }
+                      }
                     }
-                  }
-                }
-                return const Center(child: CircularProgressIndicator());
-              },
-              future: PodcastRepository.getEpisodesOfPodcast(
-                  widget.podcastSearchResult!.id!, "asc", -1),
+                    return SliverToBoxAdapter(
+                        child:
+                            const Center(child: CircularProgressIndicator()));
+                  },
+                  future: podcastService.getPodcastDetailEpisodes(
+                      widget.podcastSearchResult!.id!, sort, -1),
+                ),
+              ],
             )));
   }
 }

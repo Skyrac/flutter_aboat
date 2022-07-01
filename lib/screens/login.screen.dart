@@ -8,6 +8,7 @@ import '../injection/injector.dart';
 import '../services/user/user.service.dart';
 import '../themes/colors.dart';
 import '../themes/login-and-register.background.dart';
+import '../utils/modal.widget.dart';
 import '../widgets/login-app-bar.widget.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -267,43 +268,5 @@ class _LoginScreenState extends State<LoginScreen> {
         ],
       )),
     ));
-  }
-
-  void showAlert(BuildContext context, TextEditingController controller,
-      String title, String? label, String? hint, Function submitFunction) {
-    dialog = showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-              backgroundColor: Theme.of(context).dialogBackgroundColor,
-              title: Text(title),
-              elevation: 8,
-              content: TextField(
-                  controller: controller,
-                  decoration: InputDecoration(
-                      hintText: hint,
-                      labelText: label,
-                      labelStyle: Theme.of(context).textTheme.labelLarge,
-                      enabledBorder: const UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.blue),
-                      ),
-                      focusedBorder: const UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.green),
-                      ),
-                      border: const UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.red),
-                      ))),
-              actions: [
-                TextButton(
-                    onPressed: (() async {
-                      submitFunction();
-                    }),
-                    child: Text("Submit")),
-                TextButton(
-                    onPressed: (() {
-                      Navigator.pop(context);
-                    }),
-                    child: Text("Cancel"))
-              ],
-            ));
   }
 }
