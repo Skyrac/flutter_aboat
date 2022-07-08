@@ -2,7 +2,7 @@ import 'package:talkaboat/models/podcasts/podcast.model.dart';
 import 'package:talkaboat/models/search/search_result.model.dart';
 
 class Episode extends SearchResult {
-  int? aboatId;
+  int? episodeId;
   int? podcastId;
   @override
   int? id;
@@ -24,7 +24,7 @@ class Episode extends SearchResult {
   num? playTime;
 
   Episode(
-      {this.aboatId,
+      {this.episodeId,
       this.podcastId,
       this.id,
       this.link,
@@ -42,9 +42,9 @@ class Episode extends SearchResult {
       this.playTime});
 
   Episode.fromJson(Map<String, dynamic> json) {
-    aboatId = json['aboat_id'];
-    podcastId = json['podcast_id'];
-    id = json['aboat_id'];
+    episodeId = json['episodeId'];
+    podcastId = json['podcastId'];
+    id = json['episodeId'];
     link = json['link'];
     audio = json['audio'];
     image = json['image'];
@@ -54,9 +54,9 @@ class Episode extends SearchResult {
     thumbnail = json['thumbnail'];
     transcript = json['transcript'];
     description = json['description'];
-    pubDateMs = json['pub_date_ms'];
-    audioLengthSec = json['audio_length_sec'];
-    explicitContent = json['explicit_content'];
+    pubDateMs = json['pubDateInMilliseconds'];
+    audioLengthSec = json['audioLengthInSeconds'];
+    explicitContent = json['explicitContent'];
     maybeAudioInvalid = json['maybe_audio_invalid'];
     playTime = json['playTime'];
   }
@@ -64,9 +64,9 @@ class Episode extends SearchResult {
   @override
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['aboat_id'] = aboatId;
-    data['podcast_id'] = podcastId;
-    data['id'] = aboatId;
+    data['episodeId'] = episodeId;
+    data['podcastId'] = podcastId;
+    data['id'] = episodeId;
     data['link'] = link;
     data['audio'] = audio;
     data['image'] = image;
@@ -77,9 +77,9 @@ class Episode extends SearchResult {
     data['thumbnail'] = thumbnail;
     data['transcript'] = transcript;
     data['description'] = description;
-    data['pub_date_ms'] = pubDateMs;
-    data['audio_length_sec'] = audioLengthSec;
-    data['explicit_content'] = explicitContent;
+    data['pubDateInMilliseconds'] = pubDateMs;
+    data['audioLengthInSeconds'] = audioLengthSec;
+    data['explicitContent'] = explicitContent;
     data['maybe_audio_invalid'] = maybeAudioInvalid;
     data['playTime'] = playTime;
     return data;

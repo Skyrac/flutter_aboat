@@ -12,8 +12,8 @@ Future<void> receiveUpdate(PlaybackState state, MediaItem? currentMediaItem,
   currentlyPlayingMediaItem = currentMediaItem;
   if (currentMediaItem != null) {
     var playTime = position.inSeconds;
-    int podcastId = currentMediaItem.extras!["podcastId"];
-    int episodeId = currentMediaItem.extras!["episodeId"];
+    int podcastId = currentMediaItem.extras!["podcastId"] ?? 0;
+    int episodeId = currentMediaItem.extras!["episodeId"] ?? 0;
     if (state.playing) {
       if (setEpisode != null && episode != null) {
         setEpisode!(episode);
@@ -36,8 +36,8 @@ Future<void> positionUpdate(
     if (heartbeatCounter > heartbeatLimit) {
       heartbeatCounter = 0;
       var playTime = position.inSeconds;
-      int podcastId = currentMediaItem.extras!["podcastId"];
-      int episodeId = currentMediaItem.extras!["episodeId"];
+      int podcastId = currentMediaItem.extras!["podcastId"] ?? 0;
+      int episodeId = currentMediaItem.extras!["episodeId"] ?? 0;
       await TrackingRepository.Heartbeat(podcastId, episodeId, playTime);
     }
   }

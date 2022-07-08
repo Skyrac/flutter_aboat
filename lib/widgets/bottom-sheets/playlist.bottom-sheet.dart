@@ -137,11 +137,11 @@ class _PlaylistBottomSheetState extends State<PlaylistBottomSheet> {
         child: Card(
           child: InkWell(
             onTap: (() async {
-              entry.containsEpisode(episodeToAdd.aboatId!)
+              entry.containsEpisode(episodeToAdd.episodeId!)
                   ? await userService.removeFromPlaylistByEpisodeId(
-                      entry.playlistId!, episodeToAdd.aboatId!)
+                      entry.playlistId!, episodeToAdd.episodeId!)
                   : await userService.addToPlaylist(
-                      entry.playlistId!, episodeToAdd.aboatId!);
+                      entry.playlistId!, episodeToAdd.episodeId!);
               setState(() {});
             }),
             child: Padding(
@@ -154,7 +154,7 @@ class _PlaylistBottomSheetState extends State<PlaylistBottomSheet> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        entry.containsEpisode(episodeToAdd.aboatId!)
+                        entry.containsEpisode(episodeToAdd.episodeId!)
                             ? const Icon(Icons.remove)
                             : const Icon(Icons.add),
                         VerticalDivider(
@@ -162,7 +162,7 @@ class _PlaylistBottomSheetState extends State<PlaylistBottomSheet> {
                           thickness: 2,
                           indent: 10,
                           endIndent: 10,
-                          color: entry.containsEpisode(episodeToAdd.aboatId!)
+                          color: entry.containsEpisode(episodeToAdd.episodeId!)
                               ? Colors.green
                               : Colors.deepOrange,
                         ),

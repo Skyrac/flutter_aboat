@@ -3,12 +3,12 @@ import 'package:talkaboat/models/search/search_result.model.dart';
 import 'episode.model.dart';
 
 class Podcast extends SearchResult {
-  int? aboatId;
+  int? podcastId;
   @override
   int? id;
   @override
   String? image;
-  List<dynamic>? genreIds;
+  String? genreIds;
   String? thumbnail;
   String? titleOriginal;
   String? listennotesUrl;
@@ -35,7 +35,7 @@ class Podcast extends SearchResult {
   int? earliestPubDateMs;
 
   Podcast(
-      {this.aboatId,
+      {this.podcastId,
       super.id,
       this.image,
       this.genreIds,
@@ -63,12 +63,12 @@ class Podcast extends SearchResult {
       this.earliestPubDateMs});
 
   Podcast.fromJson(Map<String, dynamic> json) {
-    aboatId = json['aboat_id'];
-    id = json['aboat_id'];
+    podcastId = json['podcastId'];
+    id = json['podcastId'];
     image = json['image'];
-    genreIds = json['genre_ids'];
+    genreIds = json['genres'];
     thumbnail = json['thumbnail'];
-    titleOriginal = json['title_original'];
+    titleOriginal = json['title'];
     listennotesUrl = json['listennotes_url'];
     titleHighlighted = json['title_highlighted'];
     publisherOriginal = json['publisher_original'];
@@ -90,19 +90,19 @@ class Podcast extends SearchResult {
     publisher = json['publisher'];
     isClaimed = json['is_claimed'];
     description = json['description'];
-    totalEpisodes = json['total_episodes'];
-    explicitContent = json['explicit_content'];
-    latestPubDateMs = json['latest_pub_date_ms'];
+    totalEpisodes = json['totalEpisodes'];
+    explicitContent = json['explicitContent'];
+    latestPubDateMs = json['latestPubDate'];
     earliestPubDateMs = json['earliest_pub_date_ms'];
   }
 
   @override
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['aboat_id'] = aboatId;
-    data['id'] = aboatId;
+    data['podcastId'] = podcastId;
+    data['id'] = podcastId;
     data['image'] = image;
-    data['genre_ids'] = genreIds;
+    data['genres'] = genreIds;
     data['thumbnail'] = thumbnail;
     data['title_original'] = titleOriginal;
     data['listennotes_url'] = listennotesUrl;
@@ -125,7 +125,7 @@ class Podcast extends SearchResult {
     data['description'] = description;
     data['total_episodes'] = totalEpisodes;
     data['explicit_content'] = explicitContent;
-    data['latest_pub_date_ms'] = latestPubDateMs;
+    data['latestPubDate'] = latestPubDateMs;
     data['earliest_pub_date_ms'] = earliestPubDateMs;
     return data;
   }

@@ -42,7 +42,6 @@ class UserService {
 
   Future<bool> socialLogin(SocialLogin socialType, BuildContext context) async {
     UserCredential? credential;
-    print("Social Login");
     isSignin = true;
     switch (socialType) {
       case SocialLogin.Google:
@@ -68,7 +67,6 @@ class UserService {
     if (lastConnectionState == null) {
       throw Exception("Google Sign-In: Not able to connect with backend");
     }
-    print(lastConnectionState?.toJson().toString());
     return lastConnectionState != null &&
         lastConnectionState!.text != null &&
         lastConnectionState!.text! == "connected";
@@ -152,7 +150,7 @@ class UserService {
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
-  isInLibrary(int id) => library.any((element) => element.aboatId == id);
+  isInLibrary(int id) => library.any((element) => element.podcastId == id);
 
   getLibraryEntries(int amount) {
     if (library.length < amount) {
@@ -170,9 +168,13 @@ class UserService {
       if (user == null) {
         token = "";
         firebaseToken = "";
-        await prefs.setString(TOKEN_IDENTIFIER, null);
+        await prefs.setString(TOKEN_IDENTIFIER, "");
       } else {
-        await loginWithFirebaseToken(user);
+        try {
+          await loginWithFirebaseToken(user);
+        } catch (ex) {
+          prefs.setString(TOKEN_IDENTIFIER, "");
+        }
       }
     });
     var secToken = prefs.getString(TOKEN_IDENTIFIER);
@@ -183,7 +185,6 @@ class UserService {
 
   loginWithFirebaseToken(User user) async {
     var userIdToken = await user.getIdToken(true);
-    print("loginWithFirebaseToken");
     firebaseToken = userIdToken;
     try {
       lastConnectionState = await UserRepository.firebaseLogin(userIdToken);
@@ -279,6 +280,15 @@ class UserService {
     userInfo = null;
     rewards = Reward();
     library = List.empty();
+    FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+    GoogleSignIn googleSignIn = GoogleSignIn();
+    FacebookAuth facebookAuth = FacebookAuth.instance;
+
+    //await googleSignIn.signOut();
+    await googleSignIn.disconnect();
+    await FirebaseAuth.instance.signOut();
+    await facebookAuth.logOut();
+    await FirebaseAuth.instance.signOut();
     await prefs.setString(TOKEN_IDENTIFIER, "");
   }
   //#endregion
@@ -357,7 +367,7 @@ class UserService {
 
   Future<List<Podcast>> removeFromLibrary(int id) async {
     if (await PodcastRepository.removeFromLibrary(id)) {
-      library.removeWhere((item) => item.aboatId == id);
+      library.removeWhere((item) => item.podcastId == id);
     }
     return library;
   }

@@ -11,8 +11,8 @@ class PodcastService {
       podcastDetailEpisodes.sort((a, b) =>
           a.pubDateMs!.compareTo(b.pubDateMs!) * (sort == "asc" ? 1 : -1));
     } else {
-      podcastDetailEpisodes =
-          await PodcastRepository.getEpisodesOfPodcast(podcastId, sort, amount);
+      podcastDetailEpisodes = await PodcastRepository.getEpisodesOfPodcast(
+          podcastId, sort, amount, 0);
     }
     return podcastDetailEpisodes;
   }

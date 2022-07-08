@@ -25,27 +25,39 @@ class PodcastRepository {
   }
 
   static Future<List<Podcast>> getRandomPodcast(int amount) async {
-    var response = await dio.get<String>('$API/random/$amount');
-    var list = List<Podcast>.from(
-        json.decode(response.data!).map((data) => Podcast.fromJson(data)));
-    return list;
+    try {
+      var response = await dio.get<String>('$API/search/random/$amount');
+      var list = List<Podcast>.from(
+          json.decode(response.data!).map((data) => Podcast.fromJson(data)));
+      return list;
+    } catch (ex) {
+      return List.empty();
+    }
   }
 
   static Future<List<Podcast>> getRandomPodcastByGenre(
       int amount, int genre) async {
-    var response = await dio.get<String>('$API/random/$amount/$genre');
-    var list = List<Podcast>.from(
-        json.decode(response.data!).map((data) => Podcast.fromJson(data)));
-    return list;
+    try {
+      var response = await dio.get<String>('$API/search/random/$amount/$genre');
+      var list = List<Podcast>.from(
+          json.decode(response.data!).map((data) => Podcast.fromJson(data)));
+      return list;
+    } catch (ex) {
+      return List.empty();
+    }
   }
 
   static Future<List<Episode>> getEpisodesOfPodcast(
-      int id, String? sort, int? amount) async {
-    amount ??= -1;
-    var response = await dio.get<String>('$API/$id/episodes/$sort/0/$amount');
-    var list = List<Episode>.from(
-        json.decode(response.data!).map((data) => Episode.fromJson(data)));
-    return list;
+      int id, String? sort, int? amount, int? offset) async {
+    final body = {
+      "amount": amount ?? -1,
+      "id": id,
+      "offset": offset ?? 0,
+      "sort": sort ?? "desc"
+    };
+    var response = await dio.post<String>('$API/detail', data: body);
+    var podcast = Podcast.fromJson(json.decode(response.data!));
+    return podcast.episodes ?? List.empty();
   }
 
   static Future<List<Podcast>> getUserLibrary() async {

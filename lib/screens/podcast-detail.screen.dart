@@ -62,7 +62,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
 
   selectEpisode(int index, List<Episode> data) async {
     var selectedEpisode = data[index];
-    if (audioPlayer.isListeningEpisode(selectedEpisode.aboatId)) {
+    if (audioPlayer.isListeningEpisode(selectedEpisode.episodeId)) {
       audioPlayer.togglePlaybackState();
     } else {
       await audioPlayer.updateEpisodeQueue(data, index: index);

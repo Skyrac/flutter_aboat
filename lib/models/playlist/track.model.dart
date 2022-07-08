@@ -17,9 +17,9 @@ class Track {
       this.position});
 
   Track.fromJson(Map<String, dynamic> json) {
-    playlistTrackId = json['playlistTrack_Id'];
-    playlistId = json['playlist_Id'];
-    episodeId = json['episode_Id'];
+    playlistTrackId = json['playlistTrackId'];
+    playlistId = json['playlistId'];
+    episodeId = json['episodeId'];
     episode =
         json['episode'] != null ? Episode.fromJson(json['episode']) : null;
     created = json['created'];
@@ -33,9 +33,9 @@ class Track {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['playlistTrack_Id'] = playlistTrackId;
-    data['playlist_Id'] = playlistId;
-    data['episode_Id'] = episodeId;
+    data['playlistTrackId'] = playlistTrackId;
+    data['playlistId'] = playlistId;
+    data['episodeId'] = episodeId;
     if (episode != null) {
       data['episode'] = episode!.toJson();
     }

@@ -266,9 +266,12 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     if (episode.audioLengthSec! < episode.playTime! + 20) {
       playTime = 0;
     }
+    final episodeId = episode.episodeId;
+    final podcastId = episode.podcastId;
+    print("$episodeId | $podcastId");
     final Map<String, dynamic> extraMap = {
-      "episodeId": episode.aboatId,
-      "podcastId": episode.podcast?.aboatId,
+      "episodeId": episodeId,
+      "podcastId": podcastId,
       "playTime": playTime
     };
     final mediaItem = MediaItem(

@@ -18,7 +18,7 @@ class Playlist {
       this.modified});
 
   Playlist.fromJson(Map<String, dynamic> json) {
-    playlistId = json['playlist_Id'];
+    playlistId = json['playlistId'];
     name = json['name'];
     image = json['image'];
     if (json['tracks'] != null) {
@@ -33,7 +33,7 @@ class Playlist {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['playlist_Id'] = playlistId;
+    data['playlistId'] = playlistId;
     data['name'] = name;
     data['image'] = image;
     if (tracks != null) {

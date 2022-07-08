@@ -6,8 +6,8 @@ import '../injection/injector.dart';
 
 var options = BaseOptions(
   baseUrl: 'https://talkaboat.azurewebsites.net/',
-  connectTimeout: 20000,
-  receiveTimeout: 30000,
+  connectTimeout: 5000,
+  receiveTimeout: 15000,
 );
 
 var cacheOptions = CacheOptions(
