@@ -1,3 +1,6 @@
+import 'package:Talkaboat/screens/app.screen.dart';
+import 'package:Talkaboat/services/user/user.service.dart';
+import 'package:Talkaboat/themes/colors.dart';
 import 'package:Talkaboat/themes/default.theme.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -6,14 +9,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:talkaboat/injection/injector.dart';
-import 'package:talkaboat/screens/app.screen.dart';
-import 'package:talkaboat/services/user/user.service.dart';
-import 'package:talkaboat/themes/colors.dart';
-import 'package:talkaboat/themes/default.theme.dart';
 
 import 'configuration/dio.config.dart';
 import 'firebase_options.dart';
+import 'injection/injector.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

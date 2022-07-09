@@ -1,17 +1,17 @@
+import 'package:Talkaboat/screens/playlist.screen.dart';
+import 'package:Talkaboat/screens/search-and-filter.screen.dart';
+import 'package:Talkaboat/screens/social/social_entry.screen.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:talkaboat/models/podcasts/episode.model.dart';
-import 'package:talkaboat/screens/home.screen.dart';
-import 'package:talkaboat/screens/library.screen.dart';
-import 'package:talkaboat/screens/playlist.screen.dart';
-import 'package:talkaboat/screens/search-and-filter.screen.dart';
-import 'package:talkaboat/screens/social/social_entry.screen.dart';
-import 'package:talkaboat/services/audio/audio-handler.services.dart';
-import 'package:talkaboat/widgets/mini-player.widget.dart';
 
 import '../injection/injector.dart';
+import '../models/podcasts/episode.model.dart';
+import '../services/audio/audio-handler.services.dart';
 import '../themes/colors.dart';
+import '../widgets/mini-player.widget.dart';
+import 'home.screen.dart';
+import 'library.screen.dart';
 
 class AppScreen extends StatefulWidget {
   const AppScreen({Key? key, required this.title}) : super(key: key);

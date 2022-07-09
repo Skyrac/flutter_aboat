@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:talkaboat/models/podcasts/podcast.model.dart';
-import 'package:talkaboat/models/search/search_result.model.dart';
-import 'package:talkaboat/widgets/podcast-list.widget.dart';
 
 import '../injection/injector.dart';
+import '../models/podcasts/podcast.model.dart';
+import '../models/search/search_result.model.dart';
 import '../services/user/user.service.dart';
+import '../widgets/podcast-list.widget.dart';
 import 'login.screen.dart';
 
 class LibraryScreen extends StatefulWidget {

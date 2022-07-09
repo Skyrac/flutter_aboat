@@ -1,6 +1,6 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:talkaboat/models/podcasts/episode.model.dart';
-import 'package:talkaboat/services/repositories/tracking.repository.dart';
+import '../../models/podcasts/episode.model.dart';
+import '../repositories/tracking.repository.dart';
 
 int heartbeatCounter = 0;
 const heartbeatLimit = 30;

@@ -1,8 +1,6 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:talkaboat/configuration/dio.config.dart';
-import 'package:talkaboat/models/playlist/playlist.model.dart';
 
 import '../../configuration/dio.config.dart';
 import '../../models/playlist/playlist.model.dart';

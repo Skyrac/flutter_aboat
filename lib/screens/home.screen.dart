@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:talkaboat/models/podcasts/podcast.model.dart';
-import 'package:talkaboat/services/repositories/podcast.repository.dart';
-import 'package:talkaboat/services/state/state.service.dart';
-import 'package:talkaboat/services/user/user.service.dart';
-import 'package:talkaboat/themes/colors.dart';
-import 'package:talkaboat/widgets/library-preview.widget.dart';
 
 import '../injection/injector.dart';
+import '../models/podcasts/podcast.model.dart';
+import '../services/repositories/podcast.repository.dart';
+import '../services/state/state.service.dart';
+import '../services/user/user.service.dart';
+import '../themes/colors.dart';
 import '../widgets/home-app-bar.widget.dart';
+import '../widgets/library-preview.widget.dart';
 import '../widgets/podcast-list.widget.dart';
 
 class HomeScreen extends StatefulWidget {

@@ -1,11 +1,11 @@
+import 'package:Talkaboat/screens/playlist-detail.screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:talkaboat/models/playlist/playlist.model.dart';
-import 'package:talkaboat/screens/playlist-detail.screen.dart';
-import 'package:talkaboat/services/user/user.service.dart';
 
 import '../injection/injector.dart';
+import '../models/playlist/playlist.model.dart';
+import '../services/user/user.service.dart';
 import 'login.screen.dart';
 
 class PlaylistScreen extends StatefulWidget {

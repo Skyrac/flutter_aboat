@@ -8,12 +8,12 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'package:talkaboat/models/podcasts/podcast.model.dart';
-import 'package:talkaboat/models/user/user-info.model.dart';
 
 import '../../models/playlist/playlist.model.dart';
+import '../../models/podcasts/podcast.model.dart';
 import '../../models/response.model.dart';
 import '../../models/rewards/reward.model.dart';
+import '../../models/user/user-info.model.dart';
 import '../repositories/podcast.repository.dart';
 import '../repositories/user.repository.dart';
 

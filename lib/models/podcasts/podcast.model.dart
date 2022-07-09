@@ -1,5 +1,4 @@
-import 'package:talkaboat/models/search/search_result.model.dart';
-
+import '../search/search_result.model.dart';
 import 'episode.model.dart';
 
 class Podcast extends SearchResult {

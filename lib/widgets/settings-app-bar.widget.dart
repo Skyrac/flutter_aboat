@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:talkaboat/screens/login.screen.dart';
-import 'package:talkaboat/services/user/user.service.dart';
 
 import '../injection/injector.dart';
+import '../screens/login.screen.dart';
+import '../services/user/user.service.dart';
 
 class SettingsAppBarWidget extends StatefulWidget {
   const SettingsAppBarWidget({Key? key, this.refreshParent}) : super(key: key);

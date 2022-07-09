@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:talkaboat/models/search/search_result.model.dart';
 
 import '../../models/podcasts/episode.model.dart';
+import '../../models/search/search_result.model.dart';
 
 class SearchRepository {
   SearchRepository._() {}

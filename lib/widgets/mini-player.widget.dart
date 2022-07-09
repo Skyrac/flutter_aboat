@@ -1,12 +1,12 @@
+import 'package:Talkaboat/widgets/player-control.widget.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:talkaboat/services/audio/audio-handler.services.dart';
-import 'package:talkaboat/widgets/player-control.widget.dart';
 
 import '../injection/injector.dart';
 import '../models/podcasts/episode.model.dart';
+import '../services/audio/audio-handler.services.dart';
 import '../services/audio/media.state.dart';
 import '../services/state/state.service.dart';
 import '../utils/common.dart';

@@ -1,10 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:talkaboat/injection/injector.dart';
-import 'package:talkaboat/services/user/user.service.dart';
 
+import '../../injection/injector.dart';
 import '../../models/playlist/playlist.model.dart';
 import '../../models/podcasts/episode.model.dart';
+import '../../services/user/user.service.dart';
 import '../../themes/colors.dart';
 
 class PlaylistBottomSheet extends StatefulWidget {

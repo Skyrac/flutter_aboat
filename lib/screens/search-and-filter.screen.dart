@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:talkaboat/themes/colors.dart';
 
+import '../themes/colors.dart';
 import '../widgets/podcast-search.widget.dart';
 
 class SearchAndFilterScreen extends StatefulWidget {

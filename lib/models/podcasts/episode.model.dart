@@ -1,5 +1,6 @@
-import 'package:talkaboat/models/podcasts/podcast.model.dart';
-import 'package:talkaboat/models/search/search_result.model.dart';
+import 'package:Talkaboat/models/podcasts/podcast.model.dart';
+
+import '../search/search_result.model.dart';
 
 class Episode extends SearchResult {
   int? episodeId;

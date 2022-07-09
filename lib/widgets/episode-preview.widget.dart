@@ -2,12 +2,12 @@ import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:talkaboat/models/podcasts/episode.model.dart';
-import 'package:talkaboat/screens/login.screen.dart';
-import 'package:talkaboat/services/audio/audio-handler.services.dart';
-import 'package:talkaboat/services/user/user.service.dart';
 
 import '../injection/injector.dart';
+import '../models/podcasts/episode.model.dart';
+import '../screens/login.screen.dart';
+import '../services/audio/audio-handler.services.dart';
+import '../services/user/user.service.dart';
 import '../utils/common.dart';
 import 'bottom-sheets/playlist.bottom-sheet.dart';
 

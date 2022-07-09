@@ -1,11 +1,11 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:talkaboat/configuration/dio.config.dart';
-import 'package:talkaboat/models/response.model.dart';
-import 'package:talkaboat/models/user/user-info.model.dart';
 
+import '../../configuration/dio.config.dart';
+import '../../models/response.model.dart';
 import '../../models/rewards/reward.model.dart';
+import '../../models/user/user-info.model.dart';
 
 class UserRepository {
   UserRepository._();

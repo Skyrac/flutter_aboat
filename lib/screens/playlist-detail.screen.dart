@@ -1,11 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:talkaboat/injection/injector.dart';
-import 'package:talkaboat/models/playlist/playlist.model.dart';
-import 'package:talkaboat/models/playlist/track.model.dart';
-import 'package:talkaboat/services/audio/audio-handler.services.dart';
-import 'package:talkaboat/services/user/user.service.dart';
+import '../injection/injector.dart';
 
+import '../models/playlist/playlist.model.dart';
+import '../models/playlist/track.model.dart';
+import '../services/audio/audio-handler.services.dart';
+import '../services/user/user.service.dart';
 import '../themes/colors.dart';
 
 class PlaylistDetailScreen extends StatefulWidget {

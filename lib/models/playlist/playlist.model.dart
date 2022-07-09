@@ -1,5 +1,5 @@
+import 'package:Talkaboat/models/playlist/track.model.dart';
 import 'package:jiffy/jiffy.dart';
-import 'package:talkaboat/models/playlist/track.model.dart';
 
 class Playlist {
   int? playlistId;

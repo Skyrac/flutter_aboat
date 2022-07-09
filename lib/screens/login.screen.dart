@@ -1,13 +1,13 @@
+import 'package:Talkaboat/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:social_login_buttons/social_login_buttons.dart';
-import 'package:talkaboat/services/repositories/user.repository.dart';
-import 'package:talkaboat/utils/Snackbar_Creator.dart';
-import 'package:talkaboat/utils/extensions.dart';
 
 import '../injection/injector.dart';
+import '../services/repositories/user.repository.dart';
 import '../services/user/user.service.dart';
 import '../themes/colors.dart';
 import '../themes/login-and-register.background.dart';
+import '../utils/Snackbar_Creator.dart';
 import '../utils/modal.widget.dart';
 import '../widgets/login-app-bar.widget.dart';
 

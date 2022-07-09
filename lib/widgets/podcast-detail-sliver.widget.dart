@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../models/search/search_result.model.dart';
 import '../themes/colors.dart';
@@ -91,12 +92,10 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                 children: [
                   Expanded(
                       child: buildButton(
-                          text: 'Share', icon: Icons.share, onClick: () => {})),
-                  Expanded(
-                      child: buildButton(
-                          text: 'Like',
-                          icon: Icons.thumb_up,
-                          onClick: () => {})),
+                          text: 'Share', icon: Icons.share, onClick: () => {
+                            //TODO: Geräte Abhängigkeit prüfen
+                            Share.share("Check the Podcast ${podcast.title} on Talkaboat.online mobile App! Start listening and earn while supporting new and upcoming podcasters.\n\n Download it now on \nAndroid: https://play.google.com/store/apps/details?id=com.aboat.talkaboat\n", subject: "Check this out! A Podcast on Talkaboat.online.")
+                      })),
                   Expanded(
                       child: buildButton(
                           text: 'Claim',
@@ -109,7 +108,7 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                                             top: Radius.circular(20))),
                                     context: context,
                                     builder: (context) =>
-                                        const ClaimBottomSheet())
+                                        ClaimBottomSheet(podcastId: podcast.id!))
                               })),
                 ],
               ),

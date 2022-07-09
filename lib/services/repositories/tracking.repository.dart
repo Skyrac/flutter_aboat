@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-import 'package:talkaboat/services/user/user.service.dart';
 
 import '../../configuration/dio.config.dart';
 import '../../injection/injector.dart';
 import '../../models/rewards/reward.model.dart';
+import '../user/user.service.dart';
 
 class TrackingRepository {
   TrackingRepository._();

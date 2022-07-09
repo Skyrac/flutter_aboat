@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
-import 'package:talkaboat/services/user/user.service.dart';
 
 import '../injection/injector.dart';
+import '../services/user/user.service.dart';
 
 var options = BaseOptions(
   baseUrl: 'https://talkaboat.azurewebsites.net/',

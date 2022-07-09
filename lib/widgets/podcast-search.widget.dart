@@ -1,13 +1,13 @@
+import 'package:Talkaboat/widgets/podcast-list.widget.dart';
 import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:talkaboat/models/search/search_result.model.dart';
-import 'package:talkaboat/services/user/user.service.dart';
-import 'package:talkaboat/widgets/podcast-list.widget.dart';
 
 import '../injection/injector.dart';
+import '../models/search/search_result.model.dart';
 import '../screens/login.screen.dart';
 import '../services/repositories/search.repository.dart';
+import '../services/user/user.service.dart';
 import '../themes/colors.dart';
 
 class PodcastSearch extends SearchDelegate<String?> {

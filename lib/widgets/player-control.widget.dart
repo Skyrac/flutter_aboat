@@ -1,11 +1,11 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:talkaboat/screens/media_player.screen.dart';
-import 'package:talkaboat/services/audio/audio-handler.services.dart';
 
 import '../injection/injector.dart';
 import '../models/rewards/reward.model.dart';
+import '../screens/media_player.screen.dart';
+import '../services/audio/audio-handler.services.dart';
 import '../services/state/state.service.dart';
 import '../services/user/user.service.dart';
 import '../utils/common.dart';

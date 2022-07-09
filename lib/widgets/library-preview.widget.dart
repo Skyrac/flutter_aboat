@@ -1,8 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:talkaboat/models/podcasts/podcast.model.dart';
-import 'package:talkaboat/screens/podcast-detail.screen.dart';
+
+import '../models/podcasts/podcast.model.dart';
+import '../screens/podcast-detail.screen.dart';
 
 class LibraryPreviewWidget extends StatelessWidget {
   const LibraryPreviewWidget({Key? key, required this.podcast})

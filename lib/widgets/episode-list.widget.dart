@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:talkaboat/models/podcasts/episode.model.dart';
 
 import '../injection/injector.dart';
+import '../models/podcasts/episode.model.dart';
 import '../services/audio/audio-handler.services.dart';
 
 class EpisodeListWidget extends StatefulWidget {

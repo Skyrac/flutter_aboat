@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:talkaboat/models/podcasts/episode.model.dart';
-import 'package:talkaboat/models/search/search_result.model.dart';
-import 'package:talkaboat/services/audio/audio-handler.services.dart';
-import 'package:talkaboat/services/audio/podcast.service.dart';
 
 import '../injection/injector.dart';
+import '../models/podcasts/episode.model.dart';
+import '../models/search/search_result.model.dart';
+import '../services/audio/audio-handler.services.dart';
+import '../services/audio/podcast.service.dart';
 import '../themes/colors.dart';
 import '../widgets/episode-preview.widget.dart';
 import '../widgets/podcast-detail-sliver.widget.dart';
