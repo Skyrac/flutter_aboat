@@ -4,8 +4,11 @@ import 'package:dio/dio.dart';
 import 'package:talkaboat/configuration/dio.config.dart';
 import 'package:talkaboat/models/playlist/playlist.model.dart';
 
+import '../../configuration/dio.config.dart';
+import '../../models/playlist/playlist.model.dart';
 import '../../models/podcasts/episode.model.dart';
 import '../../models/podcasts/podcast.model.dart';
+import '../../models/response.model.dart';
 
 class PodcastRepository {
   PodcastRepository._() {}
@@ -32,6 +35,15 @@ class PodcastRepository {
       return list;
     } catch (ex) {
       return List.empty();
+    }
+  }
+
+  static Future<ResponseModel> getPodcastOwnership(int podcastId) async {
+    try {
+      var response = await dio.get<String>('$API/ownership/$podcastId');
+      return ResponseModel.fromJson(json.decode(response.data!));
+    } catch(ex) {
+      return ResponseModel(text: 'error');
     }
   }
 

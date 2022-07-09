@@ -1,3 +1,4 @@
+import 'package:Talkaboat/themes/default.theme.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -38,7 +39,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Flutter Demo',
+        title: 'Talkaboat',
         theme: DefaultTheme.defaultTheme,
         debugShowCheckedModeBanner: false,
         home: AnimatedSplashScreen(

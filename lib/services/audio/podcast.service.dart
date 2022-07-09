@@ -1,6 +1,10 @@
 import 'package:talkaboat/models/podcasts/episode.model.dart';
 import 'package:talkaboat/services/repositories/podcast.repository.dart';
 
+import '../../models/podcasts/episode.model.dart';
+import '../../models/response.model.dart';
+import '../repositories/podcast.repository.dart';
+
 class PodcastService {
   List<Episode> podcastDetailEpisodes = [];
 
@@ -16,4 +20,26 @@ class PodcastService {
     }
     return podcastDetailEpisodes;
   }
+
+  Future<PodcastOwnershipMethods> getPodcastOwnershipMethods(int podcastId) async {
+    var viableOption = await PodcastRepository.getPodcastOwnership(podcastId);
+
+    switch(viableOption.text) {
+      case 'full': return PodcastOwnershipMethods.FULL;
+      case 'kyc': return PodcastOwnershipMethods.KYC;
+      case 'owned': return PodcastOwnershipMethods.OWNED;
+      default: return PodcastOwnershipMethods.ERROR;
+    }
+  }
+
+  Future<ResponseModel> getPodcastOwnerDetails(int podcastId) {
+    return PodcastRepository.getPodcastOwnership(podcastId);
+  }
+}
+
+enum PodcastOwnershipMethods {
+  FULL,
+  KYC,
+  OWNED,
+  ERROR
 }
