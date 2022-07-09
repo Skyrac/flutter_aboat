@@ -205,6 +205,7 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                     return;
                   }
                   tokenService.donate(podcast.id!, double.parse(donationAmountController.text));
+                  donationAmountController.text = "";
                   Navigator.pop(context);
                 }),
                 child: Text("Donate")),
