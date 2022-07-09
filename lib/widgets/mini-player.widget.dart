@@ -2,10 +2,12 @@ import 'package:Talkaboat/widgets/player-control.widget.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../injection/injector.dart';
 import '../models/podcasts/episode.model.dart';
+import '../screens/podcast-detail.screen.dart';
 import '../services/audio/audio-handler.services.dart';
 import '../services/audio/media.state.dart';
 import '../services/state/state.service.dart';
@@ -53,14 +55,27 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 3),
-            child: Text(
-              widget.episode!.title!,
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleMedium
-                  ?.copyWith(color: Colors.black),
+            child: InkWell(
+              onTap: (() async => {
+              Navigator.push(
+              context,
+              PageTransition(
+              alignment: Alignment.bottomCenter,
+              curve: Curves.bounceOut,
+              type: PageTransitionType.rightToLeftWithFade,
+              duration: const Duration(milliseconds: 500),
+              reverseDuration: const Duration(milliseconds: 500),
+              child: PodcastDetailScreen(podcastId: widget.episode?.podcastId)))
+              }),
+              child: Text(
+                widget.episode!.title!,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                style: Theme.of(context)
+                    .textTheme
+                    .titleMedium
+                    ?.copyWith(color: Colors.black),
+              ),
             ),
           ),
           Container(

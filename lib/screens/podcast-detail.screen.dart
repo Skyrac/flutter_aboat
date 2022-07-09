@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../injection/injector.dart';
 import '../models/podcasts/episode.model.dart';
@@ -11,7 +12,8 @@ import '../widgets/podcast-detail-sliver.widget.dart';
 
 class PodcastDetailScreen extends StatefulWidget {
   final SearchResult? podcastSearchResult;
-  const PodcastDetailScreen({Key? key, this.podcastSearchResult})
+  final int? podcastId;
+  const PodcastDetailScreen({Key? key, this.podcastSearchResult, this.podcastId})
       : super(key: key);
 
   @override
@@ -69,6 +71,16 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
     }
   }
 
+  Future<SearchResult?> GetPodcast() async {
+    if(widget.podcastSearchResult != null) {
+      return widget.podcastSearchResult!;
+    } else if(widget.podcastId != null) {
+      return await podcastService.getPodcastDetails(widget.podcastId!, sort, -1);
+    } else {
+      return null;
+    }
+  }
+
   Widget buildEpisodes(List<Episode> data) => SliverList(
         delegate: SliverChildBuilderDelegate(
           (BuildContext context, int index) {
@@ -92,89 +104,138 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
               DefaultColors.secondaryColor.shade900,
               DefaultColors.secondaryColor.shade900
             ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
-            child: CustomScrollView(
-              slivers: [
-                SliverPersistentHeader(
-                  delegate: PodcastDetailSliver(
-                      expandedHeight: size.height * 0.5,
-                      podcast: widget.podcastSearchResult!),
-                  pinned: true,
-                ),
-                SliverToBoxAdapter(
-                  child: Padding(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-                      child: Column(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
-                            child: Card(
-                                child: InkWell(
-                              onTap: (() {
-                                setState(() {
-                                  isDescOpen = !isDescOpen;
-                                });
-                              }),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  widget.podcastSearchResult?.description ?? '',
-                                  maxLines: isDescOpen ? 9999 : 3,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            )),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(top: 15, bottom: 5),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                InkWell(
-                                  onTap: (() {
-                                    setState(() {
-                                      sort = sort == "asc" ? "desc" : "asc";
-                                    });
-                                  }),
-                                  child: RotatedBox(
-                                    quarterTurns: sort == "asc" ? 0 : 2,
-                                    child: Icon(Icons.sort),
-                                  ),
-                                )
-                              ],
-                            ),
-                          )
-                        ],
-                      )),
-                ),
-                FutureBuilder(
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.done) {
-                      if (snapshot.hasError) {
-                        return SliverToBoxAdapter(
-                          child: Center(
+            child:
+            FutureBuilder<SearchResult?>(builder: (context, snapshot)
+            {
+              if (snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text(
+                      '${snapshot.error} occurred',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  );
+                } else if (snapshot.hasData && snapshot.data != null) {
+                  // Extracting data from snapshot object
+                  return createCustomScrollView(snapshot.data!);
+                } else {
+                  return Center(
+                    child: Text(
+                      'No data found for this podcast. Please try again later!',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  );
+                }
+              }
+              return SizedBox(
+                height: size.height,
+                  child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [const Center(child: CircularProgressIndicator()),
+                  SizedBox(height: 50,),
+                  InkWell(
+                    onTap: (() { Navigator.pop(context); }),
+                    child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.arrow_back),
+                      SizedBox(width: 10,),
+                      Text("Back")
+                    ],
+                  ),)]));
+
+              },
+              future: GetPodcast(),
+            )
+        ));
+  }
+
+  Widget createCustomScrollView(SearchResult podcastSearchResult) {
+    final size = MediaQuery.of(context).size;
+    return CustomScrollView(
+      slivers: [
+        SliverPersistentHeader(
+          delegate: PodcastDetailSliver(
+              expandedHeight: size.height * 0.5,
+              podcast: podcastSearchResult),
+          pinned: true,
+        ),
+        SliverToBoxAdapter(
+          child: Padding(
+              padding:
+              EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+              child: Column(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Card(
+                        child: InkWell(
+                          onTap: (() {
+                            setState(() {
+                              isDescOpen = !isDescOpen;
+                            });
+                          }),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
                             child: Text(
-                              '${snapshot.error} occurred',
-                              style: TextStyle(fontSize: 18),
+                              podcastSearchResult.description ?? '',
+                              maxLines: isDescOpen ? 9999 : 3,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                        );
-                      } else if (snapshot.hasData && snapshot.data != null) {
-                        // Extracting data from snapshot object
-                        final data = snapshot.data as List<Episode>?;
-                        if (data != null && data.isNotEmpty) {
-                          return buildEpisodes(data);
-                        }
-                      }
-                    }
-                    return SliverToBoxAdapter(
-                        child:
-                            const Center(child: CircularProgressIndicator()));
-                  },
-                  future: podcastService.getPodcastDetailEpisodes(
-                      widget.podcastSearchResult!.id!, sort, -1),
-                ),
-              ],
-            )));
+                        )),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 15, bottom: 5),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        InkWell(
+                          onTap: (() {
+                            setState(() {
+                              sort = sort == "asc" ? "desc" : "asc";
+                            });
+                          }),
+                          child: RotatedBox(
+                            quarterTurns: sort == "asc" ? 0 : 2,
+                            child: Icon(Icons.sort),
+                          ),
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              )),
+        ),
+        FutureBuilder(
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.hasError) {
+                return SliverToBoxAdapter(
+                  child: Center(
+                    child: Text(
+                      '${snapshot.error} occurred',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  ),
+                );
+              } else if (snapshot.hasData && snapshot.data != null) {
+                // Extracting data from snapshot object
+                final data = snapshot.data as List<Episode>?;
+                if (data != null && data.isNotEmpty) {
+                  return buildEpisodes(data);
+                }
+              }
+            }
+            return SliverToBoxAdapter(
+                child:
+                const Center(child: CircularProgressIndicator()));
+          },
+          future: podcastService.getPodcastDetailEpisodes(
+              podcastSearchResult.id!, sort, -1),
+        ),
+      ],
+    );
   }
 }

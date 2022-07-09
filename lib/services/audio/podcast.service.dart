@@ -1,23 +1,23 @@
 
 
 import '../../models/podcasts/episode.model.dart';
+import '../../models/podcasts/podcast.model.dart';
 import '../../models/response.model.dart';
 import '../repositories/podcast.repository.dart';
 
 class PodcastService {
-  List<Episode> podcastDetailEpisodes = [];
+  Podcast? podcast= null;
 
   Future<List<Episode>> getPodcastDetailEpisodes(
       podcastId, sort, amount) async {
-    if (podcastDetailEpisodes.isNotEmpty &&
-        podcastDetailEpisodes[0].podcastId == podcastId) {
-      podcastDetailEpisodes.sort((a, b) =>
+    if (podcast != null && podcast!.episodes != null && podcast!.episodes!.isNotEmpty &&
+        podcast!.podcastId == podcastId) {
+      podcast!.episodes!.sort((a, b) =>
           a.pubDateMs!.compareTo(b.pubDateMs!) * (sort == "asc" ? 1 : -1));
     } else {
-      podcastDetailEpisodes = await PodcastRepository.getEpisodesOfPodcast(
-          podcastId, sort, amount, 0);
+      await getPodcastDetails(podcastId, sort, amount);
     }
-    return podcastDetailEpisodes;
+    return podcast?.episodes ?? List.empty();
   }
 
   Future<PodcastOwnershipMethods> getPodcastOwnershipMethods(int podcastId) async {
@@ -33,6 +33,14 @@ class PodcastService {
 
   Future<ResponseModel> getPodcastOwnerDetails(int podcastId) {
     return PodcastRepository.getPodcastOwnership(podcastId);
+  }
+
+  Future<Podcast> getPodcastDetails(int podcastId, String sort, int amount) async {
+    if(podcast == null || podcast!.podcastId != podcastId) {
+      podcast =
+      await PodcastRepository.getPodcastDetails(podcastId, sort, amount, 0);
+    }
+    return podcast ?? Podcast();
   }
 }
 

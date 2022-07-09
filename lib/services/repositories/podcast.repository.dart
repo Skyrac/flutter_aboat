@@ -57,7 +57,7 @@ class PodcastRepository {
     }
   }
 
-  static Future<List<Episode>> getEpisodesOfPodcast(
+  static Future<Podcast> getPodcastDetails(
       int id, String? sort, int? amount, int? offset) async {
     final body = {
       "amount": amount ?? -1,
@@ -67,6 +67,12 @@ class PodcastRepository {
     };
     var response = await dio.post<String>('$API/detail', data: body);
     var podcast = Podcast.fromJson(json.decode(response.data!));
+    return podcast;
+  }
+
+  static Future<List<Episode>> getEpisodesOfPodcast(
+      int id, String? sort, int? amount, int? offset) async {
+    var podcast = await getPodcastDetails(id, sort, amount, offset);
     return podcast.episodes ?? List.empty();
   }
 
