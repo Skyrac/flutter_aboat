@@ -34,7 +34,7 @@ class UserService {
 
   get isConnected => token.isNotEmpty && userInfo != null;
 
-  get availableToken => rewards.unvested;
+  get availableToken => rewards.vested;
   Stream<Reward> rewardStream() async* {
     while (true) {
       await Future.delayed(Duration(milliseconds: 500));
