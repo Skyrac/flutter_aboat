@@ -1,7 +1,13 @@
+import 'package:Talkaboat/injection/injector.dart';
+import 'package:Talkaboat/services/user/user.service.dart';
+import 'package:Talkaboat/services/web3/token.service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../models/search/search_result.model.dart';
+import '../screens/login.screen.dart';
 import '../themes/colors.dart';
 import 'bottom-sheets/claim.bottom-sheet.dart';
 
@@ -9,9 +15,12 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
   final double expandedHeight;
   final SearchResult podcast;
 
-  const PodcastDetailSliver(
+  PodcastDetailSliver(
       {required this.expandedHeight, required this.podcast});
 
+  final userService = getIt<UserService>();
+  final tokenService = getIt<TokenService>();
+  final donationAmountController = TextEditingController();
   @override
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
@@ -83,7 +92,9 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                         child: buildButton(
                             text: 'Donate',
                             icon: Icons.money,
-                            onClick: () => {}))),
+                            onClick: () => {
+                              showDonationModal(context)
+                            }))),
               ),
               const SizedBox(
                 height: 15,
@@ -143,4 +154,100 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
 
   @override
   bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) => true;
+
+  void showDonationModal(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          backgroundColor: Theme.of(context).dialogBackgroundColor,
+          title: Text('Donation for ${podcast.title}'),
+          elevation: 8,
+          content: userService.isConnected ? TextField(
+              controller: donationAmountController,
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: <TextInputFormatter> [
+                FilteringTextInputFormatter.allow(RegExp(r"[0-9.,]")),
+                TextInputFormatter.withFunction((oldValue, newValue) {
+                  try {
+                    final text = newValue.text.replaceAll(",", ".");
+                    if (text.isEmpty || double.parse(text) <= userService.availableToken)
+                    return newValue;
+                  } catch (e) {}
+                  return oldValue;
+                }),
+              ],
+              decoration: InputDecoration(
+                  hintText: "Donation Amount",
+                  labelText: "Available ABOAT: ${userService.availableToken.toStringAsFixed(2)}",
+                  labelStyle: Theme.of(context).textTheme.labelLarge,
+                  enabledBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blue),
+                  ),
+                  focusedBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.green),
+                  ),
+                  border: const UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.red),
+                  ))) :
+          SizedBox(
+            height: 140,
+            child: Column(
+              children: [
+                Text("Login to use this feature!"),
+                createLoginButton(context)
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+                onPressed: (() {
+                  if(donationAmountController.text.isEmpty) {
+                    return;
+                  }
+                  tokenService.donate(podcast.id!, double.parse(donationAmountController.text));
+                  Navigator.pop(context);
+                }),
+                child: Text("Donate")),
+            TextButton(
+                onPressed: (() {
+                  Navigator.pop(context);
+                }),
+                child: Text("Cancel"))
+          ],
+        ));
+  }
+
+  createLoginButton(BuildContext context) => Center(
+    child: Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 30),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Card(
+          child: InkWell(
+            onTap: (() {
+              Navigator.push(
+                  context,
+                  PageTransition(
+                      alignment: Alignment.bottomCenter,
+                      curve: Curves.bounceOut,
+                      type: PageTransitionType.fade,
+                      duration: const Duration(milliseconds: 300),
+                      reverseDuration: const Duration(milliseconds: 200),
+                      child: LoginScreen(() => Navigator.pop(context))));
+            }),
+            child: SizedBox(
+                height: 80,
+                width: MediaQuery.of(context).size.width,
+                child: Center(
+                  child: Text(
+                    "Login",
+                    style: Theme.of(context).textTheme.titleLarge,
+                    textAlign: TextAlign.center,
+                  ),
+                )),
+          ),
+        ),
+      ),
+    ),
+  );
 }

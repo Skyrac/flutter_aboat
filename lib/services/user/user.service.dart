@@ -33,6 +33,8 @@ class UserService {
   static const String TOKEN_IDENTIFIER = "aboat_token";
 
   get isConnected => token.isNotEmpty && userInfo != null;
+
+  get availableToken => rewards.unvested;
   Stream<Reward> rewardStream() async* {
     while (true) {
       await Future.delayed(Duration(milliseconds: 500));
@@ -213,7 +215,7 @@ class UserService {
     if (token.isNotEmpty) {
       await getUserInfo();
       if (userInfo != null) {
-        rewards = await UserRepository.getUserRewards();
+        await getRewards();
         await getLibrary();
       }
       //TODO: Vorschläge basierend auf den Vorzügen des Nutzers laden
@@ -222,6 +224,10 @@ class UserService {
     podcastProposalsHomeScreen[0] = podcasts.take(10).toList();
     podcastProposalsHomeScreen[1] = podcasts.skip(10).take(10).toList();
     podcastProposalsHomeScreen[2] = podcasts.skip(20).take(10).toList();
+  }
+
+  getRewards() async {
+    rewards = await UserRepository.getUserRewards();
   }
 
   Future<bool> getUserInfo() async {
@@ -283,12 +289,15 @@ class UserService {
     FirebaseAuth firebaseAuth = FirebaseAuth.instance;
     GoogleSignIn googleSignIn = GoogleSignIn();
     FacebookAuth facebookAuth = FacebookAuth.instance;
+    try {
+      //await googleSignIn.signOut();
+      await googleSignIn.disconnect();
+      await FirebaseAuth.instance.signOut();
+      await facebookAuth.logOut();
+      await FirebaseAuth.instance.signOut();
+    } catch(ex) {
 
-    //await googleSignIn.signOut();
-    await googleSignIn.disconnect();
-    await FirebaseAuth.instance.signOut();
-    await facebookAuth.logOut();
-    await FirebaseAuth.instance.signOut();
+    }
     await prefs.setString(TOKEN_IDENTIFIER, "");
   }
   //#endregion

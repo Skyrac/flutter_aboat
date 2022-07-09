@@ -1,3 +1,4 @@
+import 'package:Talkaboat/services/web3/token.service.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:get_it/get_it.dart';
 
@@ -19,4 +20,5 @@ Future<void> configureDependencies() async {
   getIt.registerSingleton(await UserService.init());
   getIt.registerSingleton(PodcastService());
   getIt.registerSingleton(await StateService());
+  getIt.registerSingleton(TokenService());
 }
