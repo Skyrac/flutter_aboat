@@ -224,20 +224,20 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: SocialLoginButton(
                         buttonType: SocialLoginButtonType.google,
                         mode: SocialLoginButtonMode.single,
-                        text: "Google Sign In",
+                        text: "Google",
                         onPressed: () async {
                           await socialButtonPressed(SocialLogin.Google);
                         },
                       ),
                     ),
+                    SizedBox(height: 10,),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 100),
                       child: SocialLoginButton(
                         buttonType: SocialLoginButtonType.facebook,
                         mode: SocialLoginButtonMode.single,
-                        text: "Facebook Sign In",
+                        text: "Facebook",
                         onPressed: () async {
-                          print("Facebook Login");
                           await socialButtonPressed(SocialLogin.Facebook);
                         },
                       ),

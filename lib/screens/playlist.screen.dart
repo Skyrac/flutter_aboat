@@ -134,7 +134,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
         child: Scaffold(
             appBar: AppBar(
               actions: [
-                Padding(
+                userService.isConnected ? Padding(
                   padding: const EdgeInsets.only(right: 10),
                   child: IconButton(
                     icon: const Icon(Icons.add),
@@ -143,7 +143,8 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                       showAlert(context);
                     },
                   ),
-                )
+                ) : SizedBox()
+
               ],
             ),
             body: userService.isConnected
