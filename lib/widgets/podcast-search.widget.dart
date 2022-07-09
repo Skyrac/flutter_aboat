@@ -185,6 +185,44 @@ class PodcastSearch extends SearchDelegate<String?> {
                 direction: Axis.vertical,
                 searchResults: searchResults,
                 trailing: buildPopupButton)
-            : const SizedBox());
+            : FutureBuilder<List<SearchResult>?>(
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              print(snapshot);
+              if (snapshot.hasError) {
+                return Center(
+                  child: Text(
+                    '${snapshot.error} occurred',
+                    style: TextStyle(fontSize: 18),
+                  ),
+                );
+              } else if (snapshot.hasData &&
+                  snapshot.data != null &&
+                  snapshot.data!.isNotEmpty) {
+                // Extracting data from snapshot object
+                final data = snapshot.data as List<SearchResult>?;
+                if (data != null && data.isNotEmpty) {
+                  searchResults = data;
+                  return PodcastListWidget(
+                      direction: Axis.vertical,
+                      searchResults: searchResults,
+                      trailing: buildPopupButton);
+                }
+              } else {
+                return Center(
+                    child: SizedBox(
+                      width: 200,
+                      child: Text(
+                        "No results found for \"$query\"! Try another set of filters or search query.",
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                    ));
+              }
+            }
+            return const Center(child: CircularProgressIndicator());
+          },
+          future: queryChanged(query),
+        ));
   }
 }

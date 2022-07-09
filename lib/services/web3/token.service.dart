@@ -9,7 +9,6 @@ class TokenService {
 
     var result = await TokenRepository.donateAboatToPodcast(podcastId, amount);
     await userService.getRewards();
-    print(userService.rewards.unvested);
-    return userService.rewards.unvested ?? 0;
+    return userService.rewards.vested ?? 0;
   }
 }

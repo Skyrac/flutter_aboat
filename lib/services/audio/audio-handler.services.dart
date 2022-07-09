@@ -262,6 +262,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   }
 
   MediaItem convertEpisodeToMediaItem(Episode episode) {
+    print(episode.toJson());
     var playTime = episode.playTime!;
     if (episode.audioLengthSec! < episode.playTime! + 20) {
       playTime = 0;
@@ -280,7 +281,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
         album: episode.podcast != null && episode.podcast!.title != null
             ? episode.podcast!.title!
             : '',
-        artUri: Uri.parse(episode.image!),
+        artUri: Uri.parse(episode.image ?? episode.podcast?.image ?? ''),
         title: episode.title!,
         extras: extraMap);
     return mediaItem;
