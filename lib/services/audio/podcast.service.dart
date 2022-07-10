@@ -48,5 +48,6 @@ enum PodcastOwnershipMethods {
   FULL,
   KYC,
   OWNED,
-  ERROR
+  ERROR,
+  UNDEFINED
 }

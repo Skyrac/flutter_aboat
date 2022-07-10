@@ -13,7 +13,7 @@ import '../themes/colors.dart';
 class PodcastSearch extends SearchDelegate<String?> {
   List<SearchResult> searchResults = List.empty();
   final debouncer =
-      Debouncer<String>(Duration(milliseconds: 500), initialValue: "");
+      Debouncer<String>(Duration(milliseconds: 1000), initialValue: "");
   String previousSearch = "";
   final List<String> selectedLanguages;
   final List<int> genreIds;
