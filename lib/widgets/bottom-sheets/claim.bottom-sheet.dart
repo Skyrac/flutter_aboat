@@ -2,7 +2,9 @@ import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/services/audio/podcast.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import '../../themes/colors.dart';
 
 class ClaimBottomSheet extends StatefulWidget {
@@ -118,6 +120,7 @@ class _ClaimBottomSheetState extends State<ClaimBottomSheet> {
           SizedBox(height: 20,),
           Center(
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(
                   width: 200,
@@ -174,24 +177,57 @@ class _ClaimBottomSheetState extends State<ClaimBottomSheet> {
       children: [
         Text("Verify by Know-Your-Customer", style: Theme.of(context).textTheme.titleLarge),
         SizedBox(height: 10,),
-        Text("With this method you will have to do our KYC in order to provide the proof, that you are the author of this podcast. This verification method is done manually and requires 3 - 5 business days.", style: Theme.of(context).textTheme.bodyMedium),
+        Text("With this method you will have to do our KYC in order to provide the proof, that you are the author of this podcast. After KYC send the request by clicking 'Verify'. This verification method is done manually and requires 3 - 5 business days.", style: Theme.of(context).textTheme.bodyMedium),
         SizedBox(height: 20,),
         Center(
-          child: SizedBox(
-            width: 200,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: Card(
-                color: DefaultColors.primaryColor,
-                child: InkWell(
-                  onTap: (() { print("Test");}),
-                  child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
-                      child: Row(children: [Icon(Icons.email, color: Colors.black,), SizedBox(width: 10,), Text("Request Verification", style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.black),)],),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 200,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Card(
+                    color: DefaultColors.primaryColor,
+                    child: InkWell(
+                      onTap: (() async {
+                        if(userService.userInfo != null && userService.userInfo!.userName != null && userService.userInfo!.userName!.isNotEmpty) {
+                          await launchUrlString(
+                              'https://verify-with.blockpass.org/?clientId=aboat_entertainment_ps_kyc&serviceName=Aboat+Entertainment+Private+Sale+KYC&env=prod&refId=${userService
+                                  .userInfo!.userName!}', mode: LaunchMode.externalApplication);
+                        } else {
+                          print("No Username given!");
+                        }
+                      }),
+                      child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                          child: Row(children: [Icon(Icons.email, color: Colors.black,), SizedBox(width: 10,), Text("Request Verification", style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.black),)],),
+                        ),
                     ),
+                  ),
                 ),
               ),
-            ),
+              SizedBox(
+                width: 120,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Card(
+                    color: DefaultColors.primaryColor,
+                    child: InkWell(
+                      onTap: (() {
+                        //1. Send Request Info to backend
+                        //2. Backend checks if username is verified and hasn't requested verification before
+                        //3. Backend sends notification to support team to verify ownership
+                      }),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                        child: Row(children: [Icon(Icons.verified, color: Colors.black,), SizedBox(width: 10,), Text("Verify", style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.black),)],),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ],
