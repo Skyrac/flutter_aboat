@@ -1,6 +1,7 @@
 import 'package:Talkaboat/screens/playlist.screen.dart';
 import 'package:Talkaboat/screens/search-and-filter.screen.dart';
 import 'package:Talkaboat/screens/social/social_entry.screen.dart';
+import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,7 @@ class AppScreen extends StatefulWidget {
 
 class _AppScreenState extends State<AppScreen> {
   var Tabs;
+  var userService = getIt<UserService>();
   String _currentPage = "Home";
   List<String> pageKeys = ["Home", "Search", "Playlist", "Library", "Social"];
   final Map<String, GlobalKey<NavigatorState>> _navigatorKeys = {
@@ -132,11 +134,15 @@ class _AppScreenState extends State<AppScreen> {
                   onTap: (index) {
                     _selectTab(pageKeys[index], index);
                   },
-                  items: const <Widget>[
+                  items: <Widget>[
                     Icon(Icons.home, size: 30),
                     Icon(Icons.search, size: 30),
                     Icon(Icons.playlist_add, size: 30),
-                    Icon(Icons.library_books, size: 30),
+                    Stack(children: [
+                      SizedBox(height: 30, width: 30),
+                      Center(child: Icon(Icons.library_books, size: 30)),
+                      pageKeys[currentTabIndex] == "Library" || !userService.unseenLibraryNotifcationUpdates() ? SizedBox() :Positioned(right: 10, top:10, child: Icon(Icons.notifications_active, size: 20, color: Colors.red)),
+                    ],),
                     Icon(Icons.people, size: 30)
                   ]),
             ])),

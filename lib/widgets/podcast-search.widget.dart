@@ -129,7 +129,6 @@ class PodcastSearch extends SearchDelegate<String?> {
                 ? FutureBuilder<List<SearchResult>?>(
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.done) {
-                        print(snapshot);
                         if (snapshot.hasError) {
                           return Center(
                             child: Text(
@@ -188,7 +187,6 @@ class PodcastSearch extends SearchDelegate<String?> {
             : FutureBuilder<List<SearchResult>?>(
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
-              print(snapshot);
               if (snapshot.hasError) {
                 return Center(
                   child: Text(

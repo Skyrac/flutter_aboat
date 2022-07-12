@@ -133,7 +133,6 @@ class _ClaimBottomSheetState extends State<ClaimBottomSheet> {
                           if(emailInputController.text.isEmpty) {
                             return;
                           }
-                          print("Test");
                         }),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
@@ -150,7 +149,9 @@ class _ClaimBottomSheetState extends State<ClaimBottomSheet> {
                     child: Card(
                       color: DefaultColors.primaryColor,
                       child: InkWell(
-                        onTap: (() { print("Test");}),
+                        onTap: (() {
+
+                        }),
                         child: Padding(
                             padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
                             child: Row(children: [Icon(Icons.pin, color: Colors.black,), SizedBox(width: 10,), Text("Enter PIN", style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.black),)],),

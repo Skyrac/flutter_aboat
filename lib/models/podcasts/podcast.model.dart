@@ -32,6 +32,7 @@ class Podcast extends SearchResult {
   bool? explicitContent;
   int? latestPubDateMs;
   int? earliestPubDateMs;
+  DateTime? lastUpdate;
 
   Podcast(
       {this.podcastId,
@@ -59,7 +60,8 @@ class Podcast extends SearchResult {
       this.totalEpisodes,
       this.explicitContent,
       this.latestPubDateMs,
-      this.earliestPubDateMs});
+      this.earliestPubDateMs,
+      this.lastUpdate});
 
   Podcast.fromJson(Map<String, dynamic> json) {
     podcastId = json['podcastId'];
@@ -93,6 +95,7 @@ class Podcast extends SearchResult {
     explicitContent = json['explicitContent'];
     latestPubDateMs = json['latestPubDate'];
     earliestPubDateMs = json['earliest_pub_date_ms'];
+    lastUpdate = json['lastUpdate'] != null ? DateTime.parse(json['lastUpdate']) : null;
   }
 
   @override
@@ -126,6 +129,7 @@ class Podcast extends SearchResult {
     data['explicit_content'] = explicitContent;
     data['latestPubDate'] = latestPubDateMs;
     data['earliest_pub_date_ms'] = earliestPubDateMs;
+    data['lastUpdate'] = lastUpdate ;
     return data;
   }
 }

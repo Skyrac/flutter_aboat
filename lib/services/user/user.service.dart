@@ -5,6 +5,7 @@ import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -28,9 +29,12 @@ class UserService {
   Reward rewards = Reward();
   Map<int, List<Podcast>> podcastProposalsHomeScreen = {};
   ResponseModel? lastConnectionState;
+  DateTime? lastNotificationSeen;
+  Map<int, DateTime?> lastPodcastUpdateSeen = {};
   late final prefs;
   var isSignin = false;
   static const String TOKEN_IDENTIFIER = "aboat_token";
+  static const String LAST_NOTIFICATION_UPDATE = "last_update_seen";
 
   get isConnected => token.isNotEmpty && userInfo != null;
 
@@ -217,10 +221,14 @@ class UserService {
       if (userInfo != null) {
         await getRewards();
         await getLibrary();
+        var lastUpdate = await prefs.getInt(LAST_NOTIFICATION_UPDATE);
+        if(lastUpdate != null) {
+          lastNotificationSeen = DateTime.fromMillisecondsSinceEpoch(lastUpdate);
+        }
       }
       //TODO: Vorschläge basierend auf den Vorzügen des Nutzers laden
     }
-    var podcasts = await PodcastRepository.getRandomPodcast(30);
+    var podcasts = await PodcastRepository.getRandomPodcast(20);
     podcastProposalsHomeScreen[0] = podcasts.take(10).toList();
     podcastProposalsHomeScreen[1] = podcasts.skip(10).take(10).toList();
     podcastProposalsHomeScreen[2] = podcasts.skip(20).take(10).toList();
@@ -371,6 +379,12 @@ class UserService {
   Future<List<Podcast>> getLibrary() async {
     var newLibrary = await PodcastRepository.getUserLibrary();
     library = newLibrary;
+    for(var entry in library) {
+      var lastUpdateSeen = await prefs.getInt(LAST_NOTIFICATION_UPDATE + entry.podcastId.toString());
+      if(lastUpdateSeen != null) {
+        lastPodcastUpdateSeen.assign(entry.podcastId!, DateTime.fromMillisecondsSinceEpoch(lastUpdateSeen));
+      }
+    }
     return newLibrary;
   }
 
@@ -419,6 +433,44 @@ class UserService {
       }
     }
     return false;
+  }
+
+  void SetLastLibraryNotifcationUpdate() async {
+    lastNotificationSeen = DateTime.now().toUtc();
+    await prefs.setInt(LAST_NOTIFICATION_UPDATE, lastNotificationSeen!.millisecondsSinceEpoch);
+  }
+
+  bool unseenLibraryNotifcationUpdates() {
+    if(isConnected && library != null && library.length > 0) {
+      for(var entry in library) {
+        if(entry.lastUpdate != null
+            && entry.lastUpdate!.difference(DateTime.now().toUtc()).inDays < 7) {
+          return lastNotificationSeen == null || lastNotificationSeen!.millisecondsSinceEpoch < entry.lastUpdate!.millisecondsSinceEpoch;
+        }
+      }
+    }
+    return false;
+  }
+
+  bool unseenPodcastNotifcationUpdates(int id) {
+    var podcast = library.firstWhereOrNull((element) => id.isEqual(element.podcastId!));
+    if(isConnected && library.isNotEmpty && podcast != null) {
+      return !lastPodcastUpdateSeen.containsKey(podcast.podcastId)
+        || lastPodcastUpdateSeen[podcast.podcastId]!.millisecondsSinceEpoch < podcast.lastUpdate!.millisecondsSinceEpoch;
+    }
+    return false;
+  }
+
+  Future<void> UpdatePodcastVisitDate(int? id) async {
+    if(id == null || !isConnected || library == null || !library.any((element) => id.isEqual(element.podcastId!))) {
+      return;
+    }
+    lastPodcastUpdateSeen[id] = DateTime.now().toUtc();
+    await prefs.setInt(LAST_NOTIFICATION_UPDATE + id.toString(), lastPodcastUpdateSeen[id]!.millisecondsSinceEpoch);
+  }
+
+  getProposals(int genre) {
+    return podcastProposalsHomeScreen[genre];
   }
 
   //#endregion

@@ -85,7 +85,6 @@ class UserRepository {
         "UserName": username,
         "Newsletter": newsletter
       });
-      print(response.data);
       var convertedData = ResponseModel.fromJson(json.decode(response.data!));
       return convertedData;
     } catch (exception) {

@@ -22,7 +22,6 @@ class _SearchAndFilterScreenState extends State<SearchAndFilterScreen> {
 
   @override
   void deactivate() {
-    print("deactivate");
     super.deactivate();
   }
 

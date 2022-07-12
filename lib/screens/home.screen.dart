@@ -36,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: userService.podcastProposalsHomeScreen.containsKey(genre)
               ? PodcastListWidget(
                   direction: Axis.horizontal,
-                  searchResults: userService.podcastProposalsHomeScreen[genre]!)
+                  searchResults: userService.getProposals(genre)!, checkUpdate: false,)
               : FutureBuilder(
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.done) {

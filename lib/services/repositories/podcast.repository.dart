@@ -32,6 +32,7 @@ class PodcastRepository {
           json.decode(response.data!).map((data) => Podcast.fromJson(data)));
       return list;
     } catch (ex) {
+      print(ex);
       return List.empty();
     }
   }

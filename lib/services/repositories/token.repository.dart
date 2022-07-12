@@ -14,7 +14,6 @@ class TokenRepository {
   static Future<ResponseModel> donateAboatToPodcast(int podcastId, double amount) async {
     try {
       var response = await dio.put<String>('$API/donate/$amount/$podcastId');
-      print(response.realUri);
       return ResponseModel.fromJson(jsonDecode(response.data!));
     } catch (e) {
       print(e);

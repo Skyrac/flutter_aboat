@@ -1,3 +1,4 @@
+import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -25,6 +26,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
   final podcastService = getIt<PodcastService>();
   var sort = "asc";
   var isDescOpen = false;
+  var userService = getIt<UserService>();
   Widget topContent(context) => Stack(
         children: <Widget>[
           Container(
@@ -96,6 +98,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    userService.UpdatePodcastVisitDate(widget.podcastId ?? widget.podcastSearchResult?.id);
     return Scaffold(
         body: Container(
             decoration: BoxDecoration(

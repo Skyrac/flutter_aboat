@@ -43,6 +43,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    userService.SetLastLibraryNotifcationUpdate();
     return SafeArea(
         child: Scaffold(
             body: userService.isConnected
@@ -68,6 +69,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                                 searchResults: data,
                                 direction: Axis.vertical,
                                 trailing: buildPopupButton,
+                                checkUpdate: true,
                               );
                             }
                           }

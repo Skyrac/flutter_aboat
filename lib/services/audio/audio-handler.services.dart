@@ -262,14 +262,12 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   }
 
   MediaItem convertEpisodeToMediaItem(Episode episode) {
-    print(episode.toJson());
     var playTime = episode.playTime!;
     if (episode.audioLengthSec! < episode.playTime! + 20) {
       playTime = 0;
     }
     final episodeId = episode.episodeId;
     final podcastId = episode.podcastId;
-    print("$episodeId | $podcastId");
     final Map<String, dynamic> extraMap = {
       "episodeId": episodeId,
       "podcastId": podcastId,

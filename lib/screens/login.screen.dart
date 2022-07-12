@@ -155,7 +155,6 @@ class _LoginScreenState extends State<LoginScreen> {
     if (isLoading) {
       return;
     }
-    print(socialLoginPinVerification.text);
     setState(() {
       isLoading = true;
     });

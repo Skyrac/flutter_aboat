@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
@@ -13,11 +15,12 @@ class PodcastListWidget extends StatefulWidget {
       {Key? key,
       required this.searchResults,
       required this.direction,
-      this.trailing})
+      this.trailing, this.checkUpdate})
       : super(key: key);
   final List<SearchResult?> searchResults;
   final Axis direction;
   final Function? trailing;
+  final bool? checkUpdate;
   @override
   State<PodcastListWidget> createState() => _PodcastListWidgetState();
 }
@@ -73,26 +76,36 @@ class _PodcastListWidgetState extends State<PodcastListWidget> {
         return makeCard(context, item);
       });
 
-  Widget makeCard(context, SearchResult entry) => Card(
-        elevation: 8.0,
-        margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: Container(
-            decoration:
-                const BoxDecoration(color: Color.fromRGBO(64, 75, 96, .9)),
-            child: widget.direction == Axis.horizontal
-                ? makeHorizontalListTile(context, entry)
-                : makeVerticalListTile(context, entry),
-          ),
-        ),
-      );
+  Widget makeCard(context, SearchResult entry) => Stack(
+    children: [
+    Card(
+    elevation: 8.0,
+    margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        decoration:
+        const BoxDecoration(color: Color.fromRGBO(64, 75, 96, .9)),
+        child: widget.direction == Axis.horizontal
+            ? makeHorizontalListTile(context, entry)
+            : makeVerticalListTile(context, entry),
+      ),
+    ),
+  ),
+  widget.checkUpdate != null
+  && widget.checkUpdate!
+  ? userService.unseenPodcastNotifcationUpdates(entry.id!)
+  ? Positioned(right: 20, top:10, child: Icon(Icons.notifications_active, size: 20, color: Colors.red))
+      : SizedBox() : SizedBox(),]
+  );
 
   Widget makeHorizontalListTile(context, SearchResult entry) => Padding(
       padding: const EdgeInsets.all(10),
       child: Stack(children: [
         InkWell(
-            onTap: () {
+            onTap: () async {
+              await userService.UpdatePodcastVisitDate(entry.id);
+              setState(() { });
               Navigator.push(
                   context,
                   PageTransition(
@@ -182,7 +195,9 @@ class _PodcastListWidgetState extends State<PodcastListWidget> {
         trailing: widget.trailing == null
             ? const SizedBox()
             : widget.trailing!(context, entry),
-        onTap: () {
+        onTap: () async {
+          await userService.UpdatePodcastVisitDate(entry.id);
+          setState(() { });
           Navigator.push(
               context,
               PageTransition(
