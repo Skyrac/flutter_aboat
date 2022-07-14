@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import '../injection/injector.dart';
 
 import '../models/playlist/playlist.model.dart';
@@ -108,6 +109,10 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                                 widget.playlist.image!.isEmpty
                             ? 'https://picsum.photos/200'
                             : widget.playlist.image!,
+                        cacheManager: CacheManager(Config(widget.playlist.image == null ||
+                            widget.playlist.image!.isEmpty
+                            ? 'https://picsum.photos/200'
+                            : widget.playlist.image!, stalePeriod: const Duration(days: 7))),
                         placeholder: (_, __) =>
                             const Center(child: CircularProgressIndicator()),
                         // progressIndicatorBuilder: (context, url, downloadProgress) =>

@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 import '../injection/injector.dart';
 import '../models/podcasts/episode.model.dart';
@@ -88,6 +89,10 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget> {
                                 CachedNetworkImage(
                                   imageUrl: entry.image!,
                                   fit: BoxFit.fill,
+                                  cacheManager: CacheManager(
+                                      Config(
+                                          entry.image ?? 'https://picsum.photos/200',
+                                          stalePeriod: const Duration(days: 2))),
                                   placeholder: (_, __) => const Center(
                                       child: CircularProgressIndicator()),
                                   // progressIndicatorBuilder: (context, url, downloadProgress) =>

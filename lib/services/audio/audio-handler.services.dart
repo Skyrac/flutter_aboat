@@ -1,3 +1,4 @@
+import 'package:Talkaboat/services/downloading/file-downloader.service.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:just_audio/just_audio.dart';
@@ -261,7 +262,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     }
   }
 
-  MediaItem convertEpisodeToMediaItem(Episode episode) {
+  Future<MediaItem> convertEpisodeToMediaItem(Episode episode) async {
     var playTime = episode.playTime!;
     if (episode.audioLengthSec! < episode.playTime! + 20) {
       playTime = 0;
@@ -273,8 +274,10 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
       "podcastId": podcastId,
       "playTime": playTime
     };
+    var id = (await FileDownloadService.getFile(episode.audio!))?.file.path ?? episode.audio!;
+    print(id);
     final mediaItem = MediaItem(
-        id: episode.audio!,
+        id: id,
         duration: Duration(seconds: episode.audioLengthSec! as int),
         album: episode.podcast != null && episode.podcast!.title != null
             ? episode.podcast!.title!
@@ -289,7 +292,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
       {int index = 0}) async {
     this.episodes = episodes;
     await updateQueue(
-        episodes.map((episode) => convertEpisodeToMediaItem(episode)).toList(),
+        (await Future.wait(episodes.map((episode) async => await convertEpisodeToMediaItem(episode)))).toList(),
         index: index);
   }
 

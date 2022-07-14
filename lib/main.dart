@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:Talkaboat/screens/app.screen.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/themes/colors.dart';
@@ -21,6 +23,10 @@ void main() async {
           DefaultColors.primaryColor.shade900, // navigation bar color
       statusBarColor: DefaultColors.secondaryColor.shade900 // status bar color
       ));
+
+  ByteData data = await PlatformAssetBundle().load('assets/ca/lets-encrypt-r3.pem');
+  SecurityContext.defaultContext.setTrustedCertificatesBytes(data.buffer.asUint8List());
+
   CachedNetworkImage.logLevel = CacheManagerLogLevel.debug;
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,

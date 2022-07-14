@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../injection/injector.dart';
@@ -131,8 +132,12 @@ class _PodcastListWidgetState extends State<PodcastListWidget> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   CachedNetworkImage(
-                                    imageUrl: entry.image!,
+                                    imageUrl:  entry.image ?? 'https://picsum.photos/200',
                                     fit: BoxFit.cover,
+                                    cacheManager: CacheManager(
+                                        Config(
+                                            entry.image ?? 'https://picsum.photos/200',
+                                            stalePeriod: const Duration(days: 2))),
                                     placeholder: (_, __) => const Center(
                                         child: CircularProgressIndicator()),
                                     // progressIndicatorBuilder: (context, url, downloadProgress) =>

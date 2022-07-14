@@ -1,6 +1,7 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../injection/injector.dart';
@@ -117,7 +118,11 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                                           MainAxisAlignment.center,
                                       children: [
                                         CachedNetworkImage(
-                                          imageUrl: entry.image!,
+                                          imageUrl:  entry.image ?? 'https://picsum.photos/200',
+                                          cacheManager: CacheManager(
+                                            Config(
+                                              entry.image ?? 'https://picsum.photos/200',
+                                              stalePeriod: const Duration(days: 2))),
                                           fit: BoxFit.fill,
                                           placeholder: (_, __) => const Center(
                                               child:
@@ -157,7 +162,11 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                 borderRadius: BorderRadius.circular(10),
                 child: SizedBox(
                     child: CachedNetworkImage(
-                  imageUrl: entry.image == null ? '' : entry.image!,
+                  imageUrl: entry.image ?? 'https://picsum.photos/200',
+                      cacheManager: CacheManager(
+                          Config(
+                              entry.image ?? 'https://picsum.photos/200',
+                              stalePeriod: const Duration(days: 2))),
                   fit: BoxFit.fill,
                   placeholder: (_, __) =>
                       const Center(child: CircularProgressIndicator()),
