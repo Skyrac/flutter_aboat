@@ -47,7 +47,7 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
 
   Widget buildAppBar(double shrinkOffset) => AppBar(
         title: Text(podcast.title!),
-        backgroundColor: DefaultColors.secondaryColorAlphaBlend.shade900,
+        backgroundColor: DefaultColors.secondaryColorAlphaBlendStrong.shade900,
         centerTitle: true,
       );
 
@@ -64,16 +64,6 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                   fit: BoxFit.cover,
                 ),
               )),
-          Container(
-            height: expandedHeight,
-            padding: const EdgeInsets.all(40.0),
-            child: Center(
-              child: Text(
-                "",
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-            ),
-          ),
         ],
       ));
 
@@ -102,25 +92,29 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
               Row(
                 children: [
                   Expanded(
-                      child: buildButton(
-                          text: 'Share', icon: Icons.share, onClick: () => {
-                            //TODO: Geräte Abhängigkeit prüfen
-                            Share.share("Check the Podcast ${podcast.title} on Talkaboat.online mobile App! Start listening and earn while supporting new and upcoming podcasters.\n\n Download it now on \nAndroid: https://play.google.com/store/apps/details?id=com.aboat.talkaboat\n", subject: "Check this out! A Podcast on Talkaboat.online.")
-                      })),
+                      child: Card(
+                        child: buildButton(
+                            text: 'Share', icon: Icons.share, onClick: () => {
+                              //TODO: Geräte Abhängigkeit prüfen
+                              Share.share("Check the Podcast ${podcast.title} on Talkaboat.online mobile App! Start listening and earn while supporting new and upcoming podcasters.\n\n Download it now on \nAndroid: https://play.google.com/store/apps/details?id=com.aboat.talkaboat\n", subject: "Check this out! A Podcast on Talkaboat.online.")
+                        }),
+                      )),
                   Expanded(
-                      child: buildButton(
-                          text: 'Claim',
-                          icon: Icons.rv_hookup,
-                          onClick: () => {
-                                showModalBottomSheet(
-                                    isScrollControlled: true,
-                                    shape: const RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.vertical(
-                                            top: Radius.circular(20))),
-                                    context: context,
-                                    builder: (context) =>
-                                        ClaimBottomSheet(podcastId: podcast.id!))
-                              })),
+                      child: Card(
+                        child: buildButton(
+                            text: 'Claim',
+                            icon: Icons.rv_hookup,
+                            onClick: () => {
+                                  showModalBottomSheet(
+                                      isScrollControlled: true,
+                                      shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.vertical(
+                                              top: Radius.circular(20))),
+                                      context: context,
+                                      builder: (context) =>
+                                          ClaimBottomSheet(podcastId: podcast.id!))
+                                }),
+                      )),
                 ],
               ),
             ],

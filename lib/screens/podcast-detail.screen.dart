@@ -27,42 +27,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
   var sort = "asc";
   var isDescOpen = false;
   var userService = getIt<UserService>();
-  Widget topContent(context) => Stack(
-        children: <Widget>[
-          Container(
-              padding: const EdgeInsets.only(left: 10.0),
-              height: MediaQuery.of(context).size.height * 0.5,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: NetworkImage(widget.podcastSearchResult!.image!),
-                  fit: BoxFit.cover,
-                ),
-              )),
-          Container(
-            height: MediaQuery.of(context).size.height * 0.5,
-            padding: const EdgeInsets.all(40.0),
-            width: MediaQuery.of(context).size.width,
-            decoration: BoxDecoration(
-                color: DefaultColors.secondaryColorAlphaBlend.shade900),
-            child: Center(
-              child: Text(
-                widget.podcastSearchResult!.title!,
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-            ),
-          ),
-          Positioned(
-            left: 8.0,
-            top: 60.0,
-            child: InkWell(
-              onTap: () {
-                Navigator.pop(context);
-              },
-              child: Icon(Icons.arrow_back, color: Colors.white),
-            ),
-          )
-        ],
-      );
+
 
   selectEpisode(int index, List<Episode> data) async {
     var selectedEpisode = data[index];

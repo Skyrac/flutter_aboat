@@ -1,3 +1,4 @@
+import 'package:Talkaboat/services/downloading/file-downloader.service.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -31,12 +32,18 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
   popupMenu(BuildContext context, Episode entry) => <PopupMenuEntry<String>>[
         PopupMenuItem<String>(
             value: 'add', child: Card(child: Text('Add to playlist'))),
+    PopupMenuItem<String>(
+        value: 'download', child: Card(child: Text(FileDownloadService.containsFile(entry.audio!) ? 'Delete' : 'Download'))),
       ];
 
   buildPopupButton(context, Episode entry) => PopupMenuButton(
         child: Icon(Icons.more_vert, color: Theme.of(context).iconTheme.color),
         onSelected: (value) async {
           switch (value) {
+            case 'download':
+              await FileDownloadService.cacheOrDelete(entry.audio!);
+              setState(() { });
+              break;
             case "add":
               if (!userService.isConnected) {
                 Navigator.push(
@@ -155,7 +162,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
           const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
       leading: SizedBox(
         width: 60,
-        height: 100,
+        height: 60,
         child: Stack(
           children: [
             ClipRRect(
@@ -207,8 +214,13 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
           ),
           Row(
             children: [
+              IconButton(onPressed: (() async {
+                await FileDownloadService.cacheOrDelete(entry.audio!);
+                setState(() { });
+              }), icon: Icon(FileDownloadService.containsFile(entry.audio!) ? Icons.cloud_done : Icons.cloud_download_outlined), color: FileDownloadService.containsFile(entry.audio!) ? Colors.green : Colors.white),
+              SizedBox(width: 10,),
               SizedBox(
-                width: 60,
+                width: 55,
                 child: Text(
                   (entry.playTime ?? 0) + 20 >= (entry.audioLengthSec ?? 0)
                       ? "Listened"
@@ -218,7 +230,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
               AbsorbPointer(
                   child: SizedBox(
                 height: 25,
-                width: 170,
+                width: 110,
                 child: SliderTheme(
                   data: SliderTheme.of(context).copyWith(
                       thumbColor: Colors.transparent,
@@ -253,7 +265,26 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
   @override
   Widget build(BuildContext context) {
     return widget.episode == null
-        ? SizedBox()
-        : makeCard(context, widget.episode);
+        ? SizedBox() :
+    FutureBuilder(
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                '${snapshot.error} occurred',
+                style: const TextStyle(fontSize: 18),
+              ),
+            );
+          } else {
+              return makeCard(context, widget.episode);
+          }
+        } else {
+          return const Center(
+              child: CircularProgressIndicator());
+        }
+      },
+      future: FileDownloadService.getFile(widget.episode.audio!),
+    );
   }
 }

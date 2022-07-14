@@ -61,4 +61,17 @@ class DefaultColors {
     800: Color.fromRGBO(10, 17, 26, 0.9),
     900: Color.fromRGBO(4, 7, 11, 0.9),
   });
+  static final secondaryColorAlphaBlendStrong =
+  MaterialColor(primaryColorBase.value, const <int, Color>{
+    50: Color.fromRGBO(226, 233, 243, 0.4),
+    100: Color.fromRGBO(193, 209, 231, 0.4),
+    200: Color.fromRGBO(134, 166, 207, 0.4),
+    300: Color.fromRGBO(72, 120, 183, 0.4),
+    400: Color.fromRGBO(48, 79, 121, 0.4),
+    500: Color.fromRGBO(24, 40, 61, 0.4),
+    600: Color.fromRGBO(19, 31, 48, 0.4),
+    700: Color.fromRGBO(14, 24, 37, 0.4),
+    800: Color.fromRGBO(10, 17, 26, 0.4),
+    900: Color.fromRGBO(4, 7, 11, 0.4),
+  });
 }
