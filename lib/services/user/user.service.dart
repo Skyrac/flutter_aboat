@@ -216,11 +216,12 @@ class UserService {
   }
 
   getCoreData() async {
+    print("Get Core Data");
     if (token.isNotEmpty) {
       await getUserInfo();
       if (userInfo != null) {
         await getRewards();
-        await getLibrary();
+        await getLibrary(true);
         var lastUpdate = await prefs.getInt(LAST_NOTIFICATION_UPDATE);
         if(lastUpdate != null) {
           lastNotificationSeen = DateTime.fromMillisecondsSinceEpoch(lastUpdate);
@@ -376,16 +377,19 @@ class UserService {
   //#endregion
 
   //#region Library
-  Future<List<Podcast>> getLibrary() async {
-    var newLibrary = await PodcastRepository.getUserLibrary();
-    library = newLibrary;
+  Future<List<Podcast>> getLibrary(refresh) async {
+    if(refresh) {
+      var newLibrary = await PodcastRepository.getUserLibrary();
+      library = newLibrary;
+    }
     for(var entry in library) {
-      var lastUpdateSeen = await prefs.getInt(LAST_NOTIFICATION_UPDATE + entry.podcastId.toString());
+      var lastUpdateSeen = prefs.getInt(LAST_NOTIFICATION_UPDATE + entry.podcastId.toString());
       if(lastUpdateSeen != null) {
-        lastPodcastUpdateSeen.assign(entry.podcastId!, DateTime.fromMillisecondsSinceEpoch(lastUpdateSeen));
+        var date = DateTime.fromMillisecondsSinceEpoch(lastUpdateSeen);
+        lastPodcastUpdateSeen[entry.podcastId!] = date;
       }
     }
-    return newLibrary;
+    return library;
   }
 
   Future<List<Podcast>> removeFromLibrary(int id) async {
@@ -397,7 +401,7 @@ class UserService {
 
   Future<List<Podcast>> addToLibrary(int id) async {
     if (await PodcastRepository.addToLibrary(id)) {
-      return await getLibrary();
+      return await getLibrary(true);
     }
     return library;
   }
@@ -454,7 +458,8 @@ class UserService {
 
   bool unseenPodcastNotifcationUpdates(int id) {
     var podcast = library.firstWhereOrNull((element) => id.isEqual(element.podcastId!));
-    if(isConnected && library.isNotEmpty && podcast != null) {
+    if(isConnected && library.isNotEmpty && podcast != null && podcast.lastUpdate != null) {
+      print(lastPodcastUpdateSeen[id]);
       return !lastPodcastUpdateSeen.containsKey(podcast.podcastId)
         || lastPodcastUpdateSeen[podcast.podcastId]!.millisecondsSinceEpoch < podcast.lastUpdate!.millisecondsSinceEpoch;
     }

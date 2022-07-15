@@ -95,10 +95,14 @@ class PodcastRepository {
   }
 
   static Future<List<Playlist>> getPlaylists() async {
-    var response = await dio.get<String>('$API/playlist');
-    var list = List<Playlist>.from(
-        json.decode(response.data!).map((data) => Playlist.fromJson(data)));
-    return list;
+    try {
+      var response = await dio.get<String>('$API/playlist');
+      var list = List<Playlist>.from(
+          json.decode(response.data!).map((data) => Playlist.fromJson(data)));
+      return list;
+    } catch(ex) {
+      return List.empty();
+    }
   }
 
   static Future<Playlist> changeEpisodePositionInPlaylist(

@@ -102,8 +102,8 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: SizedBox(
-                    height: 80,
-                    width: 80,
+                    height: 60,
+                    width: 60,
                     child: CachedNetworkImage(
                         imageUrl: widget.playlist.image == null ||
                                 widget.playlist.image!.isEmpty

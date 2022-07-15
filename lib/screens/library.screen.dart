@@ -84,7 +84,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                           style: Theme.of(context).textTheme.bodyLarge,
                         ));
                       },
-                      future: userService.getLibrary(),
+                      future: userService.getLibrary(false),
                     ),
                   )
                 : Center(
