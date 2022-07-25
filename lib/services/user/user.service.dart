@@ -33,6 +33,7 @@ class UserService {
   Map<int, DateTime?> lastPodcastUpdateSeen = {};
   late final prefs;
   var isSignin = false;
+  var baseLogin = false;
   static const String TOKEN_IDENTIFIER = "aboat_token";
   static const String LAST_NOTIFICATION_UPDATE = "last_update_seen";
 
@@ -49,6 +50,7 @@ class UserService {
   Future<bool> socialLogin(SocialLogin socialType, BuildContext context) async {
     UserCredential? credential;
     isSignin = true;
+    baseLogin = false;
     switch (socialType) {
       case SocialLogin.Google:
         credential = await signInWithGoogle(context);
@@ -167,15 +169,22 @@ class UserService {
 
   setInitialValues() async {
     prefs = await SharedPreferences.getInstance();
+    String secToken = await prefs.getString(TOKEN_IDENTIFIER);
+    if (secToken.isNotEmpty) {
+      token = secToken;
+      print(token);
+      baseLogin = true;
+    }
+
     FirebaseAuth.instance.idTokenChanges().listen((User? user) async {
       if (isSignin) {
         return;
       }
-      if (user == null) {
+      if (user == null && !baseLogin) {
         token = "";
         firebaseToken = "";
         await prefs.setString(TOKEN_IDENTIFIER, "");
-      } else {
+      } else if(user != null && !baseLogin) {
         try {
           await loginWithFirebaseToken(user);
         } catch (ex) {
@@ -183,13 +192,11 @@ class UserService {
         }
       }
     });
-    var secToken = prefs.getString(TOKEN_IDENTIFIER);
-    if (secToken != null) {
-      token = secToken;
-    }
+
   }
 
   loginWithFirebaseToken(User user) async {
+    baseLogin = false;
     var userIdToken = await user.getIdToken(true);
     firebaseToken = userIdToken;
     try {
@@ -291,6 +298,7 @@ class UserService {
   }
 
   logout() async {
+    baseLogin = false;
     token = "";
     userInfo = null;
     rewards = Reward();
@@ -299,10 +307,12 @@ class UserService {
     GoogleSignIn googleSignIn = GoogleSignIn();
     FacebookAuth facebookAuth = FacebookAuth.instance;
     try {
-      //await googleSignIn.signOut();
-      await googleSignIn.disconnect();
-      await FirebaseAuth.instance.signOut();
-      await facebookAuth.logOut();
+      if(googleSignIn.currentUser != null) {
+        await googleSignIn.disconnect();
+      }
+      if(await facebookAuth.accessToken != null) {
+        await facebookAuth.logOut();
+      }
       await FirebaseAuth.instance.signOut();
     } catch(ex) {
 
