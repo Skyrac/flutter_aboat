@@ -30,6 +30,7 @@ class UserService {
   Map<int, List<Podcast>> podcastProposalsHomeScreen = {};
   ResponseModel? lastConnectionState;
   DateTime? lastNotificationSeen;
+  List<UserInfoData> friends = List.empty();
   Map<int, DateTime?> lastPodcastUpdateSeen = {};
   late final prefs;
   var isSignin = false;
@@ -229,6 +230,7 @@ class UserService {
       if (userInfo != null) {
         await getRewards();
         await getLibrary(true);
+        await getFriends();
         var lastUpdate = await prefs.getInt(LAST_NOTIFICATION_UPDATE);
         if(lastUpdate != null) {
           lastNotificationSeen = DateTime.fromMillisecondsSinceEpoch(lastUpdate);
@@ -244,6 +246,10 @@ class UserService {
 
   getRewards() async {
     rewards = await UserRepository.getUserRewards();
+  }
+
+  getFriends() async {
+    friends = await UserRepository.getFriends(100, 0);
   }
 
   Future<bool> getUserInfo() async {

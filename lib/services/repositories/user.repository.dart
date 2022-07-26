@@ -54,6 +54,30 @@ class UserRepository {
     }
   }
 
+  static Future<List<UserInfoData>> getFriends(int amount, int offset) async {
+    try {
+      var response = await dio.get<String>('/v1/social/friends/$amount/$offset');
+      var convertedData = jsonDecode(response.data!)
+          .map((data) => UserInfoData.fromJson(data))
+          .toList();
+      return convertedData;
+    } catch (exception) {
+      return List.empty();
+    }
+  }
+
+  static Future<List<UserInfoData>> getUserFriends(int userId, int amount, int offset) async {
+    try {
+      var response = await dio.get<String>('/v1/social/friends/$userId/$amount/$offset');
+      var convertedData = jsonDecode(response.data!)
+          .map((data) => UserInfoData.fromJson(data))
+          .toList();
+      return convertedData;
+    } catch (exception) {
+      return List.empty();
+    }
+  }
+
   static Future<ResponseModel> firebaseLogin(String userIdToken) async {
     var data = ResponseModel(status: 0, text: userIdToken);
     var response =
@@ -91,5 +115,6 @@ class UserRepository {
       return ResponseModel();
     }
   }
+
 }
 //hitziger.fabian@live.de
