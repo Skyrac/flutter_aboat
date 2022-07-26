@@ -1,8 +1,11 @@
+import 'package:Talkaboat/models/user/social-user.model.dart';
 import 'package:Talkaboat/services/user/social.service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../../injection/injector.dart';
+import '../../models/user/user-info.model.dart';
 import '../../services/user/user.service.dart';
 import '../login.screen.dart';
 
@@ -29,6 +32,7 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
   void dispose() {
     _tabController.removeListener(_handleTabIndex);
     _tabController.dispose();
+    friendController.dispose();
     super.dispose();
   }
 
@@ -98,14 +102,44 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
                 child: Card(child: InkWell(
-                  onTap: (() async { await socialService.SearchFriends(friendController.text); }),
+                  onTap: (() async {
+                    setState(() { });
+                  }),
                     child: Icon(Icons.search, size: 36,)),),
               )
             ],
           ),
+              friendController.text.isEmpty ? showFriends() : showFriendsAndPossibleFriends()
         ]),
       ),
     );
+  }
+
+  showFriends() {
+    return SizedBox();
+  }
+
+  showFriendsAndPossibleFriends() {
+    return FutureBuilder<List<SocialUser>>(builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.done) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Text(
+              '${snapshot.error} occurred',
+              style: const TextStyle(fontSize: 18),
+            ),
+          );
+        } else if (snapshot.hasData && snapshot.data != null) {
+          // Extracting data from snapshot object
+          final data = snapshot.data;
+          print(snapshot.data);
+          if (data != null && data.isNotEmpty) {
+            return Icon(Icons.one_k);
+          }
+        }
+      }
+      return const Center(child: CircularProgressIndicator());
+    }, future: socialService.searchFriends(friendController.text));
   }
 
 
