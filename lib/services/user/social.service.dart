@@ -4,9 +4,15 @@ import '../../models/user/user-info.model.dart';
 
 class SocialService {
 
+  String lastQueue = "";
+  List<SocialUser> queueResult = List.empty();
+
   Future<List<SocialUser>> searchFriends(String identifier) async {
-    var potentialFriends = await SocialRepository.searchFriends(identifier);
-    return potentialFriends;
+    if(identifier != lastQueue) {
+      lastQueue = identifier;
+      queueResult = await SocialRepository.searchFriends(identifier);
+    }
+    return queueResult;
   }
 
 }

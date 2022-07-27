@@ -20,10 +20,13 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
   final userService = getIt<UserService>();
   late TabController _tabController;
   final socialService = getIt<SocialService>();
+  final friendController = TextEditingController();
+
   @override
   void initState() {
     _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
     _tabController.addListener(_handleTabIndex);
+    friendController.addListener(_handleTabIndex);
     super.initState();
 
   }
@@ -79,10 +82,9 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
   }
 
   Widget createFeedBody() {
-    return Icon(Icons.directions_car);
+    return Center(child: Text("There are no posts in your feed yet."));
   }
 
-  final friendController = TextEditingController();
 
   Widget createFriendBody() {
     var size = MediaQuery.of(context).size;
@@ -105,7 +107,7 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
                   onTap: (() async {
                     setState(() { });
                   }),
-                    child: Icon(Icons.search, size: 36,)),),
+                    child: Icon(Icons.search, size: 30,)),),
               )
             ],
           ),
@@ -132,9 +134,12 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
         } else if (snapshot.hasData && snapshot.data != null) {
           // Extracting data from snapshot object
           final data = snapshot.data;
-          print(snapshot.data);
           if (data != null && data.isNotEmpty) {
-            return Icon(Icons.one_k);
+            return Expanded(child:
+            ListView(scrollDirection: Axis.vertical,
+            children: createFriendCards(data)
+            ,
+            ));
           }
         }
       }
@@ -142,6 +147,49 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
     }, future: socialService.searchFriends(friendController.text));
   }
 
+  createFriendCards(List<SocialUser> data) {
+    var size = MediaQuery.of(context).size;
+    List<Widget> widgets = [];
+    data.forEach((element) {
+      widgets.add(
+        Card(child: Container(height: 100, child: Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.network(element.image ?? "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=wavatar&f=y")),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 15.0),
+              child: SizedBox(
+                height: 70,
+                width: size.width - 175,
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+
+                  Text(element.name ?? "No name", style: Theme.of(context).textTheme.bodyLarge,),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 5.0),
+                  child: Text("@${element.userName!}"),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 5.0),
+                  child: Text(element.description ?? "", overflow: TextOverflow.ellipsis,),
+                )
+            ],),
+              )),
+            IconButton(onPressed: () { }, icon: Icon(Icons.add))
+          ],
+        )))
+      );
+    });
+    return widgets;
+  }
 
   createLoginButton() => Center(
     child: Padding(
@@ -176,4 +224,6 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
       ),
     ),
   );
+
+
 }

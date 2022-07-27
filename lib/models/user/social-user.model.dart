@@ -1,14 +1,18 @@
 class SocialUser {
   String? userName;
   int? userId;
-  String? email;
+  String? description;
+  String? image;
+  String? name;
   bool? verified;
   bool? ambassador;
   bool? artist;
 
   SocialUser(
       {this.userName,
-      this.email,
+      this.description,
+        this.image,
+        this.name,
         this.userId,
       this.verified,
       this.ambassador,
@@ -17,7 +21,9 @@ class SocialUser {
   SocialUser.fromJson(Map<String, dynamic> json) {
     userName = json['userName'];
     userId = json['userId'];
-    email = json['email'];
+    description = json['description'];
+    image = json['image'];
+    name = json['name'];
     verified = json['verified'] ?? false;
     ambassador = json['ambassador'] ?? false;
     artist = json['artist'] ?? false;
@@ -26,7 +32,9 @@ class SocialUser {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['userName'] = userName;
-    data['email'] = email;
+    data['description'] = description;
+    data['image'] = image;
+    data['name'] = name;
     data['userId'] = userId;
     data['verified'] = verified;
     data['ambassador'] = ambassador;
