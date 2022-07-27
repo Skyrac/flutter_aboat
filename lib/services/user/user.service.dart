@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:Talkaboat/services/user/social.service.dart';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
+import '../../injection/injector.dart';
 import '../../models/playlist/playlist.model.dart';
 import '../../models/podcasts/podcast.model.dart';
 import '../../models/response.model.dart';
@@ -30,7 +32,7 @@ class UserService {
   Map<int, List<Podcast>> podcastProposalsHomeScreen = {};
   ResponseModel? lastConnectionState;
   DateTime? lastNotificationSeen;
-  List<UserInfoData> friends = List.empty();
+  final friendService = getIt<SocialService>();
   Map<int, DateTime?> lastPodcastUpdateSeen = {};
   late final prefs;
   var isSignin = false;
@@ -249,7 +251,7 @@ class UserService {
   }
 
   getFriends() async {
-    friends = await UserRepository.getFriends(100, 0);
+    await friendService.getFriends();
   }
 
   Future<bool> getUserInfo() async {

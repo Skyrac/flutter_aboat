@@ -4,6 +4,7 @@ class SocialUser {
   String? description;
   String? image;
   String? name;
+  bool? pending;
   bool? verified;
   bool? ambassador;
   bool? artist;
@@ -14,6 +15,7 @@ class SocialUser {
         this.image,
         this.name,
         this.userId,
+        this.pending,
       this.verified,
       this.ambassador,
       this.artist});
@@ -24,6 +26,7 @@ class SocialUser {
     description = json['description'];
     image = json['image'];
     name = json['name'];
+    pending = json['pending'];
     verified = json['verified'] ?? false;
     ambassador = json['ambassador'] ?? false;
     artist = json['artist'] ?? false;
@@ -35,6 +38,7 @@ class SocialUser {
     data['description'] = description;
     data['image'] = image;
     data['name'] = name;
+    data['pending'] = pending;
     data['userId'] = userId;
     data['verified'] = verified;
     data['ambassador'] = ambassador;
