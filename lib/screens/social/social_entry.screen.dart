@@ -183,7 +183,10 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
                 )
             ],),
               )),
-            IconButton(onPressed: () { }, icon: Icon(Icons.add))
+            IconButton(onPressed: () async {
+              await socialService.requestFriends(element);
+              setState(() { });
+            }, icon: socialService.isFriend(element.userId) ? Icon(Icons.remove) : socialService.isPending(element.userId) ? Icon(Icons.hourglass_empty) : Icon(Icons.add))
           ],
         )))
       );

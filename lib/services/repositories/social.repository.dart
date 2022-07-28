@@ -12,7 +12,43 @@ class SocialRepository {
       var response = await dio.get<String>('/v1/social/friends/$amount/$offset');
 
       var convertedData = List<SocialUser>.from(jsonDecode(response.data!)
-          .map((data) => SocialUser.fromJson(data)));
+          .map((data) => SocialUser.fromJson(data)), growable: true);
+      return convertedData;
+    } catch (exception) {
+      return List.empty();
+    }
+  }
+
+  static Future<List<SocialUser>> getPendingFriends({int amount = 0, int offset = 0}) async {
+    try {
+      var response = await dio.get<String>('/v1/social/friends/requests/outgoing/$amount/$offset');
+
+      var convertedData = List<SocialUser>.from(jsonDecode(response.data!)
+          .map((data) => SocialUser.fromJson(data)), growable: true);
+      return convertedData;
+    } catch (exception) {
+      return List.empty();
+    }
+  }
+
+  static Future<List<SocialUser>> getFriendRequests({int amount = 0, int offset = 0}) async {
+    try {
+      var response = await dio.get<String>('/v1/social/friends/requests/incoming/$amount/$offset');
+
+      var convertedData = List<SocialUser>.from(jsonDecode(response.data!)
+          .map((data) => SocialUser.fromJson(data)), growable: true);
+      return convertedData;
+    } catch (exception) {
+      return List.empty();
+    }
+  }
+
+  static Future<List<SocialUser>> getFriendSuggestions({int amount = 0, int offset = 0}) async {
+    try {
+      var response = await dio.get<String>('/v1/social/friends/suggestions/$amount/$offset');
+
+      var convertedData = List<SocialUser>.from(jsonDecode(response.data!)
+          .map((data) => SocialUser.fromJson(data)), growable: true);
       return convertedData;
     } catch (exception) {
       return List.empty();
@@ -23,7 +59,7 @@ class SocialRepository {
     try {
       var response = await dio.get<String>('/v1/social/find/$identifier');
       var convertedData = List<SocialUser>.from(jsonDecode(response.data!)
-          .map((data) => SocialUser.fromJson(data)));
+          .map((data) => SocialUser.fromJson(data)), growable: true);
       return convertedData;
     } catch (exception) {
       return List.empty();

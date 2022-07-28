@@ -18,9 +18,10 @@ Future<void> configureDependencies() async {
         androidNotificationChannelName: 'Talkaboat Audio',
         androidNotificationOngoing: true,
       )));
+
+  getIt.registerSingleton(SocialService());
   getIt.registerSingleton(await UserService.init());
   getIt.registerSingleton(PodcastService());
   getIt.registerSingleton(await StateService());
   getIt.registerSingleton(TokenService());
-  getIt.registerSingleton(SocialService());
 }
