@@ -98,6 +98,7 @@ class SocialRepository {
       var response = await dio.post<bool>('/v1/social/accept/$userId');
       return response.data!;
     } catch (exception) {
+      print(exception);
       return false;
     }
   }

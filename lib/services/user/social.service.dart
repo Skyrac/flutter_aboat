@@ -16,6 +16,9 @@ class SocialService {
   isPending(int? userId) => pendingFriends.isNotEmpty
       && pendingFriends.any((element) => element.userId == userId);
 
+  isRequest(int? userId) => friendRequests.isNotEmpty
+      && friendRequests.any((element) => element.userId == userId);
+
   getPendingAndFriendsLocally()  {
     List<SocialUser> list = List.empty(growable: true);
     if(friendRequests.isNotEmpty) {
@@ -84,6 +87,43 @@ class SocialService {
       return [];
     }
     return queueResult;
+  }
+
+  Future<bool> acceptFriend(SocialUser? user) async {
+    var success = false;
+    if(user != null) {
+
+      print("try add friend");
+      success = await SocialRepository.acceptFriendRequest(user.userId!);
+      if(success) {
+        print("accepted friend");
+        friends.add(user);
+        friendRequests.remove(user);
+      }
+    }
+    return success;
+  }
+
+  Future<bool> declineFriend(SocialUser? user) async {
+    var success = false;
+    if(user != null) {
+      success = await SocialRepository.declineFriendRequest(user.userId!);
+      if(success) {
+        friendRequests.remove(user);
+      }
+    }
+    return success;
+  }
+
+  Future<bool> removeFriend(SocialUser? user) async {
+    var success = false;
+    if(user != null) {
+      success = await SocialRepository.removeFriend(user.userId!);
+      if(success) {
+        friends.remove(user);
+      }
+    }
+    return success;
   }
 
 }

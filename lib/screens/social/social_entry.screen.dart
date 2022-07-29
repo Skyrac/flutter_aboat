@@ -9,6 +9,7 @@ import 'package:page_transition/page_transition.dart';
 import '../../injection/injector.dart';
 import '../../models/user/user-info.model.dart';
 import '../../services/user/user.service.dart';
+import '../../themes/colors.dart';
 import '../login.screen.dart';
 
 class SocialEntryScreen extends StatefulWidget {
@@ -107,7 +108,12 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
             children: [
               SizedBox(
                   width: size.width / 4 * 3,
-                  child: TextField(controller: friendController,)),
+                  child: TextField(controller: friendController,  decoration: InputDecoration(
+                    hintText: 'Search friends...',
+                    suffixIcon: IconButton(
+                      onPressed: friendController.clear,
+                      icon: Icon(Icons.clear, color: friendController.text.isEmpty ? Colors.transparent : DefaultColors.primaryColor),
+                    ),))),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
                 child: Card(child: InkWell(
@@ -130,6 +136,8 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
         children: createFriendCards(socialService.getPendingAndFriendsLocally())
     ));
   }
+
+  SocialUser? activeRequest;
 
   showFriendsAndPossibleFriends() {
     return FutureBuilder<List<SocialUser>>(builder: (context, snapshot) {
@@ -197,10 +205,33 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
                 )
             ],),
               )),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+                children: [
             IconButton(onPressed: () async {
-              await socialService.requestFriends(element);
+              if(socialService.isRequest(element.userId)) {
+                if(activeRequest != element) {
+                  activeRequest = element;
+                } else {
+                  await socialService.acceptFriend(activeRequest);
+                  activeRequest = null;
+                }
+              } else if(socialService.isFriend(element.userId)) {
+                await socialService.removeFriend(element);
+              }else {
+                await socialService.requestFriends(element);
+              }
               setState(() { });
-            }, icon: socialService.isFriend(element.userId) ? Icon(Icons.remove) : socialService.isPending(element.userId) ? Icon(Icons.hourglass_empty) : Icon(Icons.add))
+            }, icon: socialService.isFriend(element.userId)
+                ? Icon(Icons.remove) : socialService.isPending(element.userId)
+                ? Icon(Icons.hourglass_empty) : socialService.isRequest(element.userId)
+                ? (activeRequest == element ?  Icon(Icons.check) : Icon(Icons.question_mark)) : Icon(Icons.add)),
+            activeRequest != element ? SizedBox() :
+            IconButton(onPressed: () async {
+              await socialService.declineFriend(element);
+              activeRequest = null;
+              setState(() { });
+            }, icon: Icon(Icons.block))])
           ],
         )))
       );
