@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:Talkaboat/models/user/social-user.model.dart';
 import 'package:Talkaboat/services/user/social.service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -21,12 +23,16 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
   late TabController _tabController;
   final socialService = getIt<SocialService>();
   final friendController = TextEditingController();
-
+  Timer? _debounce;
   @override
   void initState() {
     _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
     _tabController.addListener(_handleTabIndex);
-    friendController.addListener(_handleTabIndex);
+    friendController.addListener(() {if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      _handleTabIndex();
+      });
+    });
     super.initState();
 
   }
@@ -35,6 +41,7 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
   void dispose() {
     _tabController.removeListener(_handleTabIndex);
     _tabController.dispose();
+    _debounce?.cancel();
     friendController.dispose();
     super.dispose();
   }
@@ -118,7 +125,10 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
   }
 
   showFriends() {
-    return SizedBox();
+    return Expanded(child:
+    ListView(scrollDirection: Axis.vertical,
+        children: createFriendCards(socialService.getPendingAndFriendsLocally())
+    ));
   }
 
   showFriendsAndPossibleFriends() {
@@ -133,13 +143,14 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
           );
         } else if (snapshot.hasData && snapshot.data != null) {
           // Extracting data from snapshot object
-          final data = snapshot.data;
-          if (data != null && data.isNotEmpty) {
-            return Expanded(child:
-            ListView(scrollDirection: Axis.vertical,
-            children: createFriendCards(data)
-            ,
-            ));
+
+            final data = snapshot.data;
+            if (data != null && data.isNotEmpty) {
+              return Expanded(child:
+              ListView(scrollDirection: Axis.vertical,
+                children: createFriendCards(data)
+              ));
+
           }
         }
       }
@@ -148,6 +159,9 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
   }
 
   createFriendCards(List<SocialUser> data) {
+    if(data.isEmpty) {
+      return [SizedBox()];
+    }
     var size = MediaQuery.of(context).size;
     List<Widget> widgets = [];
     data.forEach((element) {

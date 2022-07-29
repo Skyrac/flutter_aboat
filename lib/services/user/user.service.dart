@@ -251,7 +251,7 @@ class UserService {
   }
 
   getFriends() async {
-    await friendService.getFriends();
+    await friendService.initialize();
   }
 
   Future<bool> getUserInfo() async {
