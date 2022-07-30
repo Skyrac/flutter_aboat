@@ -22,6 +22,7 @@ class SocialService {
   getPendingAndFriendsLocally()  {
     List<SocialUser> list = List.empty(growable: true);
     if(friendRequests.isNotEmpty) {
+      print(friendRequests);
       list.addAll(friendRequests);
     }
     if(friends.isNotEmpty) {

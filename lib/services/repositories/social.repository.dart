@@ -108,6 +108,7 @@ class SocialRepository {
       var response = await dio.delete<bool>('/v1/social/remove/$userId');
       return response.data!;
     } catch (exception) {
+      print(exception);
       return false;
     }
   }

@@ -209,16 +209,16 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
               mainAxisAlignment: MainAxisAlignment.center,
                 children: [
             IconButton(onPressed: () async {
-              if(socialService.isRequest(element.userId)) {
+              if(socialService.isFriend(element.userId)) {
+                await socialService.removeFriend(element);
+              } else if(socialService.isRequest(element.userId)) {
                 if(activeRequest != element) {
                   activeRequest = element;
                 } else {
                   await socialService.acceptFriend(activeRequest);
                   activeRequest = null;
                 }
-              } else if(socialService.isFriend(element.userId)) {
-                await socialService.removeFriend(element);
-              }else {
+              } else {
                 await socialService.requestFriends(element);
               }
               setState(() { });
