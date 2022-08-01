@@ -72,6 +72,6 @@ class DefaultFirebaseOptions {
     storageBucket: 'enodi-bc.appspot.com',
     androidClientId: '1063546575410-j07tkmcsdc65bnmhgkorp4d91l3kk5g5.apps.googleusercontent.com',
     iosClientId: '1063546575410-h7e4foo0p2q6geegh74g61i7vq7cnhmn.apps.googleusercontent.com',
-    iosBundleId: 'com.example.talkaboat',
+    iosBundleId: 'com.aboat.talkaboat',
   );
 }
