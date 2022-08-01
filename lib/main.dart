@@ -18,23 +18,30 @@ import 'injection/injector.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      systemNavigationBarColor:
-          DefaultColors.primaryColor.shade900, // navigation bar color
-      statusBarColor: DefaultColors.secondaryColor.shade900 // status bar color
-      ));
+  try {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        systemNavigationBarColor:
+        DefaultColors.primaryColor.shade900, // navigation bar color
+        statusBarColor: DefaultColors.secondaryColor
+            .shade900 // status bar color
+    ));
 
-  ByteData data = await PlatformAssetBundle().load('assets/ca/lets-encrypt-r3.pem');
-  SecurityContext.defaultContext.setTrustedCertificatesBytes(data.buffer.asUint8List());
+    ByteData data = await PlatformAssetBundle().load(
+        'assets/ca/lets-encrypt-r3.pem');
+    SecurityContext.defaultContext.setTrustedCertificatesBytes(
+        data.buffer.asUint8List());
 
-  CachedNetworkImage.logLevel = CacheManagerLogLevel.debug;
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  await configureDependencies();
-  configDio();
+    CachedNetworkImage.logLevel = CacheManagerLogLevel.debug;
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    await configureDependencies();
+    configDio();
 
-  await getIt<UserService>().getCoreData();
+    await getIt<UserService>().getCoreData();
+  } catch(exception) {
+    print(exception);
+  }
   runApp(const ProviderScope(child: MyApp()));
 }
 
@@ -47,13 +54,6 @@ class MyApp extends StatelessWidget {
         title: 'Talkaboat',
         theme: DefaultTheme.defaultTheme,
         debugShowCheckedModeBanner: false,
-        home: AnimatedSplashScreen(
-            duration: 2000,
-            splash: const Image(
-                width: 250, image: AssetImage('assets/images/talkaboat.png')),
-            nextScreen: const AppScreen(title: 'Talkaboat'),
-            splashTransition: SplashTransition.fadeTransition,
-            pageTransitionType: PageTransitionType.fade,
-            backgroundColor: DefaultColors.secondaryColor.shade900));
+        home: const AppScreen(title: 'Talkaboat'));
   }
 }
