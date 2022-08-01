@@ -18,7 +18,6 @@ import 'injection/injector.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  try {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
         systemNavigationBarColor:
         DefaultColors.primaryColor.shade900, // navigation bar color
@@ -32,16 +31,18 @@ void main() async {
         data.buffer.asUint8List());
 
     CachedNetworkImage.logLevel = CacheManagerLogLevel.debug;
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+    try {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+    } catch(exception) {
+
+    }
     await configureDependencies();
     configDio();
 
     await getIt<UserService>().getCoreData();
-  } catch(exception) {
-    print(exception);
-  }
+
   runApp(const ProviderScope(child: MyApp()));
 }
 

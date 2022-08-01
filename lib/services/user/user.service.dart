@@ -179,22 +179,26 @@ class UserService {
       baseLogin = true;
     }
 
-    FirebaseAuth.instance.idTokenChanges().listen((User? user) async {
-      if (isSignin) {
-        return;
-      }
-      if (user == null && !baseLogin) {
-        token = "";
-        firebaseToken = "";
-        await prefs.setString(TOKEN_IDENTIFIER, "");
-      } else if(user != null && !baseLogin) {
-        try {
-          await loginWithFirebaseToken(user);
-        } catch (ex) {
-          prefs.setString(TOKEN_IDENTIFIER, "");
+    try {
+      FirebaseAuth.instance.idTokenChanges().listen((User? user) async {
+        if (isSignin) {
+          return;
         }
-      }
-    });
+        if (user == null && !baseLogin) {
+          token = "";
+          firebaseToken = "";
+          await prefs.setString(TOKEN_IDENTIFIER, "");
+        } else if (user != null && !baseLogin) {
+          try {
+            await loginWithFirebaseToken(user);
+          } catch (ex) {
+            prefs.setString(TOKEN_IDENTIFIER, "");
+          }
+        }
+      });
+    } catch(exception) {
+
+    }
 
   }
 
