@@ -2,7 +2,6 @@ import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/services/audio/podcast.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import '../../themes/colors.dart';
