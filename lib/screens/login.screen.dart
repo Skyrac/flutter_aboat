@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:Talkaboat/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:social_login_buttons/social_login_buttons.dart';
@@ -65,7 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   createEmailPinRequestWidget(String labelText, Function callback,
-          TextEditingController textController, String buttonText) =>
+      TextEditingController textController, String buttonText) =>
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 40),
         child: Row(
@@ -123,11 +125,15 @@ class _LoginScreenState extends State<LoginScreen> {
       isLoading = true;
     });
 
-    if (await userService.socialLogin(socialLogin, context)) {
-      ShowSnackBar(context, "Successfully signed in");
-      widget.refreshParent();
-      Navigator.pop(context);
-      return;
+    try {
+      if (await userService.socialLogin(socialLogin, context)) {
+        ShowSnackBar(context, "Successfully signed in");
+        widget.refreshParent();
+        Navigator.pop(context);
+        return;
+      }
+    } catch(exception) {
+      print(exception);
     }
 
     setState(() {
@@ -195,77 +201,97 @@ class _LoginScreenState extends State<LoginScreen> {
     final size = MediaQuery.of(context).size;
     return SafeArea(
         child: Container(
-      decoration: BoxDecoration(
-          gradient: LinearGradient(colors: [
-        DefaultColors.primaryColor.shade900,
-        DefaultColors.secondaryColor.shade900,
-        DefaultColors.secondaryColor.shade900
-      ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
-      child: Scaffold(
-          body: Stack(
-        children: [
-          LoginAndRegisterBackground(
-            child: Container(
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(height: size.height * 0.06),
-                    sentEmail
-                        ? createEmailPinRequestWidget("Pin", () async {
-                            await sendLogin(context);
-                          }, pinController, "Login")
-                        : createEmailPinRequestWidget(
-                            "E-Mail", requestEmail, emailController, "Get Pin"),
-                    SizedBox(height: size.height * 0.01),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 100),
-                      child: SocialLoginButton(
-                        buttonType: SocialLoginButtonType.google,
-                        mode: SocialLoginButtonMode.single,
-                        text: "Google",
-                        onPressed: () async {
-                          await socialButtonPressed(SocialLogin.Google);
-                        },
+          decoration: BoxDecoration(
+              gradient: LinearGradient(colors: [
+                DefaultColors.primaryColor.shade900,
+                DefaultColors.secondaryColor.shade900,
+                DefaultColors.secondaryColor.shade900
+              ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
+          child: Scaffold(
+              body: Stack(
+                children: [
+                  LoginAndRegisterBackground(
+                    child: Container(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(height: size.height * 0.06),
+                            sentEmail
+                                ? createEmailPinRequestWidget("Pin", () async {
+                              await sendLogin(context);
+                            }, pinController, "Login")
+                                : createEmailPinRequestWidget(
+                                "E-Mail", requestEmail, emailController, "Get Pin"),
+                            SizedBox(height: size.height * 0.01),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 100),
+                              child: SocialLoginButton(
+                                buttonType: SocialLoginButtonType.google,
+                                mode: SocialLoginButtonMode.single,
+                                text: "Google",
+                                onPressed: () async {
+                                  await socialButtonPressed(SocialLogin.Google);
+                                },
+                              ),
+                            ),
+                            SizedBox(height: 10,),
+                            createAppleLogin(),
+
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 100),
+                              child: SocialLoginButton(
+                                buttonType: SocialLoginButtonType.facebook,
+                                mode: SocialLoginButtonMode.single,
+                                text: "Facebook",
+                                onPressed: () async {
+                                  await socialButtonPressed(SocialLogin.Facebook);
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                    SizedBox(height: 10,),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 100),
-                      child: SocialLoginButton(
-                        buttonType: SocialLoginButtonType.facebook,
-                        mode: SocialLoginButtonMode.single,
-                        text: "Facebook",
-                        onPressed: () async {
-                          await socialButtonPressed(SocialLogin.Facebook);
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          isLoading
-              ? const Positioned(
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: Card(
-                      color: Colors.transparent,
-                      child: Center(
-                        child: CircularProgressIndicator(),
-                      )))
-              : SizedBox(),
-          const Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              height: 80,
-              child: LoginAppBarWidget()),
-        ],
-      )),
-    ));
+                  ),
+                  isLoading
+                      ? const Positioned(
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      child: Card(
+                          color: Colors.transparent,
+                          child: Center(
+                            child: CircularProgressIndicator(),
+                          )))
+                      : SizedBox(),
+                  const Positioned(
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: 80,
+                      child: LoginAppBarWidget()),
+                ],
+              )),
+        ));
+  }
+
+  createAppleLogin() {
+    return Platform.isIOS ? [
+
+    Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 100),
+      child: SocialLoginButton(
+        buttonType: SocialLoginButtonType.appleBlack,
+        mode: SocialLoginButtonMode.single,
+        text: "Apple",
+        onPressed: () async {
+          await socialButtonPressed(SocialLogin.Apple);
+        },
+      ),
+    ),
+    SizedBox(height: 10,),
+  ] :  [ SizedBox() ];
   }
 }
