@@ -237,7 +237,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             SizedBox(height: 10,),
                             createAppleLogin(),
-
+                            SizedBox(height: Platform.isIOS ? 10 : 0),
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 100),
                               child: SocialLoginButton(
@@ -278,20 +278,19 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   createAppleLogin() {
-    return Platform.isIOS ? [
+    return Platform.isIOS ?
 
-    Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 100),
-      child: SocialLoginButton(
-        buttonType: SocialLoginButtonType.appleBlack,
-        mode: SocialLoginButtonMode.single,
-        text: "Apple",
-        onPressed: () async {
-          await socialButtonPressed(SocialLogin.Apple);
-        },
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 100),
+        child: SocialLoginButton(
+          buttonType: SocialLoginButtonType.appleBlack,
+          mode: SocialLoginButtonMode.single,
+          text: "Apple",
+          onPressed: () async {
+            await socialButtonPressed(SocialLogin.Apple);
+          },
+        ),
       ),
-    ),
-    SizedBox(height: 10,),
-  ] :  [ SizedBox() ];
+     :  SizedBox() ;
   }
 }
