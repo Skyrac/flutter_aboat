@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>1063546575410-ljd3dcdu7t8i7ssu60b1uikps0ku71r0.apps.googleusercontent.com</string>
+	<string>1063546575410-qtajtv8k0glm7su4c2r0d1cr3pmge809.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.1063546575410-ljd3dcdu7t8i7ssu60b1uikps0ku71r0</string>
+	<string>com.googleusercontent.apps.1063546575410-qtajtv8k0glm7su4c2r0d1cr3pmge809</string>
 	<key>ANDROID_CLIENT_ID</key>
 	<string>1063546575410-j07tkmcsdc65bnmhgkorp4d91l3kk5g5.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
@@ -15,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.aboat.talkaboat</string>
+	<string>com.aboat-entertainment.com</string>
 	<key>PROJECT_ID</key>
 	<string>enodi-bc</string>
 	<key>STORAGE_BUCKET</key>
@@ -31,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:1063546575410:ios:ea6ad478edae37d178fa2b</string>
+	<string>1:1063546575410:ios:bbff5ce356dee6aa78fa2b</string>
 </dict>
 </plist>

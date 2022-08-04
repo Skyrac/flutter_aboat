@@ -172,7 +172,7 @@ class UserService {
 
   setInitialValues() async {
     prefs = await SharedPreferences.getInstance();
-    String secToken = await prefs.getString(TOKEN_IDENTIFIER);
+    String secToken = (await prefs.getString(TOKEN_IDENTIFIER)) ?? "";
     if (secToken.isNotEmpty) {
       token = secToken;
       print(token);

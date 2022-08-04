@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:Talkaboat/services/downloading/file-downloader.service.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
@@ -36,7 +38,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   List<Episode>? episodes;
   // ignore: close_sinks
   final BehaviorSubject<List<MediaItem>> _recentSubject =
-      BehaviorSubject.seeded(<MediaItem>[]);
+  BehaviorSubject.seeded(<MediaItem>[]);
   // final _mediaLibrary = MediaLibrary();
   final _player = AudioPlayer();
   final _playlist = ConcatenatingAudioSource(children: []);
@@ -48,13 +50,13 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
 
   bool isListeningPodcast(podcastId) {
     var currentlyPlayingPodcastId =
-        currentlyPlayingMediaItem?.extras!["podcastId"];
+    currentlyPlayingMediaItem?.extras!["podcastId"];
     return currentlyPlayingPodcastId == podcastId;
   }
 
   bool isListeningEpisode(episodeId) {
     var currentlyPlayingEpisodeId =
-        currentlyPlayingMediaItem?.extras!["episodeId"];
+    currentlyPlayingMediaItem?.extras!["episodeId"];
     return currentlyPlayingEpisodeId == episodeId;
   }
 
@@ -64,11 +66,11 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
 
   /// A stream of the current effective sequence from just_audio.
   Stream<List<IndexedAudioSource>> get _effectiveSequence => Rx.combineLatest3<
-              List<IndexedAudioSource>?,
-              List<int>?,
-              bool,
-              List<IndexedAudioSource>?>(_player.sequenceStream,
-          _player.shuffleIndicesStream, _player.shuffleModeEnabledStream,
+      List<IndexedAudioSource>?,
+      List<int>?,
+      bool,
+      List<IndexedAudioSource>?>(_player.sequenceStream,
+      _player.shuffleIndicesStream, _player.shuffleModeEnabledStream,
           (sequence, shuffleIndices, shuffleModeEnabled) {
         if (sequence == null) return [];
         if (!shuffleModeEnabled) return sequence;
@@ -86,7 +88,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
       shuffleIndicesInv[effectiveIndices[i]] = i;
     }
     return (shuffleModeEnabled &&
-            ((currentIndex ?? 0) < shuffleIndicesInv.length))
+        ((currentIndex ?? 0) < shuffleIndicesInv.length))
         ? shuffleIndicesInv[currentIndex ?? 0]
         : currentIndex;
   }
@@ -99,15 +101,15 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
           queue,
           playbackState,
           _player.shuffleIndicesStream.whereType<List<int>>(),
-          (queue, playbackState, shuffleIndices) => QueueState(
-                queue,
-                playbackState.queueIndex,
-                playbackState.shuffleMode == AudioServiceShuffleMode.all
-                    ? shuffleIndices
-                    : null,
-                playbackState.repeatMode,
-              )).where((state) =>
-          state.shuffleIndices == null ||
+              (queue, playbackState, shuffleIndices) => QueueState(
+            queue,
+            playbackState.queueIndex,
+            playbackState.shuffleMode == AudioServiceShuffleMode.all
+                ? shuffleIndices
+                : null,
+            playbackState.repeatMode,
+          )).where((state) =>
+      state.shuffleIndices == null ||
           state.queue.length == state.shuffleIndices!.length);
 
   @override
@@ -162,13 +164,13 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
         queue,
         _player.shuffleModeEnabledStream,
         _player.shuffleIndicesStream,
-        (index, queue, shuffleModeEnabled, shuffleIndices) {
-      final queueIndex =
+            (index, queue, shuffleModeEnabled, shuffleIndices) {
+          final queueIndex =
           getQueueIndex(index, shuffleModeEnabled, shuffleIndices);
-      return (queueIndex != null && queueIndex < queue.length)
-          ? queue[queueIndex]
-          : null;
-    }).whereType<MediaItem>().distinct().listen(mediaItem.add);
+          return (queueIndex != null && queueIndex < queue.length)
+              ? queue[queueIndex]
+              : null;
+        }).whereType<MediaItem>().distinct().listen(mediaItem.add);
     // Propagate all events from the audio player to AudioService clients.
     _player.playbackEventStream.listen(_broadcastState);
     _player.shuffleModeEnabledStream
@@ -183,7 +185,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     // Broadcast the current queue.
     _effectiveSequence
         .map((sequence) =>
-            sequence.map((source) => _mediaItemExpando[source]!).toList())
+        sequence.map((source) => _mediaItemExpando[source]!).toList())
         .pipe(queue);
     AudioService.position
         .listen((event) async => await positionUpdate(event, mediaItem.value));
@@ -191,7 +193,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
         state,
         mediaItem.value,
         _player.position,
-        episodes == null ? null : episodes![_player.currentIndex!]));
+        episodes == null ? null : episodes!.isNotEmpty && episodes!.length > _player.currentIndex! ? episodes![_player.currentIndex!] : episodes![episodes!.length - 1]));
   }
 
   AudioSource _itemToSource(MediaItem mediaItem) {
@@ -274,8 +276,13 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
       "podcastId": podcastId,
       "playTime": playTime
     };
-    var id = (await FileDownloadService.getFile(episode.audio!))?.file.path ?? episode.audio!;
-    print(id);
+    var file = (await FileDownloadService.getFile(episode.audio!))?.file.path;
+    if(file != null && Platform.isIOS) {
+      file = "file:$file";
+    }
+    var id = file ?? episode.audio!;
+    if(file != null)
+      print(file);
     final mediaItem = MediaItem(
         id: id,
         duration: Duration(seconds: episode.audioLengthSec! as int),
@@ -342,7 +349,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   Future<void> stop() async {
     await _player.stop();
     await playbackState.firstWhere(
-        (state) => state.processingState == AudioProcessingState.idle);
+            (state) => state.processingState == AudioProcessingState.idle);
   }
 
   /// Broadcasts the current state to all clients.
