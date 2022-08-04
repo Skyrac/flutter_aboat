@@ -193,7 +193,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
         state,
         mediaItem.value,
         _player.position,
-        episodes == null ? null : episodes!.isNotEmpty && episodes!.length > _player.currentIndex! ? episodes![_player.currentIndex!] : episodes![episodes!.length - 1]));
+        episodes == null ? null : episodes![_player.currentIndex!]));
   }
 
   AudioSource _itemToSource(MediaItem mediaItem) {
@@ -281,8 +281,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
       file = "file:$file";
     }
     var id = file ?? episode.audio!;
-    if(file != null)
-      print(file);
+
     final mediaItem = MediaItem(
         id: id,
         duration: Duration(seconds: episode.audioLengthSec! as int),
