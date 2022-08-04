@@ -290,7 +290,7 @@ class _LoginScreenState extends State<LoginScreen> {
             await socialButtonPressed(SocialLogin.Apple);
           },
         ),
-      ),
+      )
      :  SizedBox() ;
   }
 }
