@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:Talkaboat/screens/playlist.screen.dart';
 import 'package:Talkaboat/screens/search-and-filter.screen.dart';
 import 'package:Talkaboat/screens/social/social_entry.screen.dart';
@@ -129,7 +131,7 @@ class _AppScreenState extends State<AppScreen> {
                       .selectedItemColor,
                   animationCurve: Curves.easeInOut,
                   animationDuration: const Duration(milliseconds: 600),
-                  height: 50,
+                  height: Platform.isIOS ? 65 : 50,
                   index: currentTabIndex,
                   onTap: (index) {
                     _selectTab(pageKeys[index], index);
