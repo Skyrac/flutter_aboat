@@ -59,6 +59,7 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
               appBar: AppBar(
                 title: Text("Social", style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white),),
                 actions: [
+                  /*
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 0),
                     child: IconButton(
@@ -68,6 +69,7 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
                       },
                     ),
                   )
+                    */
                 ],
                 bottom: TabBar(
                   controller: _tabController,
