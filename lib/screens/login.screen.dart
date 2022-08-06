@@ -212,6 +212,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   LoginAndRegisterBackground(
                     child: Container(
+                      width: size.width > 500 ? 500 : size.width,
                       child: SingleChildScrollView(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -225,11 +226,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                 "E-Mail", requestEmail, emailController, "Get Pin"),
                             SizedBox(height: size.height * 0.01),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 100),
+                              padding: const EdgeInsets.symmetric(horizontal: 50),
                               child: SocialLoginButton(
                                 buttonType: SocialLoginButtonType.google,
                                 mode: SocialLoginButtonMode.single,
-                                text: "Google",
+                                text: "Sign in with Google",
                                 onPressed: () async {
                                   await socialButtonPressed(SocialLogin.Google);
                                 },
@@ -239,11 +240,11 @@ class _LoginScreenState extends State<LoginScreen> {
                             createAppleLogin(),
                             SizedBox(height: Platform.isIOS ? 10 : 0),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 100),
+                              padding: const EdgeInsets.symmetric(horizontal: 50),
                               child: SocialLoginButton(
                                 buttonType: SocialLoginButtonType.facebook,
                                 mode: SocialLoginButtonMode.single,
-                                text: "Facebook",
+                                text: "Sign in with Facebook",
                                 onPressed: () async {
                                   await socialButtonPressed(SocialLogin.Facebook);
                                 },
@@ -267,7 +268,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           )))
                       : SizedBox(),
                   const Positioned(
-                      top: 0,
+                      top: 5,
                       left: 0,
                       right: 0,
                       height: 80,
@@ -281,11 +282,11 @@ class _LoginScreenState extends State<LoginScreen> {
     return Platform.isIOS ?
 
       Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 100),
+        padding: const EdgeInsets.symmetric(horizontal: 50),
         child: SocialLoginButton(
           buttonType: SocialLoginButtonType.appleBlack,
           mode: SocialLoginButtonMode.single,
-          text: "Apple",
+          text: "Sign in with Apple",
           onPressed: () async {
             await socialButtonPressed(SocialLogin.Apple);
           },
