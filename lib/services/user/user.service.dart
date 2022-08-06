@@ -62,7 +62,7 @@ class UserService {
         credential = await signInWithFacebook();
         break;
       case SocialLogin.Apple:
-        credential = await signInWithFacebook();
+        credential = await signInWithApple();
         break;
     }
     if (credential == null) {
