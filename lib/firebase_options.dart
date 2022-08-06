@@ -66,12 +66,12 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyBH5IUe9YR_Gr_G7Xq4LyxPFPaEBIVyhzQ',
-    appId: '1:1063546575410:ios:3a6a513fd2a4110578fa2b',
+    appId: '1:1063546575410:ios:bbff5ce356dee6aa78fa2b',
     messagingSenderId: '1063546575410',
     projectId: 'enodi-bc',
     storageBucket: 'enodi-bc.appspot.com',
     androidClientId: '1063546575410-j07tkmcsdc65bnmhgkorp4d91l3kk5g5.apps.googleusercontent.com',
-    iosClientId: '1063546575410-h7e4foo0p2q6geegh74g61i7vq7cnhmn.apps.googleusercontent.com',
-    iosBundleId: 'com.aboat.talkaboat',
+    iosClientId: '1063546575410-qtajtv8k0glm7su4c2r0d1cr3pmge809.apps.googleusercontent.com',
+    iosBundleId: 'com.aboat-entertainment.talkaboat',
   );
 }
