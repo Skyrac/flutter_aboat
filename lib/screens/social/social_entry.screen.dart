@@ -126,7 +126,12 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
               )
             ],
           ),
-              friendController.text.isEmpty ? showFriends() : showFriendsAndPossibleFriends()
+              Expanded(
+                child: SizedBox(
+                    width: size.width > 640 ? 640 : size.width,
+                    child:
+                friendController.text.isEmpty ? showFriends() : showFriendsAndPossibleFriends()),
+              )
         ]),
       ),
     );
@@ -173,10 +178,11 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
       return [SizedBox()];
     }
     var size = MediaQuery.of(context).size;
+    double width = size.width > 640 ? 640 : size.width;
     List<Widget> widgets = [];
     data.forEach((element) {
       widgets.add(
-        Card(child: Container(height: 100, child: Row(
+        Card(child: Container(height: 120, width: width, child: Row(
           children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
@@ -188,7 +194,7 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
               padding: const EdgeInsets.symmetric(vertical: 15.0),
               child: SizedBox(
                 height: 70,
-                width: size.width - 175,
+                width: width - 175,
                 child: Column(
                   mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -198,11 +204,11 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
                   Text(element.name ?? "No name", style: Theme.of(context).textTheme.bodyLarge,),
 
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 5.0),
+                  padding: const EdgeInsets.symmetric(vertical: 3.0),
                   child: Text("@${element.userName!}"),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 5.0),
+                  padding: const EdgeInsets.symmetric(vertical: 3.0),
                   child: Text(element.description ?? "", overflow: TextOverflow.ellipsis,),
                 )
             ],),
