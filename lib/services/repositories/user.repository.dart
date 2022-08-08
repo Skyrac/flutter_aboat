@@ -117,4 +117,3 @@ class UserRepository {
   }
 
 }
-//hitziger.fabian@live.de

@@ -293,20 +293,21 @@ class UserService {
   }
 
   Future<bool> firebaseRegister(String username, bool newsletter) async {
-    if (firebaseToken.isEmpty) {
-      return false;
-    }
     try {
       var response = await UserRepository.firebaseRegister(
           firebaseToken, username, newsletter);
-      prefs.setString(TOKEN_IDENTIFIER, response.data);
       token = response.data ?? "";
-      if (response.data != null && response.data!.isNotEmpty) {
+      prefs.setString(TOKEN_IDENTIFIER, response.data);
+
+      if (token.isNotEmpty) {
         await getCoreData();
         return userInfo != null;
       }
-    } catch (ex) {}
-    return false;
+      return false;
+    } catch (ex) {
+      return false;
+    }
+
   }
 
   logout() async {
