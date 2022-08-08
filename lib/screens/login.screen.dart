@@ -56,7 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
         isLoading = true;
       });
       final userService = getIt<UserService>();
-      if (await getIt<UserService>().emailLogin(email, pin)) {
+      if (await userService.emailLogin(email, pin)) {
         widget.refreshParent();
         Navigator.pop(context);
       }
@@ -184,16 +184,38 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       isLoading = true;
     });
-    if (await userService.firebaseRegister(socialLoginNewUser.text, true)) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: new Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                new CircularProgressIndicator(),
+                new Text("Loading"),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+    var successful = await userService.firebaseRegister(socialLoginNewUser.text, true);
+    setState(() {
+      Navigator.of(context, rootNavigator: true).pop();
+      isLoading = false;
+    });
+    if (successful) {
+
       setState(() {
         Navigator.of(context, rootNavigator: true).pop();
         Navigator.pop(context);
         widget.refreshParent();
       });
     }
-    setState(() {
-      isLoading = false;
-    });
   }
 
   @override
@@ -284,7 +306,7 @@ class _LoginScreenState extends State<LoginScreen> {
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 50),
         child: SocialLoginButton(
-          buttonType: SocialLoginButtonType.appleBlack,
+          buttonType: SocialLoginButtonType.apple,
           mode: SocialLoginButtonMode.single,
           text: "Sign in with Apple",
           onPressed: () async {
