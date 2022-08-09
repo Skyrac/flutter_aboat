@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 
 import '../../configuration/dio.config.dart';
 import '../../models/response.model.dart';
+import '../../models/rewards/reward-detail.model.dart';
 import '../../models/rewards/reward.model.dart';
 import '../../models/user/user-info.model.dart';
 
@@ -51,6 +52,16 @@ class UserRepository {
       return convertedData;
     } catch (exception) {
       return Reward();
+    }
+  }
+
+  static Future<List<RewardDetail>> getDetailedUserRewards() async {
+    try {
+      var response = await dio.get<String>('/v1/user/reward/detail');
+      return List<RewardDetail>.from(json.decode(response.data!).map((model) => RewardDetail.fromJson(model)));
+    } catch (exception) {
+      print(exception);
+      return List.empty();
     }
   }
 

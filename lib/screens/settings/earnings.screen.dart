@@ -3,6 +3,7 @@ import 'package:Talkaboat/models/rewards/reward.model.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:flutter/material.dart';
 
+import '../../models/rewards/reward-detail.model.dart';
 import '../../themes/colors.dart';
 
 class EarningsScreen extends StatefulWidget {
@@ -29,21 +30,56 @@ class _EarningsScreenState extends State<EarningsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AppBar(title: const Text("Earnings"),),
-              Expanded(child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: DataTable(
-                  columns: [
-                    DataColumn(label: Text("Amount"))
-                  ],
-                  rows: generateDataRows(List.empty()),
-                ),
-              ))
+              FutureBuilder(
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    List<RewardDetail> listData = List.empty();
+                    if (snapshot.hasError) {
+                      return Center(
+                        child: Text(
+                          '${snapshot.error} occurred',
+                          style: const TextStyle(fontSize: 18),
+                        ),
+                      );
+                    } else if (snapshot.hasData && snapshot.data != null) {
+                      // Extracting data from snapshot object
+                      listData = snapshot.data as List<RewardDetail>;
+                    }
+                    return Expanded(child: SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: DataTable(
+                          columns: [
+                            DataColumn(label: Text("Date")),
+                            DataColumn(label: Text("Earned")),
+                            DataColumn(label: Text("Claimable")),
+                            DataColumn(label: Text("Description")),
+                          ],
+                          rows: generateDataRows(listData),
+                        ),
+                      ),
+                    ));
+                  } else {
+                    return const Center(
+                        child: CircularProgressIndicator());
+                  }
+                  return Center(
+                      child: Text(
+                        "You don't have any bookmarked podcasts.\n\nYou can bookmark podcasts when searching by clicking the vertical aligned ... at the right side of each podcast.",
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ));
+                },
+                future: userService.getUserRewardDetails(),
+              ),
+
             ])),
       ),
     );
   }
 
-  generateDataRows(List<Reward> entries) {
+  generateDataRows(List<RewardDetail> entries) {
     return List<DataRow>.generate(entries.length, (index) =>
       DataRow(
         color: MaterialStateProperty.resolveWith<Color?>(
@@ -59,7 +95,10 @@ class _EarningsScreenState extends State<EarningsScreen> {
               return null; // Use default value for other states and odd rows.
             }),
             cells: <DataCell>[
-              DataCell(Text("${entries[index].total}"))
+              DataCell(Text("${entries[index].getEarnDate()}")),
+              DataCell(Text("${entries[index].amount?.round()}")),
+              DataCell(Text("${entries[index].getUnlockDate()}")),
+              DataCell(Text("${entries[index].description}")),
             ],
       )
     );

@@ -15,6 +15,7 @@ import '../../injection/injector.dart';
 import '../../models/playlist/playlist.model.dart';
 import '../../models/podcasts/podcast.model.dart';
 import '../../models/response.model.dart';
+import '../../models/rewards/reward-detail.model.dart';
 import '../../models/rewards/reward.model.dart';
 import '../../models/user/user-info.model.dart';
 import '../repositories/podcast.repository.dart';
@@ -506,6 +507,10 @@ class UserService {
 
   getProposals(int genre) {
     return podcastProposalsHomeScreen[genre];
+  }
+
+  Future<List<RewardDetail>> getUserRewardDetails() async {
+    return await UserRepository.getDetailedUserRewards();
   }
 
   deleteAccount() async {
