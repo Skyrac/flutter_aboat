@@ -138,7 +138,7 @@ class UserService {
       idToken: appleCredential.identityToken,
       rawNonce: rawNonce,
     );
-
+    print(oauthCredential);
     // Sign in the user with Firebase. If the nonce we generated earlier does
     // not match the nonce in `appleCredential.identityToken`, sign in will fail.
     return await FirebaseAuth.instance.signInWithCredential(oauthCredential);
