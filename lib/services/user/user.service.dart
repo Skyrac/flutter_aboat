@@ -23,6 +23,7 @@ import '../repositories/user.repository.dart';
 enum SocialLogin { Google, Facebook, Apple }
 
 class UserService {
+  bool newUser = true;
   String token = "";
   String firebaseToken = "";
   UserInfoData? userInfo;
@@ -170,8 +171,15 @@ class UserService {
     return library.take(amount);
   }
 
+  finishIntroduction() async {
+    prefs = await SharedPreferences.getInstance();
+    newUser = false;
+    await prefs.getBool('newUser', false);
+  }
+
   setInitialValues() async {
     prefs = await SharedPreferences.getInstance();
+    newUser = (await prefs.getBool('newUser')) ?? true;
     String secToken = (await prefs.getString(TOKEN_IDENTIFIER)) ?? "";
     if (secToken.isNotEmpty) {
       token = secToken;

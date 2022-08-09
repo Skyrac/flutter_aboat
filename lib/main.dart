@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:Talkaboat/screens/app.screen.dart';
+import 'package:Talkaboat/screens/onboarding/onboarding.screen.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/themes/colors.dart';
 import 'package:Talkaboat/themes/default.theme.dart';
@@ -52,7 +53,7 @@ class MyApp extends StatelessWidget {
             duration: 2000,
             splash: const Image(
                 width: 250, image: AssetImage('assets/images/talkaboat.png')),
-            nextScreen: const AppScreen(title: 'Talkaboat'),
+            nextScreen: getIt<UserService>().newUser ? const OnBoardingScreen() : const AppScreen(title: 'Talkaboat'),
             splashTransition: SplashTransition.fadeTransition,
             pageTransitionType: PageTransitionType.fade,
             backgroundColor: DefaultColors.secondaryColor.shade900));
