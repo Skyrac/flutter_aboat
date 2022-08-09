@@ -508,6 +508,13 @@ class UserService {
     return podcastProposalsHomeScreen[genre];
   }
 
+  deleteAccount() async {
+    final success = await UserRepository.deleteAccount();
+    if(success) {
+      logout();
+    }
+  }
+
   //#endregion
 
 }

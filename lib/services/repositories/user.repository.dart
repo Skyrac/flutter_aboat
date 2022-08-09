@@ -116,4 +116,10 @@ class UserRepository {
     }
   }
 
+  static Future<bool> deleteAccount() async {
+    var response = await dio.delete<String>('/v1/user');
+
+    return response.data == null ? false : response.data!.isNotEmpty;
+  }
+
 }

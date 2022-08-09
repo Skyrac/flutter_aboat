@@ -5,6 +5,7 @@ import 'package:page_transition/page_transition.dart';
 import '../../injection/injector.dart';
 import '../../services/user/user.service.dart';
 import '../../themes/colors.dart';
+import '../../utils/modal.widget.dart';
 import '../../widgets/settings-app-bar.widget.dart';
 import '../login.screen.dart';
 
@@ -83,7 +84,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const SizedBox(height: 10),
             getUserCard(),
             const SizedBox(height: 10),
-            createMenuPoint('Earnings', () { Navigator.push(
+            createMenuPoint(Text("Earnings"), () { Navigator.push(
                 context,
                 PageTransition(
                     alignment: Alignment.centerRight,
@@ -92,18 +93,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     duration: const Duration(milliseconds: 300),
                     reverseDuration: const Duration(milliseconds: 200),
                     child: const EarningsScreen()));}, true),
+
+          createMenuPoint(Text("Delete Account", style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.red),), () {
+            showAlert(context, deletionTextController, "Confirm Deletion", "Enter username to confirm deletion", "Username",
+                completeDeletion);
+          }, true, showTrailing: false)
         ],
       ),
           )),
     ));
+
+
+  }
+  final deletionTextController = TextEditingController();
+  completeDeletion() async {
+    setState(() {
+      Navigator.of(context, rootNavigator: true).pop();
+    });
+    if(deletionTextController.text == userService.userInfo?.userName) {
+      await userService.deleteAccount();
+    }
+    setState(() { });
+
   }
 
-  createMenuPoint(String title, click, onlyWhenSignedIn) {
+  createMenuPoint(Widget title, click, onlyWhenSignedIn, { showTrailing: true }) {
     return onlyWhenSignedIn && userService.isConnected ? Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 5),
       child: TextButton(onPressed: click, child: Row(children: [
-        Expanded(child: Text(title)),
-        const Icon(Icons.navigate_next_outlined)
+        Expanded(child: title),
+        showTrailing ? const Icon(Icons.navigate_next_outlined) : const SizedBox()
       ],)),
     ) : const SizedBox();
   }
