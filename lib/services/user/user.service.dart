@@ -172,9 +172,8 @@ class UserService {
   }
 
   finishIntroduction() async {
-    prefs = await SharedPreferences.getInstance();
     newUser = false;
-    await prefs.getBool('newUser', false);
+    await prefs.setBool('newUser', false);
   }
 
   setInitialValues() async {

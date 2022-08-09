@@ -15,7 +15,7 @@ class OnBoardingScreen extends StatefulWidget {
 class _OnBoardingScreenState extends State<OnBoardingScreen> {
   final introKey = GlobalKey<IntroductionScreenState>();
   void _onIntroEnd(context) async {
-    //await getIt<UserService>().finishIntroduction();
+    await getIt<UserService>().finishIntroduction();
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => const AppScreen(title: 'Talkaboat')),
     );
@@ -75,7 +75,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         ),
         PageViewModel(
           title: "Cryptocurrency",
-          body: "We help you to take the first step into cryptocurrencies in a secure and fun environment.\n\nYou can take it step by step without all the heavy technical details or the need to use money",
+          body: "We help you to take the first step into cryptocurrencies in a secure and fun environment\n\nYou can take it step by step without all the heavy technical details or the need to use money",
           image: _buildImage('images/intro_crypto.png'),
 
           decoration: pageDecoration,
@@ -84,7 +84,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
           title: "Take a share",
           image: _buildImage('images/intro_crypto_social.png'),
           body:
-          "We provide new ways for creators and the community to help each other. One of this is by buying Non-Fungible Tokens from Creators to access income or content rights.",
+          "We provide new ways for creators and the community to help each other\n\nOne of this is by buying Non-Fungible Tokens from creators to access income or content rights",
           decoration: pageDecoration,
         ),
       ],
