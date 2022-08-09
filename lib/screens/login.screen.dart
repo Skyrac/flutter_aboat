@@ -301,7 +301,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   createAppleLogin() {
-    return !Platform.isIOS ?
+    return Platform.isIOS ?
 
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 50),
