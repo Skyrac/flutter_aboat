@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
-import '../screens/settings.screen.dart';
+import '../screens/settings/settings.screen.dart';
 
 class HomeAppBarWidget extends StatelessWidget {
   const HomeAppBarWidget({Key? key}) : super(key: key);

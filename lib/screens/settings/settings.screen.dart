@@ -1,9 +1,12 @@
+import 'package:Talkaboat/screens/settings/earnings.screen.dart';
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 
-import '../injection/injector.dart';
-import '../services/user/user.service.dart';
-import '../themes/colors.dart';
-import '../widgets/settings-app-bar.widget.dart';
+import '../../injection/injector.dart';
+import '../../services/user/user.service.dart';
+import '../../themes/colors.dart';
+import '../../widgets/settings-app-bar.widget.dart';
+import '../login.screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -72,13 +75,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
         DefaultColors.secondaryColor.shade900
       ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
       child: Scaffold(
-          body: Column(
+          body: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SettingsAppBarWidget(refreshParent: refresh),
-          const SizedBox(height: 10),
-          getUserCard()
+            SettingsAppBarWidget(refreshParent: refresh),
+            const SizedBox(height: 10),
+            getUserCard(),
+            const SizedBox(height: 10),
+            createMenuPoint('Earnings', () { Navigator.push(
+                context,
+                PageTransition(
+                    alignment: Alignment.centerRight,
+                    curve: Curves.bounceOut,
+                    type: PageTransitionType.rightToLeftWithFade,
+                    duration: const Duration(milliseconds: 300),
+                    reverseDuration: const Duration(milliseconds: 200),
+                    child: const EarningsScreen()));}, true),
         ],
-      )),
+      ),
+          )),
     ));
+  }
+
+  createMenuPoint(String title, click, onlyWhenSignedIn) {
+    return onlyWhenSignedIn && userService.isConnected ? Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 5),
+      child: TextButton(onPressed: click, child: Row(children: [
+        Expanded(child: Text(title)),
+        const Icon(Icons.navigate_next_outlined)
+      ],)),
+    ) : const SizedBox();
   }
 }
