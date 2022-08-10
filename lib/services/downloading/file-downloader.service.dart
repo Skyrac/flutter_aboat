@@ -35,6 +35,7 @@ class FileDownloadService {
   }
 
   static clearCache() async {
+    cachedFiles.clear();
     await DefaultCacheManager().emptyCache();
   }
 }

@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../../injection/injector.dart';
+import '../../services/downloading/file-downloader.service.dart';
 import '../../services/user/user.service.dart';
 import '../../themes/colors.dart';
 import '../../utils/modal.widget.dart';
 import '../../widgets/settings-app-bar.widget.dart';
-import '../login.screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -94,6 +94,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     reverseDuration: const Duration(milliseconds: 200),
                     child: const EarningsScreen()));}, true),
 
+          const SizedBox(height: 10),
+          createMenuPoint(Text("Clear Cache", style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.grey)), () { createClearCacheAlert(context); }, false, showTrailing: false),
           createMenuPoint(Text("Delete Account", style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.red),), () {
             showAlert(context, deletionTextController, "Confirm Deletion", "Enter username to confirm deletion", "Username",
                 completeDeletion);
@@ -117,8 +119,45 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   }
 
+  createClearCacheAlert(BuildContext context) {
+    // set up the buttons
+    Widget cancelButton = TextButton(
+      child: Text("Cancel"),
+      onPressed:  () {
+        Navigator.of(context, rootNavigator: true).pop();
+      },
+    );
+    Widget continueButton = TextButton(
+      child: Text("Clear Cache", style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.red) ),
+      onPressed:  () async {
+        await FileDownloadService.clearCache();
+        setState(() {
+          Navigator.of(context, rootNavigator: true).pop();
+        });
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Clear Cache Confirmation"),
+      content: Text("Clearing the cache might impact the app performance. Are you sure you want to continue?"),
+      actions: [
+        continueButton,
+        cancelButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
   createMenuPoint(Widget title, click, onlyWhenSignedIn, { showTrailing: true }) {
-    return onlyWhenSignedIn && userService.isConnected ? Padding(
+    return !onlyWhenSignedIn || userService.isConnected ? Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 5),
       child: TextButton(onPressed: click, child: Row(children: [
         Expanded(child: title),

@@ -50,11 +50,11 @@ class _EarningsScreenState extends State<EarningsScreen> {
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: DataTable(
-                          columns: [
-                            const DataColumn(label: Text("Date")),
-                            const DataColumn(label: Text("Earned")),
-                            const DataColumn(label: Text("Claimable")),
-                            const DataColumn(label: Text("Description")),
+                          columns: const [
+                            DataColumn(label: Text("Date")),
+                            DataColumn(label: Text("Earned")),
+                            DataColumn(label: Text("Claimable")),
+                            DataColumn(label: Text("Description")),
                           ],
                           rows: generateDataRows(listData),
                         ),
