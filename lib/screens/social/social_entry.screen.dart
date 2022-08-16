@@ -138,10 +138,9 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
   }
 
   showFriends() {
-    return Expanded(child:
-    ListView(scrollDirection: Axis.vertical,
+    return ListView(scrollDirection: Axis.vertical,
         children: createFriendCards(socialService.getPendingAndFriendsLocally())
-    ));
+    );
   }
 
   SocialUser? activeRequest;
@@ -161,10 +160,9 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
 
             final data = snapshot.data;
             if (data != null && data.isNotEmpty) {
-              return Expanded(child:
-              ListView(scrollDirection: Axis.vertical,
+              return ListView(scrollDirection: Axis.vertical,
                 children: createFriendCards(data)
-              ));
+              );
 
           }
         }

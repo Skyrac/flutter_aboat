@@ -5,6 +5,7 @@ import 'package:page_transition/page_transition.dart';
 
 import '../injection/injector.dart';
 import '../models/playlist/playlist.model.dart';
+import '../services/ads/ad-manager.service.dart';
 import '../services/user/user.service.dart';
 import 'login.screen.dart';
 
@@ -140,6 +141,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                     icon: const Icon(Icons.add),
                     tooltip: '',
                     onPressed: () {
+                      //AdManager.showQuestAd();
                       showAlert(context);
                     },
                   ),
