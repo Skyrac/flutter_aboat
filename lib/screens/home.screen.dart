@@ -74,36 +74,19 @@ class _HomeScreenState extends State<HomeScreen> {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Padding(
           padding: const EdgeInsets.only(left: 10),
-          child: Text(title,
-              style: TextStyle(
-                  fontSize: 32, color: Theme.of(context).primaryColor))),
+          child: Row(
+            children: [
+              Text(title,
+                  style: TextStyle(
+                      fontSize: 32, color: Theme.of(context).primaryColor)),
+              IconButton(onPressed: () {
+                setState(() { });
+              }, icon: const Icon(Icons.refresh))
+            ],
+          )),
       SizedBox(
-          height: 200,
-          child: questService.hasQuests()
-              ? QuestListWidget(
-            direction: Axis.horizontal,
-            searchResults: questService.quests, checkUpdate: false,)
-              : FutureBuilder(
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Text(
-                      '${snapshot.error} occurred',
-                      style: const TextStyle(fontSize: 18),
-                    ),
-                  );
-                } else if (snapshot.hasData && snapshot.data != null) {
-                  // Extracting data from snapshot object
-                  return QuestListWidget(
-                      direction: Axis.horizontal,
-                      searchResults: snapshot.data as List<Quest>);
-                }
-              }
-              return const Center(child: CircularProgressIndicator());
-            },
-            future: questService.getOpenQuests(),
-          ))
+          height: 250,
+          child: QuestListWidget(direction: Axis.horizontal,))
     ]);
   }
 
@@ -124,7 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const HomeAppBarWidget(),
           const SizedBox(height: 5),
           createLibraryPreview(),
-          const SizedBox(height: 5),
+          const SizedBox(height: 20),
           createTaskBar(context, 'Open Tasks'),
           const SizedBox(height: 20),
           createPodcastPreviewByGenre(context, 'Made for you!', 0),

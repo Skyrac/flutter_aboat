@@ -10,7 +10,7 @@ class AdManager {
 
   static var rewardedQuestAd;
 
-  static showQuestAd() {
+  static showQuestAd(callback) {
     RewardedAd.load(adUnitId: "ca-app-pub-3269278654019042/7737241131",
         request: const AdRequest(),
         rewardedAdLoadCallback: RewardedAdLoadCallback(
@@ -33,7 +33,7 @@ class AdManager {
         var options = ServerSideVerificationOptions(userId: userService.userInfo?.userName);
         rewardedQuestAd.setServerSideOptions(options);
         rewardedQuestAd.show(onUserEarnedReward: (AdWithoutView ad, RewardItem rewardItem) {
-
+          callback();
           // Reward the user for watching an ad.
         });
       },

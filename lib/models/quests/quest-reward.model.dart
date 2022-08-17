@@ -21,4 +21,11 @@ class QuestReward {
     data['amount'] = this.amount;
     return data;
   }
+
+  getName() {
+    switch(rewardType) {
+      case 0: return "Aboat Token";
+      default: return "Name undefined";
+    }
+  }
 }
