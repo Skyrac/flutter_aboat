@@ -141,7 +141,6 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                     icon: const Icon(Icons.add),
                     tooltip: '',
                     onPressed: () {
-                      //AdManager.showQuestAd();
                       showAlert(context);
                     },
                   ),

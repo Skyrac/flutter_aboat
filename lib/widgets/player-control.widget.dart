@@ -1,3 +1,4 @@
+import 'package:Talkaboat/screens/search-and-filter.screen.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
@@ -157,7 +158,17 @@ class _PlayerControlWidgetState extends State<PlayerControlWidget>
                     turns: Tween(begin: 0.0, end: 1.0).animate(_controller),
                     child: Image(image: AssetImage('assets/images/aboat.png')),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+            context,
+            PageTransition(
+            alignment: Alignment.bottomCenter,
+            curve: Curves.bounceOut,
+            type: PageTransitionType.rightToLeftWithFade,
+            duration: const Duration(milliseconds: 500),
+            reverseDuration: const Duration(milliseconds: 500),
+            child: SearchAndFilterScreen()));
+            },
                 ),
               ],
             );

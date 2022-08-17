@@ -1,7 +1,10 @@
+import 'package:Talkaboat/models/quests/quest.model.dart';
+import 'package:Talkaboat/widgets/quests/quest-list.widget.dart';
 import 'package:flutter/material.dart';
 
 import '../injection/injector.dart';
 import '../models/podcasts/podcast.model.dart';
+import '../services/quests/quest.service.dart';
 import '../services/repositories/podcast.repository.dart';
 import '../services/state/state.service.dart';
 import '../services/user/user.service.dart';
@@ -21,6 +24,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final homeState = getIt<StateService>();
   final userService = getIt<UserService>();
+  final questService = getIt<QuestService>();
 
   // List<Widget> createListOfCategories() {
   Widget createPodcastPreviewByGenre(
@@ -65,6 +69,44 @@ class _HomeScreenState extends State<HomeScreen> {
     ]);
   }
 
+  Widget createTaskBar(
+      BuildContext context, String title) {
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Padding(
+          padding: const EdgeInsets.only(left: 10),
+          child: Text(title,
+              style: TextStyle(
+                  fontSize: 32, color: Theme.of(context).primaryColor))),
+      SizedBox(
+          height: 200,
+          child: questService.hasQuests()
+              ? QuestListWidget(
+            direction: Axis.horizontal,
+            searchResults: questService.quests, checkUpdate: false,)
+              : FutureBuilder(
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text(
+                      '${snapshot.error} occurred',
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                  );
+                } else if (snapshot.hasData && snapshot.data != null) {
+                  // Extracting data from snapshot object
+                  return QuestListWidget(
+                      direction: Axis.horizontal,
+                      searchResults: snapshot.data as List<Quest>);
+                }
+              }
+              return const Center(child: CircularProgressIndicator());
+            },
+            future: questService.getOpenQuests(),
+          ))
+    ]);
+  }
+
   // Widget createLibraryPreviewGrid() {
   @override
   Widget build(BuildContext context) {
@@ -82,6 +124,8 @@ class _HomeScreenState extends State<HomeScreen> {
           const HomeAppBarWidget(),
           const SizedBox(height: 5),
           createLibraryPreview(),
+          const SizedBox(height: 5),
+          createTaskBar(context, 'Open Tasks'),
           const SizedBox(height: 20),
           createPodcastPreviewByGenre(context, 'Made for you!', 0),
           const SizedBox(height: 20),
