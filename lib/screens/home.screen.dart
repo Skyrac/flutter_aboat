@@ -1,7 +1,10 @@
-import 'package:Talkaboat/models/quests/quest.model.dart';
-import 'package:Talkaboat/widgets/quests/quest-list.widget.dart';
-import 'package:flutter/material.dart';
+import 'dart:io';
 
+import 'package:Talkaboat/widgets/quests/quest-list.widget.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:flutter/material.dart';
+import 'package:open_store/open_store.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import '../injection/injector.dart';
 import '../models/podcasts/podcast.model.dart';
 import '../services/quests/quest.service.dart';
@@ -25,6 +28,14 @@ class _HomeScreenState extends State<HomeScreen> {
   final homeState = getIt<StateService>();
   final userService = getIt<UserService>();
   final questService = getIt<QuestService>();
+
+  @override
+  initState() {
+    super.initState();
+
+  }
+
+
 
   // List<Widget> createListOfCategories() {
   Widget createPodcastPreviewByGenre(

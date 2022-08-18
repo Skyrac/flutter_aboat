@@ -5,8 +5,11 @@ import 'package:Talkaboat/screens/search-and-filter.screen.dart';
 import 'package:Talkaboat/screens/social/social_entry.screen.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:open_store/open_store.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../injection/injector.dart';
 import '../models/podcasts/episode.model.dart';
@@ -40,6 +43,7 @@ class _AppScreenState extends State<AppScreen> {
   int currentTabIndex = 0;
   Episode? episode;
   final GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
+
 
   Episode? setEpisode(Episode episode) {
     this.episode = episode;
@@ -80,6 +84,41 @@ class _AppScreenState extends State<AppScreen> {
       LibraryScreen(),
       SocialEntryScreen()
     ];
+    checkUpdates(context);
+  }
+
+  checkUpdates(context) async {
+    final remoteConfig = FirebaseRemoteConfig.instance;
+    await remoteConfig.setDefaults(const {"iosBuildNumber": 1, "androidBuildNumber": 1 });
+    await remoteConfig.setConfigSettings(RemoteConfigSettings(
+      fetchTimeout: const Duration(minutes: 1),
+      minimumFetchInterval: const Duration(hours: 1),
+    ));
+    await remoteConfig.fetchAndActivate();
+
+    final requiredBuildNumber = remoteConfig.getInt(Platform.isAndroid
+        ? 'androidBuildNumber'
+        : 'iosBuildNumber');
+    var packageInfo = await PackageInfo.fromPlatform();
+    final currentBuildNumber = int.parse(packageInfo.buildNumber);
+    if(currentBuildNumber < requiredBuildNumber) {
+      showDialog(context: context, builder: (_) => AlertDialog(
+        title: const Text("Update required"),
+        content: const Text("Please update your app to continue"),
+        elevation: 8,
+        actions: [
+          TextButton(onPressed: () {
+            OpenStore.instance.open(
+              appStoreId: '1637833839', // AppStore id of your app
+              androidAppBundleId: 'com.aboat.talkaboat', // Android app bundle package name
+            );
+          }, child: Text("Update")),
+          TextButton(onPressed: () {
+            Navigator.of(context).pop();
+          }, child: Text("Later"))
+        ],
+      ), barrierDismissible: true);
+    }
   }
 
   final audioPlayerHandler = getIt<AudioPlayerHandler>();

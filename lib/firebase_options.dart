@@ -17,7 +17,10 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web;
+      throw UnsupportedError(
+        'DefaultFirebaseOptions have not been configured for web - '
+        'you can reconfigure this by running the FlutterFire CLI again.',
+      );
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -46,16 +49,6 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAgOXyWLxAVxG2FmsJkXGCEzfzBpfkj1dA',
-    appId: '1:1063546575410:web:27c04a2c99575c5178fa2b',
-    messagingSenderId: '1063546575410',
-    projectId: 'enodi-bc',
-    authDomain: 'enodi-bc.firebaseapp.com',
-    storageBucket: 'enodi-bc.appspot.com',
-    measurementId: 'G-MW8NRZSGD6',
-  );
-
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyB7eguIGpuDEBd81EB3nzg5akTbMXzLd7g',
     appId: '1:1063546575410:android:633e12c643ce93ed78fa2b',
@@ -66,12 +59,12 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyBH5IUe9YR_Gr_G7Xq4LyxPFPaEBIVyhzQ',
-    appId: '1:1063546575410:ios:bbff5ce356dee6aa78fa2b',
+    appId: '1:1063546575410:ios:25ca8f3a8f6658d678fa2b',
     messagingSenderId: '1063546575410',
     projectId: 'enodi-bc',
     storageBucket: 'enodi-bc.appspot.com',
     androidClientId: '1063546575410-j07tkmcsdc65bnmhgkorp4d91l3kk5g5.apps.googleusercontent.com',
-    iosClientId: '1063546575410-qtajtv8k0glm7su4c2r0d1cr3pmge809.apps.googleusercontent.com',
+    iosClientId: '1063546575410-ql8lpaukgb4u1uf48ioug4dqj8oumeqa.apps.googleusercontent.com',
     iosBundleId: 'com.aboat-entertainment.talkaboat',
   );
 }

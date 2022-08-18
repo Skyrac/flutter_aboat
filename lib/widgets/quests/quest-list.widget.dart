@@ -78,7 +78,7 @@ class _QuestListWidgetState extends State<QuestListWidget> {
                   if(result.isEmpty) {
                     await Future.delayed(Duration(seconds: 2)),
                     setState(() {})
-                  } else {                  print(result),
+                  } else {
                     ShowSnackBar(context, result)
                   }
                 });
@@ -263,7 +263,6 @@ class _QuestListWidgetState extends State<QuestListWidget> {
 
   @override
   Widget build(BuildContext context) {
-    print("Build it");
     return FutureBuilder(
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
@@ -276,7 +275,6 @@ class _QuestListWidgetState extends State<QuestListWidget> {
             );
           } else if (snapshot.hasData && snapshot.data != null) {
             // Extracting data from snapshot object
-            print("Snapshot received");
             return makeListBuilder(context, snapshot.data as List<Quest>);
           }
         }
