@@ -35,7 +35,8 @@ class AdManager {
           onAdImpression: (RewardedAd ad) => print('$ad impression occurred.'),
         );
         var username = userService.userInfo?.userName;
-        var options = ServerSideVerificationOptions(userId: userService.userInfo?.userName);
+        print(username);
+        var options = ServerSideVerificationOptions(userId: username);
         rewardedQuestAd.setServerSideOptions(options);
         rewardedQuestAd.show(onUserEarnedReward: (AdWithoutView ad, RewardItem rewardItem) {
           callback("");
