@@ -4,6 +4,8 @@ ShowSnackBar(BuildContext context, String text) {
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
     content: Text(
       text,
+      maxLines: 3,
+      overflow: TextOverflow.ellipsis,
       style: Theme.of(context).textTheme.titleMedium,
     ),
     behavior: SnackBarBehavior.floating,

@@ -5,6 +5,7 @@ import 'package:Talkaboat/models/quests/quest.model.dart';
 import 'package:Talkaboat/services/ads/ad-manager.service.dart';
 import 'package:Talkaboat/services/quests/quest.service.dart';
 import 'package:Talkaboat/themes/colors.dart';
+import 'package:Talkaboat/utils/Snackbar_Creator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -70,10 +71,16 @@ class _QuestListWidgetState extends State<QuestListWidget> {
       child: Stack(children: [
         InkWell(
             onTap: () async {
-                AdManager.showQuestAd(() async =>
+              ShowSnackBar(context, "Loading ad...");
+                AdManager.showQuestAd((String result) async =>
                 {
-                  await Future.delayed(Duration(seconds: 2)),
-                  setState(() { })
+
+                  if(result.isEmpty) {
+                    await Future.delayed(Duration(seconds: 2)),
+                    setState(() {})
+                  } else {                  print(result),
+                    ShowSnackBar(context, result)
+                  }
                 });
             },
             child: ClipRRect(

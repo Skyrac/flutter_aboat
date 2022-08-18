@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
+import 'package:Talkaboat/utils/Snackbar_Creator.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class AdManager {
@@ -27,6 +28,8 @@ class AdManager {
             ad.dispose();
           },
           onAdFailedToShowFullScreenContent: (RewardedAd ad, AdError error) {
+            print(error);
+            callback(error.message);
             ad.dispose();
           },
           onAdImpression: (RewardedAd ad) => print('$ad impression occurred.'),
@@ -35,11 +38,13 @@ class AdManager {
         var options = ServerSideVerificationOptions(userId: userService.userInfo?.userName);
         rewardedQuestAd.setServerSideOptions(options);
         rewardedQuestAd.show(onUserEarnedReward: (AdWithoutView ad, RewardItem rewardItem) {
-          callback();
+          callback("");
           // Reward the user for watching an ad.
         });
       },
       onAdFailedToLoad: (LoadAdError error) {
+        callback(error.message);
+        print("Error Message: " + error.message);
         print('RewardedAd failed to load: $error');
       },
     ));

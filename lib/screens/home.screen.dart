@@ -71,6 +71,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget createTaskBar(
       BuildContext context, String title) {
+    if (!userService.isConnected) {
+      return Container();
+    }
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Padding(
           padding: const EdgeInsets.only(left: 10),
