@@ -79,20 +79,14 @@ class _PodcastListWidgetState extends State<PodcastListWidget> {
 
   Widget makeCard(context, SearchResult entry) => Stack(
     children: [
-    Card(
-    elevation: 8.0,
-    margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
-    child: ClipRRect(
+    ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: Container(
-        decoration:
-        const BoxDecoration(color: Color.fromRGBO(64, 75, 96, .9)),
-        child: widget.direction == Axis.horizontal
-            ? makeHorizontalListTile(context, entry)
-            : makeVerticalListTile(context, entry),
+      child: widget.direction == Axis.horizontal
+          ? makeHorizontalListTile(context, entry)
+          : makeVerticalListTile(context, entry),
       ),
     ),
-  ),
   widget.checkUpdate != null
   && widget.checkUpdate!
   ? userService.unseenPodcastNotifcationUpdates(entry.id!)

@@ -6,7 +6,7 @@ class DefaultTheme {
   static ThemeData get defaultTheme {
     return ThemeData(
         primaryColor: DefaultColors.primaryColor,
-        cardColor: DefaultColors.secondaryColor.shade800,
+        cardTheme: CardTheme(color: DefaultColors.secondaryColor.shade800, shadowColor: DefaultColors.primaryColor.shade500),
         brightness: Brightness.dark,
         iconTheme: IconThemeData(color: DefaultColors.primaryColor.shade100),
         textTheme: TextTheme(

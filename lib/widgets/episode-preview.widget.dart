@@ -80,15 +80,13 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
         final playbackState = snapshot.data;
         final processingState = playbackState?.processingState;
         final playing = playbackState?.playing ?? false;
-        return Card(
-          elevation: 8.0,
-          color: Theme.of(context).cardTheme.color,
-          margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: Card(
+            elevation: 8.0,
+            color: Theme.of(context).cardTheme.color,
+            margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
             child: Container(
-              decoration:
-                  const BoxDecoration(color: Color.fromRGBO(64, 75, 96, .9)),
               child: widget.direction == Axis.horizontal
                   ? makeHorizontalListTile(context, entry, playing)
                   : makeVerticalListTile(context, entry, playing),

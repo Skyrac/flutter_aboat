@@ -4,6 +4,7 @@ import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/models/quests/quest.model.dart';
 import 'package:Talkaboat/services/ads/ad-manager.service.dart';
 import 'package:Talkaboat/services/quests/quest.service.dart';
+import 'package:Talkaboat/themes/colors.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -31,28 +32,27 @@ class _QuestListWidgetState extends State<QuestListWidget> {
       itemCount: data.length + (questService.remainingQuests > 0 ? 1 : 0),
       scrollDirection: widget.direction,
       itemBuilder: (BuildContext context, int index) {
-        if(data.length <= index) {
+        if(index - 1 == -1) {
           var item = Quest();
           item.name = "Watch ad to unlock";
           return makeCard(context, item, true);
         }
-        final item = data[index];
+        final item = data[index - 1];
         return makeCard(context, item, false);
       });
 
-  Widget makeCard(context,Quest entry, bool isUnlock) => Stack(
+  Widget makeCard(context,Quest quest, bool isUnlock) => Stack(
       children: [
-        Card(
-          elevation: 8.0,
-          margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: Card(
+            shadowColor: quest.progress != null && quest.progress! >= quest.requirement! ? Colors.green : null,
+            elevation: 8.0,
+            margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
             child: Container(
-              decoration:
-              const BoxDecoration(color: Color.fromRGBO(64, 75, 96, .9)),
               child: widget.direction == Axis.horizontal
-                  ? makeHorizontalListTile(context, entry, isUnlock)
-                  : makeVerticalListTile(context, entry, isUnlock),
+                  ? makeHorizontalListTile(context, quest, isUnlock)
+                  : makeVerticalListTile(context, quest, isUnlock),
             ),
           ),
         ),
@@ -65,20 +65,55 @@ class _QuestListWidgetState extends State<QuestListWidget> {
     }
   }
 
-  Widget makeHorizontalListTile(context, Quest quest, bool isUnlock) => Padding(
+  Widget makeUnlock(context, Quest quest) => Padding(
       padding: const EdgeInsets.all(10),
       child: Stack(children: [
         InkWell(
             onTap: () async {
-              if(isUnlock) {
                 AdManager.showQuestAd(() async =>
                 {
                   await Future.delayed(Duration(seconds: 2)),
                   setState(() { })
                 });
-              } else {
+            },
+            child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: SizedBox(
+                  width: 190,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: SizedBox(
+                              height: 150,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.add)
+                                ],
+                              ))),
+                      Padding(
+                          padding:
+                          const EdgeInsets.only(left: 5, right: 5, top: 5),
+                          child: Text(quest.name!,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
+                              style: Theme.of(context).textTheme.titleMedium)),
+
+                    ],
+                  ),
+                ))),
+
+      ]));
+
+  Widget makeHorizontalListTile(context, Quest quest, bool isUnlock) =>
+      isUnlock ? makeUnlock(context, quest) : Padding(
+      padding: const EdgeInsets.all(10),
+      child: Stack(children: [
+        InkWell(
+            onTap: () async {
                 await finishTask(quest);
-              }
             },
             child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
@@ -87,31 +122,6 @@ class _QuestListWidgetState extends State<QuestListWidget> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      isUnlock ? ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: SizedBox(
-                              height: 150,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  isUnlock ?
-                                  Icon(Icons.add) :
-                                  CachedNetworkImage(
-                                    imageUrl:  'https://picsum.photos/200',
-                                    fit: BoxFit.cover,
-                                    cacheManager: CacheManager(
-                                        Config(
-                                            'https://picsum.photos/200',
-                                            stalePeriod: const Duration(days: 2))),
-                                    placeholder: (_, __) => const Center(
-                                        child: CircularProgressIndicator()),
-                                    // progressIndicatorBuilder: (context, url, downloadProgress) =>
-                                    //     CircularProgressIndicator(value: downloadProgress.progress),
-                                    errorWidget: (context, url, error) =>
-                                    const Icon(Icons.error),
-                                  ),
-                                ],
-                              ))) : SizedBox(),
                       Padding(
                           padding:
                           const EdgeInsets.only(left: 5, right: 5, top: 5),
@@ -146,18 +156,22 @@ class _QuestListWidgetState extends State<QuestListWidget> {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 5.0),
                         child: Card(
+                          color: DefaultColors.primaryColor,
                           child: InkWell(
                             onTap: () async {
                               await finishTask(quest);
                             } ,
                               child:
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.clean_hands),
-                                    SizedBox(width: 10,),
-                                    Text("Finish")
-                                  ],)
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.clean_hands, color: DefaultColors.secondaryColorBase),
+                                      SizedBox(width: 10,),
+                                      Text("Finish", style: Theme.of(context).textTheme.titleMedium?.copyWith(color: DefaultColors.secondaryColorBase),)
+                                    ],),
+                                )
                           ),
                         ),
                       ) :

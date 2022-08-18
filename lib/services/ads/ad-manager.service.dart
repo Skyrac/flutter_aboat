@@ -1,5 +1,7 @@
 //android rewarded ad: ca-app-pub-3269278654019042/7737241131
 
+import 'dart:io';
+
 import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -11,7 +13,7 @@ class AdManager {
   static var rewardedQuestAd;
 
   static showQuestAd(callback) {
-    RewardedAd.load(adUnitId: "ca-app-pub-3269278654019042/7737241131",
+    RewardedAd.load(adUnitId: Platform.isIOS ? "ca-app-pub-3269278654019042/9016116482" : "ca-app-pub-3269278654019042/7737241131",
         request: const AdRequest(),
         rewardedAdLoadCallback: RewardedAdLoadCallback(
       onAdLoaded: (RewardedAd ad) {

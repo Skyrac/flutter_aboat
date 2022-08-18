@@ -56,8 +56,6 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget> {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(10),
           child: Container(
-            decoration:
-                const BoxDecoration(color: Color.fromRGBO(64, 75, 96, .9)),
             child: widget.direction == Axis.horizontal
                 ? makeHorizontalListTile(context, entry)
                 : makeVerticalListTile(context, entry),
