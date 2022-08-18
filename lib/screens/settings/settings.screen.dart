@@ -10,8 +10,8 @@ import '../../utils/modal.widget.dart';
 import '../../widgets/settings-app-bar.widget.dart';
 
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({Key? key}) : super(key: key);
-
+  SettingsScreen({Key? key, this.refresh}) : super(key: key);
+  final Function? refresh;
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
@@ -21,6 +21,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   refresh() {
     setState(() {});
+    if(widget.refresh != null) {
+      widget.refresh!();
+    }
   }
 
   Widget getUserCard() {

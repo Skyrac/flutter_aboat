@@ -93,6 +93,9 @@ class _HomeScreenState extends State<HomeScreen> {
     ]);
   }
 
+  refresh() {
+    setState(() { });
+  }
   // Widget createLibraryPreviewGrid() {
   @override
   Widget build(BuildContext context) {
@@ -107,7 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
       child: Column(
         children: [
-          const HomeAppBarWidget(),
+          HomeAppBarWidget(refresh: refresh),
           const SizedBox(height: 5),
           createLibraryPreview(),
           const SizedBox(height: 20),
