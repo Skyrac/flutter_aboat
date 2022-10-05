@@ -78,7 +78,9 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: const EdgeInsets.only(left: 10),
           child: Row(
             children: [
-              Text(title, style: TextStyle(fontSize: 32, color: Theme.of(context).primaryColor)),
+              Text(title,
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 16, color: Theme.of(context).textTheme.titleMedium!.color!)),
               IconButton(
                   onPressed: () {
                     setState(() {});
