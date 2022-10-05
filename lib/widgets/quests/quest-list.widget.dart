@@ -2,7 +2,7 @@ import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/models/quests/quest.model.dart';
 import 'package:Talkaboat/services/ads/ad-manager.service.dart';
 import 'package:Talkaboat/services/quests/quest.service.dart';
-import 'package:Talkaboat/themes/colors.dart';
+import 'package:Talkaboat/themes/colors_new.dart';
 import 'package:Talkaboat/utils/Snackbar_Creator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -39,6 +39,7 @@ class _QuestListWidgetState extends State<QuestListWidget> {
           elevation: 0.0,
           margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          color: NewDefaultColors.secondaryColorAlphaBlend,
           child: Container(
             child: makeUnlock(context, quest),
           ),
@@ -53,6 +54,7 @@ class _QuestListWidgetState extends State<QuestListWidget> {
           elevation: 4.0,
           margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          color: NewDefaultColors.secondaryColorAlphaBlend,
           child: Container(
             child: widget.direction == Axis.horizontal
                 ? makeHorizontalListTile(context, quest)
@@ -132,7 +134,7 @@ class _QuestListWidgetState extends State<QuestListWidget> {
                 ? Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: Card(
-                      color: DefaultColors.primaryColor,
+                      color: NewDefaultColors.primaryColor,
                       child: InkWell(
                           onTap: () async {
                             await finishTask(quest);
@@ -142,7 +144,7 @@ class _QuestListWidgetState extends State<QuestListWidget> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Icon(Icons.clean_hands, color: DefaultColors.secondaryColorBase),
+                                const Icon(Icons.clean_hands, color: NewDefaultColors.secondaryColorBase),
                                 const SizedBox(
                                   width: 10,
                                 ),
@@ -151,7 +153,7 @@ class _QuestListWidgetState extends State<QuestListWidget> {
                                   style: Theme.of(context)
                                       .textTheme
                                       .titleMedium
-                                      ?.copyWith(color: DefaultColors.secondaryColorBase),
+                                      ?.copyWith(color: NewDefaultColors.secondaryColorBase),
                                 )
                               ],
                             ),

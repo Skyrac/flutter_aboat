@@ -1,10 +1,5 @@
-import 'dart:io';
-
 import 'package:Talkaboat/widgets/quests/quest-list.widget.dart';
-import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
-import 'package:open_store/open_store.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import '../injection/injector.dart';
 import '../models/podcasts/podcast.model.dart';
 import '../services/quests/quest.service.dart';
@@ -17,7 +12,7 @@ import '../widgets/library-preview.widget.dart';
 import '../widgets/podcast-list.widget.dart';
 
 class HomeScreen extends StatefulWidget {
-  HomeScreen(this.setEpisode, {Key? key}) : super(key: key);
+  const HomeScreen(this.setEpisode, {Key? key}) : super(key: key);
   final Function setEpisode;
 
   @override
@@ -32,26 +27,22 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   initState() {
     super.initState();
-
   }
 
-
-
   // List<Widget> createListOfCategories() {
-  Widget createPodcastPreviewByGenre(
-      BuildContext context, String title, int genre) {
+  Widget createPodcastPreviewByGenre(BuildContext context, String title, int genre) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Padding(
           padding: const EdgeInsets.only(left: 10),
-          child: Text(title,
-              style: TextStyle(
-                  fontSize: 32, color: Theme.of(context).primaryColor))),
+          child: Text(title, style: TextStyle(fontSize: 32, color: Theme.of(context).primaryColor))),
       SizedBox(
           height: 200,
           child: userService.podcastProposalsHomeScreen.containsKey(genre)
               ? PodcastListWidget(
                   direction: Axis.horizontal,
-                  searchResults: userService.getProposals(genre)!, checkUpdate: false,)
+                  searchResults: userService.getProposals(genre)!,
+                  checkUpdate: false,
+                )
               : FutureBuilder(
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.done) {
@@ -67,9 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         final data = snapshot.data as List<Podcast>?;
                         if (data != null && data.isNotEmpty) {
                           userService.podcastProposalsHomeScreen[genre] = data;
-                          return PodcastListWidget(
-                              direction: Axis.horizontal,
-                              searchResults: homeState.map[genre]!);
+                          return PodcastListWidget(direction: Axis.horizontal, searchResults: homeState.map[genre]!);
                         }
                       }
                     }
@@ -80,8 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
     ]);
   }
 
-  Widget createTaskBar(
-      BuildContext context, String title) {
+  Widget createTaskBar(BuildContext context, String title) {
     if (!userService.isConnected) {
       return Container();
     }
@@ -90,23 +78,26 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: const EdgeInsets.only(left: 10),
           child: Row(
             children: [
-              Text(title,
-                  style: TextStyle(
-                      fontSize: 32, color: Theme.of(context).primaryColor)),
-              IconButton(onPressed: () {
-                setState(() { });
-              }, icon: const Icon(Icons.refresh))
+              Text(title, style: TextStyle(fontSize: 32, color: Theme.of(context).primaryColor)),
+              IconButton(
+                  onPressed: () {
+                    setState(() {});
+                  },
+                  icon: const Icon(Icons.refresh))
             ],
           )),
-      SizedBox(
-          height: 250,
-          child: QuestListWidget(direction: Axis.horizontal,))
+      const SizedBox(
+          height: 180,
+          child: QuestListWidget(
+            direction: Axis.horizontal,
+          ))
     ]);
   }
 
   refresh() {
-    setState(() { });
+    setState(() {});
   }
+
   // Widget createLibraryPreviewGrid() {
   @override
   Widget build(BuildContext context) {
@@ -122,10 +113,10 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         children: [
           HomeAppBarWidget(refresh: refresh),
+          //const SizedBox(height: 5),
+          //createLibraryPreview(),
           const SizedBox(height: 5),
-          createLibraryPreview(),
-          const SizedBox(height: 20),
-          createTaskBar(context, 'Open Tasks'),
+          createTaskBar(context, 'Tasks'),
           const SizedBox(height: 20),
           createPodcastPreviewByGenre(context, 'Made for you!', 0),
           const SizedBox(height: 20),
@@ -139,21 +130,18 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   createLibraryPreview() {
-    if (!userService.isConnected || userService.library.length <= 0) {
+    if (!userService.isConnected || userService.library.isEmpty) {
       return Container();
     }
     var libraryEntries = userService.getLibraryEntries(6);
     var height = double.parse((libraryEntries.length / 2 * 120).toString());
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Container(
+      child: SizedBox(
         height: height,
         child: Wrap(
           spacing: 10,
-          children: [
-            for (var entry in libraryEntries)
-              LibraryPreviewWidget(podcast: entry)
-          ],
+          children: [for (var entry in libraryEntries) LibraryPreviewWidget(podcast: entry)],
         ),
       ),
     );
