@@ -101,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             final data = snapshot.data as List<Podcast>?;
                             if (data != null && data.isNotEmpty) {
                               userService.podcastProposalsHomeScreen[1] = data;
-                              return PodcastListFavoritesWidget(searchResults: homeState.map[1]!);
+                              return PodcastListFavoritesWidget(searchResults: userService.podcastProposalsHomeScreen[1]!);
                             }
                           }
                         }

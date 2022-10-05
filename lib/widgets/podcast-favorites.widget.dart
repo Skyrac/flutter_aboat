@@ -1,3 +1,4 @@
+import 'package:Talkaboat/models/podcasts/podcast.model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -12,7 +13,7 @@ import '../services/user/user.service.dart';
 class PodcastListFavoritesWidget extends StatefulWidget {
   const PodcastListFavoritesWidget({Key? key, required this.searchResults, this.trailing, this.checkUpdate})
       : super(key: key);
-  final List<SearchResult?> searchResults;
+  final List<Podcast?> searchResults;
   final Function? trailing;
   final bool? checkUpdate;
   @override
@@ -56,7 +57,7 @@ class _PodcastListFavoritesWidgetState extends State<PodcastListFavoritesWidget>
         },
       );
 
-  Widget makeListBuilder(context, List<SearchResult?> data) => GridView.count(
+  Widget makeListBuilder(context, List<Podcast?> data) => GridView.count(
       crossAxisCount: 2,
       semanticChildCount: data.length,
       childAspectRatio: 175 / 65,
@@ -69,7 +70,7 @@ class _PodcastListFavoritesWidgetState extends State<PodcastListFavoritesWidget>
         }
       }));
 
-  Widget makeCard(context, SearchResult entry) => Stack(children: [
+  Widget makeCard(context, Podcast entry) => Stack(children: [
         Container(
           child: makeVerticalListTile(context, entry),
         ),
@@ -80,7 +81,7 @@ class _PodcastListFavoritesWidgetState extends State<PodcastListFavoritesWidget>
             : const SizedBox(),
       ]);
 
-  Widget makeVerticalListTile(context, SearchResult entry) => SizedBox(
+  Widget makeVerticalListTile(context, Podcast entry) => SizedBox(
       width: 175,
       height: 65,
       child: ListTile(
@@ -107,7 +108,7 @@ class _PodcastListFavoritesWidgetState extends State<PodcastListFavoritesWidget>
           style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
         ),
         subtitle: Text(
-          "${entry.id!} Episodes",
+          "${entry.totalEpisodes!} Episodes",
           overflow: TextOverflow.ellipsis,
           maxLines: 2,
           style: const TextStyle(color: Colors.white, fontSize: 10),
