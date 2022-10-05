@@ -51,7 +51,7 @@ class _QuestListWidgetState extends State<QuestListWidget> {
           shadowColor: quest.progress != null && quest.progress! >= quest.requirement!
               ? Colors.green
               : const Color.fromRGBO(99, 163, 253, 1.0),
-          elevation: 4.0,
+          elevation: 8.0,
           margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           color: NewDefaultColors.secondaryColorAlphaBlend,
