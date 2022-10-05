@@ -30,6 +30,47 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // List<Widget> createListOfCategories() {
+  Widget createPodcastPreviewRecentlyListed(BuildContext context) {
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Padding(
+          padding: const EdgeInsets.only(left: 10),
+          child: Text("Recently Listened",
+              style: TextStyle(
+                  fontWeight: FontWeight.bold, fontSize: 16, color: Theme.of(context).textTheme.titleMedium!.color!))),
+      SizedBox(
+          height: 150,
+          child: userService.podcastProposalsHomeScreen.containsKey(0)
+              ? PodcastListWidget(
+                  direction: Axis.horizontal,
+                  searchResults: userService.getProposals(0)!,
+                  checkUpdate: false,
+                )
+              : FutureBuilder(
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.done) {
+                      if (snapshot.hasError) {
+                        return Center(
+                          child: Text(
+                            '${snapshot.error} occurred',
+                            style: const TextStyle(fontSize: 18),
+                          ),
+                        );
+                      } else if (snapshot.hasData && snapshot.data != null) {
+                        // Extracting data from snapshot object
+                        final data = snapshot.data as List<Podcast>?;
+                        if (data != null && data.isNotEmpty) {
+                          userService.podcastProposalsHomeScreen[0] = data;
+                          return PodcastListWidget(direction: Axis.horizontal, searchResults: homeState.map[0]!);
+                        }
+                      }
+                    }
+                    return const Center(child: CircularProgressIndicator());
+                  },
+                  future: PodcastRepository.getRandomPodcast(10),
+                ))
+    ]);
+  }
+
   Widget createPodcastPreviewByGenre(BuildContext context, String title, int genre) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Padding(
@@ -120,7 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 5),
           createTaskBar(context, 'Tasks'),
           const SizedBox(height: 20),
-          createPodcastPreviewByGenre(context, 'Made for you!', 0),
+          createPodcastPreviewRecentlyListed(context),
           const SizedBox(height: 20),
           createPodcastPreviewByGenre(context, 'Favorites!', 1),
 
