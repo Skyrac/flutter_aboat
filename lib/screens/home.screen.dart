@@ -13,8 +13,9 @@ import '../widgets/library-preview.widget.dart';
 import '../widgets/podcast-list.widget.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen(this.setEpisode, {Key? key}) : super(key: key);
+  const HomeScreen(this.setEpisode, this.selectTab, {Key? key}) : super(key: key);
   final Function setEpisode;
+  final Function selectTab;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -74,9 +75,23 @@ class _HomeScreenState extends State<HomeScreen> {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Padding(
           padding: const EdgeInsets.only(left: 10),
-          child: Text("Favorites",
-              style: TextStyle(
-                  fontWeight: FontWeight.bold, fontSize: 16, color: Theme.of(context).textTheme.titleMedium!.color!))),
+          child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            Text("Favorites",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, fontSize: 16, color: Theme.of(context).textTheme.titleMedium!.color!)),
+            InkWell(
+                onTap: (() {
+                  widget.selectTab("Library", 3);
+                }),
+                child: Row(children: [
+                  Text(
+                    "See All",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 16, color: Theme.of(context).textTheme.titleMedium!.color!),
+                  ),
+                  const Icon(Icons.arrow_right_alt)
+                ])),
+          ])),
       Padding(
           padding: const EdgeInsets.all(10),
           child: SizedBox(
