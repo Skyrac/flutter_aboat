@@ -4,15 +4,13 @@ import 'package:Talkaboat/screens/app.screen.dart';
 import 'package:Talkaboat/screens/onboarding/onboarding.screen.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/themes/colors.dart';
-import 'package:Talkaboat/themes/default.theme.dart';
+import 'package:Talkaboat/themes/default.theme_new.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_remote_config/firebase_remote_config.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:page_transition/page_transition.dart';
 
 import 'configuration/dio.config.dart';
@@ -22,14 +20,11 @@ import 'injection/injector.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      systemNavigationBarColor:
-          const Color.fromRGBO(29, 40, 58, 1), // navigation bar color
+      systemNavigationBarColor: DefaultColors.primaryColor.shade900, // navigation bar color
       statusBarColor: DefaultColors.secondaryColor.shade900 // status bar color
       ));
-  ByteData data =
-      await PlatformAssetBundle().load('assets/ca/lets-encrypt-r3.pem');
-  SecurityContext.defaultContext
-      .setTrustedCertificatesBytes(data.buffer.asUint8List());
+  ByteData data = await PlatformAssetBundle().load('assets/ca/lets-encrypt-r3.pem');
+  SecurityContext.defaultContext.setTrustedCertificatesBytes(data.buffer.asUint8List());
   MobileAds.instance.initialize();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -49,15 +44,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         title: 'Talkaboat',
-        theme: DefaultTheme.defaultTheme,
+        theme: NewDefaultTheme.defaultTheme,
         debugShowCheckedModeBanner: false,
         home: AnimatedSplashScreen(
             duration: 2000,
-            splash: const Image(
-                width: 250, image: AssetImage('assets/images/talkaboat.png')),
-            nextScreen: getIt<UserService>().newUser
-                ? const OnBoardingScreen()
-                : const AppScreen(title: 'Talkaboat'),
+            splash: const Image(width: 250, image: AssetImage('assets/images/talkaboat.png')),
+            nextScreen: getIt<UserService>().newUser ? const OnBoardingScreen() : const AppScreen(title: 'Talkaboat'),
             splashTransition: SplashTransition.fadeTransition,
             pageTransitionType: PageTransitionType.fade,
             backgroundColor: DefaultColors.secondaryColor.shade900));

@@ -6,17 +6,14 @@ import 'package:Talkaboat/screens/social/social_entry.screen.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:open_store/open_store.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../injection/injector.dart';
 import '../models/podcasts/episode.model.dart';
 import '../services/audio/audio-handler.services.dart';
-import '../themes/colors.dart';
 import '../widgets/mini-player.widget.dart';
 import 'home.screen.dart';
 import 'library.screen.dart';
@@ -69,8 +66,7 @@ class _AppScreenState extends State<AppScreen> {
         child: Navigator(
           key: _navigatorKeys[tabItem],
           onGenerateRoute: (routeSettings) {
-            return MaterialPageRoute(
-                builder: (context) => Tabs[currentTabIndex]);
+            return MaterialPageRoute(builder: (context) => Tabs[currentTabIndex]);
           },
         ));
   }
@@ -79,27 +75,25 @@ class _AppScreenState extends State<AppScreen> {
   initState() {
     super.initState();
     Tabs = [
-      HomeScreen(setEpisode),
+      HomeScreen(setEpisode, _selectTab),
       const SearchAndFilterScreen(),
-      PlaylistScreen(),
+      const PlaylistScreen(),
       LibraryScreen(),
-      SocialEntryScreen()
+      const SocialEntryScreen()
     ];
     checkUpdates(context);
   }
 
   checkUpdates(context) async {
     final remoteConfig = FirebaseRemoteConfig.instance;
-    await remoteConfig
-        .setDefaults(const {"iosBuildNumber": 1, "androidBuildNumber": 1});
+    await remoteConfig.setDefaults(const {"iosBuildNumber": 1, "androidBuildNumber": 1});
     await remoteConfig.setConfigSettings(RemoteConfigSettings(
       fetchTimeout: const Duration(minutes: 1),
       minimumFetchInterval: const Duration(hours: 1),
     ));
     await remoteConfig.fetchAndActivate();
 
-    final requiredBuildNumber = remoteConfig
-        .getInt(Platform.isAndroid ? 'androidBuildNumber' : 'iosBuildNumber');
+    final requiredBuildNumber = remoteConfig.getInt(Platform.isAndroid ? 'androidBuildNumber' : 'iosBuildNumber');
     var packageInfo = await PackageInfo.fromPlatform();
     final currentBuildNumber = int.parse(packageInfo.buildNumber);
     if (currentBuildNumber < requiredBuildNumber) {
@@ -114,16 +108,15 @@ class _AppScreenState extends State<AppScreen> {
                       onPressed: () {
                         OpenStore.instance.open(
                           appStoreId: '1637833839', // AppStore id of your app
-                          androidAppBundleId:
-                              'com.aboat.talkaboat', // Android app bundle package name
+                          androidAppBundleId: 'com.aboat.talkaboat', // Android app bundle package name
                         );
                       },
-                      child: Text("Update")),
+                      child: const Text("Update")),
                   TextButton(
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: Text("Later"))
+                      child: const Text("Later"))
                 ],
               ),
           barrierDismissible: true);
@@ -135,133 +128,101 @@ class _AppScreenState extends State<AppScreen> {
   @override
   Widget build(BuildContext context) {
     audioPlayerHandler.setEpisodeRefreshFunction(setEpisode);
-    return Container(
-      decoration: BoxDecoration(
-          gradient: LinearGradient(colors: [
-        DefaultColors.primaryColor.shade900,
-        DefaultColors.secondaryColor.shade900,
-        DefaultColors.secondaryColor.shade900
-      ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
-      child: WillPopScope(
-        onWillPop: () async {
-          final isFirstRouteInCurrentTab =
-              await _navigatorKeys[_currentPage]?.currentState?.maybePop();
-          if (isFirstRouteInCurrentTab != null && isFirstRouteInCurrentTab) {
-            if (_currentPage != "Home") {
-              _selectTab("Home", 1);
+    return WillPopScope(
+      onWillPop: () async {
+        final isFirstRouteInCurrentTab = await _navigatorKeys[_currentPage]?.currentState?.maybePop();
+        if (isFirstRouteInCurrentTab != null && isFirstRouteInCurrentTab) {
+          if (_currentPage != "Home") {
+            _selectTab("Home", 1);
 
-              return false;
-            }
+            return false;
           }
           // let system handle back button if we're on the first route
-          return isFirstRouteInCurrentTab != null && isFirstRouteInCurrentTab;
-        },
-        child: Scaffold(
-            body: Stack(children: <Widget>[
-              _buildOffstageNavigator("Home"),
-              _buildOffstageNavigator("Search"),
-              _buildOffstageNavigator("Playlist"),
-              _buildOffstageNavigator("Library"),
-              _buildOffstageNavigator("Social"),
-            ]),
-            bottomNavigationBar: Container(
-              child: Column(mainAxisSize: MainAxisSize.min, children: [
-                MiniPlayerWidget(episode: episode),
-                ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(20.0),
-                    topRight: Radius.circular(20.0),
-                  ),
-                  child: SizedBox(
-                    height: 70,
-                    child: BottomNavigationBar(
-                      backgroundColor: Color.fromRGBO(29, 40, 58, 1),
-                      type: BottomNavigationBarType.fixed,
-                      selectedFontSize: 0,
-                      unselectedFontSize: 0,
-                      elevation: 0,
-                      showSelectedLabels: false,
-                      showUnselectedLabels: false,
-                      currentIndex: currentTabIndex,
-                      onTap: (index) {
-                        _selectTab(pageKeys[index], index);
-                      },
-                      items: <BottomNavigationBarItem>[
-                        BottomNavigationBarItem(
-                            icon: buttonNavbar(
-                                "assets/images/home.png", 20, 20, "Home"),
-                            activeIcon: buttonNavbarActiv(
-                                "assets/images/home.png", 20, 20, "Home"),
-                            label: ''),
-                        BottomNavigationBarItem(
-                            icon: buttonNavbar(
-                                "assets/images/live.png", 29, 20, "Live"),
-                            activeIcon: buttonNavbarActiv(
-                                "assets/images/live.png", 29, 20, "Live"),
-                            label: ''),
-                        BottomNavigationBarItem(
-                            icon: buttonNavbar("assets/images/favorites.png",
-                                20, 20, "Favorites"),
-                            activeIcon: buttonNavbarActiv(
-                                "assets/images/favorites.png",
-                                20,
-                                20,
-                                "Favorites"),
-                            label: ''),
-                        BottomNavigationBarItem(
-                            icon: buttonNavbar("assets/images/playlist.png", 30,
-                                20, "Playlists"),
-                            activeIcon: buttonNavbarActiv(
-                                "assets/images/playlist.png",
-                                30,
-                                20,
-                                "Playlists"),
-                            label: ''),
-                        BottomNavigationBarItem(
-                            icon: buttonNavbar(
-                                "assets/images/social.png", 20, 20, "Social"),
-                            activeIcon: buttonNavbarActiv(
-                                "assets/images/social.png", 20, 20, "Social"),
-                            label: ''),
-                      ],
-                    ),
-                  ),
-                )
-              ]),
-            )),
-      ),
+          return isFirstRouteInCurrentTab;
+        }
+        return false;
+      },
+      child: Scaffold(
+          body: Stack(children: <Widget>[
+            _buildOffstageNavigator("Home"),
+            _buildOffstageNavigator("Search"),
+            _buildOffstageNavigator("Playlist"),
+            _buildOffstageNavigator("Library"),
+            _buildOffstageNavigator("Social"),
+          ]),
+          bottomNavigationBar: Column(mainAxisSize: MainAxisSize.min, children: [
+            MiniPlayerWidget(episode: episode),
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20.0),
+                topRight: Radius.circular(20.0),
+              ),
+              child: SizedBox(
+                height: 70,
+                child: BottomNavigationBar(
+                  backgroundColor: const Color.fromRGBO(29, 40, 58, 1),
+                  type: BottomNavigationBarType.fixed,
+                  selectedFontSize: 0,
+                  unselectedFontSize: 0,
+                  elevation: 0,
+                  showSelectedLabels: false,
+                  showUnselectedLabels: false,
+                  currentIndex: currentTabIndex,
+                  onTap: (index) {
+                    _selectTab(pageKeys[index], index);
+                  },
+                  items: <BottomNavigationBarItem>[
+                    BottomNavigationBarItem(
+                        icon: buttonNavbar("assets/images/home.png", 20, 20, "Home"),
+                        activeIcon: buttonNavbarActiv("assets/images/home.png", 20, 20, "Home"),
+                        label: ''),
+                    BottomNavigationBarItem(
+                        icon: buttonNavbar("assets/images/live.png", 29, 20, "Live"),
+                        activeIcon: buttonNavbarActiv("assets/images/live.png", 29, 20, "Live"),
+                        label: ''),
+                    BottomNavigationBarItem(
+                        icon: buttonNavbar("assets/images/favorites.png", 20, 20, "Favorites"),
+                        activeIcon: buttonNavbarActiv("assets/images/favorites.png", 20, 20, "Favorites"),
+                        label: ''),
+                    BottomNavigationBarItem(
+                        icon: buttonNavbar("assets/images/playlist.png", 30, 20, "Playlists"),
+                        activeIcon: buttonNavbarActiv("assets/images/playlist.png", 30, 20, "Playlists"),
+                        label: ''),
+                    BottomNavigationBarItem(
+                        icon: buttonNavbar("assets/images/social.png", 20, 20, "Social"),
+                        activeIcon: buttonNavbarActiv("assets/images/social.png", 20, 20, "Social"),
+                        label: ''),
+                  ],
+                ),
+              ),
+            )
+          ])),
     );
   }
 
   Widget buttonNavbar(String image, double width, double height, String text) {
-    return Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset(
-            image,
-            width: width,
-            height: height,
-            fit: BoxFit.cover,
-          ),
-          SizedBox(height: 10),
-          Text(
-            text,
-            style: GoogleFonts.inter(textStyle: TextStyle(fontSize: 12)),
-          ),
-        ]);
+    return Column(crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.center, children: [
+      Image.asset(
+        image,
+        width: width,
+        height: height,
+        fit: BoxFit.cover,
+      ),
+      const SizedBox(height: 10),
+      Text(
+        text,
+        style: GoogleFonts.inter(textStyle: const TextStyle(fontSize: 12)),
+      ),
+    ]);
   }
 
-  Widget buttonNavbarActiv(
-      String image, double width, double height, String text) {
+  Widget buttonNavbarActiv(String image, double width, double height, String text) {
     return Container(
       height: 69,
       width: 60,
       decoration: const BoxDecoration(
           color: Color.fromRGBO(114, 113, 113, 0.2),
-          borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(20),
-              bottomRight: Radius.circular(20))),
+          borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20), bottomRight: Radius.circular(20))),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
