@@ -124,11 +124,11 @@ class _QuestListWidgetState extends State<QuestListWidget> {
             Padding(
                 padding: const EdgeInsets.all(10),
                 child: Text(quest.name!,
-                    overflow: TextOverflow.ellipsis, maxLines: 2, style: Theme.of(context).textTheme.titleSmall)),
+                    overflow: TextOverflow.ellipsis, maxLines: 2, style: Theme.of(context).textTheme.titleMedium)),
             Padding(
                 padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10, top: 0),
                 child: Text(quest.description!,
-                    overflow: TextOverflow.ellipsis, maxLines: 3, style: Theme.of(context).textTheme.bodySmall)),
+                    overflow: TextOverflow.ellipsis, maxLines: 3, style: Theme.of(context).textTheme.labelMedium)),
             const Expanded(child: SizedBox()),
             quest.progress! >= quest.requirement!
                 ? Padding(
@@ -166,7 +166,9 @@ class _QuestListWidgetState extends State<QuestListWidget> {
                         child: Padding(
                             padding: const EdgeInsets.all(10),
                             child: Text("${quest.progress!.toStringAsFixed(2)} of ${quest.requirement!.toStringAsFixed(2)}",
-                                overflow: TextOverflow.ellipsis, maxLines: 2, style: Theme.of(context).textTheme.bodySmall)),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
+                                style: Theme.of(context).textTheme.labelSmall)),
                       ),
                       Center(
                         child: Padding(

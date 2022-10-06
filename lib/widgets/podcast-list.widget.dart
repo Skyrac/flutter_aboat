@@ -132,12 +132,7 @@ class _PodcastListWidgetState extends State<PodcastListWidget> {
                       child: Padding(
                           padding: const EdgeInsets.only(top: 10),
                           child: Text(entry.title!,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 2,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 12,
-                                  color: Theme.of(context).textTheme.titleMedium!.color!))))
+                              overflow: TextOverflow.ellipsis, maxLines: 2, style: Theme.of(context).textTheme.titleMedium)))
                 ],
               )),
         )),

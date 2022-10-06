@@ -106,13 +106,13 @@ class _PodcastListFavoritesWidgetState extends State<PodcastListFavoritesWidget>
           entry.title!,
           overflow: TextOverflow.ellipsis,
           maxLines: 2,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+          style: Theme.of(context).textTheme.titleMedium,
         ),
         subtitle: Text(
           "${entry.totalEpisodes!} Episodes",
           overflow: TextOverflow.ellipsis,
           maxLines: 2,
-          style: const TextStyle(color: Colors.white, fontSize: 10),
+          style: Theme.of(context).textTheme.labelMedium,
         ),
         trailing: widget.trailing == null ? null : widget.trailing!(context, entry),
         onTap: () async {

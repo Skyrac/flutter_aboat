@@ -35,24 +35,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget createPodcastPreviewRecentlyListed(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Padding(
-          padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
-          child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text("Recently Listened",
-                style: TextStyle(
-                    fontWeight: FontWeight.bold, fontSize: 16, color: Theme.of(context).textTheme.titleMedium!.color!)),
-            InkWell(
-                onTap: (() {
-                  print("Recently Listened - see all");
-                }),
-                child: Row(children: [
-                  Text(
-                    "See All",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 12, color: Theme.of(context).textTheme.titleMedium!.color!),
-                  ),
-                  const Icon(Icons.arrow_right_alt)
-                ])),
-          ])),
+        padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+        child: Text("Recently Listened", style: Theme.of(context).textTheme.titleLarge),
+      ),
       SizedBox(
           height: 150,
           child: userService.podcastProposalsHomeScreen.containsKey(0)
@@ -131,9 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.all(10),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text("Favorites",
-                style: TextStyle(
-                    fontWeight: FontWeight.bold, fontSize: 16, color: Theme.of(context).textTheme.titleMedium!.color!)),
+            Text("Favorites", style: Theme.of(context).textTheme.titleLarge),
             InkWell(
                 onTap: (() {
                   widget.selectTab("Library", 3);
@@ -141,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Row(children: [
                   Text(
                     "See All",
-                    style: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.titleMedium!.color!),
+                    style: Theme.of(context).textTheme.titleSmall,
                   ),
                   const Icon(Icons.arrow_right_alt)
                 ])),
@@ -186,9 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: const EdgeInsets.only(left: 10),
           child: Row(
             children: [
-              Text(title,
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 16, color: Theme.of(context).textTheme.titleMedium!.color!)),
+              Text(title, style: Theme.of(context).textTheme.titleLarge),
               IconButton(
                   onPressed: () {
                     setState(() {});
