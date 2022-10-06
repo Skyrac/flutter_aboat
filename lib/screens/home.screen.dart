@@ -146,36 +146,34 @@ class _HomeScreenState extends State<HomeScreen> {
                   const Icon(Icons.arrow_right_alt)
                 ])),
           ]),
-          SizedBox(
-              height: 200,
-              child: userService.podcastProposalsHomeScreen.containsKey(1)
-                  ? PodcastListFavoritesWidget(
-                      searchResults: userService.getProposals(1)!,
-                      checkUpdate: false,
-                    )
-                  : FutureBuilder(
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.done) {
-                          if (snapshot.hasError) {
-                            return Center(
-                              child: Text(
-                                '${snapshot.error} occurred',
-                                style: const TextStyle(fontSize: 18),
-                              ),
-                            );
-                          } else if (snapshot.hasData && snapshot.data != null) {
-                            // Extracting data from snapshot object
-                            final data = snapshot.data as List<Podcast>?;
-                            if (data != null && data.isNotEmpty) {
-                              userService.podcastProposalsHomeScreen[1] = data;
-                              return PodcastListFavoritesWidget(searchResults: userService.podcastProposalsHomeScreen[1]!);
-                            }
-                          }
+          userService.podcastProposalsHomeScreen.containsKey(1)
+              ? PodcastListFavoritesWidget(
+                  searchResults: userService.getProposals(1)!,
+                  checkUpdate: false,
+                )
+              : FutureBuilder(
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.done) {
+                      if (snapshot.hasError) {
+                        return Center(
+                          child: Text(
+                            '${snapshot.error} occurred',
+                            style: const TextStyle(fontSize: 18),
+                          ),
+                        );
+                      } else if (snapshot.hasData && snapshot.data != null) {
+                        // Extracting data from snapshot object
+                        final data = snapshot.data as List<Podcast>?;
+                        if (data != null && data.isNotEmpty) {
+                          userService.podcastProposalsHomeScreen[1] = data;
+                          return PodcastListFavoritesWidget(searchResults: userService.podcastProposalsHomeScreen[1]!);
                         }
-                        return const Center(child: CircularProgressIndicator());
-                      },
-                      future: PodcastRepository.getRandomPodcast(10),
-                    ))
+                      }
+                    }
+                    return const Center(child: CircularProgressIndicator());
+                  },
+                  future: PodcastRepository.getRandomPodcast(10),
+                )
         ]));
   }
 

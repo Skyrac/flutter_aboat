@@ -61,6 +61,7 @@ class _PodcastListFavoritesWidgetState extends State<PodcastListFavoritesWidget>
       crossAxisCount: 2,
       semanticChildCount: data.length,
       childAspectRatio: 175 / 65,
+      physics: const NeverScrollableScrollPhysics(),
       children: List.generate(data.length, (index) {
         if (data[index] == null) {
           return const ListTile();
@@ -131,6 +132,8 @@ class _PodcastListFavoritesWidgetState extends State<PodcastListFavoritesWidget>
 
   @override
   Widget build(BuildContext context) {
-    return makeListBuilder(context, widget.searchResults);
+    return SizedBox(
+        height: (widget.searchResults.length / 2.0).round() * (65 + 10),
+        child: makeListBuilder(context, widget.searchResults));
   }
 }
