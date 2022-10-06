@@ -172,55 +172,59 @@ class _AppScreenState extends State<AppScreen> {
                     topLeft: Radius.circular(20.0),
                     topRight: Radius.circular(20.0),
                   ),
-                  child: BottomNavigationBar(
-                    type: BottomNavigationBarType.fixed,
-                    selectedFontSize: 0,
-                    unselectedFontSize: 0,
-                    elevation: 0,
-                    showSelectedLabels: false,
-                    showUnselectedLabels: false,
-                    currentIndex: currentTabIndex,
-                    onTap: (index) {
-                      _selectTab(pageKeys[index], index);
-                    },
-                    items: <BottomNavigationBarItem>[
-                      BottomNavigationBarItem(
-                          icon: buttonNavbar(
-                              "assets/images/home.png", 20, 20, "Home"),
-                          activeIcon: buttonNavbarActiv(
-                              "assets/images/home.png", 20, 20, "Home"),
-                          label: ''),
-                      BottomNavigationBarItem(
-                          icon: buttonNavbar(
-                              "assets/images/live.png", 29, 20, "Live"),
-                          activeIcon: buttonNavbarActiv(
-                              "assets/images/live.png", 29, 20, "Live"),
-                          label: ''),
-                      BottomNavigationBarItem(
-                          icon: buttonNavbar("assets/images/favorites.png", 20,
-                              20, "Favorites"),
-                          activeIcon: buttonNavbarActiv(
-                              "assets/images/favorites.png",
-                              20,
-                              20,
-                              "Favorites"),
-                          label: ''),
-                      BottomNavigationBarItem(
-                          icon: buttonNavbar("assets/images/playlist.png", 30,
-                              20, "Playlists"),
-                          activeIcon: buttonNavbarActiv(
-                              "assets/images/playlist.png",
-                              30,
-                              20,
-                              "Playlists"),
-                          label: ''),
-                      BottomNavigationBarItem(
-                          icon: buttonNavbar(
-                              "assets/images/social.png", 20, 20, "Social"),
-                          activeIcon: buttonNavbarActiv(
-                              "assets/images/social.png", 20, 20, "Social"),
-                          label: ''),
-                    ],
+                  child: SizedBox(
+                    height: 70,
+                    child: BottomNavigationBar(
+                      backgroundColor: Color.fromRGBO(29, 40, 58, 1),
+                      type: BottomNavigationBarType.fixed,
+                      selectedFontSize: 0,
+                      unselectedFontSize: 0,
+                      elevation: 0,
+                      showSelectedLabels: false,
+                      showUnselectedLabels: false,
+                      currentIndex: currentTabIndex,
+                      onTap: (index) {
+                        _selectTab(pageKeys[index], index);
+                      },
+                      items: <BottomNavigationBarItem>[
+                        BottomNavigationBarItem(
+                            icon: buttonNavbar(
+                                "assets/images/home.png", 20, 20, "Home"),
+                            activeIcon: buttonNavbarActiv(
+                                "assets/images/home.png", 20, 20, "Home"),
+                            label: ''),
+                        BottomNavigationBarItem(
+                            icon: buttonNavbar(
+                                "assets/images/live.png", 29, 20, "Live"),
+                            activeIcon: buttonNavbarActiv(
+                                "assets/images/live.png", 29, 20, "Live"),
+                            label: ''),
+                        BottomNavigationBarItem(
+                            icon: buttonNavbar("assets/images/favorites.png",
+                                20, 20, "Favorites"),
+                            activeIcon: buttonNavbarActiv(
+                                "assets/images/favorites.png",
+                                20,
+                                20,
+                                "Favorites"),
+                            label: ''),
+                        BottomNavigationBarItem(
+                            icon: buttonNavbar("assets/images/playlist.png", 30,
+                                20, "Playlists"),
+                            activeIcon: buttonNavbarActiv(
+                                "assets/images/playlist.png",
+                                30,
+                                20,
+                                "Playlists"),
+                            label: ''),
+                        BottomNavigationBarItem(
+                            icon: buttonNavbar(
+                                "assets/images/social.png", 20, 20, "Social"),
+                            activeIcon: buttonNavbarActiv(
+                                "assets/images/social.png", 20, 20, "Social"),
+                            label: ''),
+                      ],
+                    ),
                   ),
                 )
               ]),
@@ -240,7 +244,7 @@ class _AppScreenState extends State<AppScreen> {
             height: height,
             fit: BoxFit.cover,
           ),
-          SizedBox(height: 5),
+          SizedBox(height: 10),
           Text(
             text,
             style: GoogleFonts.inter(textStyle: TextStyle(fontSize: 12)),
@@ -251,7 +255,7 @@ class _AppScreenState extends State<AppScreen> {
   Widget buttonNavbarActiv(
       String image, double width, double height, String text) {
     return Container(
-      height: 55,
+      height: 69,
       width: 60,
       decoration: const BoxDecoration(
           color: Color.fromRGBO(114, 113, 113, 0.2),
@@ -268,7 +272,7 @@ class _AppScreenState extends State<AppScreen> {
             height: height,
             fit: BoxFit.cover,
           ),
-          const SizedBox(height: 5),
+          const SizedBox(height: 10),
           Text(
             text,
             style: GoogleFonts.inter(textStyle: const TextStyle(fontSize: 12)),

@@ -19,19 +19,17 @@ import 'configuration/dio.config.dart';
 import 'firebase_options.dart';
 import 'injection/injector.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       systemNavigationBarColor:
-      DefaultColors.primaryColor.shade900, // navigation bar color
-      statusBarColor: DefaultColors.secondaryColor
-          .shade900 // status bar color
-  ));
-  ByteData data = await PlatformAssetBundle().load(
-      'assets/ca/lets-encrypt-r3.pem');
-  SecurityContext.defaultContext.setTrustedCertificatesBytes(
-      data.buffer.asUint8List());
+          const Color.fromRGBO(29, 40, 58, 1), // navigation bar color
+      statusBarColor: DefaultColors.secondaryColor.shade900 // status bar color
+      ));
+  ByteData data =
+      await PlatformAssetBundle().load('assets/ca/lets-encrypt-r3.pem');
+  SecurityContext.defaultContext
+      .setTrustedCertificatesBytes(data.buffer.asUint8List());
   MobileAds.instance.initialize();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -57,7 +55,9 @@ class MyApp extends StatelessWidget {
             duration: 2000,
             splash: const Image(
                 width: 250, image: AssetImage('assets/images/talkaboat.png')),
-            nextScreen: getIt<UserService>().newUser ? const OnBoardingScreen() : const AppScreen(title: 'Talkaboat'),
+            nextScreen: getIt<UserService>().newUser
+                ? const OnBoardingScreen()
+                : const AppScreen(title: 'Talkaboat'),
             splashTransition: SplashTransition.fadeTransition,
             pageTransitionType: PageTransitionType.fade,
             backgroundColor: DefaultColors.secondaryColor.shade900));
