@@ -215,30 +215,19 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
         child: SingleChildScrollView(
-            child: Container(
-      decoration: BoxDecoration(
-          gradient: LinearGradient(colors: [
-        DefaultColors.primaryColor.shade900,
-        DefaultColors.secondaryColor.shade900,
-        DefaultColors.secondaryColor.shade900
-      ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
-      child: Column(
-        children: [
-          HomeAppBarWidget(refresh: refresh),
-          //const SizedBox(height: 5),
-          //createLibraryPreview(),
-          const SizedBox(height: 5),
-          createTaskBar(context, 'Tasks'),
-          const SizedBox(height: 20),
-          createPodcastPreviewRecentlyListed(context),
-          const SizedBox(height: 20),
-          createFavoritesList(context),
-          const SizedBox(height: 20),
-
-          // createEpisodePreview(context, 'Made for you!', ref),
-          // createEpisodePreview(context, 'Favorites', ref)
-        ],
-      ),
+            child: Column(
+      children: [
+        HomeAppBarWidget(refresh: refresh),
+        //const SizedBox(height: 5),
+        //createLibraryPreview(),
+        const SizedBox(height: 5),
+        createTaskBar(context, 'Tasks'),
+        const SizedBox(height: 20),
+        createPodcastPreviewRecentlyListed(context),
+        const SizedBox(height: 20),
+        createFavoritesList(context),
+        const SizedBox(height: 20),
+      ],
     )));
   }
 

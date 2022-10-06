@@ -6,7 +6,6 @@ import 'package:Talkaboat/screens/social/social_entry.screen.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:open_store/open_store.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -14,7 +13,6 @@ import 'package:package_info_plus/package_info_plus.dart';
 import '../injection/injector.dart';
 import '../models/podcasts/episode.model.dart';
 import '../services/audio/audio-handler.services.dart';
-import '../themes/colors.dart';
 import '../widgets/mini-player.widget.dart';
 import 'home.screen.dart';
 import 'library.screen.dart';
@@ -129,65 +127,57 @@ class _AppScreenState extends State<AppScreen> {
   @override
   Widget build(BuildContext context) {
     audioPlayerHandler.setEpisodeRefreshFunction(setEpisode);
-    return Container(
-      decoration: BoxDecoration(
-          gradient: LinearGradient(colors: [
-        DefaultColors.primaryColor.shade900,
-        DefaultColors.secondaryColor.shade900,
-        DefaultColors.secondaryColor.shade900
-      ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
-      child: WillPopScope(
-        onWillPop: () async {
-          final isFirstRouteInCurrentTab = await _navigatorKeys[_currentPage]?.currentState?.maybePop();
-          if (isFirstRouteInCurrentTab != null && isFirstRouteInCurrentTab) {
-            if (_currentPage != "Home") {
-              _selectTab("Home", 1);
+    return WillPopScope(
+      onWillPop: () async {
+        final isFirstRouteInCurrentTab = await _navigatorKeys[_currentPage]?.currentState?.maybePop();
+        if (isFirstRouteInCurrentTab != null && isFirstRouteInCurrentTab) {
+          if (_currentPage != "Home") {
+            _selectTab("Home", 1);
 
-              return false;
-            }
+            return false;
           }
-          // let system handle back button if we're on the first route
-          return isFirstRouteInCurrentTab != null && isFirstRouteInCurrentTab;
-        },
-        child: Scaffold(
-            body: Stack(children: <Widget>[
-              _buildOffstageNavigator("Home"),
-              _buildOffstageNavigator("Search"),
-              _buildOffstageNavigator("Playlist"),
-              _buildOffstageNavigator("Library"),
-              _buildOffstageNavigator("Social"),
-            ]),
-            bottomNavigationBar: Column(mainAxisSize: MainAxisSize.min, children: [
-              MiniPlayerWidget(episode: episode),
-              CurvedNavigationBar(
-                  backgroundColor: episode == null ? Colors.transparent : Theme.of(context).bottomAppBarColor,
-                  color: Theme.of(context).bottomNavigationBarTheme.backgroundColor!,
-                  buttonBackgroundColor: Theme.of(context).bottomNavigationBarTheme.selectedItemColor,
-                  animationCurve: Curves.easeInOut,
-                  animationDuration: const Duration(milliseconds: 600),
-                  height: Platform.isIOS ? 65 : 50,
-                  index: currentTabIndex,
-                  onTap: (index) {
-                    _selectTab(pageKeys[index], index);
-                  },
-                  items: <Widget>[
-                    const Icon(Icons.home, size: 30),
-                    const Icon(Icons.search, size: 30),
-                    const Icon(Icons.playlist_add, size: 30),
-                    Stack(
-                      children: [
-                        const SizedBox(height: 30, width: 30),
-                        const Center(child: Icon(Icons.library_books, size: 30)),
-                        pageKeys[currentTabIndex] == "Library" || !userService.unseenLibraryNotifcationUpdates()
-                            ? const SizedBox()
-                            : const Positioned(
-                                right: 10, top: 10, child: Icon(Icons.notifications_active, size: 20, color: Colors.red)),
-                      ],
-                    ),
-                    const Icon(Icons.people, size: 30)
-                  ]),
-            ])),
-      ),
+        }
+        // let system handle back button if we're on the first route
+        return isFirstRouteInCurrentTab != null && isFirstRouteInCurrentTab;
+      },
+      child: Scaffold(
+          body: Stack(children: <Widget>[
+            _buildOffstageNavigator("Home"),
+            _buildOffstageNavigator("Search"),
+            _buildOffstageNavigator("Playlist"),
+            _buildOffstageNavigator("Library"),
+            _buildOffstageNavigator("Social"),
+          ]),
+          bottomNavigationBar: Column(mainAxisSize: MainAxisSize.min, children: [
+            MiniPlayerWidget(episode: episode),
+            CurvedNavigationBar(
+                backgroundColor: episode == null ? Colors.transparent : Theme.of(context).bottomAppBarColor,
+                color: Theme.of(context).bottomNavigationBarTheme.backgroundColor!,
+                buttonBackgroundColor: Theme.of(context).bottomNavigationBarTheme.selectedItemColor,
+                animationCurve: Curves.easeInOut,
+                animationDuration: const Duration(milliseconds: 600),
+                height: Platform.isIOS ? 65 : 50,
+                index: currentTabIndex,
+                onTap: (index) {
+                  _selectTab(pageKeys[index], index);
+                },
+                items: <Widget>[
+                  const Icon(Icons.home, size: 30),
+                  const Icon(Icons.search, size: 30),
+                  const Icon(Icons.playlist_add, size: 30),
+                  Stack(
+                    children: [
+                      const SizedBox(height: 30, width: 30),
+                      const Center(child: Icon(Icons.library_books, size: 30)),
+                      pageKeys[currentTabIndex] == "Library" || !userService.unseenLibraryNotifcationUpdates()
+                          ? const SizedBox()
+                          : const Positioned(
+                              right: 10, top: 10, child: Icon(Icons.notifications_active, size: 20, color: Colors.red)),
+                    ],
+                  ),
+                  const Icon(Icons.people, size: 30)
+                ]),
+          ])),
     );
   }
 }
