@@ -33,10 +33,24 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget createPodcastPreviewRecentlyListed(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Padding(
-          padding: const EdgeInsets.only(left: 10),
-          child: Text("Recently Listened",
-              style: TextStyle(
-                  fontWeight: FontWeight.bold, fontSize: 16, color: Theme.of(context).textTheme.titleMedium!.color!))),
+          padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+          child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            Text("Recently Listened",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, fontSize: 16, color: Theme.of(context).textTheme.titleMedium!.color!)),
+            InkWell(
+                onTap: (() {
+                  print("Recently Listened - see all");
+                }),
+                child: Row(children: [
+                  Text(
+                    "See All",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 12, color: Theme.of(context).textTheme.titleMedium!.color!),
+                  ),
+                  const Icon(Icons.arrow_right_alt)
+                ])),
+          ])),
       SizedBox(
           height: 150,
           child: userService.podcastProposalsHomeScreen.containsKey(0)
