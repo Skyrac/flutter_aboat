@@ -72,10 +72,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget createFavoritesList(BuildContext context) {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Padding(
-          padding: const EdgeInsets.only(left: 10),
-          child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+    return Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Text("Favorites",
                 style: TextStyle(
                     fontWeight: FontWeight.bold, fontSize: 16, color: Theme.of(context).textTheme.titleMedium!.color!)),
@@ -86,15 +86,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Row(children: [
                   Text(
                     "See All",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 16, color: Theme.of(context).textTheme.titleMedium!.color!),
+                    style: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.titleMedium!.color!),
                   ),
                   const Icon(Icons.arrow_right_alt)
                 ])),
-          ])),
-      Padding(
-          padding: const EdgeInsets.all(10),
-          child: SizedBox(
+          ]),
+          SizedBox(
               height: 200,
               child: userService.podcastProposalsHomeScreen.containsKey(1)
                   ? PodcastListFavoritesWidget(
@@ -123,8 +120,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         return const Center(child: CircularProgressIndicator());
                       },
                       future: PodcastRepository.getRandomPodcast(10),
-                    )))
-    ]);
+                    ))
+        ]));
   }
 
   Widget createTaskBar(BuildContext context, String title) {
