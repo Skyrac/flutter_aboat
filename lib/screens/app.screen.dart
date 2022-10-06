@@ -44,7 +44,6 @@ class _AppScreenState extends State<AppScreen> {
   Episode? episode;
   final GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
 
-
   Episode? setEpisode(Episode episode) {
     this.episode = episode;
     setState(() {});
@@ -68,8 +67,7 @@ class _AppScreenState extends State<AppScreen> {
         child: Navigator(
           key: _navigatorKeys[tabItem],
           onGenerateRoute: (routeSettings) {
-            return MaterialPageRoute(
-                builder: (context) => Tabs[currentTabIndex]);
+            return MaterialPageRoute(builder: (context) => Tabs[currentTabIndex]);
           },
         ));
   }
@@ -78,46 +76,51 @@ class _AppScreenState extends State<AppScreen> {
   initState() {
     super.initState();
     Tabs = [
-      HomeScreen(setEpisode),
+      HomeScreen(setEpisode, _selectTab),
       const SearchAndFilterScreen(),
-      PlaylistScreen(),
+      const PlaylistScreen(),
       LibraryScreen(),
-      SocialEntryScreen()
+      const SocialEntryScreen()
     ];
     checkUpdates(context);
   }
 
   checkUpdates(context) async {
     final remoteConfig = FirebaseRemoteConfig.instance;
-    await remoteConfig.setDefaults(const {"iosBuildNumber": 1, "androidBuildNumber": 1 });
+    await remoteConfig.setDefaults(const {"iosBuildNumber": 1, "androidBuildNumber": 1});
     await remoteConfig.setConfigSettings(RemoteConfigSettings(
       fetchTimeout: const Duration(minutes: 1),
       minimumFetchInterval: const Duration(hours: 1),
     ));
     await remoteConfig.fetchAndActivate();
 
-    final requiredBuildNumber = remoteConfig.getInt(Platform.isAndroid
-        ? 'androidBuildNumber'
-        : 'iosBuildNumber');
+    final requiredBuildNumber = remoteConfig.getInt(Platform.isAndroid ? 'androidBuildNumber' : 'iosBuildNumber');
     var packageInfo = await PackageInfo.fromPlatform();
     final currentBuildNumber = int.parse(packageInfo.buildNumber);
-    if(currentBuildNumber < requiredBuildNumber) {
-      showDialog(context: context, builder: (_) => AlertDialog(
-        title: const Text("Update required"),
-        content: const Text("Please update your app to continue"),
-        elevation: 8,
-        actions: [
-          TextButton(onPressed: () {
-            OpenStore.instance.open(
-              appStoreId: '1637833839', // AppStore id of your app
-              androidAppBundleId: 'com.aboat.talkaboat', // Android app bundle package name
-            );
-          }, child: Text("Update")),
-          TextButton(onPressed: () {
-            Navigator.of(context).pop();
-          }, child: Text("Later"))
-        ],
-      ), barrierDismissible: true);
+    if (currentBuildNumber < requiredBuildNumber) {
+      showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+                title: const Text("Update required"),
+                content: const Text("Please update your app to continue"),
+                elevation: 8,
+                actions: [
+                  TextButton(
+                      onPressed: () {
+                        OpenStore.instance.open(
+                          appStoreId: '1637833839', // AppStore id of your app
+                          androidAppBundleId: 'com.aboat.talkaboat', // Android app bundle package name
+                        );
+                      },
+                      child: const Text("Update")),
+                  TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text("Later"))
+                ],
+              ),
+          barrierDismissible: true);
     }
   }
 
@@ -135,8 +138,7 @@ class _AppScreenState extends State<AppScreen> {
       ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
       child: WillPopScope(
         onWillPop: () async {
-          final isFirstRouteInCurrentTab =
-              await _navigatorKeys[_currentPage]?.currentState?.maybePop();
+          final isFirstRouteInCurrentTab = await _navigatorKeys[_currentPage]?.currentState?.maybePop();
           if (isFirstRouteInCurrentTab != null && isFirstRouteInCurrentTab) {
             if (_currentPage != "Home") {
               _selectTab("Home", 1);
@@ -155,19 +157,12 @@ class _AppScreenState extends State<AppScreen> {
               _buildOffstageNavigator("Library"),
               _buildOffstageNavigator("Social"),
             ]),
-            bottomNavigationBar:
-                Column(mainAxisSize: MainAxisSize.min, children: [
+            bottomNavigationBar: Column(mainAxisSize: MainAxisSize.min, children: [
               MiniPlayerWidget(episode: episode),
               CurvedNavigationBar(
-                  backgroundColor: episode == null
-                      ? Colors.transparent
-                      : Theme.of(context).bottomAppBarColor,
-                  color: Theme.of(context)
-                      .bottomNavigationBarTheme
-                      .backgroundColor!,
-                  buttonBackgroundColor: Theme.of(context)
-                      .bottomNavigationBarTheme
-                      .selectedItemColor,
+                  backgroundColor: episode == null ? Colors.transparent : Theme.of(context).bottomAppBarColor,
+                  color: Theme.of(context).bottomNavigationBarTheme.backgroundColor!,
+                  buttonBackgroundColor: Theme.of(context).bottomNavigationBarTheme.selectedItemColor,
                   animationCurve: Curves.easeInOut,
                   animationDuration: const Duration(milliseconds: 600),
                   height: Platform.isIOS ? 65 : 50,
@@ -176,15 +171,20 @@ class _AppScreenState extends State<AppScreen> {
                     _selectTab(pageKeys[index], index);
                   },
                   items: <Widget>[
-                    Icon(Icons.home, size: 30),
-                    Icon(Icons.search, size: 30),
-                    Icon(Icons.playlist_add, size: 30),
-                    Stack(children: [
-                      SizedBox(height: 30, width: 30),
-                      Center(child: Icon(Icons.library_books, size: 30)),
-                      pageKeys[currentTabIndex] == "Library" || !userService.unseenLibraryNotifcationUpdates() ? SizedBox() :Positioned(right: 10, top:10, child: Icon(Icons.notifications_active, size: 20, color: Colors.red)),
-                    ],),
-                    Icon(Icons.people, size: 30)
+                    const Icon(Icons.home, size: 30),
+                    const Icon(Icons.search, size: 30),
+                    const Icon(Icons.playlist_add, size: 30),
+                    Stack(
+                      children: [
+                        const SizedBox(height: 30, width: 30),
+                        const Center(child: Icon(Icons.library_books, size: 30)),
+                        pageKeys[currentTabIndex] == "Library" || !userService.unseenLibraryNotifcationUpdates()
+                            ? const SizedBox()
+                            : const Positioned(
+                                right: 10, top: 10, child: Icon(Icons.notifications_active, size: 20, color: Colors.red)),
+                      ],
+                    ),
+                    const Icon(Icons.people, size: 30)
                   ]),
             ])),
       ),

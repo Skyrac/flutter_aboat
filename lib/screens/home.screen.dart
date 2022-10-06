@@ -1,3 +1,4 @@
+import 'package:Talkaboat/widgets/podcast-favorites.widget.dart';
 import 'package:Talkaboat/widgets/quests/quest-list.widget.dart';
 import 'package:flutter/material.dart';
 import '../injection/injector.dart';
@@ -12,8 +13,9 @@ import '../widgets/library-preview.widget.dart';
 import '../widgets/podcast-list.widget.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen(this.setEpisode, {Key? key}) : super(key: key);
+  const HomeScreen(this.setEpisode, this.selectTab, {Key? key}) : super(key: key);
   final Function setEpisode;
+  final Function selectTab;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -124,6 +126,59 @@ class _HomeScreenState extends State<HomeScreen> {
     ]);
   }
 
+  Widget createFavoritesList(BuildContext context) {
+    return Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            Text("Favorites",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, fontSize: 16, color: Theme.of(context).textTheme.titleMedium!.color!)),
+            InkWell(
+                onTap: (() {
+                  widget.selectTab("Library", 3);
+                }),
+                child: Row(children: [
+                  Text(
+                    "See All",
+                    style: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.titleMedium!.color!),
+                  ),
+                  const Icon(Icons.arrow_right_alt)
+                ])),
+          ]),
+          SizedBox(
+              height: 200,
+              child: userService.podcastProposalsHomeScreen.containsKey(1)
+                  ? PodcastListFavoritesWidget(
+                      searchResults: userService.getProposals(1)!,
+                      checkUpdate: false,
+                    )
+                  : FutureBuilder(
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.done) {
+                          if (snapshot.hasError) {
+                            return Center(
+                              child: Text(
+                                '${snapshot.error} occurred',
+                                style: const TextStyle(fontSize: 18),
+                              ),
+                            );
+                          } else if (snapshot.hasData && snapshot.data != null) {
+                            // Extracting data from snapshot object
+                            final data = snapshot.data as List<Podcast>?;
+                            if (data != null && data.isNotEmpty) {
+                              userService.podcastProposalsHomeScreen[1] = data;
+                              return PodcastListFavoritesWidget(searchResults: userService.podcastProposalsHomeScreen[1]!);
+                            }
+                          }
+                        }
+                        return const Center(child: CircularProgressIndicator());
+                      },
+                      future: PodcastRepository.getRandomPodcast(10),
+                    ))
+        ]));
+  }
+
   Widget createTaskBar(BuildContext context, String title) {
     if (!userService.isConnected) {
       return Container();
@@ -177,7 +232,8 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 20),
           createPodcastPreviewRecentlyListed(context),
           const SizedBox(height: 20),
-          createPodcastPreviewByGenre(context, 'Favorites!', 1),
+          createFavoritesList(context),
+          const SizedBox(height: 20),
 
           // createEpisodePreview(context, 'Made for you!', ref),
           // createEpisodePreview(context, 'Favorites', ref)
