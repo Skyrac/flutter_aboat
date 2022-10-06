@@ -7,6 +7,7 @@ import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:open_store/open_store.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -136,9 +137,10 @@ class _AppScreenState extends State<AppScreen> {
 
             return false;
           }
+          // let system handle back button if we're on the first route
+          return isFirstRouteInCurrentTab;
         }
-        // let system handle back button if we're on the first route
-        return isFirstRouteInCurrentTab != null && isFirstRouteInCurrentTab;
+        return false;
       },
       child: Scaffold(
           body: Stack(children: <Widget>[
@@ -150,34 +152,94 @@ class _AppScreenState extends State<AppScreen> {
           ]),
           bottomNavigationBar: Column(mainAxisSize: MainAxisSize.min, children: [
             MiniPlayerWidget(episode: episode),
-            CurvedNavigationBar(
-                backgroundColor: episode == null ? Colors.transparent : Theme.of(context).bottomAppBarColor,
-                color: Theme.of(context).bottomNavigationBarTheme.backgroundColor!,
-                buttonBackgroundColor: Theme.of(context).bottomNavigationBarTheme.selectedItemColor,
-                animationCurve: Curves.easeInOut,
-                animationDuration: const Duration(milliseconds: 600),
-                height: Platform.isIOS ? 65 : 50,
-                index: currentTabIndex,
-                onTap: (index) {
-                  _selectTab(pageKeys[index], index);
-                },
-                items: <Widget>[
-                  const Icon(Icons.home, size: 30),
-                  const Icon(Icons.search, size: 30),
-                  const Icon(Icons.playlist_add, size: 30),
-                  Stack(
-                    children: [
-                      const SizedBox(height: 30, width: 30),
-                      const Center(child: Icon(Icons.library_books, size: 30)),
-                      pageKeys[currentTabIndex] == "Library" || !userService.unseenLibraryNotifcationUpdates()
-                          ? const SizedBox()
-                          : const Positioned(
-                              right: 10, top: 10, child: Icon(Icons.notifications_active, size: 20, color: Colors.red)),
-                    ],
-                  ),
-                  const Icon(Icons.people, size: 30)
-                ]),
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20.0),
+                topRight: Radius.circular(20.0),
+              ),
+              child: SizedBox(
+                height: 70,
+                child: BottomNavigationBar(
+                  backgroundColor: const Color.fromRGBO(29, 40, 58, 1),
+                  type: BottomNavigationBarType.fixed,
+                  selectedFontSize: 0,
+                  unselectedFontSize: 0,
+                  elevation: 0,
+                  showSelectedLabels: false,
+                  showUnselectedLabels: false,
+                  currentIndex: currentTabIndex,
+                  onTap: (index) {
+                    _selectTab(pageKeys[index], index);
+                  },
+                  items: <BottomNavigationBarItem>[
+                    BottomNavigationBarItem(
+                        icon: buttonNavbar("assets/images/home.png", 20, 20, "Home"),
+                        activeIcon: buttonNavbarActiv("assets/images/home.png", 20, 20, "Home"),
+                        label: ''),
+                    BottomNavigationBarItem(
+                        icon: buttonNavbar("assets/images/live.png", 29, 20, "Live"),
+                        activeIcon: buttonNavbarActiv("assets/images/live.png", 29, 20, "Live"),
+                        label: ''),
+                    BottomNavigationBarItem(
+                        icon: buttonNavbar("assets/images/favorites.png", 20, 20, "Favorites"),
+                        activeIcon: buttonNavbarActiv("assets/images/favorites.png", 20, 20, "Favorites"),
+                        label: ''),
+                    BottomNavigationBarItem(
+                        icon: buttonNavbar("assets/images/playlist.png", 30, 20, "Playlists"),
+                        activeIcon: buttonNavbarActiv("assets/images/playlist.png", 30, 20, "Playlists"),
+                        label: ''),
+                    BottomNavigationBarItem(
+                        icon: buttonNavbar("assets/images/social.png", 20, 20, "Social"),
+                        activeIcon: buttonNavbarActiv("assets/images/social.png", 20, 20, "Social"),
+                        label: ''),
+                  ],
+                ),
+              ),
+            )
           ])),
+    );
+  }
+
+  Widget buttonNavbar(String image, double width, double height, String text) {
+    return Column(crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.center, children: [
+      Image.asset(
+        image,
+        width: width,
+        height: height,
+        fit: BoxFit.cover,
+      ),
+      const SizedBox(height: 10),
+      Text(
+        text,
+        style: GoogleFonts.inter(textStyle: const TextStyle(fontSize: 12)),
+      ),
+    ]);
+  }
+
+  Widget buttonNavbarActiv(String image, double width, double height, String text) {
+    return Container(
+      height: 69,
+      width: 60,
+      decoration: const BoxDecoration(
+          color: Color.fromRGBO(114, 113, 113, 0.2),
+          borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20), bottomRight: Radius.circular(20))),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset(
+            image,
+            width: width,
+            height: height,
+            fit: BoxFit.cover,
+          ),
+          const SizedBox(height: 10),
+          Text(
+            text,
+            style: GoogleFonts.inter(textStyle: const TextStyle(fontSize: 12)),
+          ),
+        ],
+      ),
     );
   }
 }
