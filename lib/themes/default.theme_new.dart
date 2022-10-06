@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'colors_new.dart';
 
@@ -10,10 +11,12 @@ class NewDefaultTheme {
             CardTheme(color: NewDefaultColors.secondaryColor.shade800, shadowColor: NewDefaultColors.primaryColor.shade500),
         brightness: Brightness.dark,
         iconTheme: IconThemeData(color: NewDefaultColors.primaryColor.shade100),
-        textTheme: TextTheme(
-          titleLarge: TextStyle(color: NewDefaultColors.secondaryColor.shade50),
-          titleMedium: TextStyle(color: NewDefaultColors.secondaryColor.shade50),
-          titleSmall: TextStyle(color: NewDefaultColors.secondaryColor.shade50),
+        textTheme: GoogleFonts.interTextTheme(TextTheme(
+          titleLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: NewDefaultColors.secondaryColor.shade50),
+          titleMedium: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: NewDefaultColors.secondaryColor.shade50),
+          titleSmall: TextStyle(fontSize: 12, fontWeight: FontWeight.normal, color: NewDefaultColors.secondaryColor.shade50),
+          subtitle1: TextStyle(fontSize: 10, color: NewDefaultColors.secondaryColor.shade50),
+          subtitle2: TextStyle(fontSize: 8, color: NewDefaultColors.secondaryColor.shade50),
           labelLarge: TextStyle(color: NewDefaultColors.secondaryColor.shade50),
           labelMedium: TextStyle(color: NewDefaultColors.secondaryColor.shade50),
           labelSmall: TextStyle(color: NewDefaultColors.secondaryColor.shade50),
@@ -26,7 +29,7 @@ class NewDefaultTheme {
           bodyLarge: TextStyle(color: NewDefaultColors.secondaryColor.shade50),
           bodyMedium: TextStyle(color: NewDefaultColors.secondaryColor.shade50),
           bodySmall: TextStyle(color: NewDefaultColors.secondaryColor.shade50),
-        ),
+        )),
         inputDecorationTheme: InputDecorationTheme(
           labelStyle: TextStyle(color: NewDefaultColors.primaryColor.shade100),
           hintStyle: TextStyle(color: NewDefaultColors.primaryColor.shade200),

@@ -7,6 +7,7 @@ import 'package:Talkaboat/themes/colors.dart';
 import 'package:Talkaboat/themes/default.theme_new.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -19,6 +20,10 @@ import 'injection/injector.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  LicenseRegistry.addLicense(() async* {
+    final license = await rootBundle.loadString('assets/google_fonts/OFL.txt');
+    yield LicenseEntryWithLineBreaks(['google_fonts'], license);
+  });
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       systemNavigationBarColor: DefaultColors.primaryColor.shade900, // navigation bar color
       statusBarColor: DefaultColors.secondaryColor.shade900 // status bar color
