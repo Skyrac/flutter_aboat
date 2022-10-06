@@ -68,10 +68,13 @@ class _PodcastListWidgetState extends State<PodcastListWidget> {
         return makeCard(context, item);
       });
 
-  Widget makeCard(context, SearchResult entry) => Stack(children: [
+  Widget makeCard(context, SearchResult entry) => Padding(
+      padding: const EdgeInsets.only(left: 10),
+      child: Stack(children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(10),
           child: Container(
+            color: const Color.fromRGBO(99, 163, 253, 0.5),
             child: widget.direction == Axis.horizontal
                 ? makeHorizontalListTile(context, entry)
                 : makeVerticalListTile(context, entry),
@@ -82,62 +85,66 @@ class _PodcastListWidgetState extends State<PodcastListWidget> {
                 ? const Positioned(right: 20, top: 10, child: Icon(Icons.notifications_active, size: 20, color: Colors.red))
                 : const SizedBox()
             : const SizedBox(),
-      ]);
+      ]));
 
   Widget makeHorizontalListTile(context, SearchResult entry) => Padding(
       padding: const EdgeInsets.all(10),
       child: Stack(children: [
-        InkWell(
-            onTap: () async {
-              await userService.UpdatePodcastVisitDate(entry.id);
-              setState(() {});
-              Navigator.push(
-                  context,
-                  PageTransition(
-                      alignment: Alignment.bottomCenter,
-                      curve: Curves.bounceOut,
-                      type: PageTransitionType.rightToLeftWithFade,
-                      duration: const Duration(milliseconds: 500),
-                      reverseDuration: const Duration(milliseconds: 500),
-                      child: PodcastDetailScreen(podcastSearchResult: entry)));
-            },
-            child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: SizedBox(
-                  width: 120,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ClipRRect(
+        Center(
+            child: InkWell(
+          onTap: () async {
+            await userService.UpdatePodcastVisitDate(entry.id);
+            setState(() {});
+            Navigator.push(
+                context,
+                PageTransition(
+                    alignment: Alignment.bottomCenter,
+                    curve: Curves.bounceOut,
+                    type: PageTransitionType.rightToLeftWithFade,
+                    duration: const Duration(milliseconds: 500),
+                    reverseDuration: const Duration(milliseconds: 500),
+                    child: PodcastDetailScreen(podcastSearchResult: entry)));
+          },
+          child: SizedBox(
+              width: 110,
+              height: 150,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                      child: ClipRRect(
                           borderRadius: BorderRadius.circular(10),
                           child: SizedBox(
-                              height: 120,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  CachedNetworkImage(
-                                    imageUrl: entry.image ?? 'https://picsum.photos/200',
-                                    fit: BoxFit.cover,
-                                    cacheManager: CacheManager(Config(entry.image ?? 'https://picsum.photos/200',
-                                        stalePeriod: const Duration(days: 2))),
-                                    placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
-                                    // progressIndicatorBuilder: (context, url, downloadProgress) =>
-                                    //     CircularProgressIndicator(value: downloadProgress.progress),
-                                    errorWidget: (context, url, error) => const Icon(Icons.error),
-                                  ),
-                                ],
-                              ))),
-                      Padding(
-                          padding: const EdgeInsets.only(left: 5, right: 5, top: 5),
+                            height: 90,
+                            width: 90,
+                            child: CachedNetworkImage(
+                              imageUrl: entry.image ?? 'https://picsum.photos/200',
+                              fit: BoxFit.cover,
+                              cacheManager: CacheManager(
+                                  Config(entry.image ?? 'https://picsum.photos/200', stalePeriod: const Duration(days: 2))),
+                              placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
+                              // progressIndicatorBuilder: (context, url, downloadProgress) =>
+                              //     CircularProgressIndicator(value: downloadProgress.progress),
+                              errorWidget: (context, url, error) => const Icon(Icons.error),
+                            ),
+                          ))),
+                  Center(
+                      child: Padding(
+                          padding: const EdgeInsets.only(top: 10),
                           child: Text(entry.title!,
-                              overflow: TextOverflow.ellipsis, maxLines: 2, style: Theme.of(context).textTheme.titleMedium))
-                    ],
-                  ),
-                ))),
-        Positioned(
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 12,
+                                  color: Theme.of(context).textTheme.titleMedium!.color!))))
+                ],
+              )),
+        )),
+        /*Positioned(
             right: 0,
             top: 0,
-            child: widget.trailing == null ? buildPopupButton(context, entry) : widget.trailing!(context, entry)),
+            child: widget.trailing == null ? buildPopupButton(context, entry) : widget.trailing!(context, entry)),*/
       ]));
 
   Widget makeVerticalListTile(context, SearchResult entry) => ListTile(
