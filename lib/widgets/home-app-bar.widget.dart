@@ -22,7 +22,9 @@ class HomeAppBarWidget extends StatelessWidget {
       flexibleSpace: Container(
         alignment: Alignment.bottomCenter,
         child: Image.asset(
+          width: MediaQuery.of(context).size.width,
           "assets/images/wave.png",
+          fit: BoxFit.cover,
         ),
       ),
       bottom: PreferredSize(
