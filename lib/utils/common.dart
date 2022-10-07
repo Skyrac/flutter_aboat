@@ -18,6 +18,23 @@ String formatTime(int seconds) {
   return '${(Duration(seconds: seconds))}'.split('.')[0].padLeft(8, '0');
 }
 
+class CustomTrackShape extends RoundedRectSliderTrackShape {
+  Rect getPreferredRect({
+    required RenderBox parentBox,
+    Offset offset = Offset.zero,
+    required SliderThemeData sliderTheme,
+    bool isEnabled = false,
+    bool isDiscrete = false,
+  }) {
+    final double? trackHeight = sliderTheme.trackHeight;
+    final double trackLeft = offset.dx;
+    final double trackTop =
+        offset.dy + (parentBox.size.height - trackHeight!) / 2;
+    final double trackWidth = parentBox.size.width;
+    return Rect.fromLTWH(trackLeft, trackTop, trackWidth, trackHeight);
+  }
+}
+
 class SeekBar extends StatefulWidget {
   final Duration duration;
   final Duration position;
@@ -62,72 +79,76 @@ class _SeekBarState extends State<SeekBar> {
       _dragValue = null;
     }
     final size = MediaQuery.of(context).size;
-    return Stack(
-      children: [
-        //Background Slider Layout
-        Positioned(
-          width: size.width * 0.85,
-          child: SliderTheme(
-            data: _sliderThemeData.copyWith(
-              thumbShape: HiddenThumbComponentShape(),
-              activeTrackColor: Colors.blue.shade100,
-              inactiveTrackColor: Colors.grey.shade300,
-            ),
-            child: ExcludeSemantics(
-              child: Slider(
-                min: 0.0,
-                max: widget.duration.inMilliseconds.toDouble(),
-                value: min(widget.bufferedPosition.inMilliseconds.toDouble(),
-                    widget.duration.inMilliseconds.toDouble()),
-                onChanged: (value) {},
+    return Container(
+      width: size.width,
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+      child: Stack(
+        children: [
+          //Background Slider Layout
+          Positioned(
+            width: size.width,
+            child: SliderTheme(
+              data: _sliderThemeData.copyWith(
+                trackShape: CustomTrackShape(),
+                thumbShape: HiddenThumbComponentShape(),
+                activeTrackColor: Colors.blue.shade100,
+                inactiveTrackColor: Colors.grey.shade300,
+              ),
+              child: ExcludeSemantics(
+                child: Slider(
+                  min: 0.0,
+                  max: widget.duration.inMilliseconds.toDouble(),
+                  value: min(widget.bufferedPosition.inMilliseconds.toDouble(),
+                      widget.duration.inMilliseconds.toDouble()),
+                  onChanged: (value) {},
+                ),
               ),
             ),
           ),
-        ),
-        SizedBox(
-          width: size.width * 0.85,
-          child: SliderTheme(
-            data: _sliderThemeData.copyWith(
-              inactiveTrackColor: Colors.blue.shade100,
-            ),
-            child: Slider(
-              min: 0.0,
-              max: widget.duration.inMilliseconds.toDouble(),
-              value: value,
-              onChanged: (value) {
-                if (!_dragging) {
-                  _dragging = true;
-                }
-                setState(() {
-                  _dragValue = value;
-                });
-                if (widget.onChanged != null) {
-                  widget.onChanged!(Duration(milliseconds: value.round()));
-                }
-              },
-              onChangeEnd: (value) {
-                if (widget.onChangeEnd != null) {
-                  widget.onChangeEnd!(Duration(milliseconds: value.round()));
-                }
-                _dragging = false;
-              },
+          SizedBox(
+            width: size.width,
+            child: SliderTheme(
+              data: _sliderThemeData.copyWith(
+                trackShape: CustomTrackShape(),
+                inactiveTrackColor: Color.fromRGBO(62, 62, 62, 1),
+              ),
+              child: Slider(
+                min: 0.0,
+                max: widget.duration.inMilliseconds.toDouble(),
+                value: value,
+                onChanged: (value) {
+                  if (!_dragging) {
+                    _dragging = true;
+                  }
+                  setState(() {
+                    _dragValue = value;
+                  });
+                  if (widget.onChanged != null) {
+                    widget.onChanged!(Duration(milliseconds: value.round()));
+                  }
+                },
+                onChangeEnd: (value) {
+                  if (widget.onChangeEnd != null) {
+                    widget.onChangeEnd!(Duration(milliseconds: value.round()));
+                  }
+                  _dragging = false;
+                },
+              ),
             ),
           ),
-        ),
-        Positioned(
-          right: 16.0,
-          bottom: 0.0,
-          child: Text(
-              RegExp(r'((^0*[1-9]\d*:)?\d{2}:\d{2})\.\d+$')
-                      .firstMatch("$_remaining")
-                      ?.group(1) ??
-                  '$_remaining',
-              style: Theme.of(context)
-                  .textTheme
-                  .labelSmall
-                  ?.copyWith(color: Colors.black, fontWeight: FontWeight.bold)),
-        ),
-      ],
+          // Positioned(
+          //   right: 16.0,
+          //   bottom: 0.0,
+          //   child: Text(
+          //       RegExp(r'((^0*[1-9]\d*:)?\d{2}:\d{2})\.\d+$')
+          //               .firstMatch("$_remaining")
+          //               ?.group(1) ??
+          //           '$_remaining',
+          //       style: Theme.of(context).textTheme.labelSmall?.copyWith(
+          //           color: Colors.black, fontWeight: FontWeight.bold)),
+          // ),
+        ],
+      ),
     );
   }
 
