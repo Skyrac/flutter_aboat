@@ -87,60 +87,63 @@ class _PodcastListWidgetState extends State<PodcastListWidget> {
             : const SizedBox(),
       ]));
 
-  Widget makeHorizontalListTile(context, SearchResult entry) => Padding(
-      padding: const EdgeInsets.all(10),
-      child: Stack(children: [
-        Center(
-            child: InkWell(
-          onTap: () async {
-            await userService.UpdatePodcastVisitDate(entry.id);
-            setState(() {});
-            Navigator.push(
-                context,
-                PageTransition(
-                    alignment: Alignment.bottomCenter,
-                    curve: Curves.bounceOut,
-                    type: PageTransitionType.rightToLeftWithFade,
-                    duration: const Duration(milliseconds: 500),
-                    reverseDuration: const Duration(milliseconds: 500),
-                    child: PodcastDetailScreen(podcastSearchResult: entry)));
-          },
-          child: SizedBox(
-              width: 110,
-              height: 150,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                      child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: SizedBox(
-                            height: 90,
-                            width: 90,
-                            child: CachedNetworkImage(
-                              imageUrl: entry.image ?? 'https://picsum.photos/200',
-                              fit: BoxFit.cover,
-                              cacheManager: CacheManager(
-                                  Config(entry.image ?? 'https://picsum.photos/200', stalePeriod: const Duration(days: 2))),
-                              placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
-                              // progressIndicatorBuilder: (context, url, downloadProgress) =>
-                              //     CircularProgressIndicator(value: downloadProgress.progress),
-                              errorWidget: (context, url, error) => const Icon(Icons.error),
-                            ),
-                          ))),
-                  Center(
-                      child: Padding(
-                          padding: const EdgeInsets.only(top: 10),
-                          child: Text(entry.title!,
-                              overflow: TextOverflow.ellipsis, maxLines: 2, style: Theme.of(context).textTheme.titleMedium)))
-                ],
-              )),
-        )),
-        /*Positioned(
+  Widget makeHorizontalListTile(context, SearchResult entry) => InkWell(
+      borderRadius: BorderRadius.circular(10),
+      onTap: () async {
+        await userService.UpdatePodcastVisitDate(entry.id);
+        setState(() {});
+        Navigator.push(
+            context,
+            PageTransition(
+                alignment: Alignment.bottomCenter,
+                curve: Curves.bounceOut,
+                type: PageTransitionType.rightToLeftWithFade,
+                duration: const Duration(milliseconds: 500),
+                reverseDuration: const Duration(milliseconds: 500),
+                child: PodcastDetailScreen(podcastSearchResult: entry)));
+      },
+      child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Stack(children: [
+            Center(
+              child: SizedBox(
+                  width: 110,
+                  height: 150,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(
+                          child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: SizedBox(
+                                height: 90,
+                                width: 90,
+                                child: CachedNetworkImage(
+                                  imageUrl: entry.image ?? 'https://picsum.photos/200',
+                                  fit: BoxFit.cover,
+                                  cacheManager: CacheManager(Config(entry.image ?? 'https://picsum.photos/200',
+                                      stalePeriod: const Duration(days: 2))),
+                                  placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
+                                  // progressIndicatorBuilder: (context, url, downloadProgress) =>
+                                  //     CircularProgressIndicator(value: downloadProgress.progress),
+                                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                                ),
+                              ))),
+                      Center(
+                          child: Padding(
+                              padding: const EdgeInsets.only(top: 10),
+                              child: Text(entry.title!,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 2,
+                                  style: Theme.of(context).textTheme.titleMedium)))
+                    ],
+                  )),
+            ),
+            /*Positioned(
             right: 0,
             top: 0,
             child: widget.trailing == null ? buildPopupButton(context, entry) : widget.trailing!(context, entry)),*/
-      ]));
+          ])));
 
   Widget makeVerticalListTile(context, SearchResult entry) => ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
