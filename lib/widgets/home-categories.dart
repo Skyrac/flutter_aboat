@@ -19,8 +19,27 @@ class _HomeScreenCategoriesTabState extends State<HomeScreenCategoriesTab> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
         child: Column(
-      children: [buildCategoryList(context)],
+      children: [buildSearchField(context), buildCategoryList(context)],
     ));
+  }
+
+  Widget buildSearchField(BuildContext context) {
+    return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 70, vertical: 10),
+        child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Container(
+                decoration: const BoxDecoration(
+                    color: Color.fromRGBO(29, 40, 58, 1.0),
+                    border: Border(bottom: BorderSide(width: 2, color: Color.fromRGBO(188, 140, 75, 1.0)))),
+                child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Center(
+                        child: TextField(
+                      decoration: const InputDecoration(
+                          border: InputBorder.none, hintText: "Search for category...", suffixIcon: Icon(Icons.search)),
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ))))));
   }
 
   var data = <PodcastCategory>[
@@ -70,7 +89,7 @@ class _HomeScreenCategoriesTabState extends State<HomeScreenCategoriesTab> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: Container(
-                    color: const Color.fromRGBO(99, 163, 253, 0.5),
+                    color: const Color.fromRGBO(29, 40, 58, 1.0),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
