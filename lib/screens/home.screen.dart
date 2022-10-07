@@ -1,6 +1,9 @@
+import 'package:Talkaboat/screens/settings/settings.screen.dart';
 import 'package:Talkaboat/widgets/podcast-favorites.widget.dart';
 import 'package:Talkaboat/widgets/quests/quest-list.widget.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:page_transition/page_transition.dart';
 import '../injection/injector.dart';
 import '../models/podcasts/podcast.model.dart';
 import '../services/quests/quest.service.dart';
@@ -13,7 +16,8 @@ import '../widgets/library-preview.widget.dart';
 import '../widgets/podcast-list.widget.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen(this.setEpisode, this.selectTab, {Key? key}) : super(key: key);
+  const HomeScreen(this.setEpisode, this.selectTab, {Key? key})
+      : super(key: key);
   final Function setEpisode;
   final Function selectTab;
 
@@ -36,7 +40,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Padding(
         padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
-        child: Text("Recently Listened", style: Theme.of(context).textTheme.titleLarge),
+        child: Text("Recently Listened",
+            style: Theme.of(context).textTheme.titleLarge),
       ),
       SizedBox(
           height: 150,
@@ -61,7 +66,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         final data = snapshot.data as List<Podcast>?;
                         if (data != null && data.isNotEmpty) {
                           userService.podcastProposalsHomeScreen[0] = data;
-                          return PodcastListWidget(direction: Axis.horizontal, searchResults: homeState.map[0]!);
+                          return PodcastListWidget(
+                              direction: Axis.horizontal,
+                              searchResults: homeState.map[0]!);
                         }
                       }
                     }
@@ -72,11 +79,14 @@ class _HomeScreenState extends State<HomeScreen> {
     ]);
   }
 
-  Widget createPodcastPreviewByGenre(BuildContext context, String title, int genre) {
+  Widget createPodcastPreviewByGenre(
+      BuildContext context, String title, int genre) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Padding(
           padding: const EdgeInsets.only(left: 10),
-          child: Text(title, style: TextStyle(fontSize: 32, color: Theme.of(context).primaryColor))),
+          child: Text(title,
+              style: TextStyle(
+                  fontSize: 32, color: Theme.of(context).primaryColor))),
       SizedBox(
           height: 200,
           child: userService.podcastProposalsHomeScreen.containsKey(genre)
@@ -100,7 +110,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         final data = snapshot.data as List<Podcast>?;
                         if (data != null && data.isNotEmpty) {
                           userService.podcastProposalsHomeScreen[genre] = data;
-                          return PodcastListWidget(direction: Axis.horizontal, searchResults: homeState.map[genre]!);
+                          return PodcastListWidget(
+                              direction: Axis.horizontal,
+                              searchResults: homeState.map[genre]!);
                         }
                       }
                     }
@@ -149,7 +161,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         final data = snapshot.data as List<Podcast>?;
                         if (data != null && data.isNotEmpty) {
                           userService.podcastProposalsHomeScreen[1] = data;
-                          return PodcastListFavoritesWidget(searchResults: userService.podcastProposalsHomeScreen[1]!);
+                          return PodcastListFavoritesWidget(
+                              searchResults:
+                                  userService.podcastProposalsHomeScreen[1]!);
                         }
                       }
                     }
@@ -192,22 +206,30 @@ class _HomeScreenState extends State<HomeScreen> {
   // Widget createLibraryPreviewGrid() {
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-        child: SingleChildScrollView(
-            child: Column(
-      children: [
-        HomeAppBarWidget(refresh: refresh),
-        //const SizedBox(height: 5),
-        //createLibraryPreview(),
-        const SizedBox(height: 5),
-        createTaskBar(context, 'Tasks'),
-        const SizedBox(height: 20),
-        createPodcastPreviewRecentlyListed(context),
-        const SizedBox(height: 20),
-        createFavoritesList(context),
-        const SizedBox(height: 20),
-      ],
-    )));
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(155),
+          child: HomeAppBarWidget(refresh: refresh),
+        ),
+        body: SafeArea(
+            child: SingleChildScrollView(
+                child: Column(
+          children: [
+            //const SizedBox(height: 5),
+            //createLibraryPreview(),
+            const SizedBox(height: 5),
+            createTaskBar(context, 'Tasks'),
+            const SizedBox(height: 20),
+            createPodcastPreviewRecentlyListed(context),
+            const SizedBox(height: 20),
+            createFavoritesList(context),
+            const SizedBox(height: 20),
+          ],
+        ))),
+      ),
+    );
   }
 
   createLibraryPreview() {
@@ -222,7 +244,10 @@ class _HomeScreenState extends State<HomeScreen> {
         height: height,
         child: Wrap(
           spacing: 10,
-          children: [for (var entry in libraryEntries) LibraryPreviewWidget(podcast: entry)],
+          children: [
+            for (var entry in libraryEntries)
+              LibraryPreviewWidget(podcast: entry)
+          ],
         ),
       ),
     );
