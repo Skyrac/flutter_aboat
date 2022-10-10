@@ -58,7 +58,7 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(
-            height: 7,
+            height: 6,
             width: deviceSize.width,
             child: StreamBuilder<MediaState>(
               stream: _mediaStateStream,
@@ -106,10 +106,6 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
                                   CachedNetworkImage(
                                     imageUrl: widget.episode!.image! ??
                                         'https://picsum.photos/200',
-                                    // cacheManager: CacheManager(Config(
-                                    //     widget.episode!.image! ??
-                                    //         'https://picsum.photos/200',
-                                    //     stalePeriod: const Duration(days: 2))),
                                     fit: BoxFit.fill,
                                     placeholder: (_, __) => const Center(
                                         child: CircularProgressIndicator()),
