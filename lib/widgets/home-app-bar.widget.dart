@@ -10,7 +10,7 @@ class HomeAppBarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: Color.fromRGBO(29, 40, 58, 1),
+      backgroundColor: const Color.fromRGBO(29, 40, 58, 1),
       leading: Padding(
         padding: const EdgeInsets.only(left: 15),
         child: Image.asset(
@@ -19,44 +19,49 @@ class HomeAppBarWidget extends StatelessWidget {
       ),
       leadingWidth: 45,
       titleSpacing: 10,
-      flexibleSpace: Container(
-        alignment: Alignment.bottomCenter,
-        child: Image.asset(
-          width: MediaQuery.of(context).size.width,
-          "assets/images/wave.png",
-          fit: BoxFit.cover,
-        ),
-      ),
       bottom: PreferredSize(
-        preferredSize: const Size.fromHeight(kToolbarHeight),
-        child: Container(
-          width: MediaQuery.of(context).size.width,
-          padding: const EdgeInsets.fromLTRB(25, 0, 25, 55),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.0),
-              border: const Border(
-                  bottom: BorderSide(color: Color.fromRGBO(164, 202, 255, 1))),
-            ),
-            child: const TabBar(
-                labelColor: Color.fromRGBO(188, 140, 75, 1),
-                indicatorColor: Color.fromRGBO(188, 140, 75, 1),
-                unselectedLabelColor: Color.fromRGBO(164, 202, 255, 1),
-                tabs: [
-                  Tab(text: "Suggested"),
-                  Tab(text: "Categories"),
-                  Tab(text: "News"),
-                ]),
+        preferredSize: const Size.fromHeight(kToolbarHeight + 66),
+        child: Expanded(
+          child: Column(
+            children: [
+              Container(
+                width: MediaQuery.of(context).size.width,
+                padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.0),
+                    border: const Border(bottom: BorderSide(color: Color.fromRGBO(164, 202, 255, 1))),
+                  ),
+                  child: const TabBar(
+                    labelColor: Color.fromRGBO(188, 140, 75, 1),
+                    indicatorColor: Color.fromRGBO(188, 140, 75, 1),
+                    unselectedLabelColor: Color.fromRGBO(164, 202, 255, 1),
+                    tabs: [
+                      Tab(text: "Suggested"),
+                      Tab(text: "Categories"),
+                      Tab(text: "News"),
+                    ],
+                  ),
+                ),
+              ),
+              Container(
+                color: Colors.transparent,
+                height: 66,
+                child: Image.asset(
+                  height: 66,
+                  width: MediaQuery.of(context).size.width,
+                  "assets/images/wave_old.png",
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ],
           ),
         ),
       ),
       title: Text(
         "Talkaboat",
         style: GoogleFonts.inter(
-            textStyle: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: Color.fromRGBO(99, 163, 253, 1))),
+            textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Color.fromRGBO(99, 163, 253, 1))),
       ),
       actions: [
         Padding(
