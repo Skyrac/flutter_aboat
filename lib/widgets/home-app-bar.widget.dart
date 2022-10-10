@@ -10,7 +10,7 @@ class HomeAppBarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: Color.fromRGBO(29, 40, 58, 1),
+      backgroundColor: const Color.fromRGBO(29, 40, 58, 1),
       leading: Padding(
         padding: const EdgeInsets.only(left: 15),
         child: Image.asset(
@@ -35,8 +35,7 @@ class HomeAppBarWidget extends StatelessWidget {
           child: DecoratedBox(
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.0),
-              border: const Border(
-                  bottom: BorderSide(color: Color.fromRGBO(164, 202, 255, 1))),
+              border: const Border(bottom: BorderSide(color: Color.fromRGBO(164, 202, 255, 1))),
             ),
             child: const TabBar(
                 labelColor: Color.fromRGBO(188, 140, 75, 1),
@@ -53,10 +52,7 @@ class HomeAppBarWidget extends StatelessWidget {
       title: Text(
         "Talkaboat",
         style: GoogleFonts.inter(
-            textStyle: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: Color.fromRGBO(99, 163, 253, 1))),
+            textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Color.fromRGBO(99, 163, 253, 1))),
       ),
       actions: [
         Padding(
