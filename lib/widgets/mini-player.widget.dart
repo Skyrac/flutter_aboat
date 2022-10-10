@@ -49,7 +49,9 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
     }
     Size deviceSize = MediaQuery.of(context).size;
     return Container(
-      height: 70,
+      margin: EdgeInsets.only(bottom: 18),
+      width: deviceSize.width * 0.9,
+      height: 56,
       decoration: BoxDecoration(
           color: const Color.fromRGBO(29, 40, 58, 0.7),
           borderRadius: BorderRadius.circular(10)),
@@ -59,7 +61,7 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
         children: [
           SizedBox(
             height: 6,
-            width: deviceSize.width,
+            width: deviceSize.width * 0.9,
             child: StreamBuilder<MediaState>(
               stream: _mediaStateStream,
               builder: (context, snapshot) {
@@ -90,7 +92,7 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
                                 podcastId: widget.episode?.podcastId)))
                   }),
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Stack(
                     alignment: Alignment.bottomLeft,
@@ -98,8 +100,8 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
                       ClipRRect(
                           borderRadius: BorderRadius.circular(10),
                           child: SizedBox(
-                              height: 56,
-                              width: 56,
+                              height: 50,
+                              width: 50,
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -122,41 +124,44 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
                     width: 10,
                   ),
                   Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.episode!.title!,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium
-                              ?.copyWith(color: Colors.white),
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        Text(
-                          removeAllHtmlTags(widget.episode!.description!),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 2,
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleSmall
-                              ?.copyWith(color: Colors.white),
-                        ),
-                        // Text(
-                        //   widget.episode!.!,
-                        //   overflow: TextOverflow.ellipsis,
-                        //   maxLines: 1,
-                        //   style: Theme.of(context)
-                        //       .textTheme
-                        //       .titleMedium
-                        //       ?.copyWith(color: Colors.black),
-                        // ),
-                      ],
+                    child: Container(
+                      padding: EdgeInsets.only(bottom: 8),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.episode!.title!,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(color: Colors.white),
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Text(
+                            removeAllHtmlTags(widget.episode!.description!),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleSmall
+                                ?.copyWith(color: Colors.white),
+                          ),
+                          // Text(
+                          //   widget.episode!.!,
+                          //   overflow: TextOverflow.ellipsis,
+                          //   maxLines: 1,
+                          //   style: Theme.of(context)
+                          //       .textTheme
+                          //       .titleMedium
+                          //       ?.copyWith(color: Colors.black),
+                          // ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
