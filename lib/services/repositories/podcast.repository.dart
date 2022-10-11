@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:Talkaboat/models/podcasts/podcast-genre.model.dart';
 import 'package:dio/dio.dart';
 
 import '../../configuration/dio.config.dart';
@@ -56,9 +57,33 @@ class PodcastRepository {
   static Future<List<Podcast>> getTopPodcastByGenre(int amount, int genre) async {
     try {
       var response = await dio.get<String>('$API/search/top/$amount/$genre');
+      var list = List<Podcast>.from(json.decode(response.data!).map((data) => Podcast.fromJson(data)));
+      return list;
+    } catch (ex) {
+      return List.empty();
+    }
+  }
+
+  static Future<List<Podcast>> getNewcomersByGenre(int amount, int genre) async {
+    try {
+      print("getNewcomersByGenre");
+      print('$API/search/random/$amount/$genre');
+      // TODO: use correct endpoint for newcomers when it is implemented in the backend
+      var response = await dio.get<String>('$API/search/random/$amount/$genre');
       print(response.data!);
       var list = List<Podcast>.from(json.decode(response.data!).map((data) => Podcast.fromJson(data)));
       print(list);
+      return list;
+    } catch (ex) {
+      print(ex);
+      return List.empty();
+    }
+  }
+
+  static Future<List<PodcastGenre>> getGenres() async {
+    try {
+      var response = await dio.get<String>('$API/genres');
+      var list = List<PodcastGenre>.from(json.decode(response.data!).map((data) => PodcastGenre.fromJson(data)));
       return list;
     } catch (ex) {
       return List.empty();

@@ -81,7 +81,6 @@ class Podcast extends SearchResult {
     totalEpisodes = json['totalEpisodes'];
     if (json['episodes'] != null) {
       episodes = <Episode>[];
-      print(json["episodes"].runtimeType);
       if (json["episodes"].runtimeType == int) {
         totalEpisodes = json["episodes"];
       } else {

@@ -1,15 +1,18 @@
 import 'package:Talkaboat/injection/injector.dart';
-import 'package:Talkaboat/models/podcasts/podcast-category.model.dart';
+import 'package:Talkaboat/models/podcasts/podcast-genre.model.dart';
 import 'package:Talkaboat/models/podcasts/podcast.model.dart';
 import 'package:Talkaboat/services/audio/podcast.service.dart';
+import 'package:Talkaboat/services/repositories/podcast.repository.dart';
 import 'package:Talkaboat/widgets/podcast-favorites.widget.dart';
+import 'package:Talkaboat/widgets/podcast-list.widget.dart';
 import 'package:Talkaboat/widgets/searchbar.widget.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class CategoryScreen extends StatefulWidget {
   const CategoryScreen(this.category, {Key? key}) : super(key: key);
 
-  final PodcastCategory category;
+  final PodcastGenre category;
 
   @override
   State<CategoryScreen> createState() => _CategoryScreenState();
@@ -43,47 +46,54 @@ class _CategoryScreenState extends State<CategoryScreen> {
                 Container(
                   padding: const EdgeInsets.only(left: 5),
                   height: 25,
-                  child: Image(
-                    image: widget.category.image,
-                    fit: BoxFit.cover,
-                  ),
+                  child: CachedNetworkImage(
+                      imageUrl: widget.category.imageUrl == null || widget.category.imageUrl!.isEmpty
+                          ? 'https://picsum.photos/200'
+                          : widget.category.imageUrl!,
+                      placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
+                      errorWidget: (context, url, error) => const Icon(Icons.error),
+                      fit: BoxFit.cover),
                 )
               ]),
               //leading: Icon(Icons.arrow_back_ios),
             ),
           ),
-          body: FutureBuilder(
-            future: podcastService.getTopPodcastByGenre(10, widget.category.genreId),
-            builder: ((context, snapshot) {
-              print(snapshot.connectionState);
-              if (snapshot.connectionState == ConnectionState.done) {
-                print("done");
-                print(snapshot.hasData);
-                print(snapshot.data);
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Text(
-                      '${snapshot.error} occurred',
-                      style: const TextStyle(fontSize: 18),
-                    ),
-                  );
-                } else if (snapshot.hasData && snapshot.data != null) {
-                  // Extracting data from snapshot object
-                  final data = snapshot.data as List<Podcast>?;
-                  if (data != null) {
-                    return buildLists(context, data);
+          body: SingleChildScrollView(
+            child: FutureBuilder(
+              future: Future.wait([
+                podcastService.getTopPodcastByGenre(10, widget.category.genreId),
+                PodcastRepository.getRandomPodcast(10)
+              ]),
+              builder: ((context, snapshot) {
+                print(snapshot.connectionState);
+                if (snapshot.connectionState == ConnectionState.done) {
+                  print("done");
+                  print(snapshot.hasData);
+                  print(snapshot.data);
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text(
+                        '${snapshot.error} occurred',
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                    );
                   }
+                  // Extracting data from snapshot object
+                  final allData = snapshot.data as List<List<Podcast>>;
+                  final top10 = allData[0];
+                  final newcomers = allData[1];
+                  return buildLists(context, top10, newcomers);
                 }
-              }
-              return const Center(child: CircularProgressIndicator());
-            }),
+                return const Center(child: CircularProgressIndicator());
+              }),
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget buildLists(BuildContext context, List<Podcast> podcasts) {
+  Widget buildLists(BuildContext context, List<Podcast> top10, List<Podcast> newcomers) {
     return Column(
       children: [
         SearchBar(
@@ -95,10 +105,49 @@ class _CategoryScreenState extends State<CategoryScreen> {
           },
         ),
         Padding(
+            padding: const EdgeInsets.all(10),
+            child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+              Text("Newcomers", style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(
+                width: 10,
+              ),
+              const Image(
+                image: AssetImage("assets/icons/icon_fire.png"),
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              // TODO: bottom align this text
+              Text("Reward x1.5", style: Theme.of(context).textTheme.titleMedium),
+              const Spacer(),
+              ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: InkWell(
+                      borderRadius: BorderRadius.circular(10),
+                      onTap: (() {
+                        // TODO: navigate to full list
+                        print("blab");
+                      }),
+                      child: Row(children: [
+                        Text(
+                          "See All",
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                        const Icon(Icons.arrow_right_alt)
+                      ])))
+            ])),
+        SizedBox(
+          height: 150,
+          child: PodcastListWidget(searchResults: newcomers, direction: Axis.horizontal),
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Row(children: [Text("Top 10", style: Theme.of(context).textTheme.titleLarge)])),
         PodcastListFavoritesWidget(
-          searchResults: podcasts,
+          searchResults: top10,
         )
       ],
     );

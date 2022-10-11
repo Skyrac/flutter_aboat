@@ -1,5 +1,8 @@
-import 'package:Talkaboat/models/podcasts/podcast-category.model.dart';
+import 'package:Talkaboat/injection/injector.dart';
+import 'package:Talkaboat/models/podcasts/podcast-genre.model.dart';
 import 'package:Talkaboat/screens/podcase-category.screen.dart';
+import 'package:Talkaboat/services/audio/podcast.service.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -11,12 +14,37 @@ class HomeScreenCategoriesTab extends StatefulWidget {
 }
 
 class _HomeScreenCategoriesTabState extends State<HomeScreenCategoriesTab> {
+  final podcastService = getIt<PodcastService>();
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-        child: Column(
-      children: [buildSearchField(context), buildCategoryList(context)],
-    ));
+      child: FutureBuilder(
+        future: podcastService.getGenres(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasError) {
+              return Center(
+                child: Text(
+                  '${snapshot.error} occurred',
+                  style: const TextStyle(fontSize: 18),
+                ),
+              );
+            } else if (snapshot.hasData && snapshot.data != null) {
+              // Extracting data from snapshot object
+              final data = snapshot.data as List<PodcastGenre>;
+              return Column(
+                children: [buildSearchField(context), buildCategoryList(context, data)],
+              );
+            } else {
+              return const Center(child: CircularProgressIndicator());
+            }
+          } else {
+            return const Center(child: CircularProgressIndicator());
+          }
+        },
+      ),
+    );
   }
 
   //TextEditingController searchController = TextEditingController();
@@ -47,28 +75,7 @@ class _HomeScreenCategoriesTabState extends State<HomeScreenCategoriesTab> {
                     ))))));
   }
 
-  var data = <PodcastCategory>[
-    PodcastCategory("Arts", const AssetImage("assets/icons/icon-art.png"), 1),
-    PodcastCategory("Health & Fitness", const AssetImage("assets/icons/icon-workout.png"), 2),
-    PodcastCategory("Business", const AssetImage("assets/icons/icon-business-deal.png"), 3),
-    PodcastCategory("Fiction", const AssetImage("assets/icons/icon-fiction.png"), 4),
-    PodcastCategory("Government", const AssetImage("assets/icons/icon-poll.png"), 5),
-    PodcastCategory("History", const AssetImage("assets/icons/icon-history.png"), 6),
-    PodcastCategory("Leisure", const AssetImage("assets/icons/icon-art.png"), 7),
-    PodcastCategory("Music", const AssetImage("assets/icons/icon-workout.png"), 8),
-    PodcastCategory("News", const AssetImage("assets/icons/icon-workout.png"), 9),
-    PodcastCategory("Religion & Spirituality", const AssetImage("assets/icons/icon-workout.png"), 10),
-    PodcastCategory("Science", const AssetImage("assets/icons/icon-art.png"), 11),
-    PodcastCategory("Sports", const AssetImage("assets/icons/icon-workout.png"), 12),
-    PodcastCategory("Technology", const AssetImage("assets/icons/icon-art.png"), 13),
-    PodcastCategory("TV & Film", const AssetImage("assets/icons/icon-workout.png"), 14),
-    PodcastCategory("Society & Culture", const AssetImage("assets/icons/icon-art.png"), 15),
-    PodcastCategory("Kids & Family", const AssetImage("assets/icons/icon-workout.png"), 16),
-    PodcastCategory("Education", const AssetImage("assets/icons/icon-art.png"), 17),
-    PodcastCategory("Comedy", const AssetImage("assets/icons/icon-workout.png"), 18),
-  ];
-
-  Widget buildCategoryList(BuildContext context) {
+  Widget buildCategoryList(BuildContext context, List<PodcastGenre> data) {
     var filteredItems = data.where((element) => search == '' || element.name.toLowerCase().contains(search)).toList();
 
     return GridView.count(
@@ -85,7 +92,7 @@ class _HomeScreenCategoriesTabState extends State<HomeScreenCategoriesTab> {
         }));
   }
 
-  Widget makeCard(BuildContext context, PodcastCategory category, int index) {
+  Widget makeCard(BuildContext context, PodcastGenre category, int index) {
     return SizedBox(
       width: 170,
       height: 70,
@@ -116,10 +123,13 @@ class _HomeScreenCategoriesTabState extends State<HomeScreenCategoriesTab> {
                                 child: SizedBox(
                               height: 50,
                               width: 50,
-                              child: Image(
-                                image: category.image,
-                                fit: BoxFit.cover,
-                              ),
+                              child: CachedNetworkImage(
+                                  imageUrl: category.imageUrl == null || category.imageUrl!.isEmpty
+                                      ? 'https://picsum.photos/200'
+                                      : category.imageUrl!,
+                                  placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
+                                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                                  fit: BoxFit.cover),
                             )),
                             Expanded(
                                 child: Center(

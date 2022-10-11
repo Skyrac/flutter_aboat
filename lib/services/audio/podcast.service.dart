@@ -1,3 +1,5 @@
+import 'package:Talkaboat/models/podcasts/podcast-genre.model.dart';
+
 import '../../models/podcasts/episode.model.dart';
 import '../../models/podcasts/podcast.model.dart';
 import '../../models/response.model.dart';
@@ -43,6 +45,24 @@ class PodcastService {
 
   Future<List<Podcast>> getTopPodcastByGenre(int amount, int genre) {
     return PodcastRepository.getTopPodcastByGenre(amount, genre);
+  }
+
+  Future<List<Podcast>> getNewcomersByGenre(int amount, int genre) {
+    return PodcastRepository.getNewcomersByGenre(amount, genre);
+  }
+
+  List<PodcastGenre>? genres;
+
+  Future<List<PodcastGenre>> getGenres({bool forceRefresh = false}) async {
+    if (genres != null && !forceRefresh) {
+      print(genres);
+      return genres!;
+    } else {
+      print("no genres");
+      genres = await PodcastRepository.getGenres();
+      print(genres);
+      return genres!;
+    }
   }
 }
 

@@ -112,6 +112,7 @@ class _HomeScreenSuggestedTabState extends State<HomeScreenSuggestedTab> {
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Text("Favorites", style: Theme.of(context).textTheme.titleLarge),
             InkWell(
+                borderRadius: BorderRadius.circular(10),
                 onTap: (() {
                   widget.selectTab("Library", 3);
                 }),
