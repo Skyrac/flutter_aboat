@@ -1,6 +1,6 @@
 import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/models/podcasts/podcast-genre.model.dart';
-import 'package:Talkaboat/screens/podcase-category.screen.dart';
+import 'package:Talkaboat/screens/podcast-category.screen.dart';
 import 'package:Talkaboat/services/audio/podcast.service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
