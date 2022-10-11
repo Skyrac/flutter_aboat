@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:Talkaboat/utils/extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:social_login_buttons/social_login_buttons.dart';
 
 import '../injection/injector.dart';
@@ -67,50 +68,114 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   createEmailPinRequestWidget(String labelText, Function callback,
-      TextEditingController textController, String buttonText) =>
+          TextEditingController textController, String buttonText) =>
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 40),
-        child: Row(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           mainAxisSize: MainAxisSize.max,
           children: [
-            Expanded(
-              flex: 3,
-              child: Container(
-                alignment: Alignment.center,
-                child: Card(
-                  color: DefaultColors.secondaryColorAlphaBlend.shade900,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 10, right: 10),
-                    child: TextField(
-                      controller: textController,
-                      onSubmitted: (_) async {
-                        callback();
-                      },
-                      decoration: InputDecoration(labelText: labelText),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Flexible(
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              alignment: Alignment.center,
               child: Card(
-                color: DefaultColors.secondaryColorAlphaBlend.shade900,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Container(
+                    height: 40,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: const Color.fromRGBO(29, 40, 58, 1),
+                      // ignore: prefer_const_literals_to_create_immutables
+                      boxShadow: [
+                        const BoxShadow(
+                          color: Color.fromRGBO(188, 140, 75, 1),
+                          spreadRadius: 0,
+                          blurRadius: 0,
+                          offset: Offset(0, 1), // changes position of shadow
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 10, right: 10),
+                      child: TextField(
+                        controller: textController,
+                        onSubmitted: (_) async {
+                          callback();
+                        },
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          alignLabelWithHint: true,
+                          hintText: labelText,
+                          hintStyle: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(
+                                  color: const Color.fromRGBO(135, 135, 135, 1),
+                                  fontStyle: FontStyle.italic),
+                        ),
+                      ),
+                    ),
+                  )),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Card(
+                shape: RoundedRectangleBorder(
+                    side: const BorderSide(
+                        color: Color.fromRGBO(188, 140, 75, 0.25), width: 1),
+                    borderRadius: BorderRadius.circular(15)),
+                color: const Color.fromRGBO(99, 163, 253, 1),
                 child: InkWell(
                   onTap: () => callback(),
                   child: Container(
-                    height: 60,
+                    height: 40,
                     alignment: Alignment.center,
-                    child: Padding(
+                    child: Container(
                       padding: const EdgeInsets.only(left: 10, right: 10),
                       child: Text(
                         buttonText,
+                        style: GoogleFonts.inter(
+                            color: const Color.fromRGBO(15, 23, 41, 1),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16),
                         textAlign: TextAlign.center,
                       ),
                     ),
                   ),
                 ),
               ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Row(children: <Widget>[
+              Expanded(
+                  child: Divider(
+                color: Color.fromRGBO(99, 163, 253, 1),
+                thickness: 2,
+              )),
+              Container(
+                  child: Center(child: Text("OR")),
+                  width: 80,
+                  height: 40,
+                  decoration: BoxDecoration(
+                      border: Border.all(
+                          color: Color.fromRGBO(
+                              99, 163, 253, 1), // set border color
+                          width: 2.0), // set border width
+                      borderRadius: BorderRadius.all(Radius.circular(20.0)))),
+              Expanded(
+                  child: Divider(
+                color: Color.fromRGBO(99, 163, 253, 1),
+                thickness: 2,
+              )),
+            ]),
+            const SizedBox(
+              height: 10,
             ),
           ],
         ),
@@ -132,7 +197,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.pop(context);
         return;
       }
-    } catch(exception) {
+    } catch (exception) {
       print(exception);
     }
 
@@ -189,7 +254,6 @@ class _LoginScreenState extends State<LoginScreen> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return Dialog(
-
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: new Row(
@@ -203,13 +267,13 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       },
     );
-    var successful = await userService.firebaseRegister(socialLoginNewUser.text, true);
+    var successful =
+        await userService.firebaseRegister(socialLoginNewUser.text, true);
     setState(() {
       Navigator.of(context, rootNavigator: true).pop();
       isLoading = false;
     });
     if (successful) {
-
       setState(() {
         Navigator.of(context, rootNavigator: true).pop();
         Navigator.pop(context);
@@ -223,97 +287,136 @@ class _LoginScreenState extends State<LoginScreen> {
     final size = MediaQuery.of(context).size;
     return SafeArea(
         child: Container(
-          decoration: BoxDecoration(
-              gradient: LinearGradient(colors: [
-                DefaultColors.primaryColor.shade900,
-                DefaultColors.secondaryColor.shade900,
-                DefaultColors.secondaryColor.shade900
-              ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
-          child: Scaffold(
-              body: Stack(
-                children: [
-                  LoginAndRegisterBackground(
-                    child: Container(
-                      width: size.width > 500 ? 500 : size.width,
-                      child: SingleChildScrollView(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(height: size.height * 0.06),
-                            sentEmail
-                                ? createEmailPinRequestWidget("Pin", () async {
-                              await sendLogin(context);
-                            }, pinController, "Login")
-                                : createEmailPinRequestWidget(
-                                "E-Mail", requestEmail, emailController, "Get Pin"),
-                            SizedBox(height: size.height * 0.01),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 50),
-                              child: SocialLoginButton(
-                                buttonType: SocialLoginButtonType.google,
-                                mode: SocialLoginButtonMode.single,
-                                text: "Sign in with Google",
-                                onPressed: () async {
-                                  await socialButtonPressed(SocialLogin.Google);
-                                },
-                              ),
-                            ),
-                            SizedBox(height: 10,),
-                            createAppleLogin(),
-                            SizedBox(height: Platform.isIOS ? 10 : 0),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 50),
-                              child: SocialLoginButton(
-                                buttonType: SocialLoginButtonType.facebook,
-                                mode: SocialLoginButtonMode.single,
-                                text: "Sign in with Facebook",
-                                onPressed: () async {
-                                  await socialButtonPressed(SocialLogin.Facebook);
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
+      decoration: const BoxDecoration(color: Color.fromRGBO(15, 23, 41, 1)),
+      // gradient: LinearGradient(colors: [
+      //   DefaultColors.primaryColor.shade900,
+      //   DefaultColors.secondaryColor.shade900,
+      //   DefaultColors.secondaryColor.shade900
+      // ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
+      child: Scaffold(
+          body: Stack(
+        children: [
+          LoginAndRegisterBackground(
+            child: Container(
+              width: size.width > 500 ? 500 : size.width,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      alignment: Alignment.topLeft,
+                      margin: const EdgeInsets.only(left: 55),
+                      child: Text(
+                        "Login",
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleLarge
+                            ?.copyWith(fontWeight: FontWeight.w600),
                       ),
                     ),
-                  ),
-                  isLoading
-                      ? const Positioned(
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      child: Card(
-                          color: Colors.transparent,
-                          child: Center(
-                            child: CircularProgressIndicator(),
-                          )))
-                      : SizedBox(),
-                  const Positioned(
-                      top: 5,
-                      left: 0,
-                      right: 0,
-                      height: 80,
-                      child: LoginAppBarWidget()),
-                ],
-              )),
-        ));
+                    SizedBox(height: size.height * 0.02),
+                    sentEmail
+                        ? createEmailPinRequestWidget("Pin", () async {
+                            await sendLogin(context);
+                          }, pinController, "Login")
+                        : createEmailPinRequestWidget("E-Mail...", requestEmail,
+                            emailController, "Request PIN"),
+                    // sentEmail
+                    //     ? createEmailPinRequestWidget("Pin", () async {
+                    //         await sendLogin(context);
+                    //       }, pinController, "Login")
+                    //     : createEmailPinRequestWidget(
+                    //         "E-Mail", requestEmail, emailController, "Get Pin"),
+                    SizedBox(height: size.height * 0.01),
+                    Container(
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                              color: Color.fromRGBO(
+                                  188, 140, 75, 0.25), // set border color
+                              width: 1.0), // set border width
+                          borderRadius: BorderRadius.all(Radius.circular(15))),
+                      margin: const EdgeInsets.symmetric(horizontal: 50),
+                      child: SocialLoginButton(
+                        backgroundColor: Color.fromRGBO(29, 40, 58, 0.97),
+                        imageWidth: 25,
+                        height: 40,
+                        borderRadius: 15,
+                        buttonType: SocialLoginButtonType.google,
+                        mode: SocialLoginButtonMode.single,
+                        text: "Sign in with Google",
+                        onPressed: () async {
+                          await socialButtonPressed(SocialLogin.Google);
+                        },
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    createAppleLogin(),
+                    SizedBox(height: Platform.isIOS ? 10 : 0),
+                    Container(
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                              color: Color.fromRGBO(
+                                  188, 140, 75, 0.25), // set border color
+                              width: 1.0), // set border width
+                          borderRadius: BorderRadius.all(Radius.circular(15))),
+                      margin: const EdgeInsets.symmetric(horizontal: 50),
+                      child: SocialLoginButton(
+                        backgroundColor: Color.fromRGBO(29, 40, 58, 0.97),
+                        imageWidth: 25,
+                        height: 40,
+                        borderRadius: 15,
+                        textColor: Color.fromRGBO(99, 163, 253, 1),
+                        buttonType: SocialLoginButtonType.facebook,
+                        mode: SocialLoginButtonMode.single,
+                        text: "Sign in with Facebook",
+                        onPressed: () async {
+                          await socialButtonPressed(SocialLogin.Facebook);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          isLoading
+              ? const Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: Card(
+                      color: Colors.transparent,
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      )))
+              : const SizedBox(),
+          const Positioned(
+              top: 5,
+              left: 0,
+              right: 0,
+              height: 80,
+              child: LoginAppBarWidget()),
+        ],
+      )),
+    ));
   }
 
   createAppleLogin() {
-    return Platform.isIOS ?
-
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 50),
-        child: SocialLoginButton(
-          buttonType: SocialLoginButtonType.apple,
-          mode: SocialLoginButtonMode.single,
-          text: "Sign in with Apple",
-          onPressed: () async {
-            await socialButtonPressed(SocialLogin.Apple);
-          },
-        ),
-      )
-     :  SizedBox() ;
+    return Platform.isIOS
+        ? Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 50),
+            child: SocialLoginButton(
+              buttonType: SocialLoginButtonType.apple,
+              mode: SocialLoginButtonMode.single,
+              text: "Sign in with Apple",
+              onPressed: () async {
+                await socialButtonPressed(SocialLogin.Apple);
+              },
+            ),
+          )
+        : const SizedBox();
   }
 }
