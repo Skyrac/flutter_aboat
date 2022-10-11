@@ -30,7 +30,9 @@ class HomeAppBarWidget extends StatelessWidget {
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.0),
-                    border: const Border(bottom: BorderSide(color: Color.fromRGBO(164, 202, 255, 1))),
+                    border: const Border(
+                        bottom: BorderSide(
+                            color: Color.fromRGBO(164, 202, 255, 1))),
                   ),
                   child: const TabBar(
                     labelColor: Color.fromRGBO(188, 140, 75, 1),
@@ -44,16 +46,16 @@ class HomeAppBarWidget extends StatelessWidget {
                   ),
                 ),
               ),
-              Container(
-                color: Colors.transparent,
-                height: 66,
-                child: Image.asset(
-                  height: 66,
-                  width: MediaQuery.of(context).size.width,
-                  "assets/images/wave_old.png",
-                  fit: BoxFit.cover,
-                ),
-              ),
+              // Container(
+              //   color: Colors.transparent,
+              //   height: 66,
+              //   child: Image.asset(
+              //     height: 66,
+              //     width: MediaQuery.of(context).size.width,
+              //     "assets/images/wave_old.png",
+              //     fit: BoxFit.cover,
+              //   ),
+              // ),
             ],
           ),
         ),
@@ -61,7 +63,10 @@ class HomeAppBarWidget extends StatelessWidget {
       title: Text(
         "Talkaboat",
         style: GoogleFonts.inter(
-            textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Color.fromRGBO(99, 163, 253, 1))),
+            textStyle: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: Color.fromRGBO(99, 163, 253, 1))),
       ),
       actions: [
         Padding(
