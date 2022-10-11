@@ -143,60 +143,67 @@ class _AppScreenState extends State<AppScreen> {
         return false;
       },
       child: Scaffold(
-          body: Stack(children: <Widget>[
-            _buildOffstageNavigator("Home"),
-            _buildOffstageNavigator("Search"),
-            _buildOffstageNavigator("Playlist"),
-            _buildOffstageNavigator("Library"),
-            _buildOffstageNavigator("Social"),
-          ]),
-          bottomNavigationBar: Column(mainAxisSize: MainAxisSize.min, children: [
-            MiniPlayerWidget(episode: episode),
-            ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(20.0),
-                topRight: Radius.circular(20.0),
-              ),
-              child: SizedBox(
-                height: 70,
-                child: BottomNavigationBar(
-                  backgroundColor: const Color.fromRGBO(29, 40, 58, 1),
-                  type: BottomNavigationBarType.fixed,
-                  selectedFontSize: 0,
-                  unselectedFontSize: 0,
-                  elevation: 0,
-                  showSelectedLabels: false,
-                  showUnselectedLabels: false,
-                  currentIndex: currentTabIndex,
-                  onTap: (index) {
-                    _selectTab(pageKeys[index], index);
-                  },
-                  items: <BottomNavigationBarItem>[
-                    BottomNavigationBarItem(
-                        icon: buttonNavbar("assets/images/home.png", 20, 20, "Home"),
-                        activeIcon: buttonNavbarActiv("assets/images/home.png", 20, 20, "Home"),
-                        label: ''),
-                    BottomNavigationBarItem(
-                        icon: buttonNavbar("assets/images/live.png", 29, 20, "Live"),
-                        activeIcon: buttonNavbarActiv("assets/images/live.png", 29, 20, "Live"),
-                        label: ''),
-                    BottomNavigationBarItem(
-                        icon: buttonNavbar("assets/images/favorites.png", 20, 20, "Favorites"),
-                        activeIcon: buttonNavbarActiv("assets/images/favorites.png", 20, 20, "Favorites"),
-                        label: ''),
-                    BottomNavigationBarItem(
-                        icon: buttonNavbar("assets/images/playlist.png", 30, 20, "Playlists"),
-                        activeIcon: buttonNavbarActiv("assets/images/playlist.png", 30, 20, "Playlists"),
-                        label: ''),
-                    BottomNavigationBarItem(
-                        icon: buttonNavbar("assets/images/social.png", 20, 20, "Social"),
-                        activeIcon: buttonNavbarActiv("assets/images/social.png", 20, 20, "Social"),
-                        label: ''),
-                  ],
+        body: Stack(children: <Widget>[
+          _buildOffstageNavigator("Home"),
+          _buildOffstageNavigator("Search"),
+          _buildOffstageNavigator("Playlist"),
+          _buildOffstageNavigator("Library"),
+          _buildOffstageNavigator("Social"),
+        ]),
+        bottomNavigationBar: Container(
+          color: const Color.fromRGBO(15, 23, 41, 1),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              MiniPlayerWidget(episode: episode),
+              ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20.0),
+                  topRight: Radius.circular(20.0),
+                ),
+                child: SizedBox(
+                  height: 70,
+                  child: BottomNavigationBar(
+                    backgroundColor: const Color.fromRGBO(29, 40, 58, 1),
+                    type: BottomNavigationBarType.fixed,
+                    selectedFontSize: 0,
+                    unselectedFontSize: 0,
+                    elevation: 0,
+                    showSelectedLabels: false,
+                    showUnselectedLabels: false,
+                    currentIndex: currentTabIndex,
+                    onTap: (index) {
+                      _selectTab(pageKeys[index], index);
+                    },
+                    items: <BottomNavigationBarItem>[
+                      BottomNavigationBarItem(
+                          icon: buttonNavbar("assets/images/home.png", 20, 20, "Home"),
+                          activeIcon: buttonNavbarActiv("assets/images/home.png", 20, 20, "Home"),
+                          label: ''),
+                      BottomNavigationBarItem(
+                          icon: buttonNavbar("assets/images/live.png", 29, 20, "Live"),
+                          activeIcon: buttonNavbarActiv("assets/images/live.png", 29, 20, "Live"),
+                          label: ''),
+                      BottomNavigationBarItem(
+                          icon: buttonNavbar("assets/images/favorites.png", 20, 20, "Favorites"),
+                          activeIcon: buttonNavbarActiv("assets/images/favorites.png", 20, 20, "Favorites"),
+                          label: ''),
+                      BottomNavigationBarItem(
+                          icon: buttonNavbar("assets/images/playlist.png", 30, 20, "Playlists"),
+                          activeIcon: buttonNavbarActiv("assets/images/playlist.png", 30, 20, "Playlists"),
+                          label: ''),
+                      BottomNavigationBarItem(
+                          icon: buttonNavbar("assets/images/social.png", 20, 20, "Social"),
+                          activeIcon: buttonNavbarActiv("assets/images/social.png", 20, 20, "Social"),
+                          label: ''),
+                    ],
+                  ),
                 ),
               ),
-            )
-          ])),
+            ],
+          ),
+        ),
+      ),
     );
   }
 

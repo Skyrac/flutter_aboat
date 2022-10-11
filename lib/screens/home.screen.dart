@@ -1,16 +1,12 @@
-import 'package:Talkaboat/screens/settings/settings.screen.dart';
 import 'package:Talkaboat/widgets/podcast-favorites.widget.dart';
 import 'package:Talkaboat/widgets/quests/quest-list.widget.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:page_transition/page_transition.dart';
 import '../injection/injector.dart';
 import '../models/podcasts/podcast.model.dart';
 import '../services/quests/quest.service.dart';
 import '../services/repositories/podcast.repository.dart';
 import '../services/state/state.service.dart';
 import '../services/user/user.service.dart';
-import '../themes/colors.dart';
 import '../widgets/home-app-bar.widget.dart';
 import '../widgets/library-preview.widget.dart';
 import '../widgets/podcast-list.widget.dart';
@@ -210,24 +206,44 @@ class _HomeScreenState extends State<HomeScreen> {
       length: 3,
       child: Scaffold(
         appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(155),
+          preferredSize: const Size.fromHeight(100),
           child: HomeAppBarWidget(refresh: refresh),
         ),
         body: SafeArea(
-            child: SingleChildScrollView(
-                child: Column(
-          children: [
-            //const SizedBox(height: 5),
-            //createLibraryPreview(),
-            const SizedBox(height: 5),
-            createTaskBar(context, 'Tasks'),
-            const SizedBox(height: 20),
-            createPodcastPreviewRecentlyListed(context),
-            const SizedBox(height: 20),
-            createFavoritesList(context),
-            const SizedBox(height: 20),
-          ],
-        ))),
+          child: Container(
+            color: const Color.fromRGBO(15, 23, 41, 1),
+            child: Stack(
+              children: [
+                SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      //const SizedBox(height: 5),
+                      //createLibraryPreview(),
+                      const SizedBox(height: 55),
+                      const SizedBox(height: 5),
+                      createTaskBar(context, 'Tasks'),
+                      const SizedBox(height: 20),
+                      createPodcastPreviewRecentlyListed(context),
+                      const SizedBox(height: 20),
+                      createFavoritesList(context),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
+                ),
+                Container(
+                  color: Colors.transparent,
+                  height: 66,
+                  child: Image.asset(
+                    height: 66,
+                    width: MediaQuery.of(context).size.width,
+                    "assets/images/wave_old.png",
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -251,5 +267,29 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+}
+
+class CustomAppBar extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    Path path = new Path();
+
+    path.lineTo(0, size.height);
+    path.quadraticBezierTo(
+        size.width / 4, size.height - 40, size.width / 2, size.height - 20);
+
+    path.quadraticBezierTo(
+        3 / 4 * size.width, size.height, size.width, size.height - 20);
+
+    path.lineTo(size.width, 0);
+
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) {
+    // TODO: implement shouldReclip
+    return false;
   }
 }
