@@ -90,6 +90,20 @@ class PodcastRepository {
     }
   }
 
+  static Future<List<Podcast>> search(String search, int amount, int offset, {int? genre}) async {
+    try {
+      final body = {"amount": amount, "offset": offset, "queue": search};
+      if (genre != null) {
+        body["genre"] = genre.toString();
+      }
+      var response = await dio.post<String>('$API/search', data: body);
+      var list = List<Podcast>.from(json.decode(response.data!).map((data) => Podcast.fromJson(data)));
+      return list;
+    } catch (ex) {
+      return List.empty();
+    }
+  }
+
   static Future<Podcast> getPodcastDetails(int id, String? sort, int? amount, int? offset) async {
     final body = {"amount": amount ?? -1, "id": id, "offset": offset ?? 0, "sort": sort ?? "desc"};
     var response = await dio.post<String>('$API/detail', data: body);
