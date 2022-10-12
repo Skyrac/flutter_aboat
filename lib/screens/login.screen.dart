@@ -153,22 +153,23 @@ class _LoginScreenState extends State<LoginScreen> {
               height: 30,
             ),
             Row(children: <Widget>[
-              Expanded(
+              const Expanded(
                   child: Divider(
                 color: Color.fromRGBO(99, 163, 253, 1),
                 thickness: 2,
               )),
               Container(
-                  child: Center(child: Text("OR")),
+                  child: const Center(child: Text("OR")),
                   width: 80,
                   height: 40,
                   decoration: BoxDecoration(
                       border: Border.all(
-                          color: Color.fromRGBO(
+                          color: const Color.fromRGBO(
                               99, 163, 253, 1), // set border color
                           width: 2.0), // set border width
-                      borderRadius: BorderRadius.all(Radius.circular(20.0)))),
-              Expanded(
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(20.0)))),
+              const Expanded(
                   child: Divider(
                 color: Color.fromRGBO(99, 163, 253, 1),
                 thickness: 2,
@@ -412,9 +413,10 @@ class _LoginScreenState extends State<LoginScreen> {
           margin: const EdgeInsets.symmetric(horizontal: 50),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
-            color: Color.fromRGBO(29, 40, 58, 0.97),
+            color: const Color.fromRGBO(29, 40, 58, 0.97),
             border: Border.all(
-                color: Color.fromRGBO(188, 140, 75, 0.25), // set border color
+                color: const Color.fromRGBO(
+                    188, 140, 75, 0.25), // set border color
                 width: 1.0), //
           ),
           height: 40,
@@ -424,13 +426,13 @@ class _LoginScreenState extends State<LoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Image.asset("assets/images/$image", width: 25),
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
                 Text(
                   "Sign in with $text",
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: Color.fromRGBO(99, 163, 253, 1),
+                      color: const Color.fromRGBO(99, 163, 253, 1),
                       fontWeight: FontWeight.w600),
                 ),
               ],
@@ -441,185 +443,209 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> dialogBuilder(BuildContext context) async {
     final email = emailController.text;
+    final size = MediaQuery.of(context).size;
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(32.0))),
-            backgroundColor: Color.fromRGBO(48, 73, 123, 1),
-            title: Center(child: const Text('Confirm PIN')),
-            content: Builder(builder: (context) {
-              return Container(
-                // width: 300,
-                height: 143,
-                child: Column(children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 5),
-                    margin: EdgeInsets.only(bottom: 20),
-                    child: Text(
-                        'You should receive a PIN on $email to verify your login. If you have no account registered under your email, you’ll be asked to setup an username after sign in.'),
-                  ),
-                  Container(
-                    // padding: const EdgeInsets.symmetric(horizontal: 10),
-                    alignment: Alignment.center,
-                    child: Card(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Container(
-                          height: 40,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: const Color.fromRGBO(29, 40, 58, 1),
-                            // ignore: prefer_const_literals_to_create_immutables
-                            boxShadow: [
-                              const BoxShadow(
-                                color: Color.fromRGBO(188, 140, 75, 1),
-                                spreadRadius: 0,
-                                blurRadius: 0,
-                                offset:
-                                    Offset(0, 1), // changes position of shadow
-                              ),
-                            ],
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 10, right: 10),
-                            child: TextField(
-                              controller: pinController,
-                              onSubmitted: (_) async {
-                                await sendLogin(context);
-                              },
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                alignLabelWithHint: true,
-                                hintText: "PIN...",
-                                hintStyle: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium
-                                    ?.copyWith(
-                                        color: const Color.fromRGBO(
-                                            135, 135, 135, 1),
-                                        fontStyle: FontStyle.italic),
-                              ),
-                            ),
-                          ),
+        return Builder(builder: (context) {
+          return Container(
+            width: 150,
+            height: 150,
+            color: Colors.black12,
+            child: Stack(alignment: Alignment.center, children: [
+              Positioned(
+                top: 200,
+                child: Container(
+                  width: 300,
+                  height: 260,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: const Color.fromRGBO(48, 73, 123, 1)),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.only(top: 5),
+                        child: Center(
+                            child: Text(
+                          "Confirm PIN",
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleLarge
+                              ?.copyWith(fontWeight: FontWeight.w700),
                         )),
+                      ),
+                      const SizedBox(
+                        height: 7,
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 23.5),
+                        child: Text.rich(TextSpan(children: [
+                          TextSpan(
+                            text: 'You should receive a PIN on ',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          TextSpan(
+                            text: email,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(fontWeight: FontWeight.w600),
+                          ),
+                          TextSpan(
+                            text:
+                                ' to verify your login. If you have no account registered under your email, you’ll be asked to setup an username after sign in.',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ])),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 22),
+                        alignment: Alignment.center,
+                        child: Card(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Container(
+                              height: 40,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: const Color.fromRGBO(29, 40, 58, 1),
+                                // ignore: prefer_const_literals_to_create_immutables
+                                boxShadow: [
+                                  const BoxShadow(
+                                    color: Color.fromRGBO(188, 140, 75, 1),
+                                    spreadRadius: 0,
+                                    blurRadius: 0,
+                                    offset: Offset(
+                                        0, 1), // changes position of shadow
+                                  ),
+                                ],
+                              ),
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.only(left: 10, right: 10),
+                                child: TextField(
+                                  controller: pinController,
+                                  onSubmitted: (_) async {
+                                    await sendLogin(context);
+                                  },
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    alignLabelWithHint: true,
+                                    hintText: "PIN...",
+                                    hintStyle: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                            color: const Color.fromRGBO(
+                                                135, 135, 135, 1),
+                                            fontStyle: FontStyle.italic),
+                                  ),
+                                ),
+                              ),
+                            )),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          child: Container(
+                            child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  RawMaterialButton(
+                                    onPressed: () async {
+                                      await sendLogin(context);
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        boxShadow: [
+                                          const BoxShadow(
+                                            color: Colors.black45,
+                                            spreadRadius: 1,
+                                            blurRadius: 5,
+                                            offset: Offset(0, 2),
+                                          ),
+                                        ],
+                                        borderRadius: BorderRadius.circular(15),
+                                        color: const Color.fromRGBO(
+                                            99, 163, 253, 1),
+                                        border: Border.all(
+                                            color: const Color.fromRGBO(
+                                                188, 140, 75, 0.25),
+                                            width: 1.0), //
+                                      ),
+                                      height: 40,
+                                      width: 150,
+                                      child: Center(
+                                        child: Text(
+                                          "Confirm",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .labelLarge
+                                              ?.copyWith(
+                                                  color: const Color.fromRGBO(
+                                                      15, 23, 41, 1),
+                                                  fontWeight: FontWeight.w600),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  RawMaterialButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        boxShadow: [
+                                          const BoxShadow(
+                                            color: Colors.black45,
+                                            spreadRadius: 1,
+                                            blurRadius: 5,
+                                            offset: Offset(0, 2),
+                                          ),
+                                        ],
+                                        borderRadius: BorderRadius.circular(15),
+                                        color:
+                                            const Color.fromRGBO(154, 0, 0, 1),
+                                        border: Border.all(
+                                            color: const Color.fromRGBO(
+                                                188, 140, 75, 0.25),
+                                            width: 1.0), //
+                                      ),
+                                      height: 40,
+                                      width: 80,
+                                      child: Center(
+                                        child: Text(
+                                          "Cancel",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .labelLarge
+                                              ?.copyWith(
+                                                  color: const Color.fromRGBO(
+                                                      164, 202, 255, 1),
+                                                  fontWeight: FontWeight.w600),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                ]),
+                          ))
+                    ],
                   ),
-                ]),
-              );
-            }),
-            actions: [
-              SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  child: Container(
-                    padding: EdgeInsets.only(bottom: 15),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          RawMaterialButton(
-                            onPressed: () async {
-                              await sendLogin(context);
-                            },
-                            child: Container(
-                              // margin: const EdgeInsets.symmetric(horizontal: 50),
-                              decoration: BoxDecoration(
-                                boxShadow: [
-                                  const BoxShadow(
-                                    color: Colors.black45,
-                                    spreadRadius: 1,
-                                    blurRadius: 5,
-                                    offset: Offset(
-                                        0, 2), // changes position of shadow
-                                  ),
-                                ],
-                                borderRadius: BorderRadius.circular(15),
-                                color: Color.fromRGBO(99, 163, 253, 1),
-                                border: Border.all(
-                                    color: Color.fromRGBO(
-                                        188, 140, 75, 0.25), // set border color
-                                    width: 1.0), //
-                              ),
-                              height: 40,
-                              width: 150,
-                              child: Center(
-                                child: Text(
-                                  "Confirm",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .labelLarge
-                                      ?.copyWith(
-                                          color: Color.fromRGBO(15, 23, 41, 1),
-                                          fontWeight: FontWeight.w600),
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 20,
-                          ),
-                          RawMaterialButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: Container(
-                              // margin: const EdgeInsets.symmetric(horizontal: 50),
-                              decoration: BoxDecoration(
-                                boxShadow: [
-                                  const BoxShadow(
-                                    color: Colors.black45,
-                                    spreadRadius: 1,
-                                    blurRadius: 5,
-                                    offset: Offset(
-                                        0, 2), // changes position of shadow
-                                  ),
-                                ],
-                                borderRadius: BorderRadius.circular(15),
-                                color: Color.fromRGBO(154, 0, 0, 1),
-                                border: Border.all(
-                                    color: Color.fromRGBO(
-                                        188, 140, 75, 0.25), // set border color
-                                    width: 1.0), //
-                              ),
-                              height: 40,
-                              width: 80,
-                              child: Center(
-                                child: Text(
-                                  "Cancel",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .labelLarge
-                                      ?.copyWith(
-                                          color:
-                                              Color.fromRGBO(164, 202, 255, 1),
-                                          fontWeight: FontWeight.w600),
-                                ),
-                              ),
-                            ),
-                          )
-                        ]),
-                  ))
-            ]
-            // <Widget>[
-            //   TextButton(
-            //     style: TextButton.styleFrom(
-            //       textStyle: Theme.of(context).textTheme.labelLarge,
-            //     ),
-            //     child: const Text('Disable'),
-            //     onPressed: () {
-            //       Navigator.of(context).pop();
-            //     },
-            //   ),
-            //   TextButton(
-            //     style: TextButton.styleFrom(
-            //       textStyle: Theme.of(context).textTheme.labelLarge,
-            //     ),
-            //     child: const Text('Enable'),
-            //     onPressed: () async {
-            //       await sendLogin(context);
-            //     },
-            //   ),
-            // ],
-            );
+                ),
+              ),
+            ]),
+          );
+        });
       },
     );
   }
