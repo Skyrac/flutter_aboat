@@ -99,6 +99,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Padding(
                       padding: const EdgeInsets.only(left: 10, right: 10),
                       child: TextField(
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Color.fromRGBO(164, 202, 255, 1),
+                            ),
                         controller: textController,
                         onSubmitted: (_) async {
                           callback();
@@ -213,8 +216,7 @@ class _LoginScreenState extends State<LoginScreen> {
             verifySocialLoginPin);
       } else if (userService.lastConnectionState?.text == "new_account") {
         ShowSnackBar(context, "Please create a new user");
-        showAlert(context, socialLoginNewUser, "Enter Username", "Username", "",
-            registerSocialLogin);
+        showAlertUserName(context, socialLoginNewUser, registerSocialLogin);
       } else {
         ShowSnackBar(context, "Unresolved response. Please contact an admin.");
       }
@@ -289,11 +291,6 @@ class _LoginScreenState extends State<LoginScreen> {
     return SafeArea(
         child: Container(
       decoration: const BoxDecoration(color: Color.fromRGBO(15, 23, 41, 1)),
-      // gradient: LinearGradient(colors: [
-      //   DefaultColors.primaryColor.shade900,
-      //   DefaultColors.secondaryColor.shade900,
-      //   DefaultColors.secondaryColor.shade900
-      // ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
       child: Scaffold(
           body: Stack(
         children: [
@@ -318,17 +315,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     SizedBox(height: size.height * 0.02),
                     createEmailPinRequestWidget("E-Mail...", () async {
                       await sendPinRequest();
+                      // showAlertUserName(
+                      //     context, socialLoginNewUser, registerSocialLogin);
                       await dialogBuilder(context);
                     }, emailController, "Request PIN"),
                     // sentEmail ? dialogBuilder(context) : SizedBox(),
-                    // sentEmail
-                    //     ? createEmailPinRequestWidget("Pin", () async {
-                    //         await sendLogin(context);
-                    //       }, pinController, "Login")
-                    //     : createEmailPinRequestWidget("E-Mail...", () async {
-                    //         await sendPinRequest();
-                    //         await dialogBuilder(context);
-                    //       }, emailController, "Request PIN"),
                     // sentEmail
                     //     ? createEmailPinRequestWidget("Pin", () async {
                     //         await sendLogin(context);
@@ -529,6 +520,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                 padding:
                                     const EdgeInsets.only(left: 10, right: 10),
                                 child: TextField(
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(
+                                        color: Color.fromRGBO(164, 202, 255, 1),
+                                      ),
                                   controller: pinController,
                                   onSubmitted: (_) async {
                                     await sendLogin(context);
