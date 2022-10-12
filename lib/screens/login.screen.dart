@@ -150,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             const SizedBox(
-              height: 10,
+              height: 30,
             ),
             Row(children: <Widget>[
               Expanded(
@@ -315,67 +315,47 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     SizedBox(height: size.height * 0.02),
-                    sentEmail
-                        ? createEmailPinRequestWidget("Pin", () async {
-                            await sendLogin(context);
-                          }, pinController, "Login")
-                        : createEmailPinRequestWidget("E-Mail...", requestEmail,
-                            emailController, "Request PIN"),
+                    createEmailPinRequestWidget("E-Mail...", () async {
+                      await sendPinRequest();
+                      await dialogBuilder(context);
+                    }, emailController, "Request PIN"),
+                    // sentEmail ? dialogBuilder(context) : SizedBox(),
+                    // sentEmail
+                    //     ? createEmailPinRequestWidget("Pin", () async {
+                    //         await sendLogin(context);
+                    //       }, pinController, "Login")
+                    //     : createEmailPinRequestWidget("E-Mail...", () async {
+                    //         await sendPinRequest();
+                    //         await dialogBuilder(context);
+                    //       }, emailController, "Request PIN"),
                     // sentEmail
                     //     ? createEmailPinRequestWidget("Pin", () async {
                     //         await sendLogin(context);
                     //       }, pinController, "Login")
                     //     : createEmailPinRequestWidget(
                     //         "E-Mail", requestEmail, emailController, "Get Pin"),
-                    SizedBox(height: size.height * 0.01),
-                    Container(
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                              color: Color.fromRGBO(
-                                  188, 140, 75, 0.25), // set border color
-                              width: 1.0), // set border width
-                          borderRadius: BorderRadius.all(Radius.circular(15))),
-                      margin: const EdgeInsets.symmetric(horizontal: 50),
-                      child: SocialLoginButton(
-                        backgroundColor: Color.fromRGBO(29, 40, 58, 0.97),
-                        imageWidth: 25,
-                        height: 40,
-                        borderRadius: 15,
-                        buttonType: SocialLoginButtonType.google,
-                        mode: SocialLoginButtonMode.single,
-                        text: "Sign in with Google",
-                        onPressed: () async {
-                          await socialButtonPressed(SocialLogin.Google);
-                        },
-                      ),
-                    ),
+                    SizedBox(height: size.height * 0.05),
+                    createAppleLogin(),
+                    SizedBox(height: Platform.isIOS ? 10 : 0),
+                    signInButton(
+                        image: "apple.png",
+                        socialLogin: SocialLogin.Apple,
+                        text: "Apple"),
+
                     const SizedBox(
                       height: 10,
                     ),
-                    createAppleLogin(),
-                    SizedBox(height: Platform.isIOS ? 10 : 0),
-                    Container(
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                              color: Color.fromRGBO(
-                                  188, 140, 75, 0.25), // set border color
-                              width: 1.0), // set border width
-                          borderRadius: BorderRadius.all(Radius.circular(15))),
-                      margin: const EdgeInsets.symmetric(horizontal: 50),
-                      child: SocialLoginButton(
-                        backgroundColor: Color.fromRGBO(29, 40, 58, 0.97),
-                        imageWidth: 25,
-                        height: 40,
-                        borderRadius: 15,
-                        textColor: Color.fromRGBO(99, 163, 253, 1),
-                        buttonType: SocialLoginButtonType.facebook,
-                        mode: SocialLoginButtonMode.single,
-                        text: "Sign in with Facebook",
-                        onPressed: () async {
-                          await socialButtonPressed(SocialLogin.Facebook);
-                        },
-                      ),
+                    signInButton(
+                        image: "google.png",
+                        socialLogin: SocialLogin.Google,
+                        text: "Google"),
+                    const SizedBox(
+                      height: 10,
                     ),
+                    signInButton(
+                        image: "facebook.png",
+                        socialLogin: SocialLogin.Facebook,
+                        text: "Facebook"),
                   ],
                 ),
               ),
@@ -418,5 +398,229 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           )
         : const SizedBox();
+  }
+
+  signInButton(
+      {required String image,
+      required String text,
+      required SocialLogin socialLogin}) {
+    return RawMaterialButton(
+        onPressed: () async {
+          await socialButtonPressed(socialLogin);
+        },
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 50),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            color: Color.fromRGBO(29, 40, 58, 0.97),
+            border: Border.all(
+                color: Color.fromRGBO(188, 140, 75, 0.25), // set border color
+                width: 1.0), //
+          ),
+          height: 40,
+          child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Image.asset("assets/images/$image", width: 25),
+                SizedBox(
+                  width: 10,
+                ),
+                Text(
+                  "Sign in with $text",
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: Color.fromRGBO(99, 163, 253, 1),
+                      fontWeight: FontWeight.w600),
+                ),
+              ],
+            ),
+          ),
+        ));
+  }
+
+  Future<void> dialogBuilder(BuildContext context) async {
+    final email = emailController.text;
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(32.0))),
+            backgroundColor: Color.fromRGBO(48, 73, 123, 1),
+            title: Center(child: const Text('Confirm PIN')),
+            content: Builder(builder: (context) {
+              return Container(
+                // width: 300,
+                height: 143,
+                child: Column(children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                    margin: EdgeInsets.only(bottom: 20),
+                    child: Text(
+                        'You should receive a PIN on $email to verify your login. If you have no account registered under your email, you’ll be asked to setup an username after sign in.'),
+                  ),
+                  Container(
+                    // padding: const EdgeInsets.symmetric(horizontal: 10),
+                    alignment: Alignment.center,
+                    child: Card(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        child: Container(
+                          height: 40,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: const Color.fromRGBO(29, 40, 58, 1),
+                            // ignore: prefer_const_literals_to_create_immutables
+                            boxShadow: [
+                              const BoxShadow(
+                                color: Color.fromRGBO(188, 140, 75, 1),
+                                spreadRadius: 0,
+                                blurRadius: 0,
+                                offset:
+                                    Offset(0, 1), // changes position of shadow
+                              ),
+                            ],
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 10, right: 10),
+                            child: TextField(
+                              controller: pinController,
+                              onSubmitted: (_) async {
+                                await sendLogin(context);
+                              },
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                alignLabelWithHint: true,
+                                hintText: "PIN...",
+                                hintStyle: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(
+                                        color: const Color.fromRGBO(
+                                            135, 135, 135, 1),
+                                        fontStyle: FontStyle.italic),
+                              ),
+                            ),
+                          ),
+                        )),
+                  ),
+                ]),
+              );
+            }),
+            actions: [
+              SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: Container(
+                    padding: EdgeInsets.only(bottom: 15),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          RawMaterialButton(
+                            onPressed: () async {
+                              await sendLogin(context);
+                            },
+                            child: Container(
+                              // margin: const EdgeInsets.symmetric(horizontal: 50),
+                              decoration: BoxDecoration(
+                                boxShadow: [
+                                  const BoxShadow(
+                                    color: Colors.black45,
+                                    spreadRadius: 1,
+                                    blurRadius: 5,
+                                    offset: Offset(
+                                        0, 2), // changes position of shadow
+                                  ),
+                                ],
+                                borderRadius: BorderRadius.circular(15),
+                                color: Color.fromRGBO(99, 163, 253, 1),
+                                border: Border.all(
+                                    color: Color.fromRGBO(
+                                        188, 140, 75, 0.25), // set border color
+                                    width: 1.0), //
+                              ),
+                              height: 40,
+                              width: 150,
+                              child: Center(
+                                child: Text(
+                                  "Confirm",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .labelLarge
+                                      ?.copyWith(
+                                          color: Color.fromRGBO(15, 23, 41, 1),
+                                          fontWeight: FontWeight.w600),
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 20,
+                          ),
+                          RawMaterialButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Container(
+                              // margin: const EdgeInsets.symmetric(horizontal: 50),
+                              decoration: BoxDecoration(
+                                boxShadow: [
+                                  const BoxShadow(
+                                    color: Colors.black45,
+                                    spreadRadius: 1,
+                                    blurRadius: 5,
+                                    offset: Offset(
+                                        0, 2), // changes position of shadow
+                                  ),
+                                ],
+                                borderRadius: BorderRadius.circular(15),
+                                color: Color.fromRGBO(154, 0, 0, 1),
+                                border: Border.all(
+                                    color: Color.fromRGBO(
+                                        188, 140, 75, 0.25), // set border color
+                                    width: 1.0), //
+                              ),
+                              height: 40,
+                              width: 80,
+                              child: Center(
+                                child: Text(
+                                  "Cancel",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .labelLarge
+                                      ?.copyWith(
+                                          color:
+                                              Color.fromRGBO(164, 202, 255, 1),
+                                          fontWeight: FontWeight.w600),
+                                ),
+                              ),
+                            ),
+                          )
+                        ]),
+                  ))
+            ]
+            // <Widget>[
+            //   TextButton(
+            //     style: TextButton.styleFrom(
+            //       textStyle: Theme.of(context).textTheme.labelLarge,
+            //     ),
+            //     child: const Text('Disable'),
+            //     onPressed: () {
+            //       Navigator.of(context).pop();
+            //     },
+            //   ),
+            //   TextButton(
+            //     style: TextButton.styleFrom(
+            //       textStyle: Theme.of(context).textTheme.labelLarge,
+            //     ),
+            //     child: const Text('Enable'),
+            //     onPressed: () async {
+            //       await sendLogin(context);
+            //     },
+            //   ),
+            // ],
+            );
+      },
+    );
   }
 }
