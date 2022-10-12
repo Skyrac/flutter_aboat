@@ -66,6 +66,8 @@ class PodcastService {
   }
 
   Future<List<Podcast>> search(String search, {int? genre, int amount = 10, int offset = 0}) {
+    print('amount: ${amount}');
+    print('offset: ${offset}');
     return PodcastRepository.search(search, amount, offset, genre: genre);
   }
 }

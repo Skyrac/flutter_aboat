@@ -1,8 +1,10 @@
 import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/models/podcasts/podcast.model.dart';
 import 'package:Talkaboat/services/audio/podcast.service.dart';
+import 'package:Talkaboat/widgets/podcast-list-tile.widget.dart';
 import 'package:Talkaboat/widgets/podcast-list.widget.dart';
 import 'package:Talkaboat/widgets/searchbar.widget.dart';
+import 'package:Talkaboat/widgets/infinite-scrolling-list.widget.dart';
 import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
 
@@ -33,60 +35,43 @@ class _SearchScreenState extends State<SearchScreen> {
         decoration: const BoxDecoration(color: Color.fromRGBO(15, 23, 41, 1.0)),
         child: Scaffold(
           appBar: widget.appBar ?? buildAppbar(),
-          body: SingleChildScrollView(
-            child: Column(
-              children: [
-                SearchBar(
-                  placeholder: "",
-                  onChanged: (text) {
-                    print(text);
-                    debouncer.setValue(text);
-                  },
-                ),
-                StreamBuilder(
-                  stream: debouncer.values,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.active && snapshot.hasData) {
-                      print("stream");
-                      print(snapshot.data);
-                      return FutureBuilder(
-                        future: podcastService.search(
-                          snapshot.data! as String,
-                        ),
-                        builder: (context, snapshot) {
-                          print(snapshot.connectionState);
-                          if (snapshot.connectionState == ConnectionState.done) {
-                            print("done");
-                            print(snapshot.hasData);
-                            print(snapshot.data);
-                            if (snapshot.hasError) {
-                              return Center(
-                                child: Text(
-                                  '${snapshot.error} occurred',
-                                  style: const TextStyle(fontSize: 18),
-                                ),
-                              );
-                            }
-                            // Extracting data from snapshot object
-                            final data = snapshot.data as List<Podcast>;
-                            return SizedBox(
-                                height: 1000,
-                                child: PodcastListWidget(
-                                  searchResults: data,
-                                  direction: Axis.vertical,
-                                  scrollPhysics: const NeverScrollableScrollPhysics(),
-                                ));
-                          }
-                          return const Center(child: CircularProgressIndicator());
-                        },
-                      );
-                    } else {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                  },
-                )
-              ],
-            ),
+          body: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SearchBar(
+                placeholder: "",
+                onChanged: (text) {
+                  print(text);
+                  debouncer.setValue(text);
+                },
+              ),
+              StreamBuilder(
+                stream: debouncer.values,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.active && snapshot.hasData) {
+                    print("stream");
+                    print(snapshot.data);
+                    return InfiniteScrollingList<Podcast>(
+                      fetch: ((amount, offset) {
+                        return podcastService.search(snapshot.data! as String, amount: amount, offset: offset);
+                      }),
+                      builder: (context, item) {
+                        return Padding(
+                            padding: const EdgeInsets.only(left: 10),
+                            child: Stack(children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: PodcastListTileWidget(item),
+                              ),
+                            ]));
+                      },
+                    );
+                  } else {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                },
+              )
+            ],
           ),
         ),
       ),
