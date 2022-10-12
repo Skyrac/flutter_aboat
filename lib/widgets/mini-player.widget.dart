@@ -60,7 +60,7 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(
-            height: 6,
+            height: 5.5,
             width: deviceSize.width * 0.9,
             child: StreamBuilder<MediaState>(
               stream: _mediaStateStream,
