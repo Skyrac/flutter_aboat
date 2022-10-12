@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:Talkaboat/screens/playlist.screen.dart';
-import 'package:Talkaboat/screens/search-and-filter.screen.dart';
+import 'package:Talkaboat/screens/search.screen.dart';
 import 'package:Talkaboat/screens/social/social_entry.screen.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
@@ -76,7 +76,7 @@ class _AppScreenState extends State<AppScreen> {
     super.initState();
     Tabs = [
       HomeScreen(setEpisode, _selectTab),
-      const SearchAndFilterScreen(),
+      const SearchScreen(),
       const PlaylistScreen(),
       LibraryScreen(),
       const SocialEntryScreen()

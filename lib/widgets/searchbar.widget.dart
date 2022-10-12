@@ -27,9 +27,15 @@ class _SearchBarState extends State<SearchBar> {
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Center(
               child: TextField(
-                //controller: searchController,
                 onChanged: ((text) {
                   if (widget.onChanged != null) {
+                    widget.onChanged!(text);
+                  }
+                }),
+                onSubmitted: ((text) {
+                  print("submitted");
+                  if (widget.onChanged != null) {
+                    print("call");
                     widget.onChanged!(text);
                   }
                 }),

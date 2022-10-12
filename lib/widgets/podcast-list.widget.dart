@@ -1,3 +1,5 @@
+import 'package:Talkaboat/models/podcasts/podcast.model.dart';
+import 'package:Talkaboat/widgets/podcast-list-tile.widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -10,12 +12,14 @@ import '../screens/podcast-detail.screen.dart';
 import '../services/user/user.service.dart';
 
 class PodcastListWidget extends StatefulWidget {
-  const PodcastListWidget({Key? key, required this.searchResults, required this.direction, this.trailing, this.checkUpdate})
+  const PodcastListWidget(
+      {Key? key, required this.searchResults, required this.direction, this.trailing, this.checkUpdate, this.scrollPhysics})
       : super(key: key);
   final List<SearchResult?> searchResults;
   final Axis direction;
   final Function? trailing;
   final bool? checkUpdate;
+  final ScrollPhysics? scrollPhysics;
   @override
   State<PodcastListWidget> createState() => _PodcastListWidgetState();
 }
@@ -60,24 +64,36 @@ class _PodcastListWidgetState extends State<PodcastListWidget> {
   Widget makeListBuilder(context, List<SearchResult?> data) => ListView.builder(
       itemCount: data.length,
       scrollDirection: widget.direction,
+      physics: widget.scrollPhysics,
       itemBuilder: (BuildContext context, int index) {
         if (data[index] == null) {
           return const ListTile();
         }
         final item = data[index]!;
-        return makeCard(context, item);
+        return widget.direction == Axis.horizontal ? makeHorizontalCard(context, item) : makeVerticalCard(context, item);
       });
 
-  Widget makeCard(context, SearchResult entry) => Padding(
+  Widget makeHorizontalCard(context, SearchResult entry) => Padding(
+      padding: const EdgeInsets.only(left: 10),
+      child: Stack(children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: Container(color: const Color.fromRGBO(99, 163, 253, 0.5), child: makeHorizontalListTile(context, entry)),
+        ),
+        widget.checkUpdate != null && widget.checkUpdate!
+            ? userService.unseenPodcastNotifcationUpdates(entry.id!)
+                ? const Positioned(right: 20, top: 10, child: Icon(Icons.notifications_active, size: 20, color: Colors.red))
+                : const SizedBox()
+            : const SizedBox(),
+      ]));
+
+  Widget makeVerticalCard(context, SearchResult entry) => Padding(
       padding: const EdgeInsets.only(left: 10),
       child: Stack(children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(10),
           child: Container(
-            color: const Color.fromRGBO(99, 163, 253, 0.5),
-            child: widget.direction == Axis.horizontal
-                ? makeHorizontalListTile(context, entry)
-                : makeVerticalListTile(context, entry),
+            child: makeVerticalListTile(context, entry),
           ),
         ),
         widget.checkUpdate != null && widget.checkUpdate!
@@ -145,11 +161,13 @@ class _PodcastListWidgetState extends State<PodcastListWidget> {
             child: widget.trailing == null ? buildPopupButton(context, entry) : widget.trailing!(context, entry)),*/
           ])));
 
-  Widget makeVerticalListTile(context, SearchResult entry) => ListTile(
+  Widget makeVerticalListTile(context, SearchResult entry) => PodcastListTileWidget(entry as Podcast);
+
+  Widget makeVerticalListTileold(context, SearchResult entry) => ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
         leading: SizedBox(
-          width: 60,
-          height: 100,
+          width: 90,
+          height: 90,
           child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: SizedBox(
