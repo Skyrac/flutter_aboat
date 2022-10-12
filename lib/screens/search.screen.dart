@@ -2,11 +2,10 @@ import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/models/podcasts/podcast.model.dart';
 import 'package:Talkaboat/services/audio/podcast.service.dart';
 import 'package:Talkaboat/widgets/podcast-list-tile.widget.dart';
-import 'package:Talkaboat/widgets/podcast-list.widget.dart';
 import 'package:Talkaboat/widgets/searchbar.widget.dart';
-import 'package:Talkaboat/widgets/infinite-scrolling-list.widget.dart';
 import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({this.appBar, this.onlyGenre, Key? key}) : super(key: key);
@@ -20,12 +19,42 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final podcastService = getIt<PodcastService>();
-  final debouncer = Debouncer<String>(const Duration(milliseconds: 200), initialValue: "");
+  final debouncer = Debouncer<String>(const Duration(milliseconds: 250), initialValue: "");
+
+  static const _pageSize = 20;
+
+  final PagingController<int, Podcast> _pagingController = PagingController(firstPageKey: 0);
 
   @override
   void initState() {
+    _pagingController.addPageRequestListener((pageKey) {
+      _fetchPage(pageKey);
+    });
     super.initState();
     debouncer.setValue("");
+    debouncer.values.listen((val) {
+      print("refresh");
+      _pagingController.refresh();
+    });
+  }
+
+  Future<void> _fetchPage(int pageKey) async {
+    try {
+      print("fetch");
+      print("pageKey ${pageKey}");
+      final newItems = await podcastService.search(debouncer.value, amount: _pageSize, offset: pageKey);
+      print('newItems: ${newItems}');
+      final isLastPage = newItems.length < _pageSize;
+      if (isLastPage) {
+        _pagingController.appendLastPage(newItems);
+      } else {
+        final nextPageKey = pageKey + newItems.length;
+        _pagingController.appendPage(newItems, nextPageKey);
+      }
+    } catch (error) {
+      print(error);
+      _pagingController.error = error;
+    }
   }
 
   @override
@@ -45,31 +74,24 @@ class _SearchScreenState extends State<SearchScreen> {
                   debouncer.setValue(text);
                 },
               ),
-              StreamBuilder(
-                stream: debouncer.values,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.active && snapshot.hasData) {
-                    print("stream");
-                    print(snapshot.data);
-                    return InfiniteScrollingList<Podcast>(
-                      fetch: ((amount, offset) {
-                        return podcastService.search(snapshot.data! as String, amount: amount, offset: offset);
-                      }),
-                      builder: (context, item) {
-                        return Padding(
-                            padding: const EdgeInsets.only(left: 10),
-                            child: Stack(children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: PodcastListTileWidget(item),
-                              ),
-                            ]));
-                      },
-                    );
-                  } else {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                },
+              Flexible(
+                flex: 1,
+                child: PagedListView<int, Podcast>(
+                  pagingController: _pagingController,
+                  builderDelegate: PagedChildBuilderDelegate<Podcast>(
+                    itemBuilder: (context, item, index) => Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: Stack(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: PodcastListTileWidget(item),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               )
             ],
           ),
@@ -80,5 +102,11 @@ class _SearchScreenState extends State<SearchScreen> {
 
   AppBar buildAppbar() {
     return AppBar();
+  }
+
+  @override
+  void dispose() {
+    _pagingController.dispose();
+    super.dispose();
   }
 }
