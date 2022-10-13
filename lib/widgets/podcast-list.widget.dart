@@ -29,7 +29,7 @@ class _PodcastListWidgetState extends State<PodcastListWidget> {
   popupMenu(BuildContext context, SearchResult entry) => <PopupMenuEntry<String>>[
         PopupMenuItem<String>(
           value: 'toggleLibrary',
-          child: userService.isInLibrary(entry.id!)
+          child: userService.isInFavorites(entry.id!)
               ? const Card(child: Text('Remove from Library'))
               : const Card(child: Text('Add to Library')),
         ),
@@ -51,7 +51,7 @@ class _PodcastListWidgetState extends State<PodcastListWidget> {
                         reverseDuration: const Duration(milliseconds: 500),
                         child: LoginScreen(() => setState(() {}))));
               } else {
-                await userService.toggleLibraryEntry(entry.id);
+                await userService.toggleFavoritesEntry(entry.id);
               }
               break;
           }

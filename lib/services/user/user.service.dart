@@ -28,7 +28,7 @@ class UserService {
   String token = "";
   String firebaseToken = "";
   UserInfoData? userInfo;
-  List<Podcast> library = List.empty();
+  List<Podcast> favorites = List.empty();
   List<Playlist> playlists = List.empty();
   Reward rewards = Reward();
   Map<int, List<Podcast>> podcastProposalsHomeScreen = {};
@@ -36,7 +36,7 @@ class UserService {
   DateTime? lastNotificationSeen;
   final friendService = getIt<SocialService>();
   Map<int, DateTime?> lastPodcastUpdateSeen = {};
-  late final prefs;
+  late final SharedPreferences prefs;
   var isSignin = false;
   var baseLogin = false;
   static const String TOKEN_IDENTIFIER = "aboat_token";
@@ -47,7 +47,7 @@ class UserService {
   get availableToken => rewards.vested;
   Stream<Reward> rewardStream() async* {
     while (true) {
-      await Future.delayed(Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 500));
       yield rewards;
     }
   }
@@ -80,9 +80,7 @@ class UserService {
     if (lastConnectionState == null) {
       throw Exception("Google Sign-In: Not able to connect with backend");
     }
-    return lastConnectionState != null &&
-        lastConnectionState!.text != null &&
-        lastConnectionState!.text! == "connected";
+    return lastConnectionState != null && lastConnectionState!.text != null && lastConnectionState!.text! == "connected";
   }
 
   Future<UserCredential> signInWithFacebook() async {
@@ -93,8 +91,7 @@ class UserService {
     if (loginResult.accessToken == null) {
       throw Exception("No facebook access token found!");
     }
-    final OAuthCredential facebookAuthCredential =
-        FacebookAuthProvider.credential(loginResult.accessToken!.token);
+    final OAuthCredential facebookAuthCredential = FacebookAuthProvider.credential(loginResult.accessToken!.token);
 
     // Once signed in, return the UserCredential
     return FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
@@ -103,11 +100,9 @@ class UserService {
   /// Generates a cryptographically secure random nonce, to be included in a
   /// credential request.
   String generateNonce([int length = 32]) {
-    const charset =
-        '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
+    const charset = '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
     final random = Random.secure();
-    return List.generate(length, (_) => charset[random.nextInt(charset.length)])
-        .join();
+    return List.generate(length, (_) => charset[random.nextInt(charset.length)]).join();
   }
 
   /// Returns the sha256 hash of [input] in hex notation.
@@ -147,12 +142,10 @@ class UserService {
 
   Future<UserCredential> signInWithGoogle(BuildContext context) async {
     // Trigger the authentication flow
-    final GoogleSignInAccount? googleUser =
-        await GoogleSignIn(scopes: ['profile', 'email']).signIn();
+    final GoogleSignInAccount? googleUser = await GoogleSignIn(scopes: ['profile', 'email']).signIn();
 
     // Obtain the auth details from the request
-    final GoogleSignInAuthentication? googleAuth =
-        await googleUser?.authentication;
+    final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
 
     // Create a new credential
     final credential = GoogleAuthProvider.credential(
@@ -163,13 +156,13 @@ class UserService {
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
-  isInLibrary(int id) => library.any((element) => element.podcastId == id);
+  isInFavorites(int id) => favorites.any((element) => element.podcastId == id);
 
-  getLibraryEntries(int amount) {
-    if (library.length < amount) {
-      amount = library.length;
+  getFavoritesEntries(int amount) {
+    if (favorites.length < amount) {
+      amount = favorites.length;
     }
-    return library.take(amount);
+    return favorites.take(amount);
   }
 
   finishIntroduction() async {
@@ -204,10 +197,9 @@ class UserService {
           }
         }
       });
-    } catch(exception) {
-
+    } catch (exception) {
+      throw Exception("Firebase Auth: loggin in $exception");
     }
-
   }
 
   loginWithFirebaseToken(User user) async {
@@ -216,14 +208,12 @@ class UserService {
     firebaseToken = userIdToken;
     try {
       lastConnectionState = await UserRepository.firebaseLogin(userIdToken);
-      if (lastConnectionState!.data != null &&
-          lastConnectionState!.data!.isNotEmpty) {
+      if (lastConnectionState!.data != null && lastConnectionState!.data!.isNotEmpty) {
         token = lastConnectionState!.data!;
         await getCoreData();
       }
     } catch (exception) {
-      throw new Exception(
-          "Firebase Auth: Error while requesting data from Server");
+      throw Exception("Firebase Auth: Error while requesting data from Server $exception");
     }
   }
 
@@ -243,10 +233,10 @@ class UserService {
       await getUserInfo();
       if (userInfo != null) {
         await getRewards();
-        await getLibrary(true);
+        await getFavorites(refresh: true);
         await getFriends();
         var lastUpdate = await prefs.getInt(LAST_NOTIFICATION_UPDATE);
-        if(lastUpdate != null) {
+        if (lastUpdate != null) {
           lastNotificationSeen = DateTime.fromMillisecondsSinceEpoch(lastUpdate);
         }
       }
@@ -291,8 +281,8 @@ class UserService {
       return false;
     }
     var response = await UserRepository.firebaseVerify(firebaseToken, pin);
-    prefs.setString(TOKEN_IDENTIFIER, response.data);
     token = response.data ?? "";
+    prefs.setString(TOKEN_IDENTIFIER, token);
     if (response.data != null && response.data!.isNotEmpty) {
       await getCoreData();
       return userInfo != null;
@@ -302,10 +292,9 @@ class UserService {
 
   Future<bool> firebaseRegister(String username, bool newsletter) async {
     try {
-      var response = await UserRepository.firebaseRegister(
-          firebaseToken, username, newsletter);
+      var response = await UserRepository.firebaseRegister(firebaseToken, username, newsletter);
       token = response.data ?? "";
-      prefs.setString(TOKEN_IDENTIFIER, response.data);
+      prefs.setString(TOKEN_IDENTIFIER, token);
 
       if (token.isNotEmpty) {
         await getCoreData();
@@ -315,7 +304,6 @@ class UserService {
     } catch (ex) {
       return false;
     }
-
   }
 
   logout() async {
@@ -323,21 +311,18 @@ class UserService {
     token = "";
     userInfo = null;
     rewards = Reward();
-    library = List.empty();
-    FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+    favorites = List.empty();
     GoogleSignIn googleSignIn = GoogleSignIn();
     FacebookAuth facebookAuth = FacebookAuth.instance;
     try {
-      if(googleSignIn.currentUser != null) {
+      if (googleSignIn.currentUser != null) {
         await googleSignIn.disconnect();
       }
-      if(await facebookAuth.accessToken != null) {
+      if (await facebookAuth.accessToken != null) {
         await facebookAuth.logOut();
       }
       await FirebaseAuth.instance.signOut();
-    } catch(ex) {
-
-    }
+    } catch (ex) {}
     await prefs.setString(TOKEN_IDENTIFIER, "");
   }
   //#endregion
@@ -346,102 +331,85 @@ class UserService {
   Future<List<Playlist>> getPlaylists() async {
     var newPlaylists = await PodcastRepository.getPlaylists();
     for (final playlist in newPlaylists) {
-      playlist.tracks!.sort(
-          (trackA, trackB) => trackA.position!.compareTo(trackB.position!));
+      playlist.tracks!.sort((trackA, trackB) => trackA.position!.compareTo(trackB.position!));
     }
     playlists = newPlaylists;
     return newPlaylists;
   }
 
-  Future<Playlist> changePlaylistPosition(
-      int podcastId, int trackId, int position) async {
-    var newPlaylist = await PodcastRepository.changeEpisodePositionInPlaylist(
-        podcastId, trackId, position);
-    var playlist = playlists[playlists
-        .indexWhere((element) => element.playlistId == newPlaylist.playlistId)];
-    playlist.tracks!
-        .sort((trackA, trackB) => trackA.position!.compareTo(trackB.position!));
+  Future<Playlist> changePlaylistPosition(int podcastId, int trackId, int position) async {
+    var newPlaylist = await PodcastRepository.changeEpisodePositionInPlaylist(podcastId, trackId, position);
+    var playlist = playlists[playlists.indexWhere((element) => element.playlistId == newPlaylist.playlistId)];
+    playlist.tracks!.sort((trackA, trackB) => trackA.position!.compareTo(trackB.position!));
     playlist.tracks = newPlaylist.tracks;
     return playlist;
   }
 
-  Future<Playlist> removeFromPlaylistByTrackId(
-      int playlistId, int playlistTrackId) async {
-    var newPlaylist = await PodcastRepository.removeEpisodeFromPlaylist(
-        playlistId, playlistTrackId);
-    var playlist = playlists[playlists
-        .indexWhere((element) => element.playlistId == newPlaylist.playlistId)];
-    playlist.tracks!
-        .sort((trackA, trackB) => trackA.position!.compareTo(trackB.position!));
+  Future<Playlist> removeFromPlaylistByTrackId(int playlistId, int playlistTrackId) async {
+    var newPlaylist = await PodcastRepository.removeEpisodeFromPlaylist(playlistId, playlistTrackId);
+    var playlist = playlists[playlists.indexWhere((element) => element.playlistId == newPlaylist.playlistId)];
+    playlist.tracks!.sort((trackA, trackB) => trackA.position!.compareTo(trackB.position!));
     playlist.tracks = newPlaylist.tracks;
     return playlist;
   }
 
-  Future<Playlist> removeFromPlaylistByEpisodeId(
-      int playlistId, int episodeId) async {
-    var playlist = playlists[
-        playlists.indexWhere((element) => element.playlistId == playlistId)];
-    var track = playlist.tracks
-        ?.firstWhere((element) => element.episodeId == episodeId);
+  Future<Playlist> removeFromPlaylistByEpisodeId(int playlistId, int episodeId) async {
+    var playlist = playlists[playlists.indexWhere((element) => element.playlistId == playlistId)];
+    var track = playlist.tracks?.firstWhere((element) => element.episodeId == episodeId);
     if (track == null) {
       return playlist;
     }
-    var newPlaylist = await PodcastRepository.removeEpisodeFromPlaylist(
-        playlistId, track.playlistTrackId!);
+    var newPlaylist = await PodcastRepository.removeEpisodeFromPlaylist(playlistId, track.playlistTrackId!);
 
-    playlist.tracks!
-        .sort((trackA, trackB) => trackA.position!.compareTo(trackB.position!));
+    playlist.tracks!.sort((trackA, trackB) => trackA.position!.compareTo(trackB.position!));
     playlist.tracks = newPlaylist.tracks;
     return playlist;
   }
 
   Future<Playlist> addToPlaylist(int playlistId, int episodeId) async {
-    var newPlaylist =
-        await PodcastRepository.addToPlaylist(playlistId, episodeId);
-    var playlist = playlists[playlists
-        .indexWhere((element) => element.playlistId == newPlaylist.playlistId)];
-    playlist.tracks!
-        .sort((trackA, trackB) => trackA.position!.compareTo(trackB.position!));
+    var newPlaylist = await PodcastRepository.addToPlaylist(playlistId, episodeId);
+    var playlist = playlists[playlists.indexWhere((element) => element.playlistId == newPlaylist.playlistId)];
+    playlist.tracks!.sort((trackA, trackB) => trackA.position!.compareTo(trackB.position!));
     playlist.tracks = newPlaylist.tracks;
     return playlist;
   }
   //#endregion
 
-  //#region Library
-  Future<List<Podcast>> getLibrary(refresh) async {
-    if(refresh) {
-      var newLibrary = await PodcastRepository.getUserLibrary();
-      library = newLibrary;
+  //#region Favorites
+  Future<List<Podcast>> getFavorites({refresh = false}) async {
+    if (refresh) {
+      var newFavorites = await PodcastRepository.getUserFavorites();
+      favorites = newFavorites;
     }
-    for(var entry in library) {
+    for (var entry in favorites) {
       var lastUpdateSeen = prefs.getInt(LAST_NOTIFICATION_UPDATE + entry.podcastId.toString());
-      if(lastUpdateSeen != null) {
+      if (lastUpdateSeen != null) {
         var date = DateTime.fromMillisecondsSinceEpoch(lastUpdateSeen);
         lastPodcastUpdateSeen[entry.podcastId!] = date;
       }
     }
-    return library;
+    return favorites;
   }
 
-  Future<List<Podcast>> removeFromLibrary(int id) async {
-    if (await PodcastRepository.removeFromLibrary(id)) {
-      library.removeWhere((item) => item.podcastId == id);
+  Future<List<Podcast>> removeFromFavorites(int id) async {
+    if (await PodcastRepository.removeFromFavorites(id)) {
+      favorites.removeWhere((item) => item.podcastId == id);
     }
-    return library;
+    return favorites;
   }
 
-  Future<List<Podcast>> addToLibrary(int id) async {
-    if (await PodcastRepository.addToLibrary(id)) {
-      return await getLibrary(true);
+  Future<List<Podcast>> addToFavorites(int id) async {
+    if (await PodcastRepository.addToFavorites(id)) {
+      return await getFavorites(refresh: true);
     }
-    return library;
+    return favorites;
   }
 
-  Future<List<Podcast>> toggleLibraryEntry(id) async {
-    if (isInLibrary(id)) {
-      return await removeFromLibrary(id);
+  Future<List<Podcast>> toggleFavoritesEntry(id) async {
+    if (isInFavorites(id)) {
+      return await removeFromFavorites(id);
     }
-    return await addToLibrary(id);
+    return await addToFavorites(id);
   }
 
   Future<bool> createPlaylist(String text) async {
@@ -451,8 +419,7 @@ class UserService {
     var newPlaylist = await PodcastRepository.createPlaylist(text);
     if (newPlaylist.name != null &&
         newPlaylist.name!.isNotEmpty &&
-        !playlists
-            .any((playlist) => playlist.playlistId == newPlaylist.playlistId)) {
+        !playlists.any((playlist) => playlist.playlistId == newPlaylist.playlistId)) {
       playlists.add(newPlaylist);
       return true;
     }
@@ -470,17 +437,17 @@ class UserService {
     return false;
   }
 
-  void SetLastLibraryNotifcationUpdate() async {
+  void SetLastFavoritesNotifcationUpdate() async {
     lastNotificationSeen = DateTime.now().toUtc();
     await prefs.setInt(LAST_NOTIFICATION_UPDATE, lastNotificationSeen!.millisecondsSinceEpoch);
   }
 
-  bool unseenLibraryNotifcationUpdates() {
-    if(isConnected && library != null && library.length > 0) {
-      for(var entry in library) {
-        if(entry.lastUpdate != null
-            && entry.lastUpdate!.difference(DateTime.now().toUtc()).inDays < 7) {
-          return lastNotificationSeen == null || lastNotificationSeen!.millisecondsSinceEpoch < entry.lastUpdate!.millisecondsSinceEpoch;
+  bool unseenFavoritesNotifcationUpdates() {
+    if (isConnected) {
+      for (var entry in favorites) {
+        if (entry.lastUpdate != null && entry.lastUpdate!.difference(DateTime.now().toUtc()).inDays < 7) {
+          return lastNotificationSeen == null ||
+              lastNotificationSeen!.millisecondsSinceEpoch < entry.lastUpdate!.millisecondsSinceEpoch;
         }
       }
     }
@@ -488,17 +455,17 @@ class UserService {
   }
 
   bool unseenPodcastNotifcationUpdates(int id) {
-    var podcast = library.firstWhereOrNull((element) => id.isEqual(element.podcastId!));
-    if(isConnected && library.isNotEmpty && podcast != null && podcast.lastUpdate != null) {
+    var podcast = favorites.firstWhereOrNull((element) => id.isEqual(element.podcastId!));
+    if (isConnected && favorites.isNotEmpty && podcast != null && podcast.lastUpdate != null) {
       print(lastPodcastUpdateSeen[id]);
-      return !lastPodcastUpdateSeen.containsKey(podcast.podcastId)
-        || lastPodcastUpdateSeen[podcast.podcastId]!.millisecondsSinceEpoch < podcast.lastUpdate!.millisecondsSinceEpoch;
+      return !lastPodcastUpdateSeen.containsKey(podcast.podcastId) ||
+          lastPodcastUpdateSeen[podcast.podcastId]!.millisecondsSinceEpoch < podcast.lastUpdate!.millisecondsSinceEpoch;
     }
     return false;
   }
 
   Future<void> UpdatePodcastVisitDate(int? id) async {
-    if(id == null || !isConnected || library == null || !library.any((element) => id.isEqual(element.podcastId!))) {
+    if (id == null || !isConnected || !favorites.any((element) => id.isEqual(element.podcastId!))) {
       return;
     }
     lastPodcastUpdateSeen[id] = DateTime.now().toUtc();
@@ -515,7 +482,7 @@ class UserService {
 
   deleteAccount() async {
     final success = await UserRepository.deleteAccount();
-    if(success) {
+    if (success) {
       logout();
     }
   }

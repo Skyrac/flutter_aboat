@@ -76,10 +76,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   createLibraryPreview() {
-    if (!userService.isConnected || userService.library.isEmpty) {
+    if (!userService.isConnected || userService.favorites.isEmpty) {
       return Container();
     }
-    var libraryEntries = userService.getLibraryEntries(6);
+    var libraryEntries = userService.getFavoritesEntries(6);
     var height = double.parse((libraryEntries.length / 2 * 120).toString());
     return Padding(
       padding: const EdgeInsets.all(8.0),

@@ -1,5 +1,4 @@
 import 'package:Talkaboat/injection/injector.dart';
-import 'package:Talkaboat/models/podcasts/podcast.model.dart';
 import 'package:Talkaboat/services/repositories/podcast.repository.dart';
 import 'package:Talkaboat/services/state/state.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
@@ -90,10 +89,8 @@ class _HomeScreenSuggestedTabState extends State<HomeScreenSuggestedTab> {
                           ),
                         );
                       } else if (snapshot.hasData && snapshot.data != null) {
-                        // Extracting data from snapshot object
-                        final data = snapshot.data as List<Podcast>?;
-                        if (data != null && data.isNotEmpty) {
-                          userService.podcastProposalsHomeScreen[0] = data;
+                        if (snapshot.data != null && snapshot.data!.isNotEmpty) {
+                          userService.podcastProposalsHomeScreen[0] = snapshot.data!;
                           return PodcastListWidget(direction: Axis.horizontal, searchResults: homeState.map[0]!);
                         }
                       }
@@ -140,10 +137,8 @@ class _HomeScreenSuggestedTabState extends State<HomeScreenSuggestedTab> {
                           ),
                         );
                       } else if (snapshot.hasData && snapshot.data != null) {
-                        // Extracting data from snapshot object
-                        final data = snapshot.data as List<Podcast>?;
-                        if (data != null && data.isNotEmpty) {
-                          userService.podcastProposalsHomeScreen[1] = data;
+                        if (snapshot.data != null && snapshot.data!.isNotEmpty) {
+                          userService.podcastProposalsHomeScreen[1] = snapshot.data!;
                           return PodcastListFavoritesWidget(searchResults: userService.podcastProposalsHomeScreen[1]!);
                         }
                       }
@@ -156,10 +151,10 @@ class _HomeScreenSuggestedTabState extends State<HomeScreenSuggestedTab> {
   }
 
   createLibraryPreview() {
-    if (!userService.isConnected || userService.library.isEmpty) {
+    if (!userService.isConnected || userService.favorites.isEmpty) {
       return Container();
     }
-    var libraryEntries = userService.getLibraryEntries(6);
+    var libraryEntries = userService.getFavoritesEntries(6);
     var height = double.parse((libraryEntries.length / 2 * 120).toString());
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -197,10 +192,8 @@ class _HomeScreenSuggestedTabState extends State<HomeScreenSuggestedTab> {
                           ),
                         );
                       } else if (snapshot.hasData && snapshot.data != null) {
-                        // Extracting data from snapshot object
-                        final data = snapshot.data as List<Podcast>?;
-                        if (data != null && data.isNotEmpty) {
-                          userService.podcastProposalsHomeScreen[genre] = data;
+                        if (snapshot.data != null && snapshot.data!.isNotEmpty) {
+                          userService.podcastProposalsHomeScreen[genre] = snapshot.data!;
                           return PodcastListWidget(direction: Axis.horizontal, searchResults: homeState.map[genre]!);
                         }
                       }

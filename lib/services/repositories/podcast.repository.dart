@@ -116,18 +116,18 @@ class PodcastRepository {
     return podcast.episodes ?? List.empty();
   }
 
-  static Future<List<Podcast>> getUserLibrary() async {
+  static Future<List<Podcast>> getUserFavorites() async {
     var response = await dio.get<String>('$API/library/detail');
     var list = List<Podcast>.from(json.decode(response.data!).map((data) => Podcast.fromJson(data)));
     return list;
   }
 
-  static Future<bool> removeFromLibrary(int id) async {
+  static Future<bool> removeFromFavorites(int id) async {
     var response = await dio.post<bool>('$API/library/remove/$id');
     return response.data!;
   }
 
-  static Future<bool> addToLibrary(int id) async {
+  static Future<bool> addToFavorites(int id) async {
     var response = await dio.post<bool>('$API/library/add/$id');
     return response.data!;
   }

@@ -12,8 +12,7 @@ import '../themes/colors.dart';
 
 class PodcastSearch extends SearchDelegate<String?> {
   List<SearchResult> searchResults = List.empty();
-  final debouncer =
-      Debouncer<String>(Duration(milliseconds: 1000), initialValue: "");
+  final debouncer = Debouncer<String>(const Duration(milliseconds: 1000), initialValue: "");
   String previousSearch = "";
   final List<String> selectedLanguages;
   final List<int> genreIds;
@@ -21,8 +20,7 @@ class PodcastSearch extends SearchDelegate<String?> {
 
   Future<List<SearchResult>?> queryChanged(String query) async {
     debouncer.value = query;
-    return SearchRepository.searchSuggestion(query,
-        languages: selectedLanguages.join(","), genres: genreIds.join(","));
+    return SearchRepository.searchSuggestion(query, languages: selectedLanguages.join(","), genres: genreIds.join(","));
   }
 
   @override
@@ -40,13 +38,12 @@ class PodcastSearch extends SearchDelegate<String?> {
         primaryTextTheme: theme.primaryTextTheme);
   }
 
-  buildPopupMenu(BuildContext context, SearchResult entry) =>
-      <PopupMenuEntry<String>>[
+  buildPopupMenu(BuildContext context, SearchResult entry) => <PopupMenuEntry<String>>[
         PopupMenuItem<String>(
           value: 'toggleLibrary',
-          child: userService.isInLibrary(entry.id!)
-              ? Card(child: Text('Remove from Library'))
-              : Card(child: Text('Add to Library')),
+          child: userService.isInFavorites(entry.id!)
+              ? const Card(child: Text('Remove from Library'))
+              : const Card(child: Text('Add to Library')),
         ),
       ];
 
@@ -66,7 +63,7 @@ class PodcastSearch extends SearchDelegate<String?> {
                         reverseDuration: const Duration(milliseconds: 500),
                         child: LoginScreen(() => {})));
               } else {
-                await userService.toggleLibraryEntry(entry.id);
+                await userService.toggleFavoritesEntry(entry.id);
               }
               break;
           }
@@ -133,20 +130,13 @@ class PodcastSearch extends SearchDelegate<String?> {
                           return Center(
                             child: Text(
                               '${snapshot.error} occurred',
-                              style: TextStyle(fontSize: 18),
+                              style: const TextStyle(fontSize: 18),
                             ),
                           );
-                        } else if (snapshot.hasData &&
-                            snapshot.data != null &&
-                            snapshot.data!.isNotEmpty) {
-                          // Extracting data from snapshot object
-                          final data = snapshot.data as List<SearchResult>?;
-                          if (data != null && data.isNotEmpty) {
-                            searchResults = data;
+                        } else if (snapshot.hasData && snapshot.data != null && snapshot.data!.isNotEmpty) {
+                          if (snapshot.data != null && snapshot.data!.isNotEmpty) {
                             return PodcastListWidget(
-                                direction: Axis.vertical,
-                                searchResults: searchResults,
-                                trailing: buildPopupButton);
+                                direction: Axis.vertical, searchResults: snapshot.data!, trailing: buildPopupButton);
                           }
                         } else {
                           return Center(
@@ -164,10 +154,7 @@ class PodcastSearch extends SearchDelegate<String?> {
                     },
                     future: queryChanged(query),
                   )
-                : PodcastListWidget(
-                    direction: Axis.vertical,
-                    searchResults: searchResults,
-                    trailing: buildPopupButton));
+                : PodcastListWidget(direction: Axis.vertical, searchResults: searchResults, trailing: buildPopupButton));
   }
 
   @override
@@ -180,47 +167,37 @@ class PodcastSearch extends SearchDelegate<String?> {
           DefaultColors.secondaryColor.shade900
         ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
         child: searchResults.isNotEmpty
-            ? PodcastListWidget(
-                direction: Axis.vertical,
-                searchResults: searchResults,
-                trailing: buildPopupButton)
+            ? PodcastListWidget(direction: Axis.vertical, searchResults: searchResults, trailing: buildPopupButton)
             : FutureBuilder<List<SearchResult>?>(
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              if (snapshot.hasError) {
-                return Center(
-                  child: Text(
-                    '${snapshot.error} occurred',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                );
-              } else if (snapshot.hasData &&
-                  snapshot.data != null &&
-                  snapshot.data!.isNotEmpty) {
-                // Extracting data from snapshot object
-                final data = snapshot.data as List<SearchResult>?;
-                if (data != null && data.isNotEmpty) {
-                  searchResults = data;
-                  return PodcastListWidget(
-                      direction: Axis.vertical,
-                      searchResults: searchResults,
-                      trailing: buildPopupButton);
-                }
-              } else {
-                return Center(
-                    child: SizedBox(
-                      width: 200,
-                      child: Text(
-                        "No results found for \"$query\"! Try another set of filters or search query.",
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                    ));
-              }
-            }
-            return const Center(child: CircularProgressIndicator());
-          },
-          future: queryChanged(query),
-        ));
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    if (snapshot.hasError) {
+                      return Center(
+                        child: Text(
+                          '${snapshot.error} occurred',
+                          style: const TextStyle(fontSize: 18),
+                        ),
+                      );
+                    } else if (snapshot.hasData && snapshot.data != null && snapshot.data!.isNotEmpty) {
+                      if (snapshot.data != null && snapshot.data!.isNotEmpty) {
+                        return PodcastListWidget(
+                            direction: Axis.vertical, searchResults: snapshot.data!, trailing: buildPopupButton);
+                      }
+                    } else {
+                      return Center(
+                          child: SizedBox(
+                        width: 200,
+                        child: Text(
+                          "No results found for \"$query\"! Try another set of filters or search query.",
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                      ));
+                    }
+                  }
+                  return const Center(child: CircularProgressIndicator());
+                },
+                future: queryChanged(query),
+              ));
   }
 }
