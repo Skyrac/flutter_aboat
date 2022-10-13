@@ -365,12 +365,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: CircularProgressIndicator(),
                       )))
               : const SizedBox(),
-          const Positioned(
-              top: 5,
-              left: 0,
-              right: 0,
-              height: 80,
-              child: LoginAppBarWidget()),
         ],
       )),
     ));
@@ -557,6 +551,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 children: [
                                   RawMaterialButton(
                                     onPressed: () async {
+                                      Navigator.of(context).pop();
                                       await sendLogin(context);
                                     },
                                     child: Container(
