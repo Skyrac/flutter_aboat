@@ -63,14 +63,36 @@ class _HomeScreenState extends State<HomeScreen> {
       length: 3,
       child: Scaffold(
         appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(155),
+          preferredSize: const Size.fromHeight(100),
           child: HomeAppBarWidget(refresh: refresh),
         ),
-        body: TabBarView(children: [
-          HomeScreenSuggestedTab(widget.selectTab),
-          HomeScreenCategoriesTab(),
-          Container(),
-        ]),
+        body: SafeArea(
+          child: Container(
+            color: const Color.fromRGBO(15, 23, 41, 1),
+            child: Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 55),
+                  child: TabBarView(children: [
+                    HomeScreenSuggestedTab(widget.selectTab),
+                    HomeScreenCategoriesTab(),
+                    Container(),
+                  ]),
+                ),
+                Container(
+                  color: Colors.transparent,
+                  height: 66,
+                  child: Image.asset(
+                    height: 66,
+                    width: MediaQuery.of(context).size.width,
+                    "assets/images/wave_old.png",
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -91,5 +113,27 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+}
+
+class CustomAppBar extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    Path path = new Path();
+
+    path.lineTo(0, size.height);
+    path.quadraticBezierTo(size.width / 4, size.height - 40, size.width / 2, size.height - 20);
+
+    path.quadraticBezierTo(3 / 4 * size.width, size.height, size.width, size.height - 20);
+
+    path.lineTo(size.width, 0);
+
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) {
+    // TODO: implement shouldReclip
+    return false;
   }
 }
