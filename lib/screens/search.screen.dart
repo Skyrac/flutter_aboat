@@ -1,6 +1,7 @@
 import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/models/podcasts/podcast.model.dart';
 import 'package:Talkaboat/services/audio/podcast.service.dart';
+import 'package:Talkaboat/utils/scaffold_wave.dart';
 import 'package:Talkaboat/widgets/podcast-list-tile.widget.dart';
 import 'package:Talkaboat/widgets/searchbar.widget.dart';
 import 'package:debounce_throttle/debounce_throttle.dart';
@@ -59,50 +60,46 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Container(
-        decoration: const BoxDecoration(color: Color.fromRGBO(15, 23, 41, 1.0)),
-        child: Scaffold(
-          appBar: widget.appBar ?? buildAppbar(),
-          body: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SearchBar(
-                placeholder: "",
-                onChanged: (text) {
-                  print(text);
-                  debouncer.setValue(text);
-                },
-                shadowColor: const Color.fromRGBO(99, 163, 253, 1.0),
-              ),
-              Flexible(
-                flex: 1,
-                child: PagedListView<int, Podcast>(
-                  pagingController: _pagingController,
-                  builderDelegate: PagedChildBuilderDelegate<Podcast>(
-                    itemBuilder: (context, item, index) => Padding(
-                      padding: const EdgeInsets.only(left: 10),
-                      child: Stack(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: PodcastListTileWidget(item),
-                          ),
-                        ],
+    return ScaffoldWave(
+      appBar: widget.appBar ?? buildAppbar(),
+      body: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SearchBar(
+            placeholder: "",
+            onChanged: (text) {
+              print(text);
+              debouncer.setValue(text);
+            },
+            shadowColor: const Color.fromRGBO(99, 163, 253, 1.0),
+          ),
+          Flexible(
+            flex: 1,
+            child: PagedListView<int, Podcast>(
+              pagingController: _pagingController,
+              builderDelegate: PagedChildBuilderDelegate<Podcast>(
+                itemBuilder: (context, item, index) => Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: PodcastListTileWidget(item),
                       ),
-                    ),
+                    ],
                   ),
                 ),
-              )
-            ],
-          ),
-        ),
+              ),
+            ),
+          )
+        ],
       ),
     );
   }
 
   AppBar buildAppbar() {
     return AppBar(
+      backgroundColor: const Color.fromRGBO(29, 40, 58, 1),
       title: const Text("Search"),
     );
   }

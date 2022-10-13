@@ -2,6 +2,7 @@ import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/services/quests/quest.service.dart';
 import 'package:Talkaboat/services/state/state.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
+import 'package:Talkaboat/utils/scaffold_wave.dart';
 import 'package:Talkaboat/widgets/home-categories.dart';
 import 'package:Talkaboat/widgets/home-suggested.widget.dart';
 import 'package:flutter/material.dart';
@@ -61,38 +62,16 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 3,
-      child: Scaffold(
+      child: ScaffoldWave(
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(100),
           child: HomeAppBarWidget(refresh: refresh),
         ),
-        body: SafeArea(
-          child: Container(
-            color: const Color.fromRGBO(15, 23, 41, 1),
-            child: Stack(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 55),
-                  child: TabBarView(children: [
-                    HomeScreenSuggestedTab(widget.selectTab),
-                    HomeScreenCategoriesTab(),
-                    Container(),
-                  ]),
-                ),
-                Container(
-                  color: Colors.transparent,
-                  height: 66,
-                  child: Image.asset(
-                    height: 66,
-                    width: MediaQuery.of(context).size.width,
-                    "assets/images/wave_old.png",
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+        body: TabBarView(children: [
+          HomeScreenSuggestedTab(widget.selectTab),
+          HomeScreenCategoriesTab(),
+          Container(),
+        ]),
       ),
     );
   }

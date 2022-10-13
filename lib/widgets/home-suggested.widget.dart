@@ -34,7 +34,7 @@ class _HomeScreenSuggestedTabState extends State<HomeScreenSuggestedTab> {
         createPodcastPreviewRecentlyListed(context),
         const SizedBox(height: 20),
         createFavoritesList(context),
-        const SizedBox(height: 20),
+        const SizedBox(height: 5),
       ],
     ));
   }
