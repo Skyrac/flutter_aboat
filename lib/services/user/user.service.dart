@@ -156,7 +156,7 @@ class UserService {
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
-  isInFavorites(int id) => favorites.any((element) => element.podcastId == id);
+  isInFavorites(int id) => userInfo != null && favorites.any((element) => element.podcastId == id);
 
   getFavoritesEntries(int amount) {
     if (favorites.length < amount) {

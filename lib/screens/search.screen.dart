@@ -73,6 +73,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   print(text);
                   debouncer.setValue(text);
                 },
+                shadowColor: const Color.fromRGBO(99, 163, 253, 1.0),
               ),
               Flexible(
                 flex: 1,
@@ -101,7 +102,9 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   AppBar buildAppbar() {
-    return AppBar();
+    return AppBar(
+      title: const Text("Search"),
+    );
   }
 
   @override

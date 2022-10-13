@@ -64,8 +64,14 @@ class Podcast extends SearchResult {
       this.lastUpdate});
 
   Podcast.fromJson(Map<String, dynamic> json) {
-    podcastId = json['podcastId'];
-    id = json['podcastId'];
+    print(json);
+    if (json['podcastId'] != null) {
+      podcastId = json['podcastId'];
+      id = json['podcastId'];
+    } else {
+      podcastId = json['id'];
+      id = json['id'];
+    }
     image = json['image'];
     genreIds = json['genres'];
     thumbnail = json['thumbnail'];
@@ -80,7 +86,6 @@ class Podcast extends SearchResult {
 
     totalEpisodes = json['totalEpisodes'];
     if (json['episodes'] != null) {
-      episodes = <Episode>[];
       if (json["episodes"].runtimeType == int) {
         totalEpisodes = json["episodes"];
       } else {

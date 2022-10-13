@@ -1,3 +1,4 @@
+import 'package:Talkaboat/screens/search.screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
@@ -65,7 +66,17 @@ class HomeAppBarWidget extends StatelessWidget {
               fit: BoxFit.cover,
             ),
             tooltip: '',
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  PageTransition(
+                      alignment: Alignment.bottomCenter,
+                      curve: Curves.bounceOut,
+                      type: PageTransitionType.rightToLeftWithFade,
+                      duration: const Duration(milliseconds: 500),
+                      reverseDuration: const Duration(milliseconds: 500),
+                      child: const SearchScreen()));
+            },
           ),
         ),
         Padding(

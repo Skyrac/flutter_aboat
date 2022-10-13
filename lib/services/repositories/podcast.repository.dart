@@ -96,7 +96,9 @@ class PodcastRepository {
       if (genre != null) {
         body["genre"] = genre.toString();
       }
+      print(body);
       var response = await dio.post<String>('$API/search', data: body);
+      print(response.data);
       var list = List<Podcast>.from(json.decode(response.data!).map((data) => Podcast.fromJson(data)));
       return list;
     } catch (ex) {
