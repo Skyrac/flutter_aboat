@@ -15,7 +15,7 @@ class NewDefaultTheme {
           titleLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: NewDefaultColors.secondaryColor.shade50),
           titleMedium: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: NewDefaultColors.secondaryColor.shade50),
           titleSmall: TextStyle(fontSize: 12, fontWeight: FontWeight.normal, color: NewDefaultColors.secondaryColor.shade50),
-          labelLarge: TextStyle(color: NewDefaultColors.secondaryColor.shade50),
+          labelLarge: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: NewDefaultColors.secondaryColor.shade50),
           labelMedium: TextStyle(fontSize: 10, color: NewDefaultColors.secondaryColor.shade50),
           labelSmall: TextStyle(fontSize: 8, color: NewDefaultColors.secondaryColor.shade50),
           headlineLarge: TextStyle(color: NewDefaultColors.secondaryColor.shade50),

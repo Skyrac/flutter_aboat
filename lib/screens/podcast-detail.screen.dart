@@ -1,6 +1,7 @@
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../injection/injector.dart';
 import '../models/podcasts/episode.model.dart';
@@ -8,14 +9,16 @@ import '../models/search/search_result.model.dart';
 import '../services/audio/audio-handler.services.dart';
 import '../services/audio/podcast.service.dart';
 import '../themes/colors.dart';
+import '../utils/scaffold_wave.dart';
 import '../widgets/episode-preview.widget.dart';
 import '../widgets/podcast-detail-sliver.widget.dart';
 
 class PodcastDetailScreen extends StatefulWidget {
   final SearchResult? podcastSearchResult;
   final int? podcastId;
+  final AppBar? appBar;
   const PodcastDetailScreen(
-      {Key? key, this.podcastSearchResult, this.podcastId})
+      {Key? key, this.podcastSearchResult, this.podcastId, this.appBar})
       : super(key: key);
 
   @override
@@ -131,148 +134,146 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
     final size = MediaQuery.of(context).size;
     return DefaultTabController(
       length: 3,
-      child: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            title: Text(podcastSearchResult.title!),
-            bottom: PreferredSize(
-              preferredSize: Size.fromHeight(100),
-              child: Container(
-                // color: Colors.blue,
-                child: Material(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Color.fromRGBO(29, 40, 58, 0.8),
-                  child: Container(
-                    padding: EdgeInsets.fromLTRB(18, 8, 18, 8),
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.0),
-                        border: const Border(
-                            bottom: BorderSide(
-                                color: Color.fromRGBO(164, 202, 255, 1))),
-                      ),
-                      child: const TabBar(
-                        labelColor: Color.fromRGBO(188, 140, 75, 1),
-                        indicatorColor: Color.fromRGBO(188, 140, 75, 1),
-                        unselectedLabelColor: Color.fromRGBO(164, 202, 255, 1),
-                        tabs: [
-                          Tab(text: "Episodes"),
-                          Tab(text: "Details"),
-                          Tab(text: "Community"),
-                        ],
-                      ),
-                    ),
-                  ),
-                  // Container(
-                  //   // width: 150,
-                  //   height: 70,
-                  //   padding: EdgeInsets.all(15),
-                  //   child: TabBar(
-                  //     labelColor: Color.fromRGBO(188, 140, 75, 1),
-                  //     indicatorColor: Color.fromRGBO(188, 140, 75, 1),
-                  //     unselectedLabelColor: Color.fromRGBO(164, 202, 255, 1),
-                  //     tabs: [
-                  //       Tab(text: "Suggested"),
-                  //       Tab(text: "Categories"),
-                  //       Tab(text: "News"),
-                  //     ],
-                  //   ),
-                  // ),
-                ),
-                width: size.width * 0.9,
-                // height: 100,
-                padding: EdgeInsets.only(top: 5, bottom: 10),
-              ),
-            ),
-            pinned: true,
-            expandedHeight: size.height * 0.5,
-            flexibleSpace: FlexibleSpaceBar(
-              background: Image.network(
-                podcastSearchResult.image!,
-                width: double.maxFinite,
+      child: ScaffoldWave(
+        appBar: AppBar(
+          centerTitle: false,
+          leading: Padding(
+            padding: const EdgeInsets.only(left: 0),
+            child: IconButton(
+              icon: Image.asset(
+                "assets/images/back.png",
+                width: 12,
                 fit: BoxFit.cover,
               ),
+              tooltip: '',
+              onPressed: () => Navigator.of(context).pop(),
             ),
           ),
-          // SliverPersistentHeader(
-          //   delegate: PodcastDetailSliver(
-          //       expandedHeight: size.height * 0.5,
-          //       podcast: podcastSearchResult),
-          //   pinned: true,
-          // ),
-          SliverToBoxAdapter(
-            child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-                child: Column(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Card(
-                          child: InkWell(
-                        onTap: (() {
-                          setState(() {
-                            isDescOpen = !isDescOpen;
-                          });
-                        }),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            podcastSearchResult.description ?? '',
-                            maxLines: isDescOpen ? 9999 : 3,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      )),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 15, bottom: 5),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          InkWell(
+          leadingWidth: 35,
+          titleSpacing: 3,
+          backgroundColor: const Color.fromRGBO(29, 40, 58, 1),
+          title: Text(
+            podcastSearchResult.title!,
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  color: Color.fromRGBO(99, 163, 253, 1),
+                ),
+          ),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 5),
+              child: IconButton(
+                  icon: Image.asset(
+                    "assets/images/share.png",
+                    width: 30,
+                    fit: BoxFit.cover,
+                  ),
+                  tooltip: '',
+                  onPressed: () => {
+                        //TODO: Geräte Abhängigkeit prüfen
+                        Share.share(
+                            "Check the Podcast ${podcastSearchResult.title} on Talkaboat.online mobile App! Start listening and earn while supporting new and upcoming podcasters.\n\n Download it now on \nAndroid: https://play.google.com/store/apps/details?id=com.aboat.talkaboat\n",
+                            subject:
+                                "Check this out! A Podcast on Talkaboat.online.")
+                      }),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: IconButton(
+                icon: Image.asset(
+                  "assets/images/heart.png",
+                  width: 30,
+                  fit: BoxFit.cover,
+                ),
+                tooltip: '',
+                onPressed: () {},
+              ),
+            ),
+          ],
+        ),
+        body: TabBarView(children: [
+          CustomScrollView(
+            slivers: [
+              SliverPersistentHeader(
+                delegate: PodcastDetailSliver(
+                    expandedHeight: size.height * 0.5,
+                    podcast: podcastSearchResult),
+                pinned: true,
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                    child: Column(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Card(
+                              child: InkWell(
                             onTap: (() {
                               setState(() {
-                                sort = sort == "asc" ? "desc" : "asc";
+                                isDescOpen = !isDescOpen;
                               });
                             }),
-                            child: RotatedBox(
-                              quarterTurns: sort == "asc" ? 0 : 2,
-                              child: Icon(Icons.sort),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                podcastSearchResult.description ?? '',
+                                maxLines: isDescOpen ? 9999 : 3,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
-                          )
-                        ],
-                      ),
-                    )
-                  ],
-                )),
-          ),
-          FutureBuilder(
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                if (snapshot.hasError) {
-                  return SliverToBoxAdapter(
-                    child: Center(
-                      child: Text(
-                        '${snapshot.error} occurred',
-                        style: TextStyle(fontSize: 18),
-                      ),
-                    ),
-                  );
-                } else if (snapshot.hasData && snapshot.data != null) {
-                  // Extracting data from snapshot object
-                  final data = snapshot.data as List<Episode>?;
-                  if (data != null && data.isNotEmpty) {
-                    return buildEpisodes(data);
+                          )),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 15, bottom: 5),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              InkWell(
+                                onTap: (() {
+                                  setState(() {
+                                    sort = sort == "asc" ? "desc" : "asc";
+                                  });
+                                }),
+                                child: RotatedBox(
+                                  quarterTurns: sort == "asc" ? 0 : 2,
+                                  child: Icon(Icons.sort),
+                                ),
+                              )
+                            ],
+                          ),
+                        )
+                      ],
+                    )),
+              ),
+              FutureBuilder(
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    if (snapshot.hasError) {
+                      return SliverToBoxAdapter(
+                        child: Center(
+                          child: Text(
+                            '${snapshot.error} occurred',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        ),
+                      );
+                    } else if (snapshot.hasData && snapshot.data != null) {
+                      // Extracting data from snapshot object
+                      final data = snapshot.data as List<Episode>?;
+                      if (data != null && data.isNotEmpty) {
+                        return buildEpisodes(data);
+                      }
+                    }
                   }
-                }
-              }
-              return SliverToBoxAdapter(
-                  child: const Center(child: CircularProgressIndicator()));
-            },
-            future: podcastService.getPodcastDetailEpisodes(
-                podcastSearchResult.id!, sort, -1),
+                  return SliverToBoxAdapter(
+                      child: const Center(child: CircularProgressIndicator()));
+                },
+                future: podcastService.getPodcastDetailEpisodes(
+                    podcastSearchResult.id!, sort, -1),
+              ),
+            ],
           ),
-        ],
+        ]),
       ),
     );
   }

@@ -1,7 +1,6 @@
 import 'package:Talkaboat/models/podcasts/podcast.model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../injection/injector.dart';
@@ -25,7 +24,7 @@ class _PodcastListFavoritesWidgetState extends State<PodcastListFavoritesWidget>
   popupMenu(BuildContext context, SearchResult entry) => <PopupMenuEntry<String>>[
         PopupMenuItem<String>(
           value: 'toggleLibrary',
-          child: userService.isInLibrary(entry.id!)
+          child: userService.isInFavorites(entry.id!)
               ? const Card(child: Text('Remove from Library'))
               : const Card(child: Text('Add to Library')),
         ),
@@ -47,7 +46,7 @@ class _PodcastListFavoritesWidgetState extends State<PodcastListFavoritesWidget>
                         reverseDuration: const Duration(milliseconds: 500),
                         child: LoginScreen(() => setState(() {}))));
               } else {
-                await userService.toggleLibraryEntry(entry.id);
+                await userService.toggleFavoritesEntry(entry.id);
               }
               break;
           }
