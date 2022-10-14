@@ -4,7 +4,6 @@ import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
-// ignore: depend_on_referenced_packages
 import 'package:rxdart/rxdart.dart';
 
 class PositionData {
