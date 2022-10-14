@@ -29,7 +29,7 @@ class _QuestListWidgetState extends State<QuestListWidget> {
           return makeAdCard(context, item);
         } else {
           final item = data[index - 1];
-          return makeCard(context, item);
+          return item.progress! >= item.requirement! ? makeFinishedCard(context, item) : makeCard(context, item);
         }
       });
 
@@ -46,11 +46,65 @@ class _QuestListWidgetState extends State<QuestListWidget> {
         ),
       ]);
 
+  Widget makeFinishedCard(context, Quest quest) => Stack(children: [
+        // Stack to shrink the box to size
+        Card(
+          elevation: 4.0,
+          shadowColor: const Color.fromRGBO(188, 140, 75, 1.0),
+          margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          color: NewDefaultColors.secondaryColorAlphaBlend,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(10.0),
+            onTap: () async {
+              await finishTask(quest);
+            },
+            child: SizedBox(
+              width: 140,
+              height: 160,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Padding(
+                      padding: EdgeInsets.only(top: 20, bottom: 10),
+                      child: SizedBox(
+                        height: 40,
+                        width: 40,
+                        child: Center(
+                          child: Icon(
+                            Icons.check_circle_outline,
+                            color: Color.fromRGBO(188, 140, 75, 1.0),
+                            size: 40,
+                          ),
+                        ),
+                      )),
+                  Padding(
+                      padding: const EdgeInsets.only(bottom: 20),
+                      child: SizedBox(
+                          height: 70,
+                          child: Center(
+                              child: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                            Text("Completed",
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context).textTheme.titleMedium),
+                            Text(quest.name!,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context).textTheme.titleMedium)
+                          ])))),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ]);
+
   Widget makeCard(context, Quest quest) => Stack(children: [
         Card(
-          shadowColor: quest.progress != null && quest.progress! >= quest.requirement!
-              ? Colors.green
-              : const Color.fromRGBO(99, 163, 253, 1.0),
+          shadowColor: const Color.fromRGBO(99, 163, 253, 1.0),
           elevation: 8.0,
           margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -130,67 +184,35 @@ class _QuestListWidgetState extends State<QuestListWidget> {
                 child: Text(quest.description!,
                     overflow: TextOverflow.ellipsis, maxLines: 3, style: Theme.of(context).textTheme.labelMedium)),
             const Expanded(child: SizedBox()),
-            quest.progress! >= quest.requirement!
-                ? Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Card(
-                      color: NewDefaultColors.primaryColor,
-                      child: InkWell(
-                          onTap: () async {
-                            await finishTask(quest);
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(Icons.clean_hands, color: NewDefaultColors.secondaryColorBase),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                Text(
-                                  "Finish",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium
-                                      ?.copyWith(color: NewDefaultColors.secondaryColorBase),
-                                )
-                              ],
-                            ),
-                          )),
-                    ),
-                  )
-                : Column(
-                    children: [
-                      Center(
-                        child: Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: Text("${quest.progress!.toStringAsFixed(2)} of ${quest.requirement!.toStringAsFixed(2)}",
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 2,
-                                style: Theme.of(context).textTheme.labelSmall)),
-                      ),
-                      Center(
-                        child: Padding(
-                            padding: const EdgeInsets.only(left: 10, right: 10, top: 0, bottom: 10),
-                            child: AbsorbPointer(
-                                child: SizedBox(
-                              height: 15,
-                              width: 140,
-                              child: SliderTheme(
-                                data: SliderTheme.of(context).copyWith(
-                                    thumbColor: Colors.transparent,
-                                    thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 0.0)),
-                                child: Slider(
-                                    value: (quest.progress?.toDouble() ?? 0),
-                                    onChanged: (double value) {},
-                                    min: 0,
-                                    max: quest.requirement?.toDouble() ?? 0),
-                              ),
-                            ))),
-                      )
-                    ],
-                  )
+            Column(
+              children: [
+                Center(
+                  child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Text("${quest.progress!.toStringAsFixed(2)} of ${quest.requirement!.toStringAsFixed(2)}",
+                          overflow: TextOverflow.ellipsis, maxLines: 2, style: Theme.of(context).textTheme.labelSmall)),
+                ),
+                Center(
+                  child: Padding(
+                      padding: const EdgeInsets.only(left: 10, right: 10, top: 0, bottom: 10),
+                      child: AbsorbPointer(
+                          child: SizedBox(
+                        height: 15,
+                        width: 140,
+                        child: SliderTheme(
+                          data: SliderTheme.of(context).copyWith(
+                              thumbColor: Colors.transparent,
+                              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 0.0)),
+                          child: Slider(
+                              value: (quest.progress?.toDouble() ?? 0),
+                              onChanged: (double value) {},
+                              min: 0,
+                              max: quest.requirement?.toDouble() ?? 0),
+                        ),
+                      ))),
+                )
+              ],
+            )
           ],
         ),
       ));
