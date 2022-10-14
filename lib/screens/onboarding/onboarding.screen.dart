@@ -28,9 +28,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   @override
   Widget build(BuildContext context) {
     const bodyStyle = TextStyle(fontSize: 19.0);
-    print("Test");
 
-    const pageDecoration = const PageDecoration(
+    const pageDecoration = PageDecoration(
       titleTextStyle: TextStyle(fontSize: 28.0, fontWeight: FontWeight.w700),
       bodyTextStyle: bodyStyle,
       bodyPadding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
@@ -56,35 +55,33 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
           title: "Podcasts",
           image: _buildImage('images/intro_podcasts.png'),
           body:
-          "Enjoy more than 700.000 Podcasts while earning Aboat Token and supporting your favorite podcasters for doing so",
+              "Enjoy more than 700.000 Podcasts while earning Aboat Token and supporting your favorite podcasters for doing so",
           decoration: pageDecoration,
         ),
         PageViewModel(
           title: "Daily Tasks",
           image: _buildImage('images/intro_tasks.png', 225),
-          body:
-          "Finish your daily tasks to earn great rewards and get an insight into blockchain while helping creators",
+          body: "Finish your daily tasks to earn great rewards and get an insight into blockchain while helping creators",
           decoration: pageDecoration,
         ),
         PageViewModel(
           title: "Friends",
           image: _buildImage('images/intro_social.png', 275),
-          body:
-          "Add or invite your friends to share your latest news, achievements or your favorite podcast",
+          body: "Add or invite your friends to share your latest news, achievements or your favorite podcast",
           decoration: pageDecoration,
         ),
         PageViewModel(
           title: "Cryptocurrency",
-          body: "We help you to take the first step into cryptocurrencies in a secure and fun environment\n\nYou can take it step by step without all the heavy technical details or the need to use money",
+          body:
+              "We help you to take the first step into cryptocurrencies in a secure and fun environment\n\nYou can take it step by step without all the heavy technical details or the need to use money",
           image: _buildImage('images/intro_crypto.png'),
-
           decoration: pageDecoration,
         ),
         PageViewModel(
           title: "Take a share",
           image: _buildImage('images/intro_crypto_social.png'),
           body:
-          "We provide new ways for creators and the community to help each other\n\nOne of this is by buying Non-Fungible Tokens from creators to access income or content rights",
+              "We provide new ways for creators and the community to help each other\n\nOne of this is by buying Non-Fungible Tokens from creators to access income or content rights",
           decoration: pageDecoration,
         ),
       ],

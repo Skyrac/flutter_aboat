@@ -64,8 +64,13 @@ class Podcast extends SearchResult {
       this.lastUpdate});
 
   Podcast.fromJson(Map<String, dynamic> json) {
-    podcastId = json['podcastId'];
-    id = json['podcastId'];
+    if (json['podcastId'] != null) {
+      podcastId = json['podcastId'];
+      id = json['podcastId'];
+    } else {
+      podcastId = json['id'];
+      id = json['id'];
+    }
     image = json['image'];
     genreIds = json['genres'];
     thumbnail = json['thumbnail'];
@@ -77,11 +82,17 @@ class Podcast extends SearchResult {
     rss = json['rss'];
     type = json['type'];
     email = json['email'];
+
+    totalEpisodes = json['totalEpisodes'];
     if (json['episodes'] != null) {
-      episodes = <Episode>[];
-      json['episodes'].forEach((v) {
-        episodes!.add(Episode.fromJson(v));
-      });
+      if (json["episodes"].runtimeType == int) {
+        totalEpisodes = json["episodes"];
+      } else {
+        episodes = [];
+        json['episodes'].forEach((v) {
+          episodes!.add(Episode.fromJson(v));
+        });
+      }
     }
     title = json['title'];
     country = json['country'];
@@ -91,7 +102,6 @@ class Podcast extends SearchResult {
     publisher = json['publisher'];
     isClaimed = json['is_claimed'];
     description = json['description'];
-    totalEpisodes = json['totalEpisodes'];
     explicitContent = json['explicitContent'];
     latestPubDateMs = json['latestPubDate'];
     earliestPubDateMs = json['earliest_pub_date_ms'];
@@ -129,7 +139,7 @@ class Podcast extends SearchResult {
     data['explicit_content'] = explicitContent;
     data['latestPubDate'] = latestPubDateMs;
     data['earliest_pub_date_ms'] = earliestPubDateMs;
-    data['lastUpdate'] = lastUpdate ;
+    data['lastUpdate'] = lastUpdate;
     return data;
   }
 }

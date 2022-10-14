@@ -9,7 +9,7 @@ import '../widgets/podcast-list.widget.dart';
 import 'login.screen.dart';
 
 class LibraryScreen extends StatefulWidget {
-  LibraryScreen({Key? key}) : super(key: key);
+  const LibraryScreen({Key? key}) : super(key: key);
 
   @override
   State<LibraryScreen> createState() => _LibraryScreenState();
@@ -18,8 +18,7 @@ class LibraryScreen extends StatefulWidget {
 class _LibraryScreenState extends State<LibraryScreen> {
   final userService = getIt<UserService>();
 
-  buildPopupMenu(BuildContext context, SearchResult entry) =>
-      <PopupMenuEntry<String>>[
+  buildPopupMenu(BuildContext context, SearchResult entry) => <PopupMenuEntry<String>>[
         const PopupMenuItem<String>(
           value: 'remove',
           child: Card(child: Text('Remove')),
@@ -31,7 +30,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
         onSelected: (value) async {
           switch (value) {
             case "remove":
-              await userService.removeFromLibrary(entry.id);
+              await userService.removeFromFavorites(entry.id);
               break;
           }
           setState(() {});
@@ -43,13 +42,12 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    userService.SetLastLibraryNotifcationUpdate();
+    userService.SetLastFavoritesNotifcationUpdate();
     return SafeArea(
         child: Scaffold(
             body: userService.isConnected
                 ? Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 8.0, horizontal: 20),
+                    padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20),
                     child: FutureBuilder(
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.done) {
@@ -60,8 +58,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                                 style: const TextStyle(fontSize: 18),
                               ),
                             );
-                          } else if (snapshot.hasData &&
-                              snapshot.data != null) {
+                          } else if (snapshot.hasData && snapshot.data != null) {
                             // Extracting data from snapshot object
                             final data = snapshot.data as List<Podcast>;
                             if (data.isNotEmpty) {
@@ -74,8 +71,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                             }
                           }
                         } else {
-                          return const Center(
-                              child: CircularProgressIndicator());
+                          return const Center(child: CircularProgressIndicator());
                         }
                         return Center(
                             child: Text(
@@ -84,13 +80,12 @@ class _LibraryScreenState extends State<LibraryScreen> {
                           style: Theme.of(context).textTheme.bodyLarge,
                         ));
                       },
-                      future: userService.getLibrary(false),
+                      future: userService.getFavorites(),
                     ),
                   )
                 : Center(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 30),
+                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 30),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(20),
                         child: Card(
@@ -102,21 +97,17 @@ class _LibraryScreenState extends State<LibraryScreen> {
                                       alignment: Alignment.bottomCenter,
                                       curve: Curves.bounceOut,
                                       type: PageTransitionType.fade,
-                                      duration:
-                                          const Duration(milliseconds: 300),
-                                      reverseDuration:
-                                          const Duration(milliseconds: 200),
-                                      child:
-                                          LoginScreen(() => setState(() {}))));
+                                      duration: const Duration(milliseconds: 300),
+                                      reverseDuration: const Duration(milliseconds: 200),
+                                      child: LoginScreen(() => setState(() {}))));
                             }),
-                            child: Container(
+                            child: SizedBox(
                                 height: 80,
                                 width: MediaQuery.of(context).size.width,
                                 child: Center(
                                   child: Text(
                                     "Login",
-                                    style:
-                                        Theme.of(context).textTheme.titleLarge,
+                                    style: Theme.of(context).textTheme.titleLarge,
                                     textAlign: TextAlign.center,
                                   ),
                                 )),
