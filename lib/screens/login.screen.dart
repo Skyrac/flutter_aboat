@@ -8,14 +8,12 @@ import 'package:social_login_buttons/social_login_buttons.dart';
 import '../injection/injector.dart';
 import '../services/repositories/user.repository.dart';
 import '../services/user/user.service.dart';
-import '../themes/colors.dart';
 import '../themes/login-and-register.background.dart';
 import '../utils/Snackbar_Creator.dart';
 import '../utils/modal.widget.dart';
-import '../widgets/login-app-bar.widget.dart';
 
 class LoginScreen extends StatefulWidget {
-  LoginScreen(this.refreshParent, {Key? key}) : super(key: key);
+  const LoginScreen(this.refreshParent, {Key? key}) : super(key: key);
   final Function refreshParent;
 
   @override
@@ -42,14 +40,22 @@ class _LoginScreenState extends State<LoginScreen> {
         isLoading = true;
         sentEmail = true;
       });
-      await UserRepository.requestEmailLogin(email);
-      setState(() {
-        isLoading = false;
-      });
+      var result = await UserRepository.requestEmailLogin(email);
+      if (result) {
+        setState(() {
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          isLoading = false;
+          sentEmail = false;
+        });
+      }
     }
   }
 
   Future<void> sendLogin(BuildContext context) async {
+    Navigator.of(context).pop();
     final pin = pinController.text;
     final email = emailController.text;
     if (pin.length > 3 && email.isValidEmail()) {
@@ -67,8 +73,8 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  createEmailPinRequestWidget(String labelText, Function callback,
-          TextEditingController textController, String buttonText) =>
+  createEmailPinRequestWidget(
+          String labelText, Function callback, TextEditingController textController, String buttonText) =>
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 40),
         child: Column(
@@ -79,8 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 10),
               alignment: Alignment.center,
               child: Card(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   child: Container(
                     height: 40,
                     decoration: BoxDecoration(
@@ -100,7 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       padding: const EdgeInsets.only(left: 10, right: 10),
                       child: TextField(
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Color.fromRGBO(164, 202, 255, 1),
+                              color: const Color.fromRGBO(164, 202, 255, 1),
                             ),
                         controller: textController,
                         onSubmitted: (_) async {
@@ -113,9 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           hintStyle: Theme.of(context)
                               .textTheme
                               .bodyMedium
-                              ?.copyWith(
-                                  color: const Color.fromRGBO(135, 135, 135, 1),
-                                  fontStyle: FontStyle.italic),
+                              ?.copyWith(color: const Color.fromRGBO(135, 135, 135, 1), fontStyle: FontStyle.italic),
                         ),
                       ),
                     ),
@@ -128,8 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Card(
                 shape: RoundedRectangleBorder(
-                    side: const BorderSide(
-                        color: Color.fromRGBO(188, 140, 75, 0.25), width: 1),
+                    side: const BorderSide(color: Color.fromRGBO(188, 140, 75, 0.25), width: 1),
                     borderRadius: BorderRadius.circular(15)),
                 color: const Color.fromRGBO(99, 163, 253, 1),
                 child: InkWell(
@@ -142,9 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Text(
                         buttonText,
                         style: GoogleFonts.inter(
-                            color: const Color.fromRGBO(15, 23, 41, 1),
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16),
+                            color: const Color.fromRGBO(15, 23, 41, 1), fontWeight: FontWeight.w600, fontSize: 16),
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -162,16 +162,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 thickness: 2,
               )),
               Container(
-                  child: const Center(child: Text("OR")),
                   width: 80,
                   height: 40,
                   decoration: BoxDecoration(
                       border: Border.all(
-                          color: const Color.fromRGBO(
-                              99, 163, 253, 1), // set border color
+                          color: const Color.fromRGBO(99, 163, 253, 1), // set border color
                           width: 2.0), // set border width
-                      borderRadius:
-                          const BorderRadius.all(Radius.circular(20.0)))),
+                      borderRadius: const BorderRadius.all(Radius.circular(20.0))),
+                  child: const Center(child: Text("OR"))),
               const Expanded(
                   child: Divider(
                 color: Color.fromRGBO(99, 163, 253, 1),
@@ -208,12 +206,10 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       isLoading = false;
     });
-    if (userService.lastConnectionState != null &&
-        userService.lastConnectionState?.text != null) {
+    if (userService.lastConnectionState != null && userService.lastConnectionState?.text != null) {
       if (userService.lastConnectionState?.text == "not_connected") {
         ShowSnackBar(context, "Check your E-Mail and Verify the Pin");
-        showAlert(context, socialLoginPinVerification, "Verify Pin", "Pin", "",
-            verifySocialLoginPin);
+        showAlert(context, socialLoginPinVerification, "Verify Pin", "Pin", "", verifySocialLoginPin);
       } else if (userService.lastConnectionState?.text == "new_account") {
         ShowSnackBar(context, "Please create a new user");
         showAlertUserName(context, socialLoginNewUser, registerSocialLogin);
@@ -259,19 +255,18 @@ class _LoginScreenState extends State<LoginScreen> {
         return Dialog(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: new Row(
+            child: Row(
               mainAxisSize: MainAxisSize.min,
-              children: [
-                new CircularProgressIndicator(),
-                new Text("Loading"),
+              children: const [
+                CircularProgressIndicator(),
+                Text("Loading"),
               ],
             ),
           ),
         );
       },
     );
-    var successful =
-        await userService.firebaseRegister(socialLoginNewUser.text, true);
+    var successful = await userService.firebaseRegister(socialLoginNewUser.text, true);
     setState(() {
       Navigator.of(context, rootNavigator: true).pop();
       isLoading = false;
@@ -295,7 +290,7 @@ class _LoginScreenState extends State<LoginScreen> {
           body: Stack(
         children: [
           LoginAndRegisterBackground(
-            child: Container(
+            child: SizedBox(
               width: size.width > 500 ? 500 : size.width,
               child: SingleChildScrollView(
                 child: Column(
@@ -306,10 +301,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       margin: const EdgeInsets.only(left: 55),
                       child: Text(
                         "Login",
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleLarge
-                            ?.copyWith(fontWeight: FontWeight.w600),
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
                       ),
                     ),
                     SizedBox(height: size.height * 0.02),
@@ -329,25 +321,16 @@ class _LoginScreenState extends State<LoginScreen> {
                     SizedBox(height: size.height * 0.05),
                     createAppleLogin(),
                     SizedBox(height: Platform.isIOS ? 10 : 0),
-                    signInButton(
-                        image: "apple.png",
-                        socialLogin: SocialLogin.Apple,
-                        text: "Apple"),
+                    signInButton(image: "apple.png", socialLogin: SocialLogin.Apple, text: "Apple"),
 
                     const SizedBox(
                       height: 10,
                     ),
-                    signInButton(
-                        image: "google.png",
-                        socialLogin: SocialLogin.Google,
-                        text: "Google"),
+                    signInButton(image: "google.png", socialLogin: SocialLogin.Google, text: "Google"),
                     const SizedBox(
                       height: 10,
                     ),
-                    signInButton(
-                        image: "facebook.png",
-                        socialLogin: SocialLogin.Facebook,
-                        text: "Facebook"),
+                    signInButton(image: "facebook.png", socialLogin: SocialLogin.Facebook, text: "Facebook"),
                   ],
                 ),
               ),
@@ -386,10 +369,7 @@ class _LoginScreenState extends State<LoginScreen> {
         : const SizedBox();
   }
 
-  signInButton(
-      {required String image,
-      required String text,
-      required SocialLogin socialLogin}) {
+  signInButton({required String image, required String text, required SocialLogin socialLogin}) {
     return RawMaterialButton(
         onPressed: () async {
           await socialButtonPressed(socialLogin);
@@ -400,8 +380,7 @@ class _LoginScreenState extends State<LoginScreen> {
             borderRadius: BorderRadius.circular(15),
             color: const Color.fromRGBO(29, 40, 58, 0.97),
             border: Border.all(
-                color: const Color.fromRGBO(
-                    188, 140, 75, 0.25), // set border color
+                color: const Color.fromRGBO(188, 140, 75, 0.25), // set border color
                 width: 1.0), //
           ),
           height: 40,
@@ -416,9 +395,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 Text(
                   "Sign in with $text",
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: const Color.fromRGBO(99, 163, 253, 1),
-                      fontWeight: FontWeight.w600),
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(color: const Color.fromRGBO(99, 163, 253, 1), fontWeight: FontWeight.w600),
                 ),
               ],
             ),
@@ -443,9 +423,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Container(
                   width: 300,
                   height: 260,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: const Color.fromRGBO(48, 73, 123, 1)),
+                  decoration:
+                      BoxDecoration(borderRadius: BorderRadius.circular(20), color: const Color.fromRGBO(48, 73, 123, 1)),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -455,10 +434,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Center(
                             child: Text(
                           "Confirm PIN",
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleLarge
-                              ?.copyWith(fontWeight: FontWeight.w700),
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
                         )),
                       ),
                       const SizedBox(
@@ -473,10 +449,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           TextSpan(
                             text: email,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(fontWeight: FontWeight.w600),
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
                           ),
                           TextSpan(
                             text:
@@ -492,8 +465,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 22),
                         alignment: Alignment.center,
                         child: Card(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                             child: Container(
                               height: 40,
                               decoration: BoxDecoration(
@@ -505,20 +477,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                     color: Color.fromRGBO(188, 140, 75, 1),
                                     spreadRadius: 0,
                                     blurRadius: 0,
-                                    offset: Offset(
-                                        0, 1), // changes position of shadow
+                                    offset: Offset(0, 1), // changes position of shadow
                                   ),
                                 ],
                               ),
                               child: Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 10, right: 10),
+                                padding: const EdgeInsets.only(left: 10, right: 10),
                                 child: TextField(
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium
-                                      ?.copyWith(
-                                        color: Color.fromRGBO(164, 202, 255, 1),
+                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                        color: const Color.fromRGBO(164, 202, 255, 1),
                                       ),
                                   controller: pinController,
                                   onSubmitted: (_) async {
@@ -528,13 +495,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                     border: InputBorder.none,
                                     alignLabelWithHint: true,
                                     hintText: "PIN...",
-                                    hintStyle: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium
-                                        ?.copyWith(
-                                            color: const Color.fromRGBO(
-                                                135, 135, 135, 1),
-                                            fontStyle: FontStyle.italic),
+                                    hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                        color: const Color.fromRGBO(135, 135, 135, 1), fontStyle: FontStyle.italic),
                                   ),
                                 ),
                               ),
@@ -545,92 +507,71 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       SizedBox(
                           width: MediaQuery.of(context).size.width,
-                          child: Container(
-                            child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  RawMaterialButton(
-                                    onPressed: () async {
-                                      Navigator.of(context).pop();
-                                      await sendLogin(context);
-                                    },
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        boxShadow: [
-                                          const BoxShadow(
-                                            color: Colors.black45,
-                                            spreadRadius: 1,
-                                            blurRadius: 5,
-                                            offset: Offset(0, 2),
-                                          ),
-                                        ],
-                                        borderRadius: BorderRadius.circular(15),
-                                        color: const Color.fromRGBO(
-                                            99, 163, 253, 1),
-                                        border: Border.all(
-                                            color: const Color.fromRGBO(
-                                                188, 140, 75, 0.25),
-                                            width: 1.0), //
-                                      ),
-                                      height: 40,
-                                      width: 150,
-                                      child: Center(
-                                        child: Text(
-                                          "Confirm",
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .labelLarge
-                                              ?.copyWith(
-                                                  color: const Color.fromRGBO(
-                                                      15, 23, 41, 1),
-                                                  fontWeight: FontWeight.w600),
-                                        ),
-                                      ),
+                          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                            RawMaterialButton(
+                              onPressed: () async {
+                                await sendLogin(context);
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: Colors.black45,
+                                      spreadRadius: 1,
+                                      blurRadius: 5,
+                                      offset: Offset(0, 2),
                                     ),
+                                  ],
+                                  borderRadius: BorderRadius.circular(15),
+                                  color: const Color.fromRGBO(99, 163, 253, 1),
+                                  border: Border.all(color: const Color.fromRGBO(188, 140, 75, 0.25), width: 1.0), //
+                                ),
+                                height: 40,
+                                width: 150,
+                                child: Center(
+                                  child: Text(
+                                    "Confirm",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .labelLarge
+                                        ?.copyWith(color: const Color.fromRGBO(15, 23, 41, 1), fontWeight: FontWeight.w600),
                                   ),
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  RawMaterialButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        boxShadow: [
-                                          const BoxShadow(
-                                            color: Colors.black45,
-                                            spreadRadius: 1,
-                                            blurRadius: 5,
-                                            offset: Offset(0, 2),
-                                          ),
-                                        ],
-                                        borderRadius: BorderRadius.circular(15),
-                                        color:
-                                            const Color.fromRGBO(154, 0, 0, 1),
-                                        border: Border.all(
-                                            color: const Color.fromRGBO(
-                                                188, 140, 75, 0.25),
-                                            width: 1.0), //
-                                      ),
-                                      height: 40,
-                                      width: 80,
-                                      child: Center(
-                                        child: Text(
-                                          "Cancel",
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .labelLarge
-                                              ?.copyWith(
-                                                  color: const Color.fromRGBO(
-                                                      164, 202, 255, 1),
-                                                  fontWeight: FontWeight.w600),
-                                        ),
-                                      ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            RawMaterialButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: Colors.black45,
+                                      spreadRadius: 1,
+                                      blurRadius: 5,
+                                      offset: Offset(0, 2),
                                     ),
-                                  )
-                                ]),
-                          ))
+                                  ],
+                                  borderRadius: BorderRadius.circular(15),
+                                  color: const Color.fromRGBO(154, 0, 0, 1),
+                                  border: Border.all(color: const Color.fromRGBO(188, 140, 75, 0.25), width: 1.0), //
+                                ),
+                                height: 40,
+                                width: 80,
+                                child: Center(
+                                  child: Text(
+                                    "Cancel",
+                                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                                        color: const Color.fromRGBO(164, 202, 255, 1), fontWeight: FontWeight.w600),
+                                  ),
+                                ),
+                              ),
+                            )
+                          ]))
                     ],
                   ),
                 ),
