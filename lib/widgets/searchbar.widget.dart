@@ -1,17 +1,28 @@
 import 'package:flutter/material.dart';
 
 class SearchBar extends StatefulWidget {
-  const SearchBar({this.placeholder, this.onChanged, this.shadowColor, Key? key}) : super(key: key);
+  const SearchBar({this.placeholder, this.onChanged, this.onSubmitted, this.shadowColor, this.initialSearch, Key? key})
+      : super(key: key);
 
   final String? placeholder;
   final void Function(String text)? onChanged;
+  final void Function(String text)? onSubmitted;
   final Color? shadowColor;
+  final String? initialSearch;
 
   @override
   State<SearchBar> createState() => _SearchBarState();
 }
 
 class _SearchBarState extends State<SearchBar> {
+  final TextEditingController _editingController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _editingController.text = widget.initialSearch ?? "";
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -27,16 +38,18 @@ class _SearchBarState extends State<SearchBar> {
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Center(
               child: TextField(
+                controller: _editingController,
                 onChanged: ((text) {
                   if (widget.onChanged != null) {
                     widget.onChanged!(text);
                   }
                 }),
                 onSubmitted: ((text) {
-                  print("submitted");
                   if (widget.onChanged != null) {
-                    print("call");
                     widget.onChanged!(text);
+                  }
+                  if (widget.onSubmitted != null) {
+                    widget.onSubmitted!(text);
                   }
                 }),
                 decoration: InputDecoration(

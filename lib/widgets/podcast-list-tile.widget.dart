@@ -141,7 +141,6 @@ class _PodcastListTileWidgetState extends State<PodcastListTileWidget> {
                 width: 40,
                 child: PopupMenuButton(
                     itemBuilder: (BuildContext context) {
-                      print(widget.podcast.toJson());
                       return popupMenu(context, widget.podcast);
                     },
                     onSelected: (value) async {

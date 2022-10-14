@@ -64,7 +64,6 @@ class Podcast extends SearchResult {
       this.lastUpdate});
 
   Podcast.fromJson(Map<String, dynamic> json) {
-    print(json);
     if (json['podcastId'] != null) {
       podcastId = json['podcastId'];
       id = json['podcastId'];

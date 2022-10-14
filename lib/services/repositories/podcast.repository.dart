@@ -66,13 +66,9 @@ class PodcastRepository {
 
   static Future<List<Podcast>> getNewcomersByGenre(int amount, int genre) async {
     try {
-      print("getNewcomersByGenre");
-      print('$API/search/random/$amount/$genre');
       // TODO: use correct endpoint for newcomers when it is implemented in the backend
       var response = await dio.get<String>('$API/search/random/$amount/$genre');
-      print(response.data!);
       var list = List<Podcast>.from(json.decode(response.data!).map((data) => Podcast.fromJson(data)));
-      print(list);
       return list;
     } catch (ex) {
       print(ex);
@@ -97,6 +93,7 @@ class PodcastRepository {
         body["genre"] = genre.toString();
       }
       print(body);
+      print('$API/search');
       var response = await dio.post<String>('$API/search', data: body);
       print(response.data);
       var list = List<Podcast>.from(json.decode(response.data!).map((data) => Podcast.fromJson(data)));

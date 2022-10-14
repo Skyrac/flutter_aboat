@@ -1,6 +1,7 @@
 import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/models/podcasts/podcast-genre.model.dart';
 import 'package:Talkaboat/models/podcasts/podcast.model.dart';
+import 'package:Talkaboat/screens/search.screen.dart';
 import 'package:Talkaboat/services/audio/podcast.service.dart';
 import 'package:Talkaboat/services/repositories/podcast.repository.dart';
 import 'package:Talkaboat/widgets/podcast-favorites.widget.dart';
@@ -8,6 +9,7 @@ import 'package:Talkaboat/widgets/podcast-list.widget.dart';
 import 'package:Talkaboat/widgets/searchbar.widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 
 class CategoryScreen extends StatefulWidget {
   const CategoryScreen(this.category, {Key? key}) : super(key: key);
@@ -19,12 +21,10 @@ class CategoryScreen extends StatefulWidget {
 }
 
 class _CategoryScreenState extends State<CategoryScreen> {
-  String search = "";
   final podcastService = getIt<PodcastService>();
 
   @override
   Widget build(BuildContext context) {
-    print("build");
     return SafeArea(
       child: Container(
         decoration: const BoxDecoration(color: Color.fromRGBO(15, 23, 41, 1.0)),
@@ -65,11 +65,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                 PodcastRepository.getRandomPodcast(10)
               ]),
               builder: ((context, snapshot) {
-                print(snapshot.connectionState);
                 if (snapshot.connectionState == ConnectionState.done) {
-                  print("done");
-                  print(snapshot.hasData);
-                  print(snapshot.data);
                   if (snapshot.hasError) {
                     return Center(
                       child: Text(
@@ -98,57 +94,93 @@ class _CategoryScreenState extends State<CategoryScreen> {
       children: [
         SearchBar(
           placeholder: "Search in ${widget.category.name}",
-          onChanged: (text) {
-            setState(() {
-              search = text.toLowerCase();
-            });
+          onSubmitted: (text) {
+            Navigator.push(
+              context,
+              PageTransition(
+                alignment: Alignment.bottomCenter,
+                curve: Curves.bounceOut,
+                type: PageTransitionType.fade,
+                duration: const Duration(milliseconds: 300),
+                reverseDuration: const Duration(milliseconds: 200),
+                child: SearchScreen(
+                  onlyGenre: widget.category.genreId,
+                  initialValue: text,
+                  appBar: AppBar(
+                    backgroundColor: const Color.fromRGBO(29, 40, 58, 1),
+                    title: Row(children: [
+                      Text(widget.category.name),
+                      Container(
+                        padding: const EdgeInsets.only(left: 5),
+                        height: 25,
+                        child: CachedNetworkImage(
+                            imageUrl: widget.category.imageUrl == null || widget.category.imageUrl!.isEmpty
+                                ? 'https://picsum.photos/200'
+                                : widget.category.imageUrl!,
+                            placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
+                            errorWidget: (context, url, error) => const Icon(Icons.error),
+                            fit: BoxFit.cover),
+                      )
+                    ]),
+                  ),
+                ),
+              ),
+            );
           },
         ),
-        Padding(
-            padding: const EdgeInsets.all(10),
-            child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              Text("Newcomers", style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(
-                width: 10,
-              ),
-              const Image(
-                image: AssetImage("assets/icons/icon_fire.png"),
-              ),
-              const SizedBox(
-                width: 10,
-              ),
-              // TODO: bottom align this text
-              Text("Reward x1.5", style: Theme.of(context).textTheme.titleMedium),
-              const Spacer(),
-              ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: InkWell(
+        newcomers.isNotEmpty
+            ? Padding(
+                padding: const EdgeInsets.all(10),
+                child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                  Text("Newcomers", style: Theme.of(context).textTheme.titleLarge),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  const Image(
+                    image: AssetImage("assets/icons/icon_fire.png"),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  // TODO: bottom align this text
+                  Text("Reward x1.5", style: Theme.of(context).textTheme.titleMedium),
+                  const Spacer(),
+                  ClipRRect(
                       borderRadius: BorderRadius.circular(10),
-                      onTap: (() {
-                        // TODO: navigate to full list
-                        print("blab");
-                      }),
-                      child: Row(children: [
-                        Text(
-                          "See All",
-                          style: Theme.of(context).textTheme.titleSmall,
-                        ),
-                        const Icon(Icons.arrow_right_alt)
-                      ])))
-            ])),
-        SizedBox(
-          height: 150,
-          child: PodcastListWidget(searchResults: newcomers, direction: Axis.horizontal),
-        ),
+                      child: InkWell(
+                          borderRadius: BorderRadius.circular(10),
+                          onTap: (() {
+                            // TODO: navigate to full list
+                            print("blab");
+                          }),
+                          child: Row(children: [
+                            Text(
+                              "See All",
+                              style: Theme.of(context).textTheme.titleSmall,
+                            ),
+                            const Icon(Icons.arrow_right_alt)
+                          ])))
+                ]))
+            : Container(),
+        newcomers.isNotEmpty
+            ? SizedBox(
+                height: 150,
+                child: PodcastListWidget(searchResults: newcomers, direction: Axis.horizontal),
+              )
+            : Container(),
         const SizedBox(
           height: 10,
         ),
-        Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Row(children: [Text("Top 10", style: Theme.of(context).textTheme.titleLarge)])),
-        PodcastListFavoritesWidget(
-          searchResults: top10,
-        )
+        top10.isNotEmpty
+            ? Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Row(children: [Text("Top 10", style: Theme.of(context).textTheme.titleLarge)]))
+            : Container(),
+        top10.isNotEmpty
+            ? PodcastListFavoritesWidget(
+                searchResults: top10,
+              )
+            : Container()
       ],
     );
   }

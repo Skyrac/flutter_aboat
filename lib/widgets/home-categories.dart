@@ -105,7 +105,6 @@ class _HomeScreenCategoriesTabState extends State<HomeScreenCategoriesTab> {
                 child: InkWell(
                     borderRadius: BorderRadius.circular(10),
                     onTap: () async {
-                      print("push");
                       await Navigator.of(context).push(PageTransition(
                           alignment: Alignment.bottomCenter,
                           curve: Curves.bounceOut,

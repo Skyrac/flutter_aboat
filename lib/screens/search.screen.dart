@@ -9,10 +9,11 @@ import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({this.appBar, this.onlyGenre, Key? key}) : super(key: key);
+  const SearchScreen({this.appBar, this.onlyGenre, this.initialValue, Key? key}) : super(key: key);
 
   final AppBar? appBar;
   final int? onlyGenre;
+  final String? initialValue;
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -32,19 +33,16 @@ class _SearchScreenState extends State<SearchScreen> {
       _fetchPage(pageKey);
     });
     super.initState();
-    debouncer.setValue("");
+    debouncer.setValue(widget.initialValue ?? "");
     debouncer.values.listen((val) {
-      print("refresh");
       _pagingController.refresh();
     });
   }
 
   Future<void> _fetchPage(int pageKey) async {
     try {
-      print("fetch");
-      print("pageKey ${pageKey}");
-      final newItems = await podcastService.search(debouncer.value, amount: _pageSize, offset: pageKey);
-      print('newItems: ${newItems}');
+      final newItems =
+          await podcastService.search(debouncer.value, amount: _pageSize, offset: pageKey, genre: widget.onlyGenre);
       final isLastPage = newItems.length < _pageSize;
       if (isLastPage) {
         _pagingController.appendLastPage(newItems);
@@ -66,9 +64,9 @@ class _SearchScreenState extends State<SearchScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           SearchBar(
+            initialSearch: widget.initialValue,
             placeholder: "",
             onChanged: (text) {
-              print(text);
               debouncer.setValue(text);
             },
             shadowColor: const Color.fromRGBO(99, 163, 253, 1.0),

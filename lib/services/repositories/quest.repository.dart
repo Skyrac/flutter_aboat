@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:Talkaboat/configuration/dio.config.dart';
 import 'package:Talkaboat/models/quests/quest.model.dart';
 import 'package:Talkaboat/models/rewards/reward.model.dart';
-import 'package:dio/dio.dart';
 
 import '../../models/quests/quest-response.model.dart';
 
@@ -12,7 +11,6 @@ class QuestRepository {
   static const API = "/v1/quest";
   static Future<QuestResponse?> getOpenQuests() async {
     try {
-      print("Send Open Quest Request");
       var response = await dio.get<String>(API);
       return QuestResponse.fromJson(jsonDecode(response.data!));
     } catch (e) {
