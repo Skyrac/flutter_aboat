@@ -72,9 +72,7 @@ class _PodcastListFavoritesWidgetState extends State<PodcastListFavoritesWidget>
       }));
 
   Widget makeCard(context, Podcast entry) => Stack(children: [
-        Container(
-          child: makeVerticalListTile(context, entry),
-        ),
+        makeVerticalListTile(context, entry),
         widget.checkUpdate != null && widget.checkUpdate!
             ? userService.unseenPodcastNotifcationUpdates(entry.id!)
                 ? const Positioned(right: 20, top: 10, child: Icon(Icons.notifications_active, size: 20, color: Colors.red))
@@ -86,7 +84,9 @@ class _PodcastListFavoritesWidgetState extends State<PodcastListFavoritesWidget>
       width: 175,
       height: 65,
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(vertical: 10.0),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
         leading: SizedBox(
           width: 60,
           height: 60,

@@ -25,7 +25,7 @@ void main() async {
     yield LicenseEntryWithLineBreaks(['google_fonts'], license);
   });
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      systemNavigationBarColor: DefaultColors.primaryColor.shade900, // navigation bar color
+      systemNavigationBarColor: const Color.fromRGBO(29, 40, 58, 1), // navigation bar color
       statusBarColor: DefaultColors.secondaryColor.shade900 // status bar color
       ));
   ByteData data = await PlatformAssetBundle().load('assets/ca/lets-encrypt-r3.pem');
