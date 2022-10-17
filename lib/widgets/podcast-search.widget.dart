@@ -40,7 +40,7 @@ class PodcastSearch extends SearchDelegate<String?> {
 
   buildPopupMenu(BuildContext context, SearchResult entry) {
     if (!userService.isConnected) {
-      return [];
+      return <PopupMenuItem<String>>[];
     }
     return [
       PopupMenuItem<String>(

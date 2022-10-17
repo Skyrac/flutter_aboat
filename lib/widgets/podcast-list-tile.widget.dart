@@ -16,7 +16,7 @@ class _PodcastListTileWidgetState extends State<PodcastListTileWidget> {
 
   popupMenu(BuildContext context, Podcast entry) {
     if (!userService.isConnected) {
-      return [];
+      return <PopupMenuItem<String>>[];
     }
     return [
       !userService.isInFavorites(entry.id!)
