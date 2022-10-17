@@ -15,57 +15,62 @@ class PodcastListTileWidget extends StatefulWidget {
 class _PodcastListTileWidgetState extends State<PodcastListTileWidget> {
   final userService = getIt<UserService>();
 
-  popupMenu(BuildContext context, Podcast entry) => <PopupMenuEntry<String>>[
-        userService.isInFavorites(entry.id!)
-            ? PopupMenuItem<String>(
-                value: 'add_to_avorites',
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      color: const Color.fromRGBO(29, 40, 58, 0.97),
-                      border: Border.all(color: const Color.fromRGBO(188, 140, 75, 0.25)),
-                      borderRadius: BorderRadius.circular(10)),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: const [
-                      Icon(
-                        Icons.favorite,
-                        size: 20,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(left: 10),
-                        child: Text('Add to favorites'),
-                      ),
-                    ],
-                  ),
-                ),
-              )
-            : PopupMenuItem<String>(
-                value: 'remove_to_avorites',
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      color: const Color.fromRGBO(29, 40, 58, 0.97),
-                      border: Border.all(color: const Color.fromRGBO(188, 140, 75, 0.25)),
-                      borderRadius: BorderRadius.circular(10)),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: const [
-                      Icon(
-                        Icons.favorite,
-                        size: 20,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(left: 10),
-                        child: Text('Remove from favorites'),
-                      ),
-                    ],
-                  ),
+  popupMenu(BuildContext context, Podcast entry) {
+    if (!userService.isConnected) {
+      return [];
+    }
+    return [
+      userService.isInFavorites(entry.id!)
+          ? PopupMenuItem<String>(
+              value: 'add_to_avorites',
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                    color: const Color.fromRGBO(29, 40, 58, 0.97),
+                    border: Border.all(color: const Color.fromRGBO(188, 140, 75, 0.25)),
+                    borderRadius: BorderRadius.circular(10)),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: const [
+                    Icon(
+                      Icons.favorite,
+                      size: 20,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: 10),
+                      child: Text('Add to favorites'),
+                    ),
+                  ],
                 ),
               ),
-      ];
+            )
+          : PopupMenuItem<String>(
+              value: 'remove_to_avorites',
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                    color: const Color.fromRGBO(29, 40, 58, 0.97),
+                    border: Border.all(color: const Color.fromRGBO(188, 140, 75, 0.25)),
+                    borderRadius: BorderRadius.circular(10)),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: const [
+                    Icon(
+                      Icons.favorite,
+                      size: 20,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: 10),
+                      child: Text('Remove from favorites'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
