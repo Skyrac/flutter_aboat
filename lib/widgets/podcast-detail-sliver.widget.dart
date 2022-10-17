@@ -82,14 +82,14 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
   double disappear(double shrinkOffset) => 1 - shrinkOffset / expandedHeight;
 
   Widget buildAppBar(double shrinkOffset) => PreferredSize(
-        preferredSize: Size.fromHeight(350.0),
+        preferredSize: Size.fromHeight(expandedHeight),
         child: AppBar(
             leading: SizedBox(),
             // backgroundColor:
             //     DefaultColors.secondaryColorAlphaBlendStrong.shade900,
             centerTitle: true,
             bottom: PreferredSize(
-              preferredSize: Size.fromHeight(350),
+              preferredSize: Size.fromHeight(expandedHeight),
               child: Container(
                 padding: EdgeInsets.fromLTRB(18, 5, 18, 10),
                 child: Material(
@@ -127,7 +127,7 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
         children: <Widget>[
           Container(
               padding: const EdgeInsets.only(left: 10.0),
-              height: expandedHeight,
+              height: expandedHeight - 25,
               decoration: BoxDecoration(
                 image: DecorationImage(
                   image: NetworkImage(podcast.image!),

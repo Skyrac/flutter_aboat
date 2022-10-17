@@ -31,18 +31,84 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
   final userService = getIt<UserService>();
   popupMenu(BuildContext context, Episode entry) => <PopupMenuEntry<String>>[
         PopupMenuItem<String>(
-            value: 'add', child: Card(child: Text('Add to playlist'))),
-    PopupMenuItem<String>(
-        value: 'download', child: Card(child: Text(FileDownloadService.containsFile(entry.audio!) ? 'Delete' : 'Download'))),
+            value: 'add',
+            child: Container(
+                width: 176,
+                height: 30,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    color: const Color.fromRGBO(29, 40, 58, 0.97),
+                    border: Border.all(
+                        color: const Color.fromRGBO(188, 140, 75, 0.25))),
+                child: Row(
+                  children: [
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Image.asset(
+                      "assets/images/list _add.png",
+                      width: 22,
+                      fit: BoxFit.cover,
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Text('Add to playlist',
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(color: Color.fromRGBO(99, 163, 253, 1))),
+                  ],
+                ))),
+        PopupMenuItem<String>(
+            value: 'download',
+            child: Container(
+                width: 176,
+                height: 30,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    color: const Color.fromRGBO(29, 40, 58, 0.97),
+                    border: Border.all(
+                        color: const Color.fromRGBO(188, 140, 75, 0.25))),
+                child: Row(
+                  children: [
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Image.asset(
+                      "assets/images/cloud.png",
+                      width: 22,
+                      fit: BoxFit.cover,
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Text(
+                        FileDownloadService.containsFile(entry.audio!)
+                            ? 'Delete'
+                            : 'Download',
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(color: Color.fromRGBO(99, 163, 253, 1))),
+                  ],
+                ))),
       ];
 
   buildPopupButton(context, Episode entry) => PopupMenuButton(
+        padding: const EdgeInsets.symmetric(vertical: 15),
+        shape: const RoundedRectangleBorder(
+          side: BorderSide(color: Color.fromRGBO(188, 140, 75, 1)),
+          borderRadius: BorderRadius.all(Radius.circular(10.0)),
+        ),
+        constraints: const BoxConstraints.expand(width: 196, height: 110),
+        color: const Color.fromRGBO(15, 23, 41, 1),
         child: Icon(Icons.more_vert, color: Theme.of(context).iconTheme.color),
         onSelected: (value) async {
           switch (value) {
             case 'download':
               await FileDownloadService.cacheOrDelete(entry.audio!);
-              setState(() { });
+              setState(() {});
               break;
             case "add":
               if (!userService.isConnected) {
@@ -123,11 +189,13 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                                           MainAxisAlignment.center,
                                       children: [
                                         CachedNetworkImage(
-                                          imageUrl:  entry.image ?? 'https://picsum.photos/200',
-                                          cacheManager: CacheManager(
-                                            Config(
-                                              entry.image ?? 'https://picsum.photos/200',
-                                              stalePeriod: const Duration(days: 2))),
+                                          imageUrl: entry.image ??
+                                              'https://picsum.photos/200',
+                                          cacheManager: CacheManager(Config(
+                                              entry.image ??
+                                                  'https://picsum.photos/200',
+                                              stalePeriod:
+                                                  const Duration(days: 2))),
                                           fit: BoxFit.fill,
                                           placeholder: (_, __) => const Center(
                                               child:
@@ -168,10 +236,9 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                 child: SizedBox(
                     child: CachedNetworkImage(
                   imageUrl: entry.image ?? 'https://picsum.photos/200',
-                      cacheManager: CacheManager(
-                          Config(
-                              entry.image ?? 'https://picsum.photos/200',
-                              stalePeriod: const Duration(days: 2))),
+                  cacheManager: CacheManager(Config(
+                      entry.image ?? 'https://picsum.photos/200',
+                      stalePeriod: const Duration(days: 2))),
                   fit: BoxFit.fill,
                   placeholder: (_, __) =>
                       const Center(child: CircularProgressIndicator()),
@@ -212,11 +279,20 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
           ),
           Row(
             children: [
-              IconButton(onPressed: (() async {
-                await FileDownloadService.cacheOrDelete(entry.audio!);
-                setState(() { });
-              }), icon: Icon(FileDownloadService.containsFile(entry.audio!) ? Icons.cloud_done : Icons.cloud_download_outlined), color: FileDownloadService.containsFile(entry.audio!) ? Colors.green : Colors.white),
-              SizedBox(width: 10,),
+              IconButton(
+                  onPressed: (() async {
+                    await FileDownloadService.cacheOrDelete(entry.audio!);
+                    setState(() {});
+                  }),
+                  icon: Icon(FileDownloadService.containsFile(entry.audio!)
+                      ? Icons.cloud_done
+                      : Icons.cloud_download_outlined),
+                  color: FileDownloadService.containsFile(entry.audio!)
+                      ? Colors.green
+                      : Colors.white),
+              const SizedBox(
+                width: 10,
+              ),
               SizedBox(
                 width: 55,
                 child: Text(
@@ -263,26 +339,25 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
   @override
   Widget build(BuildContext context) {
     return widget.episode == null
-        ? SizedBox() :
-    FutureBuilder(
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                '${snapshot.error} occurred',
-                style: const TextStyle(fontSize: 18),
-              ),
-            );
-          } else {
-              return makeCard(context, widget.episode);
-          }
-        } else {
-          return const Center(
-              child: CircularProgressIndicator());
-        }
-      },
-      future: FileDownloadService.getFile(widget.episode.audio!),
-    );
+        ? const SizedBox()
+        : FutureBuilder(
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text(
+                      '${snapshot.error} occurred',
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                  );
+                } else {
+                  return makeCard(context, widget.episode);
+                }
+              } else {
+                return const Center(child: CircularProgressIndicator());
+              }
+            },
+            future: FileDownloadService.getFile(widget.episode.audio!),
+          );
   }
 }

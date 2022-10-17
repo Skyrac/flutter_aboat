@@ -135,6 +135,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
     return DefaultTabController(
       length: 3,
       child: ScaffoldWave(
+        height: 33,
         appBar: AppBar(
           centerTitle: false,
           leading: Padding(
@@ -195,56 +196,56 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
             slivers: [
               SliverPersistentHeader(
                 delegate: PodcastDetailSliver(
-                    expandedHeight: size.height * 0.5,
+                    expandedHeight: size.height * 0.4,
                     podcast: podcastSearchResult),
                 pinned: true,
               ),
-              SliverToBoxAdapter(
-                child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-                    child: Column(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: Card(
-                              child: InkWell(
-                            onTap: (() {
-                              setState(() {
-                                isDescOpen = !isDescOpen;
-                              });
-                            }),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                podcastSearchResult.description ?? '',
-                                maxLines: isDescOpen ? 9999 : 3,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          )),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 15, bottom: 5),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              InkWell(
-                                onTap: (() {
-                                  setState(() {
-                                    sort = sort == "asc" ? "desc" : "asc";
-                                  });
-                                }),
-                                child: RotatedBox(
-                                  quarterTurns: sort == "asc" ? 0 : 2,
-                                  child: Icon(Icons.sort),
-                                ),
-                              )
-                            ],
-                          ),
-                        )
-                      ],
-                    )),
-              ),
+              // SliverToBoxAdapter(
+              //   child: Padding(
+              //       padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+              //       child: Column(
+              //         children: [
+              //           ClipRRect(
+              //             borderRadius: BorderRadius.circular(20),
+              //             child: Card(
+              //                 child: InkWell(
+              //               onTap: (() {
+              //                 setState(() {
+              //                   isDescOpen = !isDescOpen;
+              //                 });
+              //               }),
+              //               child: Padding(
+              //                 padding: const EdgeInsets.all(8.0),
+              //                 child: Text(
+              //                   podcastSearchResult.description ?? '',
+              //                   maxLines: isDescOpen ? 9999 : 3,
+              //                   overflow: TextOverflow.ellipsis,
+              //                 ),
+              //               ),
+              //             )),
+              //           ),
+              //           Padding(
+              //             padding: EdgeInsets.only(top: 15, bottom: 5),
+              //             child: Row(
+              //               mainAxisAlignment: MainAxisAlignment.end,
+              //               children: [
+              //                 InkWell(
+              //                   onTap: (() {
+              //                     setState(() {
+              //                       sort = sort == "asc" ? "desc" : "asc";
+              //                     });
+              //                   }),
+              //                   child: RotatedBox(
+              //                     quarterTurns: sort == "asc" ? 0 : 2,
+              //                     child: Icon(Icons.sort),
+              //                   ),
+              //                 )
+              //               ],
+              //             ),
+              //           )
+              //         ],
+              //       )),
+              // ),
               FutureBuilder(
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
