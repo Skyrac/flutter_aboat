@@ -86,11 +86,14 @@ class PodcastRepository {
     }
   }
 
-  static Future<List<Podcast>> search(String search, int amount, int offset, {int? genre}) async {
+  static Future<List<Podcast>> search(String search, int amount, int offset, {int? genre, int? rank}) async {
     try {
       final body = {"amount": amount, "offset": offset, "queue": search};
       if (genre != null) {
         body["genre"] = genre.toString();
+      }
+      if (rank != null) {
+        body["rank"] = rank.toString();
       }
       print(body);
       print('$API/search');
