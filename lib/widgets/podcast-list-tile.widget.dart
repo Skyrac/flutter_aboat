@@ -4,7 +4,6 @@ import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-// TODO: should be possible as stateless?
 class PodcastListTileWidget extends StatefulWidget {
   const PodcastListTileWidget(this.podcast, {Key? key}) : super(key: key);
   final Podcast podcast;
@@ -20,7 +19,7 @@ class _PodcastListTileWidgetState extends State<PodcastListTileWidget> {
       return [];
     }
     return [
-      userService.isInFavorites(entry.id!)
+      !userService.isInFavorites(entry.id!)
           ? PopupMenuItem<String>(
               value: 'add_to_avorites',
               child: Container(
