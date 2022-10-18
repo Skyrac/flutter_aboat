@@ -55,19 +55,14 @@ class PodcastService {
 
   Future<List<PodcastGenre>> getGenres({bool forceRefresh = false}) async {
     if (genres != null && !forceRefresh) {
-      print(genres);
       return genres!;
     } else {
-      print("no genres");
       genres = await PodcastRepository.getGenres();
-      print(genres);
       return genres!;
     }
   }
 
   Future<List<Podcast>> search(String search, {int? genre, int amount = 10, int offset = 0}) {
-    print('amount: ${amount}');
-    print('offset: ${offset}');
     return PodcastRepository.search(search, amount, offset, genre: genre);
   }
 }

@@ -38,14 +38,19 @@ class PodcastSearch extends SearchDelegate<String?> {
         primaryTextTheme: theme.primaryTextTheme);
   }
 
-  buildPopupMenu(BuildContext context, SearchResult entry) => <PopupMenuEntry<String>>[
-        PopupMenuItem<String>(
-          value: 'toggleLibrary',
-          child: userService.isInFavorites(entry.id!)
-              ? const Card(child: Text('Remove from Library'))
-              : const Card(child: Text('Add to Library')),
-        ),
-      ];
+  buildPopupMenu(BuildContext context, SearchResult entry) {
+    if (!userService.isConnected) {
+      return <PopupMenuItem<String>>[];
+    }
+    return [
+      PopupMenuItem<String>(
+        value: 'toggleLibrary',
+        child: userService.isInFavorites(entry.id!)
+            ? const Card(child: Text('Remove from Library'))
+            : const Card(child: Text('Add to Library')),
+      ),
+    ];
+  }
 
   buildPopupButton(context, entry) => PopupMenuButton(
         child: Icon(Icons.more_vert, color: Theme.of(context).iconTheme.color),
