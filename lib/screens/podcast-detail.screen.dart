@@ -177,18 +177,41 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                                 "Check this out! A Podcast on Talkaboat.online.")
                       }),
             ),
-            Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: IconButton(
-                icon: Image.asset(
-                  "assets/images/heart.png",
-                  width: 30,
-                  fit: BoxFit.cover,
-                ),
-                tooltip: '',
-                onPressed: () {},
-              ),
-            ),
+            !userService.isConnected
+                ? SizedBox()
+                : userService.isInFavorites(podcastSearchResult.id!)
+                    ? Padding(
+                        padding: const EdgeInsets.only(right: 10),
+                        child: IconButton(
+                          icon: Image.asset(
+                            "assets/images/heart2.png",
+                            width: 30,
+                            fit: BoxFit.cover,
+                          ),
+                          tooltip: '',
+                          onPressed: () async {
+                            await userService
+                                .removeFromFavorites(podcastSearchResult.id!);
+                            setState(() {});
+                          },
+                        ),
+                      )
+                    : Padding(
+                        padding: const EdgeInsets.only(right: 10),
+                        child: IconButton(
+                          icon: Image.asset(
+                            "assets/images/heart.png",
+                            width: 30,
+                            fit: BoxFit.cover,
+                          ),
+                          tooltip: '',
+                          onPressed: () async {
+                            await userService
+                                .addToFavorites(podcastSearchResult.id!);
+                            setState(() {});
+                          },
+                        ),
+                      ),
           ],
         ),
         body: TabBarView(children: [

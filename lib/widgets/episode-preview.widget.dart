@@ -255,9 +255,11 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                 : Colors.transparent,
           ),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
+                padding: EdgeInsets.only(right: 5),
                 width: 100,
                 height: 100,
                 child: Center(
@@ -300,7 +302,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
               ),
               Container(
                 height: 105,
-                width: 220,
+                width: 218,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
