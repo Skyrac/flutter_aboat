@@ -3,6 +3,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:intl/intl.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../injection/injector.dart';
@@ -57,7 +58,8 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                         style: Theme.of(context)
                             .textTheme
                             .titleMedium
-                            ?.copyWith(color: Color.fromRGBO(99, 163, 253, 1))),
+                            ?.copyWith(
+                                color: const Color.fromRGBO(99, 163, 253, 1))),
                   ],
                 ))),
         PopupMenuItem<String>(
@@ -90,7 +92,8 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                         style: Theme.of(context)
                             .textTheme
                             .titleMedium
-                            ?.copyWith(color: Color.fromRGBO(99, 163, 253, 1))),
+                            ?.copyWith(
+                                color: const Color.fromRGBO(99, 163, 253, 1))),
                   ],
                 ))),
       ];
@@ -103,7 +106,10 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
         ),
         constraints: const BoxConstraints.expand(width: 196, height: 110),
         color: const Color.fromRGBO(15, 23, 41, 1),
-        child: Icon(Icons.more_vert, color: Theme.of(context).iconTheme.color),
+        child: Image.asset(
+          "assets/images/options.png",
+          width: 6,
+        ),
         onSelected: (value) async {
           switch (value) {
             case 'download':
@@ -148,16 +154,22 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
         final playing = playbackState?.playing ?? false;
         return ClipRRect(
           borderRadius: BorderRadius.circular(10),
-          child: Card(
-            elevation: 8.0,
-            color: Theme.of(context).cardTheme.color,
-            margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
-            child: Container(
-              child: widget.direction == Axis.horizontal
-                  ? makeHorizontalListTile(context, entry, playing)
-                  : makeVerticalListTile(context, entry, playing),
-            ),
+          child: Container(
+            child: widget.direction == Axis.horizontal
+                ? makeHorizontalListTile(context, entry, playing)
+                : makeVerticalListTile(context, entry, playing),
           ),
+          // child: Card(
+          //   elevation: 8.0,
+          //   color: Theme.of(context).cardTheme.color,
+          //   color: Theme.of(context).cardTheme.color,
+          //   margin: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 0.0),
+          //   child: Container(
+          //     child: widget.direction == Axis.horizontal
+          //         ? makeHorizontalListTile(context, entry, playing)
+          //         : makeVerticalListTile(context, entry, playing),
+          //   ),
+          // ),
         );
       });
 
@@ -221,112 +233,185 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                   ))));
 
   Widget makeVerticalListTile(context, Episode entry, bool playing) {
+    final dt =
+        DateTime.fromMillisecondsSinceEpoch(entry.pubDateMs?.toInt() ?? 0);
+    var dateFormatted = DateFormat('dd.MM.yyyy').format(dt);
     final remaining =
         Duration(seconds: (entry.audioLengthSec! - entry.playTime!).toInt());
-    return ListTile(
-      contentPadding:
-          const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-      leading: SizedBox(
-        width: 60,
-        height: 60,
-        child: Stack(
-          children: [
-            ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: SizedBox(
-                    child: CachedNetworkImage(
-                  imageUrl: entry.image ?? 'https://picsum.photos/200',
-                  cacheManager: CacheManager(Config(
-                      entry.image ?? 'https://picsum.photos/200',
-                      stalePeriod: const Duration(days: 2))),
-                  fit: BoxFit.fill,
-                  placeholder: (_, __) =>
-                      const Center(child: CircularProgressIndicator()),
-                  // progressIndicatorBuilder: (context, url, downloadProgress) =>
-                  //     CircularProgressIndicator(value: downloadProgress.progress),
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
-                ))),
-            Positioned.fill(
-                child: Center(
-                    child: Card(
-                        color: Theme.of(context).dialogTheme.backgroundColor,
-                        child: Icon(
-                            audioHandler.isListeningEpisode(
-                                        widget.episode.id) &&
-                                    playing
-                                ? Icons.pause
-                                : Icons.play_arrow,
-                            size: 30)))),
-          ],
-        ),
-      ),
-      title: Text(
-        entry.title!,
-        overflow: TextOverflow.ellipsis,
-        maxLines: 2,
-        style:
-            const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-      ),
-      subtitle: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            removeAllHtmlTags(entry.description!),
-            overflow: TextOverflow.ellipsis,
-            maxLines: 2,
-            style: const TextStyle(color: Colors.white),
+    return Container(
+      padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+      height: 105,
+      width: MediaQuery.of(context).size.width,
+      child: RawMaterialButton(
+        onPressed: () async {
+          widget.onPlayEpisode();
+        },
+        child: Container(
+          // height: 105,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: audioHandler.isListeningEpisode(widget.episode.id) && playing
+                ? const Color.fromRGBO(188, 140, 75, 0.2)
+                : Colors.transparent,
           ),
-          Row(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              IconButton(
-                  onPressed: (() async {
-                    await FileDownloadService.cacheOrDelete(entry.audio!);
-                    setState(() {});
-                  }),
-                  icon: Icon(FileDownloadService.containsFile(entry.audio!)
-                      ? Icons.cloud_done
-                      : Icons.cloud_download_outlined),
-                  color: FileDownloadService.containsFile(entry.audio!)
-                      ? Colors.green
-                      : Colors.white),
+              Container(
+                width: 100,
+                height: 100,
+                child: Center(
+                  child: Stack(
+                    children: [
+                      ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: SizedBox(
+                              child: CachedNetworkImage(
+                            imageUrl:
+                                entry.image ?? 'https://picsum.photos/200',
+                            cacheManager: CacheManager(Config(
+                                entry.image ?? 'https://picsum.photos/200',
+                                stalePeriod: const Duration(days: 2))),
+                            fit: BoxFit.fill,
+                            placeholder: (_, __) => const Center(
+                                child: CircularProgressIndicator()),
+                            // progressIndicatorBuilder: (context, url, downloadProgress) =>
+                            //     CircularProgressIndicator(value: downloadProgress.progress),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error),
+                          ))),
+                      Positioned.fill(
+                          child: Center(
+                              child: audioHandler.isListeningEpisode(
+                                          widget.episode.id) &&
+                                      playing
+                                  ? Image.asset(
+                                      "assets/images/pause.png",
+                                      width: 25,
+                                    )
+                                  : Image.asset("assets/images/play.png",
+                                      width: 25))),
+                    ],
+                  ),
+                ),
+              ),
               const SizedBox(
                 width: 10,
               ),
-              SizedBox(
-                width: 55,
-                child: Text(
-                  (entry.playTime ?? 0) + 20 >= (entry.audioLengthSec ?? 0)
-                      ? "Listened"
-                      : formatTime(remaining.inSeconds),
+              Container(
+                height: 105,
+                width: 220,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Flexible(
+                      fit: FlexFit.loose,
+                      child: Text(
+                        entry.title!,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12),
+                      ),
+                    ),
+                    Flexible(
+                      fit: FlexFit.loose,
+                      child: Text(removeAllHtmlTags(entry.description!),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 12)),
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            audioHandler.isListeningEpisode(
+                                        widget.episode.id) &&
+                                    playing
+                                ? Row(
+                                    children: [
+                                      Image.asset(
+                                          "assets/images/play_small.png"),
+                                      const SizedBox(
+                                        width: 3,
+                                      ),
+                                      const Text('Playing',
+                                          style: TextStyle(fontSize: 10)),
+                                    ],
+                                  )
+                                : const SizedBox(),
+                            Container(
+                              padding: const EdgeInsets.only(top: 3),
+                              child: Text(dateFormatted.toString(),
+                                  style: const TextStyle(fontSize: 10)),
+                            ),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text.rich(TextSpan(children: [
+                              TextSpan(
+                                  text: remaining.inHours != 0
+                                      ? '${remaining.inHours % 60}st '
+                                      : "",
+                                  style: const TextStyle(fontSize: 10)),
+                              TextSpan(
+                                  text: remaining.inMinutes != 0
+                                      ? '${remaining.inMinutes % 60}min '
+                                      : "",
+                                  style: const TextStyle(fontSize: 10)),
+                              TextSpan(
+                                text: '${remaining.inSeconds % 60}sec',
+                                style: const TextStyle(fontSize: 10),
+                              ),
+                            ])),
+                          ],
+                        ),
+                        RawMaterialButton(
+                          elevation: 0.0,
+                          focusElevation: 0.0,
+                          hoverElevation: 0.0,
+                          highlightElevation: 0,
+                          visualDensity: VisualDensity.compact,
+                          constraints: const BoxConstraints(
+                              minWidth: 0.0, minHeight: 0.0),
+                          padding: const EdgeInsets.all(0),
+                          onPressed: (() async {
+                            await FileDownloadService.cacheOrDelete(
+                                entry.audio!);
+                            setState(() {});
+                          }),
+                          child: FileDownloadService.containsFile(entry.audio!)
+                              ? Image.asset(
+                                  "assets/images/cloud_complete.png",
+                                  width: 25,
+                                )
+                              : Image.asset(
+                                  "assets/images/cloud.png",
+                                  width: 25,
+                                ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
-              AbsorbPointer(
-                  child: SizedBox(
-                height: 25,
-                width: 110,
-                child: SliderTheme(
-                  data: SliderTheme.of(context).copyWith(
-                      thumbColor: Colors.transparent,
-                      thumbShape:
-                          const RoundSliderThumbShape(enabledThumbRadius: 0.0)),
-                  child: Slider(
-                      value: (entry.playTime?.toDouble() ?? 0),
-                      onChanged: (double value) {},
-                      min: 0,
-                      max: entry.audioLengthSec?.toDouble() ?? 0),
-                ),
-              )),
+              const SizedBox(
+                width: 15,
+              ),
+              buildPopupButton(context, entry),
             ],
-          )
-        ],
+          ),
+        ),
       ),
-      trailing: buildPopupButton(context, entry),
-      onTap: () async {
-        widget.onPlayEpisode();
-        // await audioHandler
-        //     .updateEpisodeQueue(List.generate(1, (index) => entry));
-      },
     );
   }
 
