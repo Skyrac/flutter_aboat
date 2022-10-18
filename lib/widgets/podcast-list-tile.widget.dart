@@ -5,8 +5,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class PodcastListTileWidget extends StatefulWidget {
-  const PodcastListTileWidget(this.podcast, {Key? key}) : super(key: key);
+  const PodcastListTileWidget(this.podcast, {this.stateChangeCb, Key? key}) : super(key: key);
   final Podcast podcast;
+  final void Function()? stateChangeCb;
   @override
   State<PodcastListTileWidget> createState() => _PodcastListTileWidgetState();
 }
@@ -151,9 +152,15 @@ class _PodcastListTileWidgetState extends State<PodcastListTileWidget> {
                       switch (value) {
                         case "add_to_avorites":
                           await userService.addToFavorites(widget.podcast.id!);
+                          if (widget.stateChangeCb != null) {
+                            widget.stateChangeCb!();
+                          }
                           break;
                         case "remove_to_avorites":
                           await userService.removeFromFavorites(widget.podcast.id!);
+                          if (widget.stateChangeCb != null) {
+                            widget.stateChangeCb!();
+                          }
                           break;
                       }
                     },

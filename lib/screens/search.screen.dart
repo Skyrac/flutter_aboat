@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/models/podcasts/podcast-rank.model.dart';
 import 'package:Talkaboat/models/podcasts/podcast.model.dart';
@@ -12,12 +14,22 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:page_transition/page_transition.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({this.appBar, this.onlyGenre, this.initialValue, this.onlyRank, Key? key}) : super(key: key);
+  const SearchScreen(
+      {this.appBar,
+      this.onlyGenre,
+      this.initialValue,
+      this.onlyRank,
+      this.refreshOnStateChange,
+      this.customSearchFunc,
+      Key? key})
+      : super(key: key);
 
   final AppBar? appBar;
   final int? onlyGenre;
   final PodcastRank? onlyRank;
   final String? initialValue;
+  final bool? refreshOnStateChange;
+  final Future<List<Podcast>> Function(String)? customSearchFunc;
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -45,8 +57,10 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Future<void> _fetchPage(int pageKey) async {
     try {
-      final newItems = await podcastService.search(debouncer.value,
-          amount: _pageSize, offset: pageKey, genre: widget.onlyGenre, rank: widget.onlyRank);
+      final newItems = await (widget.customSearchFunc != null
+          ? widget.customSearchFunc!(debouncer.value)
+          : podcastService.search(debouncer.value,
+              amount: _pageSize, offset: pageKey, genre: widget.onlyGenre, rank: widget.onlyRank));
       final isLastPage = newItems.length < _pageSize;
       if (isLastPage) {
         _pagingController.appendLastPage(newItems);
@@ -60,6 +74,8 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
+  final ScrollController _controller = ScrollController();
+
   @override
   Widget build(BuildContext context) {
     return ScaffoldWave(
@@ -67,6 +83,9 @@ class _SearchScreenState extends State<SearchScreen> {
       body: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          SizedBox(
+            height: _controller.positions.isEmpty ? 0 : min(_controller.offset, 66),
+          ),
           SearchBar(
             initialSearch: widget.initialValue,
             placeholder: "",
@@ -78,17 +97,21 @@ class _SearchScreenState extends State<SearchScreen> {
           Flexible(
             flex: 1,
             child: PagedListView<int, Podcast>(
+              scrollController: _controller,
               pagingController: _pagingController,
               builderDelegate: PagedChildBuilderDelegate<Podcast>(
                 itemBuilder: (context, item, index) => Padding(
                   padding: const EdgeInsets.only(left: 10),
-                  child: Stack(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: PodcastListTileWidget(item),
-                      ),
-                    ],
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: PodcastListTileWidget(
+                      item,
+                      stateChangeCb: widget.refreshOnStateChange != null && widget.refreshOnStateChange! == true
+                          ? () {
+                              _pagingController.refresh();
+                            }
+                          : null,
+                    ),
                   ),
                 ),
               ),
