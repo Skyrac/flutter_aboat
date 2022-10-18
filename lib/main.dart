@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:Talkaboat/screens/app.screen.dart';
+import 'package:Talkaboat/screens/login.screen.dart';
 import 'package:Talkaboat/screens/onboarding/onboarding.screen.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/themes/colors.dart';
@@ -25,11 +26,14 @@ void main() async {
     yield LicenseEntryWithLineBreaks(['google_fonts'], license);
   });
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      systemNavigationBarColor: const Color.fromRGBO(29, 40, 58, 1), // navigation bar color
+      systemNavigationBarColor:
+          const Color.fromRGBO(29, 40, 58, 1), // navigation bar color
       statusBarColor: DefaultColors.secondaryColor.shade900 // status bar color
       ));
-  ByteData data = await PlatformAssetBundle().load('assets/ca/lets-encrypt-r3.pem');
-  SecurityContext.defaultContext.setTrustedCertificatesBytes(data.buffer.asUint8List());
+  ByteData data =
+      await PlatformAssetBundle().load('assets/ca/lets-encrypt-r3.pem');
+  SecurityContext.defaultContext
+      .setTrustedCertificatesBytes(data.buffer.asUint8List());
   MobileAds.instance.initialize();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -41,9 +45,14 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -53,8 +62,13 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         home: AnimatedSplashScreen(
             duration: 2000,
-            splash: const Image(width: 250, image: AssetImage('assets/images/talkaboat.png')),
-            nextScreen: getIt<UserService>().newUser ? const OnBoardingScreen() : const AppScreen(title: 'Talkaboat'),
+            splash: const Image(
+                width: 250, image: AssetImage('assets/images/talkaboat.png')),
+            nextScreen: getIt<UserService>().newUser
+                ? const OnBoardingScreen()
+                : !getIt<UserService>().isConnected
+                    ? LoginScreen(() => setState(() {}))
+                    : const AppScreen(title: 'Talkaboat'),
             splashTransition: SplashTransition.fadeTransition,
             pageTransitionType: PageTransitionType.fade,
             backgroundColor: DefaultColors.secondaryColor.shade900));

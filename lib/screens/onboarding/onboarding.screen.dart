@@ -5,6 +5,8 @@ import 'package:Talkaboat/themes/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 
+import '../login.screen.dart';
+
 class OnBoardingScreen extends StatefulWidget {
   const OnBoardingScreen({Key? key}) : super(key: key);
 
@@ -17,7 +19,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   void _onIntroEnd(context) async {
     await getIt<UserService>().finishIntroduction();
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const AppScreen(title: 'Talkaboat')),
+      MaterialPageRoute(builder: (_) => LoginScreen(() => setState(() {}))),
     );
   }
 
@@ -61,13 +63,15 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         PageViewModel(
           title: "Daily Tasks",
           image: _buildImage('images/intro_tasks.png', 225),
-          body: "Finish your daily tasks to earn great rewards and get an insight into blockchain while helping creators",
+          body:
+              "Finish your daily tasks to earn great rewards and get an insight into blockchain while helping creators",
           decoration: pageDecoration,
         ),
         PageViewModel(
           title: "Friends",
           image: _buildImage('images/intro_social.png', 275),
-          body: "Add or invite your friends to share your latest news, achievements or your favorite podcast",
+          body:
+              "Add or invite your friends to share your latest news, achievements or your favorite podcast",
           decoration: pageDecoration,
         ),
         PageViewModel(
