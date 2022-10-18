@@ -131,12 +131,30 @@ class _HomeScreenSuggestedTabState extends State<HomeScreenSuggestedTab> {
 
   Widget createSideScrollPodcasts(BuildContext context, Future<List<Podcast>> future,
       {String? title, String? multiplier, void Function()? seeAllCb}) {
+    List<Widget> flame = multiplier != null
+        ? <Widget>[
+            const SizedBox(
+              width: 10,
+            ),
+            const Image(
+              image: AssetImage("assets/icons/icon_fire.png"),
+            ),
+            const SizedBox(
+              width: 10,
+            ),
+            // TODO: bottom align this text
+            Text("Reward $multiplier", style: Theme.of(context).textTheme.titleMedium)
+          ]
+        : [Container()];
+
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       title != null
           ? Padding(
               padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
               child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 Text(title, style: Theme.of(context).textTheme.titleLarge),
+                ...flame,
+                const Spacer(),
                 seeAllCb != null
                     ? InkWell(
                         borderRadius: BorderRadius.circular(10),
