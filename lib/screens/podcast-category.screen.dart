@@ -87,38 +87,31 @@ class _CategoryScreenState extends State<CategoryScreen> {
           onSubmitted: (text) {
             Navigator.push(
               context,
-              PageTransition(
-                alignment: Alignment.bottomCenter,
-                curve: Curves.bounceOut,
-                type: PageTransitionType.fade,
-                duration: const Duration(milliseconds: 300),
-                reverseDuration: const Duration(milliseconds: 200),
-                child: SearchScreen(
-                  onlyGenre: widget.category.genreId,
-                  initialValue: text,
-                  appBar: AppBar(
-                    backgroundColor: const Color.fromRGBO(29, 40, 58, 1),
-                    title: Row(children: [
-                      Text(widget.category.name),
-                      Container(
-                        padding: const EdgeInsets.only(left: 5),
-                        height: 25,
-                        child: CachedNetworkImage(
-                            imageUrl: widget.category.imageUrl == null || widget.category.imageUrl!.isEmpty
-                                ? 'https://picsum.photos/200'
-                                : widget.category.imageUrl!,
-                            placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
-                            errorWidget: (context, url, error) => const Icon(Icons.error),
-                            fit: BoxFit.cover),
-                      )
-                    ]),
-                  ),
-                ),
-              ),
+              buildSearchScreenTransition(
+                  genreId: widget.category.genreId,
+                  intitialValue: text,
+                  imageUrl: widget.category.imageUrl,
+                  title: widget.category.name),
             );
           },
         ),
-        newcomers.isNotEmpty ? PodcastListHorizontal(data: newcomers, title: "Newcomer", multiplier: "x1.5") : Container(),
+        newcomers.isNotEmpty
+            ? PodcastListHorizontal(
+                data: newcomers,
+                title: "Newcomer",
+                multiplier: "x1.5",
+                seeAllCb: (() {
+                  Navigator.push(
+                    context,
+                    buildSearchScreenTransition(
+                        genreId: widget.category.genreId,
+                        rank: PodcastRank.NewComer,
+                        imageUrl: widget.category.imageUrl,
+                        title: "Newcomer in ${widget.category.name}"),
+                  );
+                }),
+              )
+            : Container(),
         newcomers.isNotEmpty
             ? const SizedBox(
                 height: 10,
@@ -139,13 +132,45 @@ class _CategoryScreenState extends State<CategoryScreen> {
                 height: 10,
               )
             : Container(),
-        receivers.isNotEmpty ? PodcastListHorizontal(data: receivers, title: "Receivers", multiplier: "x1.25") : Container(),
+        receivers.isNotEmpty
+            ? PodcastListHorizontal(
+                data: receivers,
+                title: "Receivers",
+                multiplier: "x1.25",
+                seeAllCb: (() {
+                  Navigator.push(
+                    context,
+                    buildSearchScreenTransition(
+                        genreId: widget.category.genreId,
+                        rank: PodcastRank.Receiver,
+                        imageUrl: widget.category.imageUrl,
+                        title: "Receivers in ${widget.category.name}"),
+                  );
+                }),
+              )
+            : Container(),
         receivers.isNotEmpty
             ? const SizedBox(
                 height: 10,
               )
             : Container(),
-        hodlers.isNotEmpty ? PodcastListHorizontal(data: hodlers, title: "Hodlers", multiplier: "x1.1") : Container(),
+        hodlers.isNotEmpty
+            ? PodcastListHorizontal(
+                data: hodlers,
+                title: "Hodlers",
+                multiplier: "x1.1",
+                seeAllCb: (() {
+                  Navigator.push(
+                    context,
+                    buildSearchScreenTransition(
+                        genreId: widget.category.genreId,
+                        rank: PodcastRank.Hodler,
+                        imageUrl: widget.category.imageUrl,
+                        title: "Hodlers in ${widget.category.name}"),
+                  );
+                }),
+              )
+            : Container(),
         hodlers.isNotEmpty
             ? const SizedBox(
                 height: 10,

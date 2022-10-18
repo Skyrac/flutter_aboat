@@ -1,18 +1,22 @@
 import 'package:Talkaboat/injection/injector.dart';
+import 'package:Talkaboat/models/podcasts/podcast-rank.model.dart';
 import 'package:Talkaboat/models/podcasts/podcast.model.dart';
 import 'package:Talkaboat/services/audio/podcast.service.dart';
 import 'package:Talkaboat/utils/scaffold_wave.dart';
 import 'package:Talkaboat/widgets/podcast-list-tile.widget.dart';
 import 'package:Talkaboat/widgets/searchbar.widget.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:page_transition/page_transition.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({this.appBar, this.onlyGenre, this.initialValue, Key? key}) : super(key: key);
+  const SearchScreen({this.appBar, this.onlyGenre, this.initialValue, this.onlyRank, Key? key}) : super(key: key);
 
   final AppBar? appBar;
   final int? onlyGenre;
+  final PodcastRank? onlyRank;
   final String? initialValue;
 
   @override
@@ -41,8 +45,8 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Future<void> _fetchPage(int pageKey) async {
     try {
-      final newItems =
-          await podcastService.search(debouncer.value, amount: _pageSize, offset: pageKey, genre: widget.onlyGenre);
+      final newItems = await podcastService.search(debouncer.value,
+          amount: _pageSize, offset: pageKey, genre: widget.onlyGenre, rank: widget.onlyRank);
       final isLastPage = newItems.length < _pageSize;
       if (isLastPage) {
         _pagingController.appendLastPage(newItems);
@@ -107,4 +111,35 @@ class _SearchScreenState extends State<SearchScreen> {
     _pagingController.dispose();
     super.dispose();
   }
+}
+
+PageTransition buildSearchScreenTransition(
+    {String? intitialValue, int? genreId, PodcastRank? rank, String? title, String? imageUrl}) {
+  return PageTransition(
+    alignment: Alignment.bottomCenter,
+    curve: Curves.bounceOut,
+    type: PageTransitionType.fade,
+    duration: const Duration(milliseconds: 300),
+    reverseDuration: const Duration(milliseconds: 200),
+    child: SearchScreen(
+      onlyGenre: genreId,
+      onlyRank: rank,
+      initialValue: intitialValue,
+      appBar: AppBar(
+        backgroundColor: const Color.fromRGBO(29, 40, 58, 1),
+        title: Row(children: [
+          Text(title ?? ""),
+          Container(
+            padding: const EdgeInsets.only(left: 5),
+            height: 25,
+            child: CachedNetworkImage(
+                imageUrl: imageUrl == null || imageUrl.isEmpty ? 'https://picsum.photos/200' : imageUrl,
+                placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
+                errorWidget: (context, url, error) => const Icon(Icons.error),
+                fit: BoxFit.cover),
+          )
+        ]),
+      ),
+    ),
+  );
 }
