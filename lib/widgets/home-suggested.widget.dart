@@ -24,19 +24,27 @@ class _HomeScreenSuggestedTabState extends State<HomeScreenSuggestedTab> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-        child: Column(
-      children: [
-        //const SizedBox(height: 5),
-        //createLibraryPreview(),
-        const SizedBox(height: 5),
-        createTaskBar(context, 'Tasks'),
-        const SizedBox(height: 20),
-        createPodcastPreviewRecentlyListed(context),
-        const SizedBox(height: 20),
-        createFavoritesList(context),
-        const SizedBox(height: 5),
-      ],
-    ));
+      child: Column(
+        children: [
+          ...createOnlyLoggedInWidgets(context),
+          const SizedBox(height: 5),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> createOnlyLoggedInWidgets(BuildContext context) {
+    if (!userService.isConnected) {
+      return [];
+    }
+    return <Widget>[
+      const SizedBox(height: 5),
+      createTaskBar(context, 'Tasks'),
+      const SizedBox(height: 20),
+      createPodcastPreviewRecentlyListed(context),
+      const SizedBox(height: 20),
+      createFavoritesList(context),
+    ];
   }
 
   Widget createTaskBar(BuildContext context, String title) {
@@ -104,67 +112,46 @@ class _HomeScreenSuggestedTabState extends State<HomeScreenSuggestedTab> {
 
   Widget createFavoritesList(BuildContext context) {
     return Padding(
-        padding: const EdgeInsets.all(10),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text("Favorites", style: Theme.of(context).textTheme.titleLarge),
-            InkWell(
-                borderRadius: BorderRadius.circular(10),
-                onTap: (() {
-                  widget.selectTab("Library", 3);
-                }),
-                child: Row(children: [
-                  Text(
-                    "See All",
-                    style: Theme.of(context).textTheme.titleSmall,
+      padding: const EdgeInsets.all(10),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Text("Favorites", style: Theme.of(context).textTheme.titleLarge),
+          InkWell(
+              borderRadius: BorderRadius.circular(10),
+              onTap: (() {
+                widget.selectTab("Library", 3);
+              }),
+              child: Row(children: [
+                Text(
+                  "See All",
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+                const Icon(Icons.arrow_right_alt)
+              ])),
+        ]),
+        FutureBuilder(
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.hasError) {
+                return Center(
+                  child: Text(
+                    '${snapshot.error} occurred',
+                    style: const TextStyle(fontSize: 18),
                   ),
-                  const Icon(Icons.arrow_right_alt)
-                ])),
-          ]),
-          userService.podcastProposalsHomeScreen.containsKey(1)
-              ? PodcastListFavoritesWidget(
-                  searchResults: userService.getProposals(1)!,
-                  checkUpdate: false,
-                )
-              : FutureBuilder(
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.done) {
-                      if (snapshot.hasError) {
-                        return Center(
-                          child: Text(
-                            '${snapshot.error} occurred',
-                            style: const TextStyle(fontSize: 18),
-                          ),
-                        );
-                      } else if (snapshot.hasData && snapshot.data != null) {
-                        if (snapshot.data != null && snapshot.data!.isNotEmpty) {
-                          userService.podcastProposalsHomeScreen[1] = snapshot.data!;
-                          return PodcastListFavoritesWidget(searchResults: userService.podcastProposalsHomeScreen[1]!);
-                        }
-                      }
-                    }
-                    return const Center(child: CircularProgressIndicator());
-                  },
-                  future: PodcastRepository.getRandomPodcast(10),
-                )
-        ]));
-  }
-
-  createLibraryPreview() {
-    if (!userService.isConnected || userService.favorites.isEmpty) {
-      return Container();
-    }
-    var libraryEntries = userService.getFavoritesEntries(6);
-    var height = double.parse((libraryEntries.length / 2 * 120).toString());
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: SizedBox(
-        height: height,
-        child: Wrap(
-          spacing: 10,
-          children: [for (var entry in libraryEntries) LibraryPreviewWidget(podcast: entry)],
-        ),
-      ),
+                );
+              } else if (snapshot.hasData && snapshot.data != null) {
+                if (snapshot.data != null && snapshot.data!.isNotEmpty) {
+                  return PodcastListFavoritesWidget(searchResults: snapshot.data!.take(10).toList());
+                }
+              }
+              // TODO: display a nice text
+              return Container();
+            }
+            return const Center(child: CircularProgressIndicator());
+          },
+          future: userService.getFavorites(),
+        )
+      ]),
     );
   }
 
