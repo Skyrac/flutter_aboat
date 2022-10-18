@@ -1,5 +1,7 @@
 import 'package:Talkaboat/injection/injector.dart';
+import 'package:Talkaboat/models/podcasts/podcast-rank.model.dart';
 import 'package:Talkaboat/models/podcasts/podcast.model.dart';
+import 'package:Talkaboat/services/audio/podcast.service.dart';
 import 'package:Talkaboat/services/repositories/podcast.repository.dart';
 import 'package:Talkaboat/services/state/state.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
@@ -20,6 +22,7 @@ class HomeScreenSuggestedTab extends StatefulWidget {
 class _HomeScreenSuggestedTabState extends State<HomeScreenSuggestedTab> {
   final homeState = getIt<StateService>();
   final userService = getIt<UserService>();
+  final podcastService = getIt<PodcastService>();
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +47,15 @@ class _HomeScreenSuggestedTabState extends State<HomeScreenSuggestedTab> {
       createSideScrollPodcasts(context, PodcastRepository.getRandomPodcast(10), title: "Recently Listened"),
       const SizedBox(height: 20),
       createFavoritesList(context),
+      const SizedBox(height: 20),
+      createSideScrollPodcasts(context, podcastService.search("", amount: 10, offset: 0, rank: PodcastRank.NewComer),
+          title: "Newcomer", multiplier: "x1.5"),
+      const SizedBox(height: 20),
+      createSideScrollPodcasts(context, podcastService.search("", amount: 10, offset: 0, rank: PodcastRank.Receiver),
+          title: "Receiver", multiplier: "x1.25"),
+      const SizedBox(height: 20),
+      createSideScrollPodcasts(context, podcastService.search("", amount: 10, offset: 0, rank: PodcastRank.Hodler),
+          title: "Holder", multiplier: "x1.1"),
     ];
   }
 
