@@ -58,14 +58,14 @@ class _LoginScreenState extends State<LoginScreen> {
     Navigator.of(context).pop();
     final pin = pinController.text;
     final email = emailController.text;
+    final navigator = Navigator.of(context);
     if (pin.length > 3 && email.isValidEmail()) {
       setState(() {
         isLoading = true;
       });
-      final userService = getIt<UserService>();
       if (await userService.emailLogin(email, pin)) {
         widget.refreshParent();
-        Navigator.pop(context);
+        navigator.pop();
       }
       setState(() {
         isLoading = false;
@@ -111,6 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         onSubmitted: (_) async {
                           callback();
                         },
+                        keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           alignLabelWithHint: true,
