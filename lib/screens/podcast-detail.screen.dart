@@ -84,14 +84,14 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                     return Center(
                       child: Text(
                         '${snapshot.error} occurred',
-                        style: TextStyle(fontSize: 18),
+                        style: const TextStyle(fontSize: 18),
                       ),
                     );
                   } else if (snapshot.hasData && snapshot.data != null) {
                     // Extracting data from snapshot object
                     return createCustomScrollView(snapshot.data!);
                   } else {
-                    return Center(
+                    return const Center(
                       child: Text(
                         'No data found for this podcast. Please try again later!',
                         style: TextStyle(fontSize: 18),
@@ -106,7 +106,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           const Center(child: CircularProgressIndicator()),
-                          SizedBox(
+                          const SizedBox(
                             height: 50,
                           ),
                           InkWell(
@@ -116,11 +116,11 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.arrow_back),
-                                SizedBox(
+                                const Icon(Icons.arrow_back),
+                                const SizedBox(
                                   width: 10,
                                 ),
-                                Text("Back")
+                                const Text("Back")
                               ],
                             ),
                           )
@@ -138,36 +138,21 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
         height: 33,
         appBar: AppBar(
           centerTitle: false,
-          leading: Padding(
-            padding: const EdgeInsets.only(left: 0),
-            child: IconButton(
-              icon: Image.asset(
-                "assets/images/back.png",
-                width: 12,
-                fit: BoxFit.cover,
-              ),
-              tooltip: '',
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ),
           leadingWidth: 35,
           titleSpacing: 3,
           backgroundColor: const Color.fromRGBO(29, 40, 58, 1),
           title: Text(
             podcastSearchResult.title!,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: Color.fromRGBO(99, 163, 253, 1),
+                  color: const Color.fromRGBO(99, 163, 253, 1),
                 ),
           ),
           actions: [
             Padding(
               padding: const EdgeInsets.only(right: 5),
               child: IconButton(
-                  icon: Image.asset(
-                    "assets/images/share.png",
-                    width: 30,
-                    fit: BoxFit.cover,
-                  ),
+                  icon: const Icon(Icons.share,
+                      color: Color.fromRGBO(99, 163, 253, 0.5), size: 36),
                   tooltip: '',
                   onPressed: () => {
                         //TODO: Geräte Abhängigkeit prüfen
@@ -178,16 +163,14 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                       }),
             ),
             !userService.isConnected
-                ? SizedBox()
+                ? const SizedBox()
                 : userService.isInFavorites(podcastSearchResult.id!)
                     ? Padding(
                         padding: const EdgeInsets.only(right: 10),
                         child: IconButton(
-                          icon: Image.asset(
-                            "assets/images/heart2.png",
-                            width: 30,
-                            fit: BoxFit.cover,
-                          ),
+                          icon: const Icon(Icons.favorite,
+                              color: Color.fromRGBO(99, 163, 253, 0.5),
+                              size: 36),
                           tooltip: '',
                           onPressed: () async {
                             await userService
@@ -199,11 +182,9 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                     : Padding(
                         padding: const EdgeInsets.only(right: 10),
                         child: IconButton(
-                          icon: Image.asset(
-                            "assets/images/heart.png",
-                            width: 30,
-                            fit: BoxFit.cover,
-                          ),
+                          icon: const Icon(Icons.favorite_border,
+                              color: Color.fromRGBO(99, 163, 253, 0.5),
+                              size: 36),
                           tooltip: '',
                           onPressed: () async {
                             await userService
@@ -223,52 +204,6 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                     podcast: podcastSearchResult),
                 pinned: true,
               ),
-              // SliverToBoxAdapter(
-              //   child: Padding(
-              //       padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-              //       child: Column(
-              //         children: [
-              //           ClipRRect(
-              //             borderRadius: BorderRadius.circular(20),
-              //             child: Card(
-              //                 child: InkWell(
-              //               onTap: (() {
-              //                 setState(() {
-              //                   isDescOpen = !isDescOpen;
-              //                 });
-              //               }),
-              //               child: Padding(
-              //                 padding: const EdgeInsets.all(8.0),
-              //                 child: Text(
-              //                   podcastSearchResult.description ?? '',
-              //                   maxLines: isDescOpen ? 9999 : 3,
-              //                   overflow: TextOverflow.ellipsis,
-              //                 ),
-              //               ),
-              //             )),
-              //           ),
-              //           Padding(
-              //             padding: EdgeInsets.only(top: 15, bottom: 5),
-              //             child: Row(
-              //               mainAxisAlignment: MainAxisAlignment.end,
-              //               children: [
-              //                 InkWell(
-              //                   onTap: (() {
-              //                     setState(() {
-              //                       sort = sort == "asc" ? "desc" : "asc";
-              //                     });
-              //                   }),
-              //                   child: RotatedBox(
-              //                     quarterTurns: sort == "asc" ? 0 : 2,
-              //                     child: Icon(Icons.sort),
-              //                   ),
-              //                 )
-              //               ],
-              //             ),
-              //           )
-              //         ],
-              //       )),
-              // ),
               FutureBuilder(
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
@@ -277,7 +212,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                         child: Center(
                           child: Text(
                             '${snapshot.error} occurred',
-                            style: TextStyle(fontSize: 18),
+                            style: const TextStyle(fontSize: 18),
                           ),
                         ),
                       );
@@ -289,12 +224,34 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                       }
                     }
                   }
-                  return SliverToBoxAdapter(
-                      child: const Center(child: CircularProgressIndicator()));
+                  return const SliverToBoxAdapter(
+                      child: Center(child: CircularProgressIndicator()));
                 },
                 future: podcastService.getPodcastDetailEpisodes(
                     podcastSearchResult.id!, sort, -1),
               ),
+            ],
+          ),
+          CustomScrollView(
+            slivers: [
+              SliverPersistentHeader(
+                delegate: PodcastDetailSliver(
+                    expandedHeight: size.height * 0.4,
+                    podcast: podcastSearchResult),
+                pinned: true,
+              ),
+              const SliverToBoxAdapter(child: Center(child: Placeholder()))
+            ],
+          ),
+          CustomScrollView(
+            slivers: [
+              SliverPersistentHeader(
+                delegate: PodcastDetailSliver(
+                    expandedHeight: size.height * 0.4,
+                    podcast: podcastSearchResult),
+                pinned: true,
+              ),
+              const SliverToBoxAdapter(child: Center(child: Placeholder()))
             ],
           ),
         ]),

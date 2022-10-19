@@ -46,11 +46,8 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                     const SizedBox(
                       width: 10,
                     ),
-                    Image.asset(
-                      "assets/images/list _add.png",
-                      width: 22,
-                      fit: BoxFit.cover,
-                    ),
+                    const Icon(Icons.format_list_bulleted_add,
+                        color: Color.fromRGBO(99, 163, 253, 1), size: 25),
                     const SizedBox(
                       width: 10,
                     ),
@@ -159,17 +156,6 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                 ? makeHorizontalListTile(context, entry, playing)
                 : makeVerticalListTile(context, entry, playing),
           ),
-          // child: Card(
-          //   elevation: 8.0,
-          //   color: Theme.of(context).cardTheme.color,
-          //   color: Theme.of(context).cardTheme.color,
-          //   margin: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 0.0),
-          //   child: Container(
-          //     child: widget.direction == Axis.horizontal
-          //         ? makeHorizontalListTile(context, entry, playing)
-          //         : makeVerticalListTile(context, entry, playing),
-          //   ),
-          // ),
         );
       });
 
@@ -180,8 +166,6 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
               onTap: () async {
                 await widget.onPlayEpisode();
                 setState(() {});
-                // await audioHandler
-                //     .updateEpisodeQueue(List.generate(1, (index) => entry));
               },
               child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
@@ -212,8 +196,6 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                                           placeholder: (_, __) => const Center(
                                               child:
                                                   CircularProgressIndicator()),
-                                          // progressIndicatorBuilder: (context, url, downloadProgress) =>
-                                          //     CircularProgressIndicator(value: downloadProgress.progress),
                                           errorWidget: (context, url, error) =>
                                               const Icon(Icons.error),
                                         ),
@@ -247,7 +229,6 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
           widget.onPlayEpisode();
         },
         child: Container(
-          // height: 105,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             color: audioHandler.isListeningEpisode(widget.episode.id) && playing
@@ -259,7 +240,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
-                padding: EdgeInsets.only(right: 5),
+                padding: const EdgeInsets.only(right: 5),
                 width: 100,
                 height: 100,
                 child: Center(
@@ -277,8 +258,6 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                             fit: BoxFit.fill,
                             placeholder: (_, __) => const Center(
                                 child: CircularProgressIndicator()),
-                            // progressIndicatorBuilder: (context, url, downloadProgress) =>
-                            //     CircularProgressIndicator(value: downloadProgress.progress),
                             errorWidget: (context, url, error) =>
                                 const Icon(Icons.error),
                           ))),
@@ -300,7 +279,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
               const SizedBox(
                 width: 10,
               ),
-              Container(
+              SizedBox(
                 height: 105,
                 width: 218,
                 child: Column(
@@ -340,8 +319,10 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                                     playing
                                 ? Row(
                                     children: [
-                                      Image.asset(
-                                          "assets/images/play_small.png"),
+                                      const Icon(Icons.play_arrow,
+                                          color:
+                                              Color.fromRGBO(188, 140, 75, 1),
+                                          size: 18),
                                       const SizedBox(
                                         width: 3,
                                       ),

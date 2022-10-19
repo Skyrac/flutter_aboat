@@ -29,7 +29,6 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
       fit: StackFit.expand,
       children: [
         buildBackground(shrinkOffset, context),
-
         buildAppBar(shrinkOffset),
         Positioned(
           top: top,
@@ -37,42 +36,6 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
           right: 20,
           child: buildFloating(shrinkOffset, context),
         ),
-        // buildAppBar(shrinkOffset),
-        // Container(
-        //     height: 30,
-        //     padding: EdgeInsets.fromLTRB(18, 58, 18, 8),
-        //     alignment: Alignment.bottomCenter,
-        //     child: DecoratedBox(
-        //       decoration: BoxDecoration(
-        //         // color: Colors.white.withOpacity(1.0),
-        //         border: const Border(
-        //             bottom:
-        //                 BorderSide(color: Color.fromRGBO(164, 202, 255, 1))),
-        //       ),
-        //       child: const TabBar(
-        //         labelColor: Color.fromRGBO(188, 140, 75, 1),
-        //         indicatorColor: Color.fromRGBO(188, 140, 75, 1),
-        //         unselectedLabelColor: Color.fromRGBO(164, 202, 255, 1),
-        //         tabs: [
-        //           Tab(text: "Episodes"),
-        //           Tab(text: "Details"),
-        //           Tab(text: "Community"),
-        //         ],
-        //       ),
-        //     ))
-        // Container(
-        //   alignment: Alignment.bottomCenter,
-        //   child: const TabBar(
-        //     labelColor: Color.fromRGBO(188, 140, 75, 1),
-        //     indicatorColor: Color.fromRGBO(188, 140, 75, 1),
-        //     unselectedLabelColor: Color.fromRGBO(164, 202, 255, 1),
-        //     tabs: [
-        //       Tab(text: "Episodes"),
-        //       Tab(text: "Details"),
-        //       Tab(text: "Community"),
-        //     ],
-        //   ),
-        // )
       ],
     );
   }
@@ -85,18 +48,16 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
         preferredSize: Size.fromHeight(expandedHeight),
         child: AppBar(
             leading: SizedBox(),
-            // backgroundColor:
-            //     DefaultColors.secondaryColorAlphaBlendStrong.shade900,
             centerTitle: true,
             bottom: PreferredSize(
               preferredSize: Size.fromHeight(expandedHeight),
               child: Container(
-                padding: EdgeInsets.fromLTRB(18, 5, 18, 10),
+                padding: const EdgeInsets.fromLTRB(18, 5, 18, 10),
                 child: Material(
                   borderRadius: BorderRadius.circular(20),
-                  color: Color.fromRGBO(29, 40, 58, 0.8),
+                  color: const Color.fromRGBO(29, 40, 58, 0.8),
                   child: Container(
-                    padding: EdgeInsets.fromLTRB(18, 8, 18, 8),
+                    padding: const EdgeInsets.fromLTRB(18, 8, 18, 8),
                     child: DecoratedBox(
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.0),
@@ -129,6 +90,7 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
               padding: const EdgeInsets.only(left: 10.0),
               height: expandedHeight - 25,
               decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
                 image: DecorationImage(
                   image: NetworkImage(podcast.image!),
                   fit: BoxFit.cover,
@@ -144,36 +106,9 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              // SizedBox(
-              //   width: 240,
-              //   child: ClipRRect(
-              //       borderRadius: BorderRadius.circular(200),
-              //       child: Card(
-              //           child: buildButton(
-              //               text: 'Donate',
-              //               icon: Icons.money,
-              //               onClick: () => {showDonationModal(context)}))),
-              // ),
-              // const SizedBox(
-              //   height: 15,
-              // ),
               Row(
                 children: [
-                  // Expanded(
-                  //     child: Card(
-                  //   child: buildButton(
-                  //       text: 'Share',
-                  //       icon: Icons.share,
-                  //       onClick: () => {
-                  //             //TODO: Geräte Abhängigkeit prüfen
-                  //             Share.share(
-                  //                 "Check the Podcast ${podcast.title} on Talkaboat.online mobile App! Start listening and earn while supporting new and upcoming podcasters.\n\n Download it now on \nAndroid: https://play.google.com/store/apps/details?id=com.aboat.talkaboat\n",
-                  //                 subject:
-                  //                     "Check this out! A Podcast on Talkaboat.online.")
-                  //           }),
-                  // )),
                   Expanded(
-                    //S child: Card(
                     child: buildButton(
                         text: 'Ownership',
                         icon: Image.asset(
@@ -190,15 +125,12 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                                   builder: (context) =>
                                       ClaimBottomSheet(podcastId: podcast.id!))
                             }),
-                    //)
                   ),
                   Expanded(
-                    //Schild: Card(
                     child: buildButton(
                         text: 'Donate',
                         icon: Image.asset("assets/images/money.png", width: 28),
                         onClick: () => {showDonationModal(context)}),
-                    //)
                   ),
                 ],
               ),
@@ -217,15 +149,15 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
           height: 40,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color: Color.fromRGBO(15, 23, 41, 1),
-              border: Border.all(color: Color.fromRGBO(99, 163, 253, 1))),
+              color: const Color.fromRGBO(15, 23, 41, 1),
+              border: Border.all(color: const Color.fromRGBO(99, 163, 253, 1))),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               icon,
               const SizedBox(width: 12),
               Text(text,
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontSize: 12, color: Color.fromRGBO(99, 163, 253, 1))),
             ],
           ),
@@ -255,7 +187,7 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                   ? TextField(
                       controller: donationAmountController,
                       keyboardType:
-                          TextInputType.numberWithOptions(decimal: true),
+                          const TextInputType.numberWithOptions(decimal: true),
                       inputFormatters: <TextInputFormatter>[
                         FilteringTextInputFormatter.allow(RegExp(r"[0-9.,]")),
                         TextInputFormatter.withFunction((oldValue, newValue) {
@@ -286,7 +218,7 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                       height: 140,
                       child: Column(
                         children: [
-                          Text("Login to use this feature!"),
+                          const Text("Login to use this feature!"),
                           createLoginButton(context)
                         ],
                       ),
@@ -302,12 +234,12 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                       donationAmountController.text = "";
                       Navigator.pop(context);
                     }),
-                    child: Text("Donate")),
+                    child: const Text("Donate")),
                 TextButton(
                     onPressed: (() {
                       Navigator.pop(context);
                     }),
-                    child: Text("Cancel"))
+                    child: const Text("Cancel"))
               ],
             ));
   }
