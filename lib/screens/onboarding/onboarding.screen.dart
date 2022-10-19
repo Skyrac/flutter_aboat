@@ -1,4 +1,5 @@
 import 'package:Talkaboat/injection/injector.dart';
+import 'package:Talkaboat/main.dart';
 import 'package:Talkaboat/screens/app.screen.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/themes/colors.dart';
@@ -14,7 +15,7 @@ class OnBoardingScreen extends StatefulWidget {
   State<OnBoardingScreen> createState() => _OnBoardingScreenState();
 }
 
-class _OnBoardingScreenState extends State<OnBoardingScreen> {
+class _OnBoardingScreenState extends State<OnBoardingScreen> with RouteAware {
   final introKey = GlobalKey<IntroductionScreenState>();
   void _onIntroEnd(context) async {
     await getIt<UserService>().finishIntroduction();
@@ -23,12 +24,39 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
     );
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context)! as PageRoute);
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    // Covering route was popped off the navigator.
+    super.didPopNext();
+    // didPopNext is still in the context of the pop that triggered it
+    // we await till it is computed before our next pop
+    Future.delayed(
+        Duration.zero,
+        () =>
+            Navigator.of(_context!).pushReplacement(MaterialPageRoute(builder: (_) => const AppScreen(title: 'Talkaboat'))));
+  }
+
   Widget _buildImage(String assetName, [double width = 350]) {
     return Image.asset('assets/$assetName', width: width);
   }
 
+  BuildContext? _context;
+
   @override
   Widget build(BuildContext context) {
+    _context ??= context;
     const bodyStyle = TextStyle(fontSize: 19.0);
 
     const pageDecoration = PageDecoration(
@@ -63,15 +91,13 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         PageViewModel(
           title: "Daily Tasks",
           image: _buildImage('images/intro_tasks.png', 225),
-          body:
-              "Finish your daily tasks to earn great rewards and get an insight into blockchain while helping creators",
+          body: "Finish your daily tasks to earn great rewards and get an insight into blockchain while helping creators",
           decoration: pageDecoration,
         ),
         PageViewModel(
           title: "Friends",
           image: _buildImage('images/intro_social.png', 275),
-          body:
-              "Add or invite your friends to share your latest news, achievements or your favorite podcast",
+          body: "Add or invite your friends to share your latest news, achievements or your favorite podcast",
           decoration: pageDecoration,
         ),
         PageViewModel(

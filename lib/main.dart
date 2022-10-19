@@ -26,14 +26,11 @@ void main() async {
     yield LicenseEntryWithLineBreaks(['google_fonts'], license);
   });
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      systemNavigationBarColor:
-          const Color.fromRGBO(29, 40, 58, 1), // navigation bar color
+      systemNavigationBarColor: const Color.fromRGBO(29, 40, 58, 1), // navigation bar color
       statusBarColor: DefaultColors.secondaryColor.shade900 // status bar color
       ));
-  ByteData data =
-      await PlatformAssetBundle().load('assets/ca/lets-encrypt-r3.pem');
-  SecurityContext.defaultContext
-      .setTrustedCertificatesBytes(data.buffer.asUint8List());
+  ByteData data = await PlatformAssetBundle().load('assets/ca/lets-encrypt-r3.pem');
+  SecurityContext.defaultContext.setTrustedCertificatesBytes(data.buffer.asUint8List());
   MobileAds.instance.initialize();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -45,6 +42,8 @@ void main() async {
   runApp(const MyApp());
 }
 
+final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
+
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -53,6 +52,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final userService = getIt<UserService>();
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -60,13 +61,13 @@ class _MyAppState extends State<MyApp> {
         title: 'Talkaboat',
         theme: NewDefaultTheme.defaultTheme,
         debugShowCheckedModeBanner: false,
+        navigatorObservers: [routeObserver],
         home: AnimatedSplashScreen(
             duration: 2000,
-            splash: const Image(
-                width: 250, image: AssetImage('assets/images/talkaboat.png')),
-            nextScreen: getIt<UserService>().newUser
+            splash: const Image(width: 250, image: AssetImage('assets/images/talkaboat.png')),
+            nextScreen: userService.newUser
                 ? const OnBoardingScreen()
-                : !getIt<UserService>().isConnected
+                : !userService.isConnected
                     ? LoginScreen(() => setState(() {}))
                     : const AppScreen(title: 'Talkaboat'),
             splashTransition: SplashTransition.fadeTransition,
