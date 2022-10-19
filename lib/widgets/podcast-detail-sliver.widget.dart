@@ -30,12 +30,10 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
       children: [
         buildBackground(shrinkOffset, context),
         buildAppBar(shrinkOffset),
-        Positioned(
-          top: top,
-          left: 20,
-          right: 20,
+        Container(
+          padding: const EdgeInsets.only(bottom: 100),
           child: buildFloating(shrinkOffset, context),
-        ),
+        )
       ],
     );
   }
@@ -47,7 +45,7 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
   Widget buildAppBar(double shrinkOffset) => PreferredSize(
         preferredSize: Size.fromHeight(expandedHeight),
         child: AppBar(
-            leading: SizedBox(),
+            leading: const SizedBox(),
             centerTitle: true,
             bottom: PreferredSize(
               preferredSize: Size.fromHeight(expandedHeight),
