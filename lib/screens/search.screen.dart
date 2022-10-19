@@ -29,7 +29,7 @@ class SearchScreen extends StatefulWidget {
   final PodcastRank? onlyRank;
   final String? initialValue;
   final bool? refreshOnStateChange;
-  final Future<List<Podcast>> Function(String)? customSearchFunc;
+  final Future<List<Podcast>> Function(String text, int amount, int offset)? customSearchFunc;
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -45,10 +45,10 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   void initState() {
+    super.initState();
     _pagingController.addPageRequestListener((pageKey) {
       _fetchPage(pageKey);
     });
-    super.initState();
     debouncer.setValue(widget.initialValue ?? "");
     debouncer.values.listen((val) {
       _pagingController.refresh();
@@ -58,7 +58,7 @@ class _SearchScreenState extends State<SearchScreen> {
   Future<void> _fetchPage(int pageKey) async {
     try {
       final newItems = await (widget.customSearchFunc != null
-          ? widget.customSearchFunc!(debouncer.value)
+          ? widget.customSearchFunc!(debouncer.value, _pageSize, pageKey)
           : podcastService.search(debouncer.value,
               amount: _pageSize, offset: pageKey, genre: widget.onlyGenre, rank: widget.onlyRank));
       final isLastPage = newItems.length < _pageSize;

@@ -16,9 +16,12 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   @override
   Widget build(BuildContext context) {
     return SearchScreen(
-      customSearchFunc: ((text) async {
-        return Future.value(
-            (await userService.getFavorites()).where((element) => element.title?.contains(text) ?? false).toList());
+      customSearchFunc: ((text, amount, offset) async {
+        return Future.value((await userService.getFavorites())
+            .where((element) => element.title?.contains(text) ?? false)
+            .skip(offset)
+            .take(amount)
+            .toList());
       }),
       refreshOnStateChange: true,
       appBar: AppBar(
