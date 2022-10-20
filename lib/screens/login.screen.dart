@@ -401,17 +401,20 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
-                isLoading
-                    ? const Positioned(
+                true
+                    ? Positioned(
                         top: 0,
                         left: 0,
                         right: 0,
                         bottom: 0,
                         child: Card(
-                            color: Colors.transparent,
-                            margin: EdgeInsets.all(0),
-                            child: Center(
-                              child: CircularProgressIndicator(),
+                            color: const Color.fromRGBO(15, 23, 41, 0.75),
+                            margin: const EdgeInsets.all(0),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
+                            child: const Center(
+                              child: CircularProgressIndicator(
+                                color: Color.fromRGBO(99, 163, 253, 1),
+                              ),
                             )))
                     : const SizedBox(),
               ],
