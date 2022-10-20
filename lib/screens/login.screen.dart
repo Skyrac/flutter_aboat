@@ -25,8 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
   var isLogin = true;
   var sentEmail = false;
   var dialog;
-  var socialLoginPinVerification = TextEditingController();
-  var socialLoginNewUser = TextEditingController();
+
   final userService = getIt<UserService>();
 
   final emailController = TextEditingController();
@@ -194,9 +193,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       if (await userService.socialLogin(socialLogin, context)) {
-        ShowSnackBar(context, "Successfully signed in");
+        //ShowSnackBar(context, "Successfully signed in");
         widget.refreshParent();
-        Navigator.pop(context);
+        //Navigator.pop(context);
         return;
       }
     } catch (exception) {
@@ -209,9 +208,26 @@ class _LoginScreenState extends State<LoginScreen> {
     if (userService.lastConnectionState != null && userService.lastConnectionState?.text != null) {
       if (userService.lastConnectionState?.text == "not_connected") {
         ShowSnackBar(context, "Check your E-Mail and Verify the Pin");
-        showAlert(context, socialLoginPinVerification, "Verify Pin", "Pin", "", verifySocialLoginPin);
+        final bodyMediumTheme = Theme.of(context).textTheme.bodyMedium;
+        final pinResult = await showInputDialog(context, "Confirm PIN", (_) {
+          return Text.rich(TextSpan(children: [
+            TextSpan(
+              text: 'You should receive a PIN on ',
+              style: bodyMediumTheme,
+            ),
+            TextSpan(
+              text: emailController.text,
+              style: bodyMediumTheme?.copyWith(fontWeight: FontWeight.w600),
+            ),
+            TextSpan(
+              text:
+                  ' to verify your login. If you have no account registered under your email, you’ll be asked to setup an username after sign in.',
+              style: bodyMediumTheme,
+            ),
+          ]));
+        }, "Pin...");
+        //showAlert(context, socialLoginPinVerification, "Verify Pin", "Pin", "", verifySocialLoginPin);
       } else if (userService.lastConnectionState?.text == "new_account") {
-        ShowSnackBar(context, "Please create a new user");
         final result = await showInputDialog(
             context,
             "Choose an username",
@@ -224,7 +240,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ])),
             "Username...");
         if (result != null) {
-          registerSocialLogin();
+          registerSocialLogin(result);
         } else {
           // cancel
         }
@@ -236,18 +252,16 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  verifySocialLoginPin() async {
+  verifySocialLoginPin(String pin) async {
     if (isLoading) {
       return;
     }
     setState(() {
       isLoading = true;
     });
-    if (await userService.firebaseVerify(socialLoginPinVerification.text)) {
+    if (await userService.firebaseVerify(pin)) {
       setState(() {
         isLoading = false;
-        Navigator.of(context, rootNavigator: true).pop();
-        Navigator.pop(context);
         widget.refreshParent();
       });
     }
@@ -256,40 +270,19 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  registerSocialLogin() async {
+  registerSocialLogin(String username) async {
     if (isLoading) {
       return;
     }
     setState(() {
       isLoading = true;
     });
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return Dialog(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: const [
-                CircularProgressIndicator(),
-                Text("Loading"),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-    var successful = await userService.firebaseRegister(socialLoginNewUser.text, true);
+    var successful = true; //await userService.firebaseRegister(username, true);
     setState(() {
-      Navigator.of(context, rootNavigator: true).pop();
       isLoading = false;
     });
     if (successful) {
       setState(() {
-        Navigator.of(context, rootNavigator: true).pop();
-        Navigator.pop(context);
         widget.refreshParent();
       });
     }
@@ -393,7 +386,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     SizedBox(height: size.height * 0.05),
                     createAppleLogin(),
                     SizedBox(height: Platform.isIOS ? 10 : 0),
-                    signInButton(image: "apple.png", socialLogin: SocialLogin.Apple, text: "Apple"),
+                    createAppleLogin(),
                     const SizedBox(
                       height: 10,
                     ),
@@ -426,17 +419,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   createAppleLogin() {
     return Platform.isIOS
-        ? Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 50),
-            child: SocialLoginButton(
-              buttonType: SocialLoginButtonType.apple,
-              mode: SocialLoginButtonMode.single,
-              text: "Sign in with Apple",
-              onPressed: () async {
-                await socialButtonPressed(SocialLogin.Apple);
-              },
-            ),
-          )
+        ? signInButton(image: "apple.png", socialLogin: SocialLogin.Apple, text: "Apple")
         : const SizedBox();
   }
 
