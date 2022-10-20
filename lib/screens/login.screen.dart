@@ -31,8 +31,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final emailController = TextEditingController();
 
-  final pinController = TextEditingController();
-
   Future<void> sendPinRequest() async {
     final email = emailController.text;
     if (email.isValidEmail()) {
@@ -41,7 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
         sentEmail = true;
       });
       var result = await UserRepository.requestEmailLogin(email);
-      if (result) {
+      if (result != null) {
         setState(() {
           isLoading = false;
         });
@@ -54,16 +52,20 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Future<void> sendLogin(BuildContext context) async {
-    Navigator.of(context).pop();
-    final pin = pinController.text;
-    final email = emailController.text;
+  Future<bool> sendLogin(BuildContext context, String email, String pin) async {
     final navigator = Navigator.of(context);
     if (pin.length > 3 && email.isValidEmail()) {
       setState(() {
         isLoading = true;
       });
-      if (await userService.emailLogin(email, pin)) {
+      final result = await userService.emailLogin(email, pin);
+      print(result);
+      if (result == "new_account") {
+        setState(() {
+          isLoading = false;
+        });
+        return true;
+      } else if (result == "true") {
         widget.refreshParent();
         navigator.pop();
       }
@@ -71,6 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
         isLoading = false;
       });
     }
+    return false;
   }
 
   createEmailPinRequestWidget(
@@ -184,10 +187,6 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       );
 
-  requestEmail() async {
-    await sendPinRequest();
-  }
-
   socialButtonPressed(SocialLogin socialLogin) async {
     setState(() {
       isLoading = true;
@@ -213,7 +212,22 @@ class _LoginScreenState extends State<LoginScreen> {
         showAlert(context, socialLoginPinVerification, "Verify Pin", "Pin", "", verifySocialLoginPin);
       } else if (userService.lastConnectionState?.text == "new_account") {
         ShowSnackBar(context, "Please create a new user");
-        showAlertUserName(context, socialLoginNewUser, registerSocialLogin);
+        final result = await showInputDialog(
+            context,
+            "Choose an username",
+            (_) => Text.rich(TextSpan(children: [
+                  TextSpan(
+                    text:
+                        'Your username will be shown for in social media features as well as comments and ratings you might leave for podcasts and episodes.',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ])),
+            "Username...");
+        if (result != null) {
+          registerSocialLogin();
+        } else {
+          // cancel
+        }
       } else {
         ShowSnackBar(context, "Unresolved response. Please contact an admin.");
       }
@@ -307,23 +321,79 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     SizedBox(height: size.height * 0.02),
                     createEmailPinRequestWidget("E-Mail...", () async {
+                      final bodyMediumTheme = Theme.of(context).textTheme.bodyMedium;
                       await sendPinRequest();
-                      // showAlertUserName(
-                      //     context, socialLoginNewUser, registerSocialLogin);
-                      await dialogBuilder(context);
+                      final pinResult = await showInputDialog(context, "Confirm PIN", (_) {
+                        return Text.rich(TextSpan(children: [
+                          TextSpan(
+                            text: 'You should receive a PIN on ',
+                            style: bodyMediumTheme,
+                          ),
+                          TextSpan(
+                            text: emailController.text,
+                            style: bodyMediumTheme?.copyWith(fontWeight: FontWeight.w600),
+                          ),
+                          TextSpan(
+                            text:
+                                ' to verify your login. If you have no account registered under your email, you’ll be asked to setup an username after sign in.',
+                            style: bodyMediumTheme,
+                          ),
+                        ]));
+                      }, "Pin...");
+                      if (pinResult != null) {
+                        // Confirm
+                        setState(() {
+                          isLoading = true;
+                        });
+                        final loginResult = await sendLogin(context, emailController.text, pinResult);
+                        print(loginResult);
+                        setState(() {
+                          isLoading = false;
+                        });
+                        if (loginResult) {
+                          // new user
+                          final username = await showInputDialog(
+                              context,
+                              "Choose an username",
+                              (_) => Text.rich(TextSpan(children: [
+                                    TextSpan(
+                                      text:
+                                          'Your username will be shown for in social media features as well as comments and ratings you might leave for podcasts and episodes.',
+                                      style: bodyMediumTheme,
+                                    ),
+                                  ])),
+                              "Username...");
+                          if (username != null) {
+                            setState(() {
+                              isLoading = true;
+                            });
+                            final registerResult =
+                                await UserRepository.emailRegister(emailController.text, pinResult, username, false);
+                            setState(() {
+                              isLoading = false;
+                            });
+                            if (registerResult) {
+                              widget.refreshParent();
+                            } else {
+                              // register error
+                            }
+                          } else {
+                            print("cancel");
+                            // cancel
+                            return;
+                          }
+                        } else {
+                          //loginResult == false -> not a new account
+                        }
+                      } else {
+                        // Cancel from PIN Dialog
+                        return;
+                      }
                     }, emailController, "Request PIN"),
-                    // sentEmail ? dialogBuilder(context) : SizedBox(),
-                    // sentEmail
-                    //     ? createEmailPinRequestWidget("Pin", () async {
-                    //         await sendLogin(context);
-                    //       }, pinController, "Login")
-                    //     : createEmailPinRequestWidget(
-                    //         "E-Mail", requestEmail, emailController, "Get Pin"),
                     SizedBox(height: size.height * 0.05),
                     createAppleLogin(),
                     SizedBox(height: Platform.isIOS ? 10 : 0),
                     signInButton(image: "apple.png", socialLogin: SocialLogin.Apple, text: "Apple"),
-
                     const SizedBox(
                       height: 10,
                     ),
@@ -407,10 +477,10 @@ class _LoginScreenState extends State<LoginScreen> {
         ));
   }
 
-  Future<void> dialogBuilder(BuildContext context) async {
-    final email = emailController.text;
-    final size = MediaQuery.of(context).size;
-    return showDialog<void>(
+  Future<String?> showInputDialog(
+      BuildContext context, String title, Text Function(BuildContext context) textBuilder, String hintText) async {
+    final textController = TextEditingController();
+    return showDialog<String>(
       context: context,
       builder: (BuildContext context) {
         return Builder(builder: (context) {
@@ -434,7 +504,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         padding: const EdgeInsets.only(top: 5),
                         child: Center(
                             child: Text(
-                          "Confirm PIN",
+                          title,
                           style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
                         )),
                       ),
@@ -443,21 +513,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 23.5),
-                        child: Text.rich(TextSpan(children: [
-                          TextSpan(
-                            text: 'You should receive a PIN on ',
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          TextSpan(
-                            text: email,
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
-                          ),
-                          TextSpan(
-                            text:
-                                ' to verify your login. If you have no account registered under your email, you’ll be asked to setup an username after sign in.',
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                        ])),
+                        child: textBuilder(context),
                       ),
                       const SizedBox(
                         height: 10,
@@ -472,9 +528,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
                                 color: const Color.fromRGBO(29, 40, 58, 1),
-                                // ignore: prefer_const_literals_to_create_immutables
-                                boxShadow: [
-                                  const BoxShadow(
+                                boxShadow: const [
+                                  BoxShadow(
                                     color: Color.fromRGBO(188, 140, 75, 1),
                                     spreadRadius: 0,
                                     blurRadius: 0,
@@ -488,14 +543,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                         color: const Color.fromRGBO(164, 202, 255, 1),
                                       ),
-                                  controller: pinController,
-                                  onSubmitted: (_) async {
-                                    await sendLogin(context);
+                                  controller: textController,
+                                  onSubmitted: (text) {
+                                    Navigator.of(context).pop(text);
                                   },
                                   decoration: InputDecoration(
                                     border: InputBorder.none,
                                     alignLabelWithHint: true,
-                                    hintText: "PIN...",
+                                    hintText: hintText,
                                     hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                         color: const Color.fromRGBO(135, 135, 135, 1), fontStyle: FontStyle.italic),
                                   ),
@@ -510,8 +565,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           width: MediaQuery.of(context).size.width,
                           child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                             RawMaterialButton(
-                              onPressed: () async {
-                                await sendLogin(context);
+                              onPressed: () {
+                                Navigator.of(context).pop(textController.text);
                               },
                               child: Container(
                                 decoration: BoxDecoration(
@@ -545,7 +600,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             RawMaterialButton(
                               onPressed: () {
-                                Navigator.of(context).pop();
+                                Navigator.of(context).pop(null);
                               },
                               child: Container(
                                 decoration: BoxDecoration(
