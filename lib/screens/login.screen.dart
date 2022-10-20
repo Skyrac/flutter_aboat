@@ -291,130 +291,135 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return SafeArea(
+    return Stack(children: [
+      SafeArea(
         child: Container(
-      decoration: const BoxDecoration(color: Color.fromRGBO(15, 23, 41, 1)),
-      child: Scaffold(
-          body: Stack(
-        children: [
-          LoginAndRegisterBackground(
-            child: SizedBox(
-              width: size.width > 500 ? 500 : size.width,
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      alignment: Alignment.topLeft,
-                      margin: const EdgeInsets.only(left: 55),
-                      child: Text(
-                        "Login",
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
+          decoration: const BoxDecoration(color: Color.fromRGBO(15, 23, 41, 1)),
+          child: Scaffold(
+            body: Stack(
+              children: [
+                LoginAndRegisterBackground(
+                  child: SizedBox(
+                    width: size.width > 500 ? 500 : size.width,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            alignment: Alignment.topLeft,
+                            margin: const EdgeInsets.only(left: 55),
+                            child: Text(
+                              "Login",
+                              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                          SizedBox(height: size.height * 0.02),
+                          createEmailPinRequestWidget("E-Mail...", () async {
+                            final bodyMediumTheme = Theme.of(context).textTheme.bodyMedium;
+                            await sendPinRequest();
+                            final pinResult = await showInputDialog(context, "Confirm PIN", (_) {
+                              return Text.rich(TextSpan(children: [
+                                TextSpan(
+                                  text: 'You should receive a PIN on ',
+                                  style: bodyMediumTheme,
+                                ),
+                                TextSpan(
+                                  text: emailController.text,
+                                  style: bodyMediumTheme?.copyWith(fontWeight: FontWeight.w600),
+                                ),
+                                TextSpan(
+                                  text:
+                                      ' to verify your login. If you have no account registered under your email, you’ll be asked to setup an username after sign in.',
+                                  style: bodyMediumTheme,
+                                ),
+                              ]));
+                            }, "Pin...");
+                            if (pinResult != null) {
+                              // Confirm
+                              setState(() {
+                                isLoading = true;
+                              });
+                              final loginResult = await sendLogin(context, emailController.text, pinResult);
+                              print(loginResult);
+                              setState(() {
+                                isLoading = false;
+                              });
+                              if (loginResult) {
+                                // new user
+                                final username = await showInputDialog(
+                                    context,
+                                    "Choose an username",
+                                    (_) => Text.rich(TextSpan(children: [
+                                          TextSpan(
+                                            text:
+                                                'Your username will be shown for in social media features as well as comments and ratings you might leave for podcasts and episodes.',
+                                            style: bodyMediumTheme,
+                                          ),
+                                        ])),
+                                    "Username...");
+                                if (username != null) {
+                                  setState(() {
+                                    isLoading = true;
+                                  });
+                                  final registerResult =
+                                      await UserRepository.emailRegister(emailController.text, pinResult, username, false);
+                                  setState(() {
+                                    isLoading = false;
+                                  });
+                                  if (registerResult) {
+                                    widget.refreshParent();
+                                  } else {
+                                    // register error
+                                  }
+                                } else {
+                                  print("cancel");
+                                  // cancel
+                                  return;
+                                }
+                              } else {
+                                //loginResult == false -> not a new account
+                              }
+                            } else {
+                              // Cancel from PIN Dialog
+                              return;
+                            }
+                          }, emailController, "Request PIN"),
+                          SizedBox(height: size.height * 0.05),
+                          createAppleLogin(),
+                          SizedBox(height: Platform.isIOS ? 10 : 0),
+                          createAppleLogin(),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          signInButton(image: "google.png", socialLogin: SocialLogin.Google, text: "Google"),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          signInButton(image: "facebook.png", socialLogin: SocialLogin.Facebook, text: "Facebook"),
+                        ],
                       ),
                     ),
-                    SizedBox(height: size.height * 0.02),
-                    createEmailPinRequestWidget("E-Mail...", () async {
-                      final bodyMediumTheme = Theme.of(context).textTheme.bodyMedium;
-                      await sendPinRequest();
-                      final pinResult = await showInputDialog(context, "Confirm PIN", (_) {
-                        return Text.rich(TextSpan(children: [
-                          TextSpan(
-                            text: 'You should receive a PIN on ',
-                            style: bodyMediumTheme,
-                          ),
-                          TextSpan(
-                            text: emailController.text,
-                            style: bodyMediumTheme?.copyWith(fontWeight: FontWeight.w600),
-                          ),
-                          TextSpan(
-                            text:
-                                ' to verify your login. If you have no account registered under your email, you’ll be asked to setup an username after sign in.',
-                            style: bodyMediumTheme,
-                          ),
-                        ]));
-                      }, "Pin...");
-                      if (pinResult != null) {
-                        // Confirm
-                        setState(() {
-                          isLoading = true;
-                        });
-                        final loginResult = await sendLogin(context, emailController.text, pinResult);
-                        print(loginResult);
-                        setState(() {
-                          isLoading = false;
-                        });
-                        if (loginResult) {
-                          // new user
-                          final username = await showInputDialog(
-                              context,
-                              "Choose an username",
-                              (_) => Text.rich(TextSpan(children: [
-                                    TextSpan(
-                                      text:
-                                          'Your username will be shown for in social media features as well as comments and ratings you might leave for podcasts and episodes.',
-                                      style: bodyMediumTheme,
-                                    ),
-                                  ])),
-                              "Username...");
-                          if (username != null) {
-                            setState(() {
-                              isLoading = true;
-                            });
-                            final registerResult =
-                                await UserRepository.emailRegister(emailController.text, pinResult, username, false);
-                            setState(() {
-                              isLoading = false;
-                            });
-                            if (registerResult) {
-                              widget.refreshParent();
-                            } else {
-                              // register error
-                            }
-                          } else {
-                            print("cancel");
-                            // cancel
-                            return;
-                          }
-                        } else {
-                          //loginResult == false -> not a new account
-                        }
-                      } else {
-                        // Cancel from PIN Dialog
-                        return;
-                      }
-                    }, emailController, "Request PIN"),
-                    SizedBox(height: size.height * 0.05),
-                    createAppleLogin(),
-                    SizedBox(height: Platform.isIOS ? 10 : 0),
-                    createAppleLogin(),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    signInButton(image: "google.png", socialLogin: SocialLogin.Google, text: "Google"),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    signInButton(image: "facebook.png", socialLogin: SocialLogin.Facebook, text: "Facebook"),
-                  ],
+                  ),
                 ),
-              ),
+                isLoading
+                    ? const Positioned(
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        child: Card(
+                            color: Colors.transparent,
+                            margin: EdgeInsets.all(0),
+                            child: Center(
+                              child: CircularProgressIndicator(),
+                            )))
+                    : const SizedBox(),
+              ],
             ),
           ),
-          isLoading
-              ? const Positioned(
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: Card(
-                      color: Colors.transparent,
-                      child: Center(
-                        child: CircularProgressIndicator(),
-                      )))
-              : const SizedBox(),
-        ],
-      )),
-    ));
+        ),
+      ),
+    ]);
   }
 
   createAppleLogin() {
