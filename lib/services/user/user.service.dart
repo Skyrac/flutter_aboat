@@ -43,6 +43,7 @@ class UserService {
   static const String LAST_NOTIFICATION_UPDATE = "last_update_seen";
 
   get isConnected => token.isNotEmpty && userInfo != null;
+  get guest => prefs.getBool("guest") ?? false;
 
   get availableToken => rewards.vested;
   Stream<Reward> rewardStream() async* {
@@ -168,6 +169,10 @@ class UserService {
   finishIntroduction() async {
     newUser = false;
     await prefs.setBool('newUser', false);
+  }
+
+  loginAsGuest() async {
+    await prefs.setBool("guest", true);
   }
 
   setInitialValues() async {

@@ -57,6 +57,13 @@ class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    final nextScreen = userService.newUser
+        ? const OnBoardingScreen()
+        : (!userService.isConnected && !userService.guest)
+            ? LoginScreen(() => setState(() {
+                  print("refresh");
+                }))
+            : const AppScreen(title: 'Talkaboat');
     return MaterialApp(
         title: 'Talkaboat',
         theme: NewDefaultTheme.defaultTheme,
@@ -65,11 +72,7 @@ class _MyAppState extends State<MyApp> {
         home: AnimatedSplashScreen(
             duration: 2000,
             splash: const Image(width: 250, image: AssetImage('assets/images/talkaboat.png')),
-            nextScreen: userService.newUser
-                ? const OnBoardingScreen()
-                : !userService.isConnected
-                    ? LoginScreen(() => setState(() {}))
-                    : const AppScreen(title: 'Talkaboat'),
+            nextScreen: nextScreen,
             splashTransition: SplashTransition.fadeTransition,
             pageTransitionType: PageTransitionType.fade,
             backgroundColor: DefaultColors.secondaryColor.shade900));
