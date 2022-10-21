@@ -20,7 +20,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> with RouteAware {
   void _onIntroEnd(context) async {
     await getIt<UserService>().finishIntroduction();
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => LoginScreen(() => setState(() {}))),
+      MaterialPageRoute(builder: (_) => LoginScreen(true, () => setState(() {}))),
     );
   }
 

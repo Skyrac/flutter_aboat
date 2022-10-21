@@ -15,15 +15,13 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
   final double expandedHeight;
   final SearchResult podcast;
 
-  PodcastDetailSliver(
-      {required this.expandedHeight, required this.podcast});
+  PodcastDetailSliver({required this.expandedHeight, required this.podcast});
 
   final userService = getIt<UserService>();
   final tokenService = getIt<TokenService>();
   final donationAmountController = TextEditingController();
   @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     const size = 200;
     final top = expandedHeight / 1.1 - shrinkOffset / 3 - size;
     return Stack(
@@ -79,12 +77,7 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                 child: ClipRRect(
                     borderRadius: BorderRadius.circular(200),
                     child: Card(
-                        child: buildButton(
-                            text: 'Donate',
-                            icon: Icons.money,
-                            onClick: () => {
-                              showDonationModal(context)
-                            }))),
+                        child: buildButton(text: 'Donate', icon: Icons.money, onClick: () => {showDonationModal(context)}))),
               ),
               const SizedBox(
                 height: 15,
@@ -93,28 +86,30 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                 children: [
                   Expanded(
                       child: Card(
-                        child: buildButton(
-                            text: 'Share', icon: Icons.share, onClick: () => {
+                    child: buildButton(
+                        text: 'Share',
+                        icon: Icons.share,
+                        onClick: () => {
                               //TODO: Geräte Abhängigkeit prüfen
-                              Share.share("Check the Podcast ${podcast.title} on Talkaboat.online mobile App! Start listening and earn while supporting new and upcoming podcasters.\n\n Download it now on \nAndroid: https://play.google.com/store/apps/details?id=com.aboat.talkaboat\n", subject: "Check this out! A Podcast on Talkaboat.online.")
-                        }),
-                      )),
+                              Share.share(
+                                  "Check the Podcast ${podcast.title} on Talkaboat.online mobile App! Start listening and earn while supporting new and upcoming podcasters.\n\n Download it now on \nAndroid: https://play.google.com/store/apps/details?id=com.aboat.talkaboat\n",
+                                  subject: "Check this out! A Podcast on Talkaboat.online.")
+                            }),
+                  )),
                   Expanded(
                       child: Card(
-                        child: buildButton(
-                            text: 'Claim',
-                            icon: Icons.rv_hookup,
-                            onClick: () => {
-                                  showModalBottomSheet(
-                                      isScrollControlled: true,
-                                      shape: const RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.vertical(
-                                              top: Radius.circular(20))),
-                                      context: context,
-                                      builder: (context) =>
-                                          ClaimBottomSheet(podcastId: podcast.id!))
-                                }),
-                      )),
+                    child: buildButton(
+                        text: 'Claim',
+                        icon: Icons.rv_hookup,
+                        onClick: () => {
+                              showModalBottomSheet(
+                                  isScrollControlled: true,
+                                  shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+                                  context: context,
+                                  builder: (context) => ClaimBottomSheet(podcastId: podcast.id!))
+                            }),
+                  )),
                 ],
               ),
             ],
@@ -122,17 +117,13 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
         ),
       );
 
-  Widget buildButton(
-          {required String text,
-          required IconData icon,
-          required Function onClick}) =>
-      TextButton(
+  Widget buildButton({required String text, required IconData icon, required Function onClick}) => TextButton(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(icon),
             const SizedBox(width: 12),
-            Text(text, style: TextStyle(fontSize: 20)),
+            Text(text, style: const TextStyle(fontSize: 20)),
           ],
         ),
         onPressed: () {
@@ -153,96 +144,93 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          backgroundColor: Theme.of(context).dialogBackgroundColor,
-          title: Text('Donation for ${podcast.title}'),
-          elevation: 8,
-          content: userService.isConnected ? TextField(
-              controller: donationAmountController,
-              keyboardType: TextInputType.numberWithOptions(decimal: true),
-              inputFormatters: <TextInputFormatter> [
-                FilteringTextInputFormatter.allow(RegExp(r"[0-9.,]")),
-                TextInputFormatter.withFunction((oldValue, newValue) {
-                  try {
-                    final text = newValue.text.replaceAll(",", ".");
-                    if (text.isEmpty || double.parse(text) <= userService.availableToken)
-                    return newValue;
-                  } catch (e) {}
-                  return oldValue;
-                }),
+              backgroundColor: Theme.of(context).dialogBackgroundColor,
+              title: Text('Donation for ${podcast.title}'),
+              elevation: 8,
+              content: userService.isConnected
+                  ? TextField(
+                      controller: donationAmountController,
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.allow(RegExp(r"[0-9.,]")),
+                        TextInputFormatter.withFunction((oldValue, newValue) {
+                          try {
+                            final text = newValue.text.replaceAll(",", ".");
+                            if (text.isEmpty || double.parse(text) <= userService.availableToken) return newValue;
+                          } catch (e) {}
+                          return oldValue;
+                        }),
+                      ],
+                      decoration: InputDecoration(
+                          hintText: "Donation Amount",
+                          labelText: "Available ABOAT: ${userService.availableToken.toStringAsFixed(2)}",
+                          labelStyle: Theme.of(context).textTheme.labelLarge,
+                          enabledBorder: const UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.blue),
+                          ),
+                          focusedBorder: const UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.green),
+                          ),
+                          border: const UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.red),
+                          )))
+                  : SizedBox(
+                      height: 140,
+                      child: Column(
+                        children: [const Text("Login to use this feature!"), createLoginButton(context)],
+                      ),
+                    ),
+              actions: [
+                TextButton(
+                    onPressed: (() {
+                      if (donationAmountController.text.isEmpty) {
+                        return;
+                      }
+                      tokenService.donate(podcast.id!, double.parse(donationAmountController.text));
+                      donationAmountController.text = "";
+                      Navigator.pop(context);
+                    }),
+                    child: const Text("Donate")),
+                TextButton(
+                    onPressed: (() {
+                      Navigator.pop(context);
+                    }),
+                    child: const Text("Cancel"))
               ],
-              decoration: InputDecoration(
-                  hintText: "Donation Amount",
-                  labelText: "Available ABOAT: ${userService.availableToken.toStringAsFixed(2)}",
-                  labelStyle: Theme.of(context).textTheme.labelLarge,
-                  enabledBorder: const UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.blue),
-                  ),
-                  focusedBorder: const UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.green),
-                  ),
-                  border: const UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red),
-                  ))) :
-          SizedBox(
-            height: 140,
-            child: Column(
-              children: [
-                Text("Login to use this feature!"),
-                createLoginButton(context)
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-                onPressed: (() {
-                  if(donationAmountController.text.isEmpty) {
-                    return;
-                  }
-                  tokenService.donate(podcast.id!, double.parse(donationAmountController.text));
-                  donationAmountController.text = "";
-                  Navigator.pop(context);
-                }),
-                child: Text("Donate")),
-            TextButton(
-                onPressed: (() {
-                  Navigator.pop(context);
-                }),
-                child: Text("Cancel"))
-          ],
-        ));
+            ));
   }
 
   createLoginButton(BuildContext context) => Center(
-    child: Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 30),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: Card(
-          child: InkWell(
-            onTap: (() {
-              Navigator.push(
-                  context,
-                  PageTransition(
-                      alignment: Alignment.bottomCenter,
-                      curve: Curves.bounceOut,
-                      type: PageTransitionType.fade,
-                      duration: const Duration(milliseconds: 300),
-                      reverseDuration: const Duration(milliseconds: 200),
-                      child: LoginScreen(() => Navigator.pop(context))));
-            }),
-            child: SizedBox(
-                height: 80,
-                width: MediaQuery.of(context).size.width,
-                child: Center(
-                  child: Text(
-                    "Login",
-                    style: Theme.of(context).textTheme.titleLarge,
-                    textAlign: TextAlign.center,
-                  ),
-                )),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 30),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Card(
+              child: InkWell(
+                onTap: (() {
+                  Navigator.push(
+                      context,
+                      PageTransition(
+                          alignment: Alignment.bottomCenter,
+                          curve: Curves.bounceOut,
+                          type: PageTransitionType.fade,
+                          duration: const Duration(milliseconds: 300),
+                          reverseDuration: const Duration(milliseconds: 200),
+                          child: LoginScreen(true, () => Navigator.pop(context))));
+                }),
+                child: SizedBox(
+                    height: 80,
+                    width: MediaQuery.of(context).size.width,
+                    child: Center(
+                      child: Text(
+                        "Login",
+                        style: Theme.of(context).textTheme.titleLarge,
+                        textAlign: TextAlign.center,
+                      ),
+                    )),
+              ),
+            ),
           ),
         ),
-      ),
-    ),
-  );
+      );
 }

@@ -81,6 +81,7 @@ class UserService {
     if (lastConnectionState == null) {
       throw Exception("Google Sign-In: Not able to connect with backend");
     }
+    print("lastConnectionState: ${lastConnectionState?.toJson()}");
     return lastConnectionState != null && lastConnectionState!.text != null && lastConnectionState!.text! == "connected";
   }
 
@@ -306,6 +307,7 @@ class UserService {
       var response = await UserRepository.firebaseRegister(firebaseToken, username, newsletter);
       token = response.data ?? "";
       prefs.setString(TOKEN_IDENTIFIER, token);
+      print("token: $token");
 
       if (token.isNotEmpty) {
         await getCoreData();

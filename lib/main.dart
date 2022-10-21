@@ -57,12 +57,17 @@ class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    print("isConnected ${userService.isConnected}");
+    print("token ${userService.token}");
+    print("userinfo ${userService.userInfo?.toJson()}");
     final nextScreen = userService.newUser
         ? const OnBoardingScreen()
         : (!userService.isConnected && !userService.guest)
-            ? LoginScreen(() => setState(() {
-                  print("refresh");
-                }))
+            ? LoginScreen(
+                false,
+                () => setState(() {
+                      print("refresh");
+                    }))
             : const AppScreen(title: 'Talkaboat');
     return MaterialApp(
         title: 'Talkaboat',

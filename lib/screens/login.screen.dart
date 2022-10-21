@@ -3,18 +3,17 @@ import 'dart:io';
 import 'package:Talkaboat/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:social_login_buttons/social_login_buttons.dart';
 
 import '../injection/injector.dart';
 import '../services/repositories/user.repository.dart';
 import '../services/user/user.service.dart';
 import '../themes/login-and-register.background.dart';
 import '../utils/Snackbar_Creator.dart';
-import '../utils/modal.widget.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen(this.refreshParent, {Key? key}) : super(key: key);
+  const LoginScreen(this.shouldPop, this.refreshParent, {Key? key}) : super(key: key);
   final Function refreshParent;
+  final bool shouldPop;
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -66,7 +65,9 @@ class _LoginScreenState extends State<LoginScreen> {
         return true;
       } else if (result == "true") {
         widget.refreshParent();
-        navigator.pop();
+        if (widget.shouldPop) {
+          navigator.pop();
+        }
       }
       setState(() {
         isLoading = false;
@@ -195,7 +196,9 @@ class _LoginScreenState extends State<LoginScreen> {
       if (await userService.socialLogin(socialLogin, context)) {
         //ShowSnackBar(context, "Successfully signed in");
         widget.refreshParent();
-        //Navigator.pop(context);
+        if (widget.shouldPop) {
+          Navigator.of(context).pop();
+        }
         return;
       }
     } catch (exception) {
@@ -277,13 +280,17 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       isLoading = true;
     });
-    var successful = true; //await userService.firebaseRegister(username, true);
+    var successful = await userService.firebaseRegister(username, true);
+    print("successful: $successful");
     setState(() {
       isLoading = false;
     });
     if (successful) {
       setState(() {
         widget.refreshParent();
+        if (widget.shouldPop) {
+          Navigator.of(context).pop();
+        }
       });
     }
   }
@@ -424,7 +431,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           onTap: () async {
                             await userService.loginAsGuest();
                             widget.refreshParent();
-                            Navigator.of(context).pop();
+                            if (widget.shouldPop) {
+                              Navigator.of(context).pop();
+                            }
                           },
                           borderRadius: BorderRadius.circular(10),
                           child: const Padding(

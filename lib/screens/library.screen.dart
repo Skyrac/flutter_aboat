@@ -99,7 +99,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                                       type: PageTransitionType.fade,
                                       duration: const Duration(milliseconds: 300),
                                       reverseDuration: const Duration(milliseconds: 200),
-                                      child: LoginScreen(() => setState(() {}))));
+                                      child: LoginScreen(true, () => setState(() {}))));
                             }),
                             child: SizedBox(
                                 height: 80,

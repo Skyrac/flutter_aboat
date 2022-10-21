@@ -44,7 +44,7 @@ class _PodcastListFavoritesWidgetState extends State<PodcastListFavoritesWidget>
                         type: PageTransitionType.rightToLeftWithFade,
                         duration: const Duration(milliseconds: 500),
                         reverseDuration: const Duration(milliseconds: 500),
-                        child: LoginScreen(() => setState(() {}))));
+                        child: LoginScreen(true, () => setState(() {}))));
               } else {
                 await userService.toggleFavoritesEntry(entry.id);
               }

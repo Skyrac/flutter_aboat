@@ -25,62 +25,60 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
           value: 'rename',
           child: Card(
               child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                Icon(
-                  Icons.edit,
-                  size: 20,
-                  color: Theme.of(context).iconTheme.color,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 10),
-                  child: Text('Rename'),
-                )
-              ])),
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.edit,
+                size: 20,
+                color: Theme.of(context).iconTheme.color,
+              ),
+              const Padding(
+                padding: EdgeInsets.only(left: 10),
+                child: Text('Rename'),
+              )
+            ],
+          )),
         ),
         PopupMenuItem<String>(
           value: 'copy',
           child: Card(
               child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                Icon(
-                  Icons.copy,
-                  size: 20,
-                  color: Theme.of(context).iconTheme.color,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 10),
-                  child: Text('Copy'),
-                )
-              ])),
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.copy,
+                size: 20,
+                color: Theme.of(context).iconTheme.color,
+              ),
+              const Padding(
+                padding: EdgeInsets.only(left: 10),
+                child: Text('Copy'),
+              )
+            ],
+          )),
         ),
         PopupMenuItem<String>(
           value: 'delete',
           child: Card(
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                Icon(
-                  Icons.delete,
-                  size: 20,
-                  color: Theme.of(context).iconTheme.color,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 10),
-                  child: Text('Delete'),
-                )
-              ])),
+              child:
+                  Row(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.center, children: [
+            Icon(
+              Icons.delete,
+              size: 20,
+              color: Theme.of(context).iconTheme.color,
+            ),
+            const Padding(
+              padding: EdgeInsets.only(left: 10),
+              child: Text('Delete'),
+            )
+          ])),
         ),
       ];
 
   buildPopupButton(context, Playlist entry) => PopupMenuButton(
-        child: Card(
-            child: Icon(Icons.more_vert,
-                color: Theme.of(context).iconTheme.color)),
+        child: Card(child: Icon(Icons.more_vert, color: Theme.of(context).iconTheme.color)),
         onSelected: (value) async {
           switch (value) {
             case "delete":
@@ -111,7 +109,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                           type: PageTransitionType.fade,
                           duration: const Duration(milliseconds: 300),
                           reverseDuration: const Duration(milliseconds: 200),
-                          child: LoginScreen(() => setState(() {}))));
+                          child: LoginScreen(true, () => setState(() {}))));
                 }),
                 child: SizedBox(
                     height: 80,
@@ -135,22 +133,21 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
         child: Scaffold(
             appBar: AppBar(
               actions: [
-                userService.isConnected ? Padding(
-                  padding: const EdgeInsets.only(right: 10),
-                  child: IconButton(
-                    icon: const Icon(Icons.add),
-                    tooltip: '',
-                    onPressed: () {
-                      showAlert(context);
-                    },
-                  ),
-                ) : SizedBox()
-
+                userService.isConnected
+                    ? Padding(
+                        padding: const EdgeInsets.only(right: 10),
+                        child: IconButton(
+                          icon: const Icon(Icons.add),
+                          tooltip: '',
+                          onPressed: () {
+                            showAlert(context);
+                          },
+                        ),
+                      )
+                    : const SizedBox()
               ],
             ),
-            body: userService.isConnected
-                ? createPlaylistView()
-                : createLoginButton()));
+            body: userService.isConnected ? createPlaylistView() : createLoginButton()));
   }
 
   createPlaylistView() => FutureBuilder(
@@ -207,21 +204,17 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                       child: PlaylistDetailScreen(playlist: entry)));
             }),
             child: ListTile(
-              leading: Container(
+              leading: SizedBox(
                 height: 60,
                 width: 60,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
-                      imageUrl: entry.image == null || entry.image!.isEmpty
-                          ? 'https://picsum.photos/200'
-                          : entry.image!,
-                      placeholder: (_, __) =>
-                          const Center(child: CircularProgressIndicator()),
+                      imageUrl: entry.image == null || entry.image!.isEmpty ? 'https://picsum.photos/200' : entry.image!,
+                      placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
                       // progressIndicatorBuilder: (context, url, downloadProgress) =>
                       //     CircularProgressIndicator(value: downloadProgress.progress),
-                      errorWidget: (context, url, error) =>
-                          const Icon(Icons.error),
+                      errorWidget: (context, url, error) => const Icon(Icons.error),
                       fit: BoxFit.cover),
                 ),
               ),
@@ -258,20 +251,19 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
               actions: [
                 TextButton(
                     onPressed: (() async {
-                      if (await userService
-                          .createPlaylist(playlistCreationController.text)) {
+                      if (await userService.createPlaylist(playlistCreationController.text)) {
                         setState(() {
                           playlistCreationController.text = "";
                           Navigator.pop(context);
                         });
                       }
                     }),
-                    child: Text("Create")),
+                    child: const Text("Create")),
                 TextButton(
                     onPressed: (() {
                       Navigator.pop(context);
                     }),
-                    child: Text("Cancel"))
+                    child: const Text("Cancel"))
               ],
             ));
   }
