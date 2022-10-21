@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:Talkaboat/screens/app.screen.dart';
+import 'package:Talkaboat/screens/login.screen.dart';
 import 'package:Talkaboat/screens/onboarding/onboarding.screen.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/themes/colors.dart';
@@ -41,8 +42,17 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
+
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final userService = getIt<UserService>();
 
   // This widget is the root of your application.
   @override
@@ -51,10 +61,15 @@ class MyApp extends StatelessWidget {
         title: 'Talkaboat',
         theme: NewDefaultTheme.defaultTheme,
         debugShowCheckedModeBanner: false,
+        navigatorObservers: [routeObserver],
         home: AnimatedSplashScreen(
             duration: 2000,
             splash: const Image(width: 250, image: AssetImage('assets/images/talkaboat.png')),
-            nextScreen: getIt<UserService>().newUser ? const OnBoardingScreen() : const AppScreen(title: 'Talkaboat'),
+            nextScreen: userService.newUser
+                ? const OnBoardingScreen()
+                : !userService.isConnected
+                    ? LoginScreen(() => setState(() {}))
+                    : const AppScreen(title: 'Talkaboat'),
             splashTransition: SplashTransition.fadeTransition,
             pageTransitionType: PageTransitionType.fade,
             backgroundColor: DefaultColors.secondaryColor.shade900));

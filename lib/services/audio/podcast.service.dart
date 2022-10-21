@@ -1,4 +1,5 @@
 import 'package:Talkaboat/models/podcasts/podcast-genre.model.dart';
+import 'package:Talkaboat/models/podcasts/podcast-rank.model.dart';
 
 import '../../models/podcasts/episode.model.dart';
 import '../../models/podcasts/podcast.model.dart';
@@ -62,8 +63,8 @@ class PodcastService {
     }
   }
 
-  Future<List<Podcast>> search(String search, {int? genre, int amount = 10, int offset = 0}) {
-    return PodcastRepository.search(search, amount, offset, genre: genre);
+  Future<List<Podcast>> search(String search, {int? genre, int amount = 10, int offset = 0, PodcastRank? rank}) {
+    return PodcastRepository.search(search, amount, offset, genre: genre, rank: rank);
   }
 }
 

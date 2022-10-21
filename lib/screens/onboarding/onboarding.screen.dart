@@ -1,9 +1,12 @@
 import 'package:Talkaboat/injection/injector.dart';
+import 'package:Talkaboat/main.dart';
 import 'package:Talkaboat/screens/app.screen.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/themes/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
+
+import '../login.screen.dart';
 
 class OnBoardingScreen extends StatefulWidget {
   const OnBoardingScreen({Key? key}) : super(key: key);
@@ -12,21 +15,48 @@ class OnBoardingScreen extends StatefulWidget {
   State<OnBoardingScreen> createState() => _OnBoardingScreenState();
 }
 
-class _OnBoardingScreenState extends State<OnBoardingScreen> {
+class _OnBoardingScreenState extends State<OnBoardingScreen> with RouteAware {
   final introKey = GlobalKey<IntroductionScreenState>();
   void _onIntroEnd(context) async {
     await getIt<UserService>().finishIntroduction();
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const AppScreen(title: 'Talkaboat')),
+      MaterialPageRoute(builder: (_) => LoginScreen(() => setState(() {}))),
     );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context)! as PageRoute);
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    // Covering route was popped off the navigator.
+    super.didPopNext();
+    // didPopNext is still in the context of the pop that triggered it
+    // we await till it is computed before our next pop
+    Future.delayed(
+        Duration.zero,
+        () =>
+            Navigator.of(_context!).pushReplacement(MaterialPageRoute(builder: (_) => const AppScreen(title: 'Talkaboat'))));
   }
 
   Widget _buildImage(String assetName, [double width = 350]) {
     return Image.asset('assets/$assetName', width: width);
   }
 
+  BuildContext? _context;
+
   @override
   Widget build(BuildContext context) {
+    _context ??= context;
     const bodyStyle = TextStyle(fontSize: 19.0);
 
     const pageDecoration = PageDecoration(

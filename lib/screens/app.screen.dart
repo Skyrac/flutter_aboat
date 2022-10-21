@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:Talkaboat/screens/playlist.screen.dart';
+import 'package:Talkaboat/screens/favorites.screen.dart';
 import 'package:Talkaboat/screens/search.screen.dart';
 import 'package:Talkaboat/screens/social/social_entry.screen.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
@@ -77,8 +77,8 @@ class _AppScreenState extends State<AppScreen> {
     Tabs = [
       HomeScreen(setEpisode, _selectTab),
       const SearchScreen(),
-      const PlaylistScreen(),
-      LibraryScreen(),
+      const FavoritesScreen(),
+      const LibraryScreen(),
       const SocialEntryScreen()
     ];
     checkUpdates(context);

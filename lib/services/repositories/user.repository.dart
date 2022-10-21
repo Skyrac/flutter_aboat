@@ -11,26 +11,35 @@ import '../../models/user/user-info.model.dart';
 class UserRepository {
   UserRepository._();
 
-  static Future<bool> requestEmailLogin(String email) async {
+  static Future<String?> requestEmailLogin(String email) async {
     try {
-      var response = await Dio().post<String>(
-          'https://api.talkaboat.online/v1/user/login/email/$email');
+      var response = await Dio().post<String>('https://api.talkaboat.online/v1/user/login/email/$email');
       var convertedData = response.data;
-      return convertedData != null;
+      print(convertedData);
+      return convertedData;
     } catch (e) {
       print(e);
     }
-    return false;
+    return null;
   }
 
   static Future<String> emailLogin(String email, String pin) async {
     try {
-      var response = await Dio().post<String>(
-          'https://api.talkaboat.online/v1/user/login/email',
-          data: {"address": email, "signature": pin});
+      var response = await Dio()
+          .post<String>('https://api.talkaboat.online/v1/user/login/email', data: {"address": email, "signature": pin});
+      print('data: ${response.data}');
+      if (response.data == "Value cannot be null. (Parameter 'User not found! Please register before sign in.')") {
+        return "new_account";
+      }
       var convertedData = json.decode(response.data!)["token"];
       return convertedData;
     } catch (exception) {
+      print(exception);
+      final ex = exception as DioError;
+      final error = (ex.response?.data ?? "") as String;
+      if (error.contains("Value cannot be null. (Parameter 'User not found! Please register before sign in.')")) {
+        return "new_account";
+      }
       return "";
     }
   }
@@ -68,9 +77,7 @@ class UserRepository {
   static Future<List<UserInfoData>> getFriends(int amount, int offset) async {
     try {
       var response = await dio.get<String>('/v1/social/friends/$amount/$offset');
-      var convertedData = jsonDecode(response.data!)
-          .map((data) => UserInfoData.fromJson(data))
-          .toList();
+      var convertedData = jsonDecode(response.data!).map((data) => UserInfoData.fromJson(data)).toList();
       return convertedData;
     } catch (exception) {
       return List.empty();
@@ -80,9 +87,7 @@ class UserRepository {
   static Future<List<UserInfoData>> getUserFriends(int userId, int amount, int offset) async {
     try {
       var response = await dio.get<String>('/v1/social/friends/$userId/$amount/$offset');
-      var convertedData = jsonDecode(response.data!)
-          .map((data) => UserInfoData.fromJson(data))
-          .toList();
+      var convertedData = jsonDecode(response.data!).map((data) => UserInfoData.fromJson(data)).toList();
       return convertedData;
     } catch (exception) {
       return List.empty();
@@ -91,18 +96,15 @@ class UserRepository {
 
   static Future<ResponseModel> firebaseLogin(String userIdToken) async {
     var data = ResponseModel(status: 0, text: userIdToken);
-    var response =
-        await dio.post<String>('/v1/user/login/firebase', data: data);
+    var response = await dio.post<String>('/v1/user/login/firebase', data: data);
     var convertedData = ResponseModel.fromJson(json.decode(response.data!));
     return convertedData;
   }
 
-  static Future<ResponseModel> firebaseVerify(
-      String userIdToken, String pin) async {
+  static Future<ResponseModel> firebaseVerify(String userIdToken, String pin) async {
     try {
       var data = ResponseModel(status: 0, text: userIdToken);
-      var response =
-          await dio.post<String>('/v1/user/login/firebase/$pin', data: data);
+      var response = await dio.post<String>('/v1/user/login/firebase/$pin', data: data);
       var convertedData = ResponseModel.fromJson(json.decode(response.data!));
       return convertedData;
     } catch (exception) {
@@ -110,20 +112,27 @@ class UserRepository {
     }
   }
 
-  static Future<ResponseModel> firebaseRegister(
-      String userIdToken, String username, bool newsletter) async {
+  static Future<ResponseModel> firebaseRegister(String userIdToken, String username, bool newsletter) async {
     try {
-      var response =
-          await dio.post<String>('/v1/user/register/firebase/', data: {
-        "Address": "Social: $username",
-        "Signature": userIdToken,
-        "UserName": username,
-        "Newsletter": newsletter
-      });
+      var response = await dio.post<String>('/v1/user/register/firebase/',
+          data: {"address": "Social: $username", "Signature": userIdToken, "UserName": username, "Newsletter": newsletter});
       var convertedData = ResponseModel.fromJson(json.decode(response.data!));
       return convertedData;
     } catch (exception) {
       return ResponseModel();
+    }
+  }
+
+  static Future<bool> emailRegister(String email, String pin, String username, bool newsletter) async {
+    try {
+      var response = await dio.post<String>('/v1/user/register/email/',
+          data: {"address": email, "signature": pin, "userName": username, "newsletter": newsletter});
+      print(response.data);
+      return true;
+    } catch (exception) {
+      print(exception);
+      print((exception as DioError).response);
+      return false;
     }
   }
 
@@ -132,5 +141,4 @@ class UserRepository {
 
     return response.data == null ? false : response.data!.isNotEmpty;
   }
-
 }
