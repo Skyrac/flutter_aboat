@@ -26,12 +26,17 @@ class PodcastListHorizontal extends StatelessWidget {
                 ),
               );
             } else if (snapshot.hasData && snapshot.data != null) {
-              if (snapshot.data != null && snapshot.data!.isNotEmpty) {
+              if (snapshot.data != null) {
                 return PodcastListWidget(direction: Axis.horizontal, searchResults: snapshot.data!);
               }
             }
             // TODO: display a nice text
-            return Container();
+            return Center(
+              child: Text(
+                'snapshot.hasData: ${snapshot.hasData} snapshot.data: ${snapshot.data != null} snapshot.data!.isNotEmpty: ${snapshot.data!.isNotEmpty}',
+                style: const TextStyle(fontSize: 18),
+              ),
+            );
           }
           return const Center(child: CircularProgressIndicator());
         },

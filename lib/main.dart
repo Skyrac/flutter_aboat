@@ -58,6 +58,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     print("isConnected ${userService.isConnected}");
+    print("guest ${userService.guest}");
     print("token ${userService.token}");
     print("userinfo ${userService.userInfo?.toJson()}");
     final nextScreen = userService.newUser
@@ -69,6 +70,7 @@ class _MyAppState extends State<MyApp> {
                       print("refresh");
                     }))
             : const AppScreen(title: 'Talkaboat');
+    print(nextScreen);
     return MaterialApp(
         title: 'Talkaboat',
         theme: NewDefaultTheme.defaultTheme,
