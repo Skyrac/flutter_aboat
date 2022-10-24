@@ -32,35 +32,41 @@ class _HomeScreenSuggestedTabState extends State<HomeScreenSuggestedTab> {
         children: [
           ...createOnlyLoggedInWidgets(context),
           PodcastListHorizontal(
-              future: podcastService.search("", amount: 10, offset: 0, rank: PodcastRank.NewComer),
+              future: podcastService.search("",
+                  amount: 10, offset: 0, rank: PodcastRank.NewComer),
               title: "Newcomer",
               multiplier: "x1.5",
               seeAllCb: (() {
                 Navigator.push(
                   context,
-                  buildSearchScreenTransition(rank: PodcastRank.NewComer, title: "Newcomers"),
+                  buildSearchScreenTransition(
+                      rank: PodcastRank.NewComer, title: "Newcomers"),
                 );
               })),
           const SizedBox(height: 20),
           PodcastListHorizontal(
-              future: podcastService.search("", amount: 10, offset: 0, rank: PodcastRank.Receiver),
+              future: podcastService.search("",
+                  amount: 10, offset: 0, rank: PodcastRank.Receiver),
               title: "Receiver",
               multiplier: "x1.25",
               seeAllCb: (() {
                 Navigator.push(
                   context,
-                  buildSearchScreenTransition(rank: PodcastRank.Receiver, title: "Receivers"),
+                  buildSearchScreenTransition(
+                      rank: PodcastRank.Receiver, title: "Receivers"),
                 );
               })),
           const SizedBox(height: 20),
           PodcastListHorizontal(
-              future: podcastService.search("", amount: 10, offset: 0, rank: PodcastRank.Hodler),
+              future: podcastService.search("",
+                  amount: 10, offset: 0, rank: PodcastRank.Hodler),
               title: "Holder",
               multiplier: "x1.1",
               seeAllCb: (() {
                 Navigator.push(
                   context,
-                  buildSearchScreenTransition(rank: PodcastRank.Hodler, title: "Hodlers"),
+                  buildSearchScreenTransition(
+                      rank: PodcastRank.Hodler, title: "Hodlers"),
                 );
               })),
           const SizedBox(height: 5),
@@ -77,7 +83,9 @@ class _HomeScreenSuggestedTabState extends State<HomeScreenSuggestedTab> {
       const SizedBox(height: 5),
       createTaskBar(context, 'Tasks'),
       const SizedBox(height: 20),
-      PodcastListHorizontal(future: PodcastRepository.getRandomPodcast(10), title: "Recently Listened"),
+      PodcastListHorizontal(
+          future: PodcastRepository.getRecentlyListened(),
+          title: "Recently Listened"),
       const SizedBox(height: 20),
       createFavoritesList(context),
       const SizedBox(height: 20),
@@ -140,7 +148,8 @@ class _HomeScreenSuggestedTabState extends State<HomeScreenSuggestedTab> {
                 );
               } else if (snapshot.hasData && snapshot.data != null) {
                 if (snapshot.data != null && snapshot.data!.isNotEmpty) {
-                  return PodcastListFavoritesWidget(searchResults: snapshot.data!.take(10).toList());
+                  return PodcastListFavoritesWidget(
+                      searchResults: snapshot.data!.take(10).toList());
                 }
               }
               // TODO: display a nice text
@@ -154,11 +163,14 @@ class _HomeScreenSuggestedTabState extends State<HomeScreenSuggestedTab> {
     );
   }
 
-  Widget createPodcastPreviewByGenre(BuildContext context, String title, int genre) {
+  Widget createPodcastPreviewByGenre(
+      BuildContext context, String title, int genre) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Padding(
           padding: const EdgeInsets.only(left: 10),
-          child: Text(title, style: TextStyle(fontSize: 32, color: Theme.of(context).primaryColor))),
+          child: Text(title,
+              style: TextStyle(
+                  fontSize: 32, color: Theme.of(context).primaryColor))),
       SizedBox(
           height: 200,
           child: userService.podcastProposalsHomeScreen.containsKey(genre)
@@ -178,9 +190,13 @@ class _HomeScreenSuggestedTabState extends State<HomeScreenSuggestedTab> {
                           ),
                         );
                       } else if (snapshot.hasData && snapshot.data != null) {
-                        if (snapshot.data != null && snapshot.data!.isNotEmpty) {
-                          userService.podcastProposalsHomeScreen[genre] = snapshot.data!;
-                          return PodcastListWidget(direction: Axis.horizontal, searchResults: homeState.map[genre]!);
+                        if (snapshot.data != null &&
+                            snapshot.data!.isNotEmpty) {
+                          userService.podcastProposalsHomeScreen[genre] =
+                              snapshot.data!;
+                          return PodcastListWidget(
+                              direction: Axis.horizontal,
+                              searchResults: homeState.map[genre]!);
                         }
                       }
                     }
