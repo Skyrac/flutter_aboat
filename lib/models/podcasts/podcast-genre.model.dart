@@ -7,7 +7,7 @@ class PodcastGenre {
 
   PodcastGenre.fromJson(Map<String, dynamic> json) {
     name = json['name'];
-    imageUrl = json['imageUrl'];
+    imageUrl = json['image'];
     genreId = json['id'];
   }
 }
