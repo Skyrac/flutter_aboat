@@ -412,16 +412,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                 150 -
                                 size.height / 5 -
                                 50 -
-                                130 -
+                                110 -
                                 (widget.shouldPop ? 0 : 70) -
                                 50),
                         InkWell(
                             onTap: () async {
                               await userService.loginAsGuest();
-                              widget.refreshParent();
+                              print(widget.shouldPop);
                               if (widget.shouldPop) {
                                 Navigator.of(context).pop();
                               }
+                              widget.refreshParent();
                             },
                             borderRadius: BorderRadius.circular(10),
                             child: const Padding(

@@ -238,6 +238,8 @@ class UserService {
     if (token.isNotEmpty) {
       await getUserInfo();
       if (userInfo != null) {
+        print(userInfo);
+        await prefs.setBool("guest", false);
         await getRewards();
         await getFavorites(refresh: true);
         await getFriends();

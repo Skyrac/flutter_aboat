@@ -26,9 +26,7 @@ class PodcastListHorizontal extends StatelessWidget {
                 ),
               );
             } else if (snapshot.hasData && snapshot.data != null) {
-              if (snapshot.data != null) {
-                return PodcastListWidget(direction: Axis.horizontal, searchResults: snapshot.data!);
-              }
+              return PodcastListWidget(direction: Axis.horizontal, searchResults: snapshot.data!);
             }
             // TODO: display a nice text
             return Center(
