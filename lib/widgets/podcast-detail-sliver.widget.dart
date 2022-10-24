@@ -216,7 +216,7 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                           type: PageTransitionType.fade,
                           duration: const Duration(milliseconds: 300),
                           reverseDuration: const Duration(milliseconds: 200),
-                          child: LoginScreen(true, () => Navigator.pop(context))));
+                          child: LoginScreen(true, refreshParent: () => Navigator.pop(context))));
                 }),
                 child: SizedBox(
                     height: 80,

@@ -1,8 +1,6 @@
 import 'dart:io';
 
-import 'package:Talkaboat/screens/app.screen.dart';
-import 'package:Talkaboat/screens/login.screen.dart';
-import 'package:Talkaboat/screens/onboarding/onboarding.screen.dart';
+import 'package:Talkaboat/screens/root.screen.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/themes/colors.dart';
 import 'package:Talkaboat/themes/default.theme_new.dart';
@@ -42,8 +40,6 @@ void main() async {
   runApp(const MyApp());
 }
 
-final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
-
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -57,29 +53,14 @@ class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    print("isConnected ${userService.isConnected}");
-    print("guest ${userService.guest}");
-    print("token ${userService.token}");
-    print("userinfo ${userService.userInfo?.toJson()}");
-    final nextScreen = userService.newUser
-        ? const OnBoardingScreen()
-        : (!userService.isConnected && !userService.guest)
-            ? LoginScreen(
-                false,
-                () => setState(() {
-                      print("refresh");
-                    }))
-            : const AppScreen(title: 'Talkaboat');
-    print(nextScreen);
     return MaterialApp(
         title: 'Talkaboat',
         theme: NewDefaultTheme.defaultTheme,
         debugShowCheckedModeBanner: false,
-        navigatorObservers: [routeObserver],
         home: AnimatedSplashScreen(
             duration: 2000,
             splash: const Image(width: 250, image: AssetImage('assets/images/talkaboat.png')),
-            nextScreen: nextScreen,
+            nextScreen: const RootScreen(),
             splashTransition: SplashTransition.fadeTransition,
             pageTransitionType: PageTransitionType.fade,
             backgroundColor: DefaultColors.secondaryColor.shade900));

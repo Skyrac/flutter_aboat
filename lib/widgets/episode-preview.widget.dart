@@ -52,7 +52,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                         type: PageTransitionType.rightToLeftWithFade,
                         duration: const Duration(milliseconds: 500),
                         reverseDuration: const Duration(milliseconds: 500),
-                        child: LoginScreen(true, () => setState(() {}))));
+                        child: LoginScreen(true, refreshParent: () => setState(() {}))));
               } else {
                 showModalBottomSheet(
                     isScrollControlled: true,

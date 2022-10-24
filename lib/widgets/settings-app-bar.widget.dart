@@ -35,6 +35,19 @@ class _SettingsAppBarWidgetState extends State<SettingsAppBarWidget> {
                   onPressed: () async {
                     await userService.logout();
                     refresh();
+                    Navigator.push(
+                        context,
+                        PageTransition(
+                            alignment: Alignment.bottomCenter,
+                            curve: Curves.bounceOut,
+                            type: PageTransitionType.fade,
+                            duration: const Duration(milliseconds: 300),
+                            reverseDuration: const Duration(milliseconds: 200),
+                            child: LoginScreen(
+                              true,
+                              refreshParent: refresh,
+                              allowPop: false,
+                            )));
                   },
                 )
               : IconButton(
@@ -49,7 +62,7 @@ class _SettingsAppBarWidgetState extends State<SettingsAppBarWidget> {
                             type: PageTransitionType.fade,
                             duration: const Duration(milliseconds: 300),
                             reverseDuration: const Duration(milliseconds: 200),
-                            child: LoginScreen(true, refresh)));
+                            child: LoginScreen(true, refreshParent: refresh)));
                   },
                 ),
         )

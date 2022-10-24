@@ -284,7 +284,7 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
                           type: PageTransitionType.fade,
                           duration: const Duration(milliseconds: 300),
                           reverseDuration: const Duration(milliseconds: 200),
-                          child: LoginScreen(true, () => setState(() {}))));
+                          child: LoginScreen(true, refreshParent: () => setState(() {}))));
                 }),
                 child: SizedBox(
                     height: 80,

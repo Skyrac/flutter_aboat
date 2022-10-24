@@ -5,7 +5,6 @@ import 'package:page_transition/page_transition.dart';
 
 import '../injection/injector.dart';
 import '../models/playlist/playlist.model.dart';
-import '../services/ads/ad-manager.service.dart';
 import '../services/user/user.service.dart';
 import 'login.screen.dart';
 
@@ -109,7 +108,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                           type: PageTransitionType.fade,
                           duration: const Duration(milliseconds: 300),
                           reverseDuration: const Duration(milliseconds: 200),
-                          child: LoginScreen(true, () => setState(() {}))));
+                          child: LoginScreen(true, refreshParent: () => setState(() {}))));
                 }),
                 child: SizedBox(
                     height: 80,

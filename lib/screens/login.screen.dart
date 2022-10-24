@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Talkaboat/screens/app.screen.dart';
 import 'package:Talkaboat/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,9 +12,10 @@ import '../themes/login-and-register.background.dart';
 import '../utils/Snackbar_Creator.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen(this.shouldPop, this.refreshParent, {Key? key}) : super(key: key);
-  final Function refreshParent;
+  const LoginScreen(this.shouldPop, {this.allowPop = true, this.refreshParent, Key? key}) : super(key: key);
+  final Function? refreshParent;
   final bool shouldPop;
+  final bool allowPop;
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -21,20 +23,28 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   var isLoading = false;
-  var isLogin = true;
-  var sentEmail = false;
-  var dialog;
 
   final userService = getIt<UserService>();
 
   final emailController = TextEditingController();
+
+  void navAway(NavigatorState navigator) {
+    if (widget.refreshParent != null) {
+      widget.refreshParent!();
+    }
+    if (widget.shouldPop) {
+      navigator.pop();
+    } else {
+      Future.microtask(
+          () => navigator.pushReplacement(MaterialPageRoute(builder: (context) => const AppScreen(title: 'Talkaboat'))));
+    }
+  }
 
   Future<void> sendPinRequest() async {
     final email = emailController.text;
     if (email.isValidEmail()) {
       setState(() {
         isLoading = true;
-        sentEmail = true;
       });
       var result = await UserRepository.requestEmailLogin(email);
       if (result != null) {
@@ -44,7 +54,6 @@ class _LoginScreenState extends State<LoginScreen> {
       } else {
         setState(() {
           isLoading = false;
-          sentEmail = false;
         });
       }
     }
@@ -64,10 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
         });
         return true;
       } else if (result == "true") {
-        widget.refreshParent();
-        if (widget.shouldPop) {
-          navigator.pop();
-        }
+        navAway(navigator);
       }
       setState(() {
         isLoading = false;
@@ -195,10 +201,8 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       if (await userService.socialLogin(socialLogin, context)) {
         //ShowSnackBar(context, "Successfully signed in");
-        widget.refreshParent();
-        if (widget.shouldPop) {
-          Navigator.of(context).pop();
-        }
+        navAway(Navigator.of(context));
+
         return;
       }
     } catch (exception) {
@@ -265,7 +269,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (await userService.firebaseVerify(pin)) {
       setState(() {
         isLoading = false;
-        widget.refreshParent();
+        //widget.refreshParent();
       });
     }
     setState(() {
@@ -287,10 +291,7 @@ class _LoginScreenState extends State<LoginScreen> {
     });
     if (successful) {
       setState(() {
-        widget.refreshParent();
-        if (widget.shouldPop) {
-          Navigator.of(context).pop();
-        }
+        navAway(Navigator.of(context));
       });
     }
   }
@@ -298,161 +299,159 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return Stack(children: [
-      SafeArea(
-        child: Container(
-          decoration: const BoxDecoration(color: Color.fromRGBO(15, 23, 41, 1)),
-          child: Scaffold(
-            body: Stack(
-              children: [
-                LoginAndRegisterBackground(
-                  child: SizedBox(
-                    width: size.width > 500 ? 500 : size.width,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          alignment: Alignment.topLeft,
-                          margin: const EdgeInsets.only(left: 55),
-                          child: Text(
-                            "Login",
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
-                          ),
-                        ),
-                        SizedBox(height: size.height * 0.02),
-                        createEmailPinRequestWidget("E-Mail...", () async {
-                          final bodyMediumTheme = Theme.of(context).textTheme.bodyMedium;
-                          await sendPinRequest();
-                          final pinResult = await showInputDialog(context, "Confirm PIN", (_) {
-                            return Text.rich(TextSpan(children: [
-                              TextSpan(
-                                text: 'You should receive a PIN on ',
-                                style: bodyMediumTheme,
+    return WillPopScope(
+        onWillPop: () => Future.value(widget.allowPop),
+        child: Stack(children: [
+          SafeArea(
+            child: Container(
+              decoration: const BoxDecoration(color: Color.fromRGBO(15, 23, 41, 1)),
+              child: Scaffold(
+                body: Stack(
+                  children: [
+                    LoginAndRegisterBackground(
+                      child: SizedBox(
+                        width: size.width > 500 ? 500 : size.width,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              alignment: Alignment.topLeft,
+                              margin: const EdgeInsets.only(left: 55),
+                              child: Text(
+                                "Login",
+                                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
                               ),
-                              TextSpan(
-                                text: emailController.text,
-                                style: bodyMediumTheme?.copyWith(fontWeight: FontWeight.w600),
-                              ),
-                              TextSpan(
-                                text:
-                                    ' to verify your login. If you have no account registered under your email, you’ll be asked to setup an username after sign in.',
-                                style: bodyMediumTheme,
-                              ),
-                            ]));
-                          }, "Pin...");
-                          if (pinResult != null) {
-                            // Confirm
-                            setState(() {
-                              isLoading = true;
-                            });
-                            final loginResult = await sendLogin(context, emailController.text, pinResult);
-                            print(loginResult);
-                            setState(() {
-                              isLoading = false;
-                            });
-                            if (loginResult) {
-                              // new user
-                              final username = await showInputDialog(
-                                  context,
-                                  "Choose an username",
-                                  (_) => Text.rich(TextSpan(children: [
-                                        TextSpan(
-                                          text:
-                                              'Your username will be shown for in social media features as well as comments and ratings you might leave for podcasts and episodes.',
-                                          style: bodyMediumTheme,
-                                        ),
-                                      ])),
-                                  "Username...");
-                              if (username != null) {
+                            ),
+                            SizedBox(height: size.height * 0.02),
+                            createEmailPinRequestWidget("E-Mail...", () async {
+                              final bodyMediumTheme = Theme.of(context).textTheme.bodyMedium;
+                              await sendPinRequest();
+                              final pinResult = await showInputDialog(context, "Confirm PIN", (_) {
+                                return Text.rich(TextSpan(children: [
+                                  TextSpan(
+                                    text: 'You should receive a PIN on ',
+                                    style: bodyMediumTheme,
+                                  ),
+                                  TextSpan(
+                                    text: emailController.text,
+                                    style: bodyMediumTheme?.copyWith(fontWeight: FontWeight.w600),
+                                  ),
+                                  TextSpan(
+                                    text:
+                                        ' to verify your login. If you have no account registered under your email, you’ll be asked to setup an username after sign in.',
+                                    style: bodyMediumTheme,
+                                  ),
+                                ]));
+                              }, "Pin...");
+                              if (pinResult != null) {
+                                // Confirm
                                 setState(() {
                                   isLoading = true;
                                 });
-                                final registerResult =
-                                    await UserRepository.emailRegister(emailController.text, pinResult, username, false);
+                                final loginResult = await sendLogin(context, emailController.text, pinResult);
+                                print(loginResult);
                                 setState(() {
                                   isLoading = false;
                                 });
-                                if (registerResult) {
-                                  widget.refreshParent();
+                                if (loginResult) {
+                                  // new user
+                                  final username = await showInputDialog(
+                                      context,
+                                      "Choose an username",
+                                      (_) => Text.rich(TextSpan(children: [
+                                            TextSpan(
+                                              text:
+                                                  'Your username will be shown for in social media features as well as comments and ratings you might leave for podcasts and episodes.',
+                                              style: bodyMediumTheme,
+                                            ),
+                                          ])),
+                                      "Username...");
+                                  if (username != null) {
+                                    setState(() {
+                                      isLoading = true;
+                                    });
+                                    final registerResult =
+                                        await UserRepository.emailRegister(emailController.text, pinResult, username, false);
+                                    setState(() {
+                                      isLoading = false;
+                                    });
+                                    if (registerResult) {
+                                      //widget.refreshParent();
+                                    } else {
+                                      // register error
+                                    }
+                                  } else {
+                                    print("cancel");
+                                    // cancel
+                                    return;
+                                  }
                                 } else {
-                                  // register error
+                                  //loginResult == false -> not a new account
                                 }
                               } else {
-                                print("cancel");
-                                // cancel
+                                // Cancel from PIN Dialog
                                 return;
                               }
-                            } else {
-                              //loginResult == false -> not a new account
-                            }
-                          } else {
-                            // Cancel from PIN Dialog
-                            return;
-                          }
-                        }, emailController, "Request PIN"),
-                        SizedBox(height: size.height * 0.05),
-                        createAppleLogin(),
-                        SizedBox(height: Platform.isIOS ? 10 : 0),
-                        createAppleLogin(),
-                        const SizedBox(
-                          height: 10,
+                            }, emailController, "Request PIN"),
+                            SizedBox(height: size.height * 0.05),
+                            createAppleLogin(),
+                            SizedBox(height: Platform.isIOS ? 10 : 0),
+                            createAppleLogin(),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            signInButton(image: "google.png", socialLogin: SocialLogin.Google, text: "Google"),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            signInButton(image: "facebook.png", socialLogin: SocialLogin.Facebook, text: "Facebook"),
+                            SizedBox(
+                                // height - (emailpadding top + bottom) * height - 3 * socialbuttonpadding - 3 * socialbuttonheight - emailinput height - wave height - wave offset top - fudge factor - if shouldpop bottombarheight + fudge factor
+                                height: size.height -
+                                    size.height * 0.07 -
+                                    10 * 3 -
+                                    40 * 3 -
+                                    150 -
+                                    size.height / 5 -
+                                    50 -
+                                    110 -
+                                    (widget.shouldPop ? 0 : 70) -
+                                    50),
+                            InkWell(
+                                onTap: () async {
+                                  await userService.loginAsGuest();
+                                  navAway(Navigator.of(context));
+                                },
+                                borderRadius: BorderRadius.circular(10),
+                                child: const Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 10), child: Text("Continue as guest")))
+                          ],
                         ),
-                        signInButton(image: "google.png", socialLogin: SocialLogin.Google, text: "Google"),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        signInButton(image: "facebook.png", socialLogin: SocialLogin.Facebook, text: "Facebook"),
-                        SizedBox(
-                            // height - (emailpadding top + bottom) * height - 3 * socialbuttonpadding - 3 * socialbuttonheight - emailinput height - wave height - wave offset top - fudge factor - if shouldpop bottombarheight + fudge factor
-                            height: size.height -
-                                size.height * 0.07 -
-                                10 * 3 -
-                                40 * 3 -
-                                150 -
-                                size.height / 5 -
-                                50 -
-                                110 -
-                                (widget.shouldPop ? 0 : 70) -
-                                50),
-                        InkWell(
-                            onTap: () async {
-                              await userService.loginAsGuest();
-                              print(widget.shouldPop);
-                              if (widget.shouldPop) {
-                                Navigator.of(context).pop();
-                              }
-                              widget.refreshParent();
-                            },
-                            borderRadius: BorderRadius.circular(10),
-                            child: const Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 10), child: Text("Continue as guest")))
-                      ],
+                      ),
                     ),
-                  ),
+                    isLoading
+                        ? Positioned(
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            child: Card(
+                                color: const Color.fromRGBO(15, 23, 41, 0.75),
+                                margin: const EdgeInsets.all(0),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
+                                child: const Center(
+                                  child: CircularProgressIndicator(
+                                    color: Color.fromRGBO(99, 163, 253, 1),
+                                  ),
+                                )))
+                        : const SizedBox(),
+                  ],
                 ),
-                isLoading
-                    ? Positioned(
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        child: Card(
-                            color: const Color.fromRGBO(15, 23, 41, 0.75),
-                            margin: const EdgeInsets.all(0),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
-                            child: const Center(
-                              child: CircularProgressIndicator(
-                                color: Color.fromRGBO(99, 163, 253, 1),
-                              ),
-                            )))
-                    : const SizedBox(),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
-    ]);
+        ]));
   }
 
   createAppleLogin() {
