@@ -18,23 +18,23 @@ String formatTime(int seconds) {
   return '${(Duration(seconds: seconds))}'.split('.')[0].padLeft(8, '0');
 }
 
-// class CustomTrackShape extends RoundedRectSliderTrackShape {
-//   @override
-//   Rect getPreferredRect({
-//     required RenderBox parentBox,
-//     Offset offset = Offset.zero,
-//     required SliderThemeData sliderTheme,
-//     bool isEnabled = false,
-//     bool isDiscrete = false,
-//   }) {
-//     final double? trackHeight = sliderTheme.trackHeight;
-//     final double trackLeft = offset.dx;
-//     final double trackTop =
-//         offset.dy + (parentBox.size.height - trackHeight!) / 2;
-//     final double trackWidth = parentBox.size.width;
-//     return Rect.fromLTWH(trackLeft, trackTop, trackWidth, 20);
-//   }
-// }
+class CustomTrackShape extends RoundedRectSliderTrackShape {
+  @override
+  Rect getPreferredRect({
+    required RenderBox parentBox,
+    Offset offset = Offset.zero,
+    required SliderThemeData sliderTheme,
+    bool isEnabled = false,
+    bool isDiscrete = false,
+  }) {
+    final double? trackHeight = sliderTheme.trackHeight;
+    final double trackLeft = offset.dx;
+    final double trackTop =
+        offset.dy + (parentBox.size.height - trackHeight!) / 2;
+    final double trackWidth = parentBox.size.width;
+    return Rect.fromLTWH(trackLeft, trackTop, trackWidth, 20);
+  }
+}
 
 class SeekBar extends StatefulWidget {
   final Duration duration;
@@ -84,11 +84,39 @@ class _SeekBarState extends State<SeekBar> {
     return Stack(
       children: [
         //Background Slider Layout
+        // Positioned(
+        //   top: 0,
+        //   child: FillingSlider(
+        //     color: const Color.fromRGBO(99, 163, 253, 1),
+        //     fillColor: const Color.fromRGBO(62, 62, 62, 1),
+        //     initialValue: value,
+        //     width: size.width * 0.9,
+        //     height: 20,
+        //     direction: FillingSliderDirection.horizontal,
+        //     onFinish: (value) {
+        //       if (widget.onChangeEnd != null) {
+        //         widget.onChangeEnd!(Duration(milliseconds: value.round()));
+        //       }
+        //       _dragging = false;
+        //     },
+        //     onChange: (value, oldValue) {
+        //       if (!_dragging) {
+        //         _dragging = true;
+        //       }
+        //       setState(() {
+        //         _dragValue = value;
+        //       });
+        //       if (widget.onChanged != null) {
+        //         widget.onChanged!(Duration(milliseconds: value.round()));
+        //       }
+        //     },
+        //   ),
+        // ),
         Positioned(
           width: size.width,
           child: SliderTheme(
             data: _sliderThemeData.copyWith(
-              trackShape: const RoundSliderTrackShape(),
+              trackShape: CustomTrackShape(),
               thumbShape: HiddenThumbComponentShape(),
               activeTrackColor: Colors.blue.shade100,
               inactiveTrackColor: Colors.grey.shade300,
@@ -97,7 +125,8 @@ class _SeekBarState extends State<SeekBar> {
               child: Slider(
                 min: 0.0,
                 max: widget.duration.inMilliseconds.toDouble(),
-                value: min(widget.bufferedPosition.inMilliseconds.toDouble(), widget.duration.inMilliseconds.toDouble()),
+                value: min(widget.bufferedPosition.inMilliseconds.toDouble(),
+                    widget.duration.inMilliseconds.toDouble()),
                 onChanged: (value) {},
               ),
             ),
@@ -107,7 +136,7 @@ class _SeekBarState extends State<SeekBar> {
           width: size.width,
           child: SliderTheme(
             data: _sliderThemeData.copyWith(
-              trackShape: const RoundSliderTrackShape(),
+              trackShape: CustomTrackShape(),
               thumbShape: HiddenThumbComponentShape(),
               activeTrackColor: const Color.fromRGBO(99, 163, 253, 1),
               inactiveTrackColor: const Color.fromRGBO(62, 62, 62, 1),
@@ -136,22 +165,64 @@ class _SeekBarState extends State<SeekBar> {
             ),
           ),
         ),
-        // Positioned(
-        //   right: 16.0,
-        //   bottom: 0.0,
-        //   child: Text(
-        //       RegExp(r'((^0*[1-9]\d*:)?\d{2}:\d{2})\.\d+$')
-        //               .firstMatch("$_remaining")
-        //               ?.group(1) ??
-        //           '$_remaining',
-        //       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-        //           color: Colors.black, fontWeight: FontWeight.bold)),
-        // ),
+        Positioned(
+            top: 0,
+            right: 0,
+            child: ClipPath(
+                clipper: CustomClipperRightCorner(), // <--
+                child: Container(
+                  width: 10,
+                  height: 6,
+                  color: Color.fromRGBO(15, 23, 41, 1),
+                ))),
+        Positioned(
+            top: 0,
+            left: 0,
+            child: ClipPath(
+                clipper: CustomClipperLeftCorner(), // <--
+                child: Container(
+                  width: 10,
+                  height: 6,
+                  color: Color.fromRGBO(15, 23, 41, 1),
+                ))),
       ],
     );
   }
 
   // Duration get _remaining => widget.duration - widget.position;
+}
+
+class CustomClipperRightCorner extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    double radius = 10;
+    Path path = Path()
+      ..lineTo(size.width, 0)
+      ..lineTo(size.width, size.height)
+      ..arcToPoint(Offset(0, 0),
+          radius: Radius.circular(radius), clockwise: false)
+      ..close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
+}
+
+class CustomClipperLeftCorner extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    double radius = 10;
+    Path path = Path()
+      ..lineTo(size.width, 0)
+      ..arcToPoint(Offset(0, size.height),
+          radius: Radius.circular(radius), clockwise: false)
+      ..close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
 
 class HiddenThumbComponentShape extends SliderComponentShape {
@@ -215,7 +286,8 @@ class LoggingAudioHandler extends CompositeAudioHandler {
   }
 
   @override
-  Future<void> prepareFromMediaId(String mediaId, [Map<String, dynamic>? extras]) {
+  Future<void> prepareFromMediaId(String mediaId,
+      [Map<String, dynamic>? extras]) {
     _log('prepareFromMediaId($mediaId, $extras)');
     return super.prepareFromMediaId(mediaId, extras);
   }
@@ -401,7 +473,8 @@ class LoggingAudioHandler extends CompositeAudioHandler {
   }
 
   @override
-  Future<dynamic> customAction(String name, [Map<String, dynamic>? extras]) async {
+  Future<dynamic> customAction(String name,
+      [Map<String, dynamic>? extras]) async {
     _log('customAction($name, extras)');
     final dynamic result = await super.customAction(name, extras);
     _log('customAction -> $result');
@@ -421,7 +494,8 @@ class LoggingAudioHandler extends CompositeAudioHandler {
   }
 
   @override
-  Future<List<MediaItem>> getChildren(String parentMediaId, [Map<String, dynamic>? options]) async {
+  Future<List<MediaItem>> getChildren(String parentMediaId,
+      [Map<String, dynamic>? options]) async {
     _log('getChildren($parentMediaId, $options)');
     final result = await super.getChildren(parentMediaId, options);
     _log('getChildren -> $result');
@@ -447,7 +521,8 @@ class LoggingAudioHandler extends CompositeAudioHandler {
   }
 
   @override
-  Future<List<MediaItem>> search(String query, [Map<String, dynamic>? extras]) async {
+  Future<List<MediaItem>> search(String query,
+      [Map<String, dynamic>? extras]) async {
     _log('search($query, $extras)');
     final result = await super.search(query, extras);
     _log('search -> $result');
@@ -491,7 +566,10 @@ void showSliderDialog({
           child: Column(
             children: [
               Text('${snapshot.data?.toStringAsFixed(1)}$valueSuffix',
-                  style: const TextStyle(fontFamily: 'Fixed', fontWeight: FontWeight.bold, fontSize: 24.0)),
+                  style: const TextStyle(
+                      fontFamily: 'Fixed',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 24.0)),
               Slider(
                 divisions: divisions,
                 min: min,
@@ -508,141 +586,23 @@ void showSliderDialog({
 }
 
 class QueueState {
-  static const QueueState empty = QueueState([], 0, [], AudioServiceRepeatMode.none);
+  static const QueueState empty =
+      QueueState([], 0, [], AudioServiceRepeatMode.none);
 
   final List<MediaItem> queue;
   final int? queueIndex;
   final List<int>? shuffleIndices;
   final AudioServiceRepeatMode repeatMode;
 
-  const QueueState(this.queue, this.queueIndex, this.shuffleIndices, this.repeatMode);
+  const QueueState(
+      this.queue, this.queueIndex, this.shuffleIndices, this.repeatMode);
 
-  bool get hasPrevious => repeatMode != AudioServiceRepeatMode.none || (queueIndex ?? 0) > 0;
-  bool get hasNext => repeatMode != AudioServiceRepeatMode.none || (queueIndex ?? 0) + 1 < queue.length;
+  bool get hasPrevious =>
+      repeatMode != AudioServiceRepeatMode.none || (queueIndex ?? 0) > 0;
+  bool get hasNext =>
+      repeatMode != AudioServiceRepeatMode.none ||
+      (queueIndex ?? 0) + 1 < queue.length;
 
-  List<int> get indices => shuffleIndices ?? List.generate(queue.length, (i) => i);
-}
-
-class RoundSliderTrackShape extends SliderTrackShape {
-  /// Creates a slider track that draws 2 rectangles.
-  const RoundSliderTrackShape();
-
-  @override
-  void paint(
-    PaintingContext context,
-    Offset offset, {
-    required RenderBox parentBox,
-    required SliderThemeData sliderTheme,
-    required Animation<double> enableAnimation,
-    required TextDirection textDirection,
-    required Offset thumbCenter,
-    Offset? secondaryOffset,
-    bool isDiscrete = false,
-    bool isEnabled = false,
-  }) {
-    assert(sliderTheme.disabledActiveTrackColor != null);
-    assert(sliderTheme.disabledInactiveTrackColor != null);
-    assert(sliderTheme.activeTrackColor != null);
-    assert(sliderTheme.inactiveTrackColor != null);
-    assert(sliderTheme.thumbShape != null);
-    // If the slider [SliderThemeData.trackHeight] is less than or equal to 0,
-    // then it makes no difference whether the track is painted or not,
-    // therefore the painting can be a no-op.
-    if (sliderTheme.trackHeight! <= 0) {
-      return;
-    }
-
-    // Assign the track segment paints, which are left: active, right: inactive,
-    // but reversed for right to left text.
-    final ColorTween activeTrackColorTween =
-        ColorTween(begin: sliderTheme.disabledActiveTrackColor, end: sliderTheme.activeTrackColor);
-    final ColorTween inactiveTrackColorTween =
-        ColorTween(begin: sliderTheme.disabledInactiveTrackColor, end: sliderTheme.inactiveTrackColor);
-    final Paint activePaint = Paint()..color = activeTrackColorTween.evaluate(enableAnimation)!;
-    final Paint inactivePaint = Paint()..color = inactiveTrackColorTween.evaluate(enableAnimation)!;
-    final Paint leftTrackPaint;
-    final Paint rightTrackPaint;
-    switch (textDirection) {
-      case TextDirection.ltr:
-        leftTrackPaint = activePaint;
-        rightTrackPaint = inactivePaint;
-        break;
-      case TextDirection.rtl:
-        leftTrackPaint = inactivePaint;
-        rightTrackPaint = activePaint;
-        break;
-    }
-
-    final Rect trackRect = getPreferredRect(
-      parentBox: parentBox,
-      offset: offset,
-      sliderTheme: sliderTheme,
-      isEnabled: isEnabled,
-      isDiscrete: isDiscrete,
-    );
-
-    final Rect leftTrackSegment = Rect.fromLTRB(trackRect.left, trackRect.top, thumbCenter.dx, trackRect.bottom);
-    if (!leftTrackSegment.isEmpty) {
-      context.canvas.drawRect(leftTrackSegment, leftTrackPaint);
-    }
-    final Rect rightTrackSegment = Rect.fromLTRB(thumbCenter.dx, trackRect.top, trackRect.right, trackRect.bottom);
-    if (!rightTrackSegment.isEmpty) {
-      context.canvas.drawRect(rightTrackSegment, rightTrackPaint);
-    }
-
-    final bool showSecondaryTrack = (secondaryOffset != null) &&
-        ((textDirection == TextDirection.ltr)
-            ? (secondaryOffset.dx > thumbCenter.dx)
-            : (secondaryOffset.dx < thumbCenter.dx));
-
-    if (showSecondaryTrack) {
-      final ColorTween secondaryTrackColorTween =
-          ColorTween(begin: sliderTheme.disabledActiveTrackColor, end: sliderTheme.activeTrackColor);
-      final Paint secondaryTrackPaint = Paint()..color = secondaryTrackColorTween.evaluate(enableAnimation)!;
-      final Rect secondaryTrackSegment = Rect.fromLTRB(
-        (textDirection == TextDirection.ltr) ? thumbCenter.dx : secondaryOffset.dx,
-        trackRect.top,
-        (textDirection == TextDirection.ltr) ? secondaryOffset.dx : thumbCenter.dx,
-        trackRect.bottom,
-      );
-      if (!secondaryTrackSegment.isEmpty) {
-        context.canvas.drawRect(secondaryTrackSegment, secondaryTrackPaint);
-      }
-    }
-    // Left Arc
-    context.canvas.drawArc(
-        Rect.fromCircle(center: Offset(trackRect.left, trackRect.top + 11.0), radius: 11.0),
-        -pi * 3 / 2, // -270 degrees
-        pi, // 180 degrees
-        false,
-        trackRect.left - thumbCenter.dx == 0.0 ? rightTrackPaint : leftTrackPaint);
-
-    // Right Arc
-    context.canvas.drawArc(
-        Rect.fromCircle(center: Offset(trackRect.right, trackRect.top + 11.0), radius: 11.0),
-        -pi / 2, // -90 degrees
-        pi, // 180 degrees
-        false,
-        trackRect.right - thumbCenter.dx == 0.0 ? leftTrackPaint : rightTrackPaint);
-  }
-
-  @override
-  Rect getPreferredRect(
-      {required RenderBox parentBox,
-      Offset offset = Offset.zero,
-      required SliderThemeData sliderTheme,
-      bool isEnabled = false,
-      bool isDiscrete = false}) {
-    final double? overlayWidth = sliderTheme.overlayShape?.getPreferredSize(isEnabled, isDiscrete).width;
-    final double? trackHeight = sliderTheme.trackHeight;
-    assert(overlayWidth! >= 0);
-    assert(trackHeight! >= 0);
-    assert(parentBox.size.width >= overlayWidth!);
-    assert(parentBox.size.height >= trackHeight!);
-
-    final double trackLeft = offset.dx + overlayWidth! / 2;
-    final double trackTop = offset.dy + (parentBox.size.height - trackHeight!) / 2;
-    final double trackWidth = parentBox.size.width - overlayWidth;
-    return Rect.fromLTWH(trackLeft * 0.45, trackTop, trackWidth * 1.09, trackHeight);
-  }
+  List<int> get indices =>
+      shuffleIndices ?? List.generate(queue.length, (i) => i);
 }
