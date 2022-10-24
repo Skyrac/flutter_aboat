@@ -133,6 +133,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
   Widget createCustomScrollView(SearchResult podcastSearchResult) {
     final size = MediaQuery.of(context).size;
     return DefaultTabController(
+      animationDuration: Duration.zero,
       length: 3,
       child: ScaffoldWave(
         height: 33,
