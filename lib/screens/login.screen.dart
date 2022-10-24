@@ -306,6 +306,18 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Container(
               decoration: const BoxDecoration(color: Color.fromRGBO(15, 23, 41, 1)),
               child: Scaffold(
+                bottomNavigationBar: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: InkWell(
+                          onTap: () async {
+                            await userService.loginAsGuest();
+                            navAway(Navigator.of(context));
+                          },
+                          borderRadius: BorderRadius.circular(10),
+                          child: const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 10), child: Text("Continue as guest"))))
+                ]),
                 body: Stack(
                   children: [
                     LoginAndRegisterBackground(
@@ -406,26 +418,6 @@ class _LoginScreenState extends State<LoginScreen> {
                               height: 10,
                             ),
                             signInButton(image: "facebook.png", socialLogin: SocialLogin.Facebook, text: "Facebook"),
-                            SizedBox(
-                                // height - (emailpadding top + bottom) * height - 3 * socialbuttonpadding - 3 * socialbuttonheight - emailinput height - wave height - wave offset top - fudge factor - if shouldpop bottombarheight + fudge factor
-                                height: size.height -
-                                    size.height * 0.07 -
-                                    10 * 3 -
-                                    40 * 3 -
-                                    150 -
-                                    size.height / 5 -
-                                    50 -
-                                    110 -
-                                    (widget.shouldPop ? 0 : 70) -
-                                    50),
-                            InkWell(
-                                onTap: () async {
-                                  await userService.loginAsGuest();
-                                  navAway(Navigator.of(context));
-                                },
-                                borderRadius: BorderRadius.circular(10),
-                                child: const Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: 10), child: Text("Continue as guest")))
                           ],
                         ),
                       ),
