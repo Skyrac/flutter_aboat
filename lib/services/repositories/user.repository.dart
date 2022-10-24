@@ -117,7 +117,7 @@ class UserRepository {
   static Future<ResponseModel> firebaseRegister(String userIdToken, String username, bool newsletter) async {
     try {
       print({"address": "Social: $username", "signature": userIdToken, "userName": username, "newsletter": newsletter});
-      var response = await dio.post<String>('/v1/user/register/firebase/',
+      var response = await dio.post<String>('/v1/user/register/firebase',
           data: {"address": "Social: $username", "signature": userIdToken, "userName": username, "newsletter": newsletter});
       var convertedData = ResponseModel.fromJson(json.decode(response.data!));
       print(response.data);
@@ -132,8 +132,8 @@ class UserRepository {
 
   static Future<bool> emailRegister(String email, String pin, String username, bool newsletter) async {
     try {
-      var response = await dio.post<String>('/v1/user/register/email/',
-          data: {"address": email, "signature": pin, "userName": username, "newsletter": newsletter});
+      var response = await dio.post<String>('/v1/user/register/email',
+          data: {"address": email, "guid": pin, "userName": username, "newsletter": newsletter});
       print(response.data);
       return true;
     } catch (exception) {
