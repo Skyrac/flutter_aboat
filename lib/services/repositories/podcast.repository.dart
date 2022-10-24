@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:Talkaboat/models/podcasts/podcast-genre.model.dart';
+import 'package:Talkaboat/models/podcasts/podcast-rank.model.dart';
 import 'package:dio/dio.dart';
 
 import '../../configuration/dio.config.dart';
@@ -86,14 +87,14 @@ class PodcastRepository {
     }
   }
 
-  static Future<List<Podcast>> search(String search, int amount, int offset, {int? genre, int? rank}) async {
+  static Future<List<Podcast>> search(String search, int amount, int offset, {int? genre, PodcastRank? rank}) async {
     try {
       final body = {"amount": amount, "offset": offset, "queue": search};
       if (genre != null) {
         body["genre"] = genre.toString();
       }
       if (rank != null) {
-        body["rank"] = rank.toString();
+        body["rank"] = rank.id.toString();
       }
       print(body);
       print('$API/search');

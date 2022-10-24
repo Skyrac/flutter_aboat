@@ -80,18 +80,21 @@ class _HomeScreenCategoriesTabState extends State<HomeScreenCategoriesTab> {
   Widget buildCategoryList(BuildContext context, List<PodcastGenre> data) {
     var filteredItems = data.where((element) => search == '' || element.name.toLowerCase().contains(search)).toList();
 
-    return GridView.count(
-      mainAxisSpacing: 10,
-      crossAxisSpacing: 10,
-      shrinkWrap: true,
-      crossAxisCount: 2,
-      semanticChildCount: data.length,
-      childAspectRatio: 170 / 70,
-      physics: const NeverScrollableScrollPhysics(),
-      children: List.generate(filteredItems.length, (index) {
-        final item = filteredItems[index];
-        return makeCard(context, item, index);
-      }),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: GridView.count(
+        mainAxisSpacing: 10,
+        crossAxisSpacing: 10,
+        shrinkWrap: true,
+        crossAxisCount: 2,
+        semanticChildCount: data.length,
+        childAspectRatio: 170 / 70,
+        physics: const NeverScrollableScrollPhysics(),
+        children: List.generate(filteredItems.length, (index) {
+          final item = filteredItems[index];
+          return makeCard(context, item, index);
+        }),
+      ),
     );
   }
 

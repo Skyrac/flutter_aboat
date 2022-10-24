@@ -266,14 +266,20 @@ class UserService {
   }
 
   //#region Login/Logout
-  Future<bool> emailLogin(String email, String pin) async {
+  Future<String> emailLogin(String email, String pin) async {
     token = await UserRepository.emailLogin(email, pin);
+    if (token == "new_account") {
+      return "new_account";
+    }
+    if (token.isEmpty) {
+      return "false";
+    }
     prefs.setString(TOKEN_IDENTIFIER, token);
     if (token.isNotEmpty) {
       await getCoreData();
-      return userInfo != null;
+      return userInfo != null ? "true" : "false";
     }
-    return false;
+    return "false";
   }
 
   Future<bool> firebaseVerify(String pin) async {
