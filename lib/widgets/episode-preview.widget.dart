@@ -15,9 +15,7 @@ import '../utils/common.dart';
 import 'bottom-sheets/playlist.bottom-sheet.dart';
 
 class EpisodePreviewWidget extends StatefulWidget {
-  EpisodePreviewWidget(this.episode, this.direction, this.onPlayEpisode,
-      {Key? key})
-      : super(key: key);
+  EpisodePreviewWidget(this.episode, this.direction, this.onPlayEpisode, {Key? key}) : super(key: key);
   Episode episode;
   Axis direction;
   Function onPlayEpisode;
@@ -39,24 +37,19 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5),
                     color: const Color.fromRGBO(29, 40, 58, 0.97),
-                    border: Border.all(
-                        color: const Color.fromRGBO(188, 140, 75, 0.25))),
+                    border: Border.all(color: const Color.fromRGBO(188, 140, 75, 0.25))),
                 child: Row(
                   children: [
                     const SizedBox(
                       width: 10,
                     ),
-                    const Icon(Icons.format_list_bulleted_add,
-                        color: Color.fromRGBO(99, 163, 253, 1), size: 25),
+                    const Icon(Icons.format_list_bulleted, color: Color.fromRGBO(99, 163, 253, 1), size: 25),
                     const SizedBox(
                       width: 10,
                     ),
                     Text('Add to playlist',
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleMedium
-                            ?.copyWith(
-                                color: const Color.fromRGBO(99, 163, 253, 1))),
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(color: const Color.fromRGBO(99, 163, 253, 1))),
                   ],
                 ))),
         PopupMenuItem<String>(
@@ -67,8 +60,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5),
                     color: const Color.fromRGBO(29, 40, 58, 0.97),
-                    border: Border.all(
-                        color: const Color.fromRGBO(188, 140, 75, 0.25))),
+                    border: Border.all(color: const Color.fromRGBO(188, 140, 75, 0.25))),
                 child: Row(
                   children: [
                     const SizedBox(
@@ -82,15 +74,9 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                     const SizedBox(
                       width: 10,
                     ),
-                    Text(
-                        FileDownloadService.containsFile(entry.audio!)
-                            ? 'Delete'
-                            : 'Download',
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleMedium
-                            ?.copyWith(
-                                color: const Color.fromRGBO(99, 163, 253, 1))),
+                    Text(FileDownloadService.containsFile(entry.audio!) ? 'Delete' : 'Download',
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(color: const Color.fromRGBO(99, 163, 253, 1))),
                   ],
                 ))),
       ];
@@ -128,12 +114,9 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
               } else {
                 showModalBottomSheet(
                     isScrollControlled: true,
-                    shape: const RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.vertical(top: Radius.circular(20))),
+                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
                     context: context,
-                    builder: (context) =>
-                        PlaylistBottomSheet(episodeToAdd: entry));
+                    builder: (context) => PlaylistBottomSheet(episodeToAdd: entry));
               }
               break;
           }
@@ -160,67 +143,53 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
         );
       });
 
-  Widget makeHorizontalListTile(context, Episode entry, bool playing) =>
-      Padding(
-          padding: const EdgeInsets.all(10),
-          child: InkWell(
-              onTap: () async {
-                await widget.onPlayEpisode();
-                setState(() {});
-              },
-              child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: SizedBox(
-                    width: 120,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+  Widget makeHorizontalListTile(context, Episode entry, bool playing) => Padding(
+      padding: const EdgeInsets.all(10),
+      child: InkWell(
+          onTap: () async {
+            await widget.onPlayEpisode();
+            setState(() {});
+          },
+          child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: SizedBox(
+                width: 120,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Stack(
                       children: [
-                        Stack(
-                          children: [
-                            ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: SizedBox(
-                                    height: 120,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        CachedNetworkImage(
-                                          imageUrl: entry.image ??
-                                              'https://picsum.photos/200',
-                                          cacheManager: CacheManager(Config(
-                                              entry.image ??
-                                                  'https://picsum.photos/200',
-                                              stalePeriod:
-                                                  const Duration(days: 2))),
-                                          fit: BoxFit.fill,
-                                          placeholder: (_, __) => const Center(
-                                              child:
-                                                  CircularProgressIndicator()),
-                                          errorWidget: (context, url, error) =>
-                                              const Icon(Icons.error),
-                                        ),
-                                      ],
-                                    )))
-                          ],
-                        ),
-                        Padding(
-                            padding: const EdgeInsets.only(
-                                left: 5, right: 5, top: 5),
-                            child: Text(entry.title!,
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 2,
-                                style: Theme.of(context).textTheme.titleMedium))
+                        ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: SizedBox(
+                                height: 120,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    CachedNetworkImage(
+                                      imageUrl: entry.image ?? 'https://picsum.photos/200',
+                                      cacheManager: CacheManager(Config(entry.image ?? 'https://picsum.photos/200',
+                                          stalePeriod: const Duration(days: 2))),
+                                      fit: BoxFit.fill,
+                                      placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
+                                      errorWidget: (context, url, error) => const Icon(Icons.error),
+                                    ),
+                                  ],
+                                )))
                       ],
                     ),
-                  ))));
+                    Padding(
+                        padding: const EdgeInsets.only(left: 5, right: 5, top: 5),
+                        child: Text(entry.title!,
+                            overflow: TextOverflow.ellipsis, maxLines: 2, style: Theme.of(context).textTheme.titleMedium))
+                  ],
+                ),
+              ))));
 
   Widget makeVerticalListTile(context, Episode entry, bool playing) {
-    final dt =
-        DateTime.fromMillisecondsSinceEpoch(entry.pubDateMs?.toInt() ?? 0);
+    final dt = DateTime.fromMillisecondsSinceEpoch(entry.pubDateMs?.toInt() ?? 0);
     var dateFormatted = DateFormat('dd.MM.yyyy').format(dt);
-    final remaining =
-        Duration(seconds: (entry.audioLengthSec! - entry.playTime!).toInt());
+    final remaining = Duration(seconds: (entry.audioLengthSec! - entry.playTime!).toInt());
     return Container(
       padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
       height: 105,
@@ -251,28 +220,21 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                           borderRadius: BorderRadius.circular(10),
                           child: SizedBox(
                               child: CachedNetworkImage(
-                            imageUrl:
-                                entry.image ?? 'https://picsum.photos/200',
-                            cacheManager: CacheManager(Config(
-                                entry.image ?? 'https://picsum.photos/200',
-                                stalePeriod: const Duration(days: 2))),
+                            imageUrl: entry.image ?? 'https://picsum.photos/200',
+                            cacheManager: CacheManager(
+                                Config(entry.image ?? 'https://picsum.photos/200', stalePeriod: const Duration(days: 2))),
                             fit: BoxFit.fill,
-                            placeholder: (_, __) => const Center(
-                                child: CircularProgressIndicator()),
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.error),
+                            placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
+                            errorWidget: (context, url, error) => const Icon(Icons.error),
                           ))),
                       Positioned.fill(
                           child: Center(
-                              child: audioHandler.isListeningEpisode(
-                                          widget.episode.id) &&
-                                      playing
+                              child: audioHandler.isListeningEpisode(widget.episode.id) && playing
                                   ? Image.asset(
                                       "assets/images/pause.png",
                                       width: 25,
                                     )
-                                  : Image.asset("assets/images/play.png",
-                                      width: 25))),
+                                  : Image.asset("assets/images/play.png", width: 25))),
                     ],
                   ),
                 ),
@@ -293,10 +255,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                         entry.title!,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12),
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12),
                       ),
                     ),
                     Flexible(
@@ -304,8 +263,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                       child: Text(removeAllHtmlTags(entry.description!),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
-                          style: const TextStyle(
-                              color: Colors.white, fontSize: 12)),
+                          style: const TextStyle(color: Colors.white, fontSize: 12)),
                     ),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -315,27 +273,20 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            audioHandler.isListeningEpisode(
-                                        widget.episode.id) &&
-                                    playing
+                            audioHandler.isListeningEpisode(widget.episode.id) && playing
                                 ? Row(
                                     children: [
-                                      const Icon(Icons.play_arrow,
-                                          color:
-                                              Color.fromRGBO(188, 140, 75, 1),
-                                          size: 18),
+                                      const Icon(Icons.play_arrow, color: Color.fromRGBO(188, 140, 75, 1), size: 18),
                                       const SizedBox(
                                         width: 3,
                                       ),
-                                      const Text('Playing',
-                                          style: TextStyle(fontSize: 10)),
+                                      const Text('Playing', style: TextStyle(fontSize: 10)),
                                     ],
                                   )
                                 : const SizedBox(),
                             Container(
                               padding: const EdgeInsets.only(top: 3),
-                              child: Text(dateFormatted.toString(),
-                                  style: const TextStyle(fontSize: 10)),
+                              child: Text(dateFormatted.toString(), style: const TextStyle(fontSize: 10)),
                             ),
                           ],
                         ),
@@ -343,14 +294,10 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                           children: [
                             Text.rich(TextSpan(children: [
                               TextSpan(
-                                  text: remaining.inHours != 0
-                                      ? '${remaining.inHours % 60}st '
-                                      : "",
+                                  text: remaining.inHours != 0 ? '${remaining.inHours % 60}st ' : "",
                                   style: const TextStyle(fontSize: 10)),
                               TextSpan(
-                                  text: remaining.inMinutes != 0
-                                      ? '${remaining.inMinutes % 60}min '
-                                      : "",
+                                  text: remaining.inMinutes != 0 ? '${remaining.inMinutes % 60}min ' : "",
                                   style: const TextStyle(fontSize: 10)),
                               TextSpan(
                                 text: '${remaining.inSeconds % 60}sec',
@@ -365,13 +312,11 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                           hoverElevation: 0.0,
                           highlightElevation: 0,
                           visualDensity: VisualDensity.compact,
-                          constraints: const BoxConstraints(
-                              minWidth: 0.0, minHeight: 0.0),
+                          constraints: const BoxConstraints(minWidth: 0.0, minHeight: 0.0),
                           padding: const EdgeInsets.all(0),
                           onPressed: (() async {
                             await userService.addToFavorites(entry.podcastId!);
-                            await FileDownloadService.cacheOrDelete(
-                                entry.audio!);
+                            await FileDownloadService.cacheOrDelete(entry.audio!);
                             setState(() {});
                           }),
                           child: FileDownloadService.containsFile(entry.audio!)
