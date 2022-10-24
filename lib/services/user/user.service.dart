@@ -25,6 +25,7 @@ enum SocialLogin { Google, Facebook, Apple }
 
 class UserService {
   bool newUser = true;
+  bool _guest = false;
   String token = "";
   String firebaseToken = "";
   UserInfoData? userInfo;
@@ -43,7 +44,7 @@ class UserService {
   static const String LAST_NOTIFICATION_UPDATE = "last_update_seen";
 
   get isConnected => token.isNotEmpty && userInfo != null;
-  get guest => prefs.getBool("guest") ?? false;
+  get guest => _guest;
 
   get availableToken => rewards.vested;
   Stream<Reward> rewardStream() async* {
@@ -173,7 +174,7 @@ class UserService {
   }
 
   loginAsGuest() async {
-    await prefs.setBool("guest", true);
+    _guest = true;
   }
 
   setInitialValues() async {
@@ -239,7 +240,7 @@ class UserService {
       await getUserInfo();
       if (userInfo != null) {
         print(userInfo);
-        await prefs.setBool("guest", false);
+        _guest = false;
         await getRewards();
         await getFavorites(refresh: true);
         await getFriends();
