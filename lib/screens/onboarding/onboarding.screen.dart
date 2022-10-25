@@ -2,6 +2,7 @@ import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/themes/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 
 import '../login.screen.dart';
@@ -27,6 +28,15 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   }
 
   BuildContext? _context;
+
+  @override
+  initState() {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        systemNavigationBarColor: DefaultColors.secondaryColorBase, // navigation bar color
+        statusBarColor: DefaultColors.secondaryColor.shade900 // status bar color
+        ));
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

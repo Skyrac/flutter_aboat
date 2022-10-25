@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:Talkaboat/screens/app.screen.dart';
+import 'package:Talkaboat/themes/colors.dart';
 import 'package:Talkaboat/utils/extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../injection/injector.dart';
@@ -27,6 +29,15 @@ class _LoginScreenState extends State<LoginScreen> {
   final userService = getIt<UserService>();
 
   final emailController = TextEditingController();
+
+  @override
+  initState() {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        systemNavigationBarColor: const Color.fromRGBO(15, 23, 41, 1), // navigation bar color
+        statusBarColor: DefaultColors.secondaryColor.shade900 // status bar color
+        ));
+    super.initState();
+  }
 
   void navAway(NavigatorState navigator) {
     if (widget.refreshParent != null) {
