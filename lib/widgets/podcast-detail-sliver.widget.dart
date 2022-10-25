@@ -90,6 +90,7 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 image: DecorationImage(
+                  opacity: 0.6,
                   image: NetworkImage(podcast.image!),
                   fit: BoxFit.cover,
                 ),
