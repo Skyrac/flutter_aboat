@@ -51,6 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
           isLoading = false;
         });
       } else {
+        ShowSnackBar(context, "Error getting PIN");
         setState(() {
           isLoading = false;
         });
@@ -73,6 +74,8 @@ class _LoginScreenState extends State<LoginScreen> {
         return true;
       } else if (result == "true") {
         navAway(navigator);
+      } else {
+        ShowSnackBar(context, "Error lgging in");
       }
       setState(() {
         isLoading = false;
@@ -99,9 +102,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       color: const Color.fromRGBO(29, 40, 58, 1),
-                      // ignore: prefer_const_literals_to_create_immutables
-                      boxShadow: [
-                        const BoxShadow(
+                      boxShadow: const [
+                        BoxShadow(
                           color: Color.fromRGBO(188, 140, 75, 1),
                           spreadRadius: 0,
                           blurRadius: 0,
@@ -199,9 +201,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       if (await userService.socialLogin(socialLogin, context)) {
-        //ShowSnackBar(context, "Successfully signed in");
         navAway(Navigator.of(context));
-
         return;
       }
     } catch (exception) {
@@ -292,6 +292,8 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         navAway(Navigator.of(context));
       });
+    } else {
+      ShowSnackBar(context, "Error registering");
     }
   }
 
