@@ -35,8 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (widget.shouldPop) {
       navigator.pop();
     } else {
-      Future.microtask(
-          () => navigator.pushReplacement(MaterialPageRoute(builder: (context) => const AppScreen(title: 'Talkaboat'))));
+      navigator.pushReplacement(MaterialPageRoute(builder: (context) => const AppScreen(title: 'Talkaboat')));
     }
   }
 
@@ -306,17 +305,31 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Container(
               decoration: const BoxDecoration(color: Color.fromRGBO(15, 23, 41, 1)),
               child: Scaffold(
-                bottomNavigationBar: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: InkWell(
-                          onTap: () async {
-                            await userService.loginAsGuest();
-                            navAway(Navigator.of(context));
-                          },
-                          borderRadius: BorderRadius.circular(10),
-                          child: const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 10), child: Text("Continue as guest"))))
+                bottomNavigationBar: Stack(children: [
+                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: InkWell(
+                            onTap: () async {
+                              await userService.loginAsGuest();
+                              navAway(Navigator.of(context));
+                            },
+                            borderRadius: BorderRadius.circular(10),
+                            child: const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 10), child: Text("Continue as guest"))))
+                  ]),
+                  isLoading
+                      ? Positioned(
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          child: Card(
+                              color: const Color.fromRGBO(15, 23, 41, 0.75),
+                              margin: const EdgeInsets.all(0),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
+                              child: null))
+                      : const SizedBox()
                 ]),
                 body: Stack(
                   children: [
