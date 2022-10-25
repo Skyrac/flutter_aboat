@@ -75,7 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
       } else if (result == "true") {
         navAway(navigator);
       } else {
-        ShowSnackBar(context, "Error lgging in");
+        ShowSnackBar(context, "Error logging in");
       }
       setState(() {
         isLoading = false;
@@ -407,6 +407,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       //widget.refreshParent();
                                     } else {
                                       // register error
+                                      ShowSnackBar(context, "Error registering");
                                     }
                                   } else {
                                     print("cancel");
