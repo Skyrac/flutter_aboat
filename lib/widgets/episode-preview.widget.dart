@@ -103,9 +103,12 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
         ),
         constraints: const BoxConstraints.expand(width: 196, height: 110),
         color: const Color.fromRGBO(15, 23, 41, 1),
-        child: Image.asset(
-          "assets/images/options.png",
-          width: 6,
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(14, 30, 14, 30),
+          child: Image.asset(
+            "assets/images/options.png",
+            width: 6,
+          ),
         ),
         onSelected: (value) async {
           switch (value) {
@@ -417,9 +420,6 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(
-                width: 15,
               ),
               buildPopupButton(context, entry),
             ],
