@@ -1,3 +1,4 @@
+import 'package:Talkaboat/widgets/player-control.widget.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -152,75 +153,12 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
                       ),
                     ),
                   ),
-                  Container(
-                    padding: const EdgeInsets.fromLTRB(0, 0, 5, 2),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        StreamBuilder<PlaybackState>(
-                          stream: audioHandler.playbackState,
-                          builder: (context, snapshot) {
-                            final playbackState = snapshot.data;
-                            final processingState =
-                                playbackState?.processingState;
-                            final playing = playbackState?.playing;
-                            if (processingState ==
-                                    AudioProcessingState.loading ||
-                                processingState ==
-                                    AudioProcessingState.buffering) {
-                              return Container(
-                                margin: const EdgeInsets.fromLTRB(0, 0, 10, 8),
-                                width: 16.0,
-                                height: 16.0,
-                                child: const CircularProgressIndicator(),
-                              );
-                            } else if (playing != true) {
-                              return IconButton(
-                                color: const Color.fromRGBO(99, 163, 253, 1),
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(),
-                                icon: const Icon(Icons.play_arrow),
-                                iconSize: 34.0,
-                                onPressed: audioHandler.play,
-                              );
-                            } else {
-                              return IconButton(
-                                color: const Color.fromRGBO(99, 163, 253, 1),
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(),
-                                icon: const Icon(Icons.pause),
-                                iconSize: 34.0,
-                                onPressed: audioHandler.pause,
-                              );
-                            }
-                          },
-                        ),
-                        Container(
-                          padding: const EdgeInsets.only(right: 7),
-                          child: Row(
-                            children: [
-                              Text(
-                                '$id',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall
-                                    ?.copyWith(
-                                        fontSize: 10, color: Colors.white),
-                              ),
-                              const SizedBox(
-                                width: 5,
-                              ),
-                              Image.asset(
-                                'assets/images/aboat.png',
-                                width: 10,
-                              ),
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                  )
+                  AnimatedContainer(
+                      padding: EdgeInsets.only(right: 5),
+                      duration: const Duration(milliseconds: 500),
+                      width: 60,
+                      height: 50,
+                      child: PlayerControlWidget()),
                 ],
               ),
             ),
