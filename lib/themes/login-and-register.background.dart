@@ -12,7 +12,7 @@ class LoginAndRegisterBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Container(
+    return SizedBox(
       width: double.infinity,
       height: size.height,
       child: Stack(
@@ -22,34 +22,28 @@ class LoginAndRegisterBackground extends StatelessWidget {
               top: 0,
               right: 0,
               child: Container(
-                color: Color.fromRGBO(29, 40, 58, 1),
+                color: const Color.fromRGBO(29, 40, 58, 1),
                 height: 110,
                 width: size.width,
               )),
           Positioned(
             top: 100,
             right: 0,
-            child:
-                Image.asset("assets/images/wave_group.png", width: size.width),
+            child: Image.asset("assets/images/wave_group.png", width: size.width),
           ),
           Positioned(
             top: 20,
-            child: Image.asset("assets/images/logo_no_circle1.png",
-                width: size.width * 0.13),
+            child: Image.asset("assets/images/logo_no_circle1.png", width: size.width * 0.13),
           ),
           Positioned(
             top: 80,
             child: Text("Talkaboat",
                 style: GoogleFonts.inter(
-                  textStyle: const TextStyle(
-                      color: Color.fromRGBO(99, 163, 253, 1),
-                      fontWeight: FontWeight.w700,
-                      fontSize: 24),
+                  textStyle:
+                      const TextStyle(color: Color.fromRGBO(99, 163, 253, 1), fontWeight: FontWeight.w700, fontSize: 24),
                 )),
           ),
-          Positioned(
-              top: size.height / 5,
-              child: Container(padding: EdgeInsets.only(top: 50), child: child))
+          Positioned(top: size.height / 5, child: Container(padding: const EdgeInsets.only(top: 50), child: child))
         ],
       ),
     );

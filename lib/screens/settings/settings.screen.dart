@@ -10,7 +10,7 @@ import '../../utils/modal.widget.dart';
 import '../../widgets/settings-app-bar.widget.dart';
 
 class SettingsScreen extends StatefulWidget {
-  SettingsScreen({Key? key, this.refresh}) : super(key: key);
+  const SettingsScreen({Key? key, this.refresh}) : super(key: key);
   final Function? refresh;
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -21,14 +21,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   refresh() {
     setState(() {});
-    if(widget.refresh != null) {
+    if (widget.refresh != null) {
       widget.refresh!();
     }
   }
 
   Widget getUserCard() {
-    return userService.userInfo == null ||
-            userService.userInfo!.userName == null
+    return userService.userInfo == null || userService.userInfo!.userName == null
         ? const SizedBox()
         : ClipRRect(
             borderRadius: BorderRadius.circular(50),
@@ -80,59 +79,65 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
       child: Scaffold(
           body: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             SettingsAppBarWidget(refreshParent: refresh),
             const SizedBox(height: 10),
             getUserCard(),
             const SizedBox(height: 10),
-            createMenuPoint(Text("Earnings"), () { Navigator.push(
-                context,
-                PageTransition(
-                    alignment: Alignment.centerRight,
-                    curve: Curves.bounceOut,
-                    type: PageTransitionType.rightToLeftWithFade,
-                    duration: const Duration(milliseconds: 300),
-                    reverseDuration: const Duration(milliseconds: 200),
-                    child: const EarningsScreen()));}, true),
-
-          const SizedBox(height: 10),
-          createMenuPoint(Text("Clear Cache", style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.grey)), () { createClearCacheAlert(context); }, false, showTrailing: false),
-          createMenuPoint(Text("Delete Account", style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.red),), () {
-            showAlert(context, deletionTextController, "Confirm Deletion", "Enter username to confirm deletion", "Username",
-                completeDeletion);
-          }, true, showTrailing: false)
-        ],
-      ),
-          )),
+            createMenuPoint(const Text("Earnings"), () {
+              Navigator.push(
+                  context,
+                  PageTransition(
+                      alignment: Alignment.centerRight,
+                      curve: Curves.bounceOut,
+                      type: PageTransitionType.rightToLeftWithFade,
+                      duration: const Duration(milliseconds: 300),
+                      reverseDuration: const Duration(milliseconds: 200),
+                      child: const EarningsScreen()));
+            }, true),
+            const SizedBox(height: 10),
+            createMenuPoint(Text("Clear Cache", style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.grey)),
+                () {
+              createClearCacheAlert(context);
+            }, false, showTrailing: false),
+            createMenuPoint(
+                Text(
+                  "Delete Account",
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.red),
+                ), () {
+              showAlert(context, deletionTextController, "Confirm Deletion", "Enter username to confirm deletion",
+                  "Username", completeDeletion);
+            }, true, showTrailing: false)
+          ],
+        ),
+      )),
     ));
-
-
   }
+
   final deletionTextController = TextEditingController();
   completeDeletion() async {
     setState(() {
       Navigator.of(context, rootNavigator: true).pop();
     });
-    if(deletionTextController.text == userService.userInfo?.userName) {
+    if (deletionTextController.text == userService.userInfo?.userName) {
       await userService.deleteAccount();
     }
-    setState(() { });
-
+    setState(() {});
   }
 
   createClearCacheAlert(BuildContext context) {
     // set up the buttons
     Widget cancelButton = TextButton(
-      child: Text("Cancel"),
-      onPressed:  () {
+      child: const Text("Cancel"),
+      onPressed: () {
         Navigator.of(context, rootNavigator: true).pop();
       },
     );
     Widget continueButton = TextButton(
-      child: Text("Clear Cache", style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.red) ),
-      onPressed:  () async {
+      child: Text("Clear Cache", style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.red)),
+      onPressed: () async {
         await FileDownloadService.clearCache();
         setState(() {
           Navigator.of(context, rootNavigator: true).pop();
@@ -142,8 +147,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
-      title: Text("Clear Cache Confirmation"),
-      content: Text("Clearing the cache might impact the app performance. Are you sure you want to continue?"),
+      title: const Text("Clear Cache Confirmation"),
+      content: const Text("Clearing the cache might impact the app performance. Are you sure you want to continue?"),
       actions: [
         continueButton,
         cancelButton,
@@ -159,13 +164,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  createMenuPoint(Widget title, click, onlyWhenSignedIn, { showTrailing: true }) {
-    return !onlyWhenSignedIn || userService.isConnected ? Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 5),
-      child: TextButton(onPressed: click, child: Row(children: [
-        Expanded(child: title),
-        showTrailing ? const Icon(Icons.navigate_next_outlined) : const SizedBox()
-      ],)),
-    ) : const SizedBox();
+  createMenuPoint(Widget title, click, onlyWhenSignedIn, {showTrailing: true}) {
+    return !onlyWhenSignedIn || userService.isConnected
+        ? Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 5),
+            child: TextButton(
+                onPressed: click,
+                child: Row(
+                  children: [
+                    Expanded(child: title),
+                    showTrailing ? const Icon(Icons.navigate_next_outlined) : const SizedBox()
+                  ],
+                )),
+          )
+        : const SizedBox();
   }
 }

@@ -1,6 +1,4 @@
 import 'package:Talkaboat/injection/injector.dart';
-import 'package:Talkaboat/main.dart';
-import 'package:Talkaboat/screens/app.screen.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/themes/colors.dart';
 import 'package:flutter/material.dart';
@@ -15,37 +13,13 @@ class OnBoardingScreen extends StatefulWidget {
   State<OnBoardingScreen> createState() => _OnBoardingScreenState();
 }
 
-class _OnBoardingScreenState extends State<OnBoardingScreen> with RouteAware {
+class _OnBoardingScreenState extends State<OnBoardingScreen> {
   final introKey = GlobalKey<IntroductionScreenState>();
   void _onIntroEnd(context) async {
     await getIt<UserService>().finishIntroduction();
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => LoginScreen(() => setState(() {}))),
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => const LoginScreen(false)),
     );
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    routeObserver.subscribe(this, ModalRoute.of(context)! as PageRoute);
-  }
-
-  @override
-  void dispose() {
-    routeObserver.unsubscribe(this);
-    super.dispose();
-  }
-
-  @override
-  void didPopNext() {
-    // Covering route was popped off the navigator.
-    super.didPopNext();
-    // didPopNext is still in the context of the pop that triggered it
-    // we await till it is computed before our next pop
-    Future.delayed(
-        Duration.zero,
-        () =>
-            Navigator.of(_context!).pushReplacement(MaterialPageRoute(builder: (_) => const AppScreen(title: 'Talkaboat'))));
   }
 
   Widget _buildImage(String assetName, [double width = 350]) {

@@ -14,12 +14,10 @@ import '../utils/common.dart';
 import 'bottom-sheets/playlist.bottom-sheet.dart';
 
 class EpisodePreviewWidget extends StatefulWidget {
-  EpisodePreviewWidget(this.episode, this.direction, this.onPlayEpisode,
-      {Key? key})
-      : super(key: key);
-  Episode episode;
-  Axis direction;
-  Function onPlayEpisode;
+  const EpisodePreviewWidget(this.episode, this.direction, this.onPlayEpisode, {Key? key}) : super(key: key);
+  final Episode episode;
+  final Axis direction;
+  final Function onPlayEpisode;
 
   @override
   State<EpisodePreviewWidget> createState() => _EpisodePreviewWidgetState();
@@ -30,10 +28,10 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
   final playlistSearchController = TextEditingController();
   final userService = getIt<UserService>();
   popupMenu(BuildContext context, Episode entry) => <PopupMenuEntry<String>>[
+        const PopupMenuItem<String>(value: 'add', child: Card(child: Text('Add to playlist'))),
         PopupMenuItem<String>(
-            value: 'add', child: Card(child: Text('Add to playlist'))),
-    PopupMenuItem<String>(
-        value: 'download', child: Card(child: Text(FileDownloadService.containsFile(entry.audio!) ? 'Delete' : 'Download'))),
+            value: 'download',
+            child: Card(child: Text(FileDownloadService.containsFile(entry.audio!) ? 'Delete' : 'Download'))),
       ];
 
   buildPopupButton(context, Episode entry) => PopupMenuButton(
@@ -42,7 +40,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
           switch (value) {
             case 'download':
               await FileDownloadService.cacheOrDelete(entry.audio!);
-              setState(() { });
+              setState(() {});
               break;
             case "add":
               if (!userService.isConnected) {
@@ -54,16 +52,13 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                         type: PageTransitionType.rightToLeftWithFade,
                         duration: const Duration(milliseconds: 500),
                         reverseDuration: const Duration(milliseconds: 500),
-                        child: LoginScreen(() => setState(() {}))));
+                        child: LoginScreen(true, refreshParent: () => setState(() {}))));
               } else {
                 showModalBottomSheet(
                     isScrollControlled: true,
-                    shape: const RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.vertical(top: Radius.circular(20))),
+                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
                     context: context,
-                    builder: (context) =>
-                        PlaylistBottomSheet(episodeToAdd: entry));
+                    builder: (context) => PlaylistBottomSheet(episodeToAdd: entry));
               }
               break;
           }
@@ -95,69 +90,57 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
         );
       });
 
-  Widget makeHorizontalListTile(context, Episode entry, bool playing) =>
-      Padding(
-          padding: const EdgeInsets.all(10),
-          child: InkWell(
-              onTap: () async {
-                await widget.onPlayEpisode();
-                setState(() {});
-                // await audioHandler
-                //     .updateEpisodeQueue(List.generate(1, (index) => entry));
-              },
-              child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: SizedBox(
-                    width: 120,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+  Widget makeHorizontalListTile(context, Episode entry, bool playing) => Padding(
+      padding: const EdgeInsets.all(10),
+      child: InkWell(
+          onTap: () async {
+            await widget.onPlayEpisode();
+            setState(() {});
+            // await audioHandler
+            //     .updateEpisodeQueue(List.generate(1, (index) => entry));
+          },
+          child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: SizedBox(
+                width: 120,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Stack(
                       children: [
-                        Stack(
-                          children: [
-                            ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: SizedBox(
-                                    height: 120,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        CachedNetworkImage(
-                                          imageUrl:  entry.image ?? 'https://picsum.photos/200',
-                                          cacheManager: CacheManager(
-                                            Config(
-                                              entry.image ?? 'https://picsum.photos/200',
-                                              stalePeriod: const Duration(days: 2))),
-                                          fit: BoxFit.fill,
-                                          placeholder: (_, __) => const Center(
-                                              child:
-                                                  CircularProgressIndicator()),
-                                          // progressIndicatorBuilder: (context, url, downloadProgress) =>
-                                          //     CircularProgressIndicator(value: downloadProgress.progress),
-                                          errorWidget: (context, url, error) =>
-                                              const Icon(Icons.error),
-                                        ),
-                                      ],
-                                    )))
-                          ],
-                        ),
-                        Padding(
-                            padding: const EdgeInsets.only(
-                                left: 5, right: 5, top: 5),
-                            child: Text(entry.title!,
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 2,
-                                style: Theme.of(context).textTheme.titleMedium))
+                        ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: SizedBox(
+                                height: 120,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    CachedNetworkImage(
+                                      imageUrl: entry.image ?? 'https://picsum.photos/200',
+                                      cacheManager: CacheManager(Config(entry.image ?? 'https://picsum.photos/200',
+                                          stalePeriod: const Duration(days: 2))),
+                                      fit: BoxFit.fill,
+                                      placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
+                                      // progressIndicatorBuilder: (context, url, downloadProgress) =>
+                                      //     CircularProgressIndicator(value: downloadProgress.progress),
+                                      errorWidget: (context, url, error) => const Icon(Icons.error),
+                                    ),
+                                  ],
+                                )))
                       ],
                     ),
-                  ))));
+                    Padding(
+                        padding: const EdgeInsets.only(left: 5, right: 5, top: 5),
+                        child: Text(entry.title!,
+                            overflow: TextOverflow.ellipsis, maxLines: 2, style: Theme.of(context).textTheme.titleMedium))
+                  ],
+                ),
+              ))));
 
   Widget makeVerticalListTile(context, Episode entry, bool playing) {
-    final remaining =
-        Duration(seconds: (entry.audioLengthSec! - entry.playTime!).toInt());
+    final remaining = Duration(seconds: (entry.audioLengthSec! - entry.playTime!).toInt());
     return ListTile(
-      contentPadding:
-          const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
       leading: SizedBox(
         width: 60,
         height: 60,
@@ -168,13 +151,10 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                 child: SizedBox(
                     child: CachedNetworkImage(
                   imageUrl: entry.image ?? 'https://picsum.photos/200',
-                      cacheManager: CacheManager(
-                          Config(
-                              entry.image ?? 'https://picsum.photos/200',
-                              stalePeriod: const Duration(days: 2))),
+                  cacheManager:
+                      CacheManager(Config(entry.image ?? 'https://picsum.photos/200', stalePeriod: const Duration(days: 2))),
                   fit: BoxFit.fill,
-                  placeholder: (_, __) =>
-                      const Center(child: CircularProgressIndicator()),
+                  placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
                   // progressIndicatorBuilder: (context, url, downloadProgress) =>
                   //     CircularProgressIndicator(value: downloadProgress.progress),
                   errorWidget: (context, url, error) => const Icon(Icons.error),
@@ -184,11 +164,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                     child: Card(
                         color: Theme.of(context).dialogTheme.backgroundColor,
                         child: Icon(
-                            audioHandler.isListeningEpisode(
-                                        widget.episode.id) &&
-                                    playing
-                                ? Icons.pause
-                                : Icons.play_arrow,
+                            audioHandler.isListeningEpisode(widget.episode.id) && playing ? Icons.pause : Icons.play_arrow,
                             size: 30)))),
           ],
         ),
@@ -197,8 +173,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
         entry.title!,
         overflow: TextOverflow.ellipsis,
         maxLines: 2,
-        style:
-            const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
       ),
       subtitle: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -212,17 +187,21 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
           ),
           Row(
             children: [
-              IconButton(onPressed: (() async {
-                await FileDownloadService.cacheOrDelete(entry.audio!);
-                setState(() { });
-              }), icon: Icon(FileDownloadService.containsFile(entry.audio!) ? Icons.cloud_done : Icons.cloud_download_outlined), color: FileDownloadService.containsFile(entry.audio!) ? Colors.green : Colors.white),
-              SizedBox(width: 10,),
+              IconButton(
+                  onPressed: (() async {
+                    await FileDownloadService.cacheOrDelete(entry.audio!);
+                    setState(() {});
+                  }),
+                  icon: Icon(
+                      FileDownloadService.containsFile(entry.audio!) ? Icons.cloud_done : Icons.cloud_download_outlined),
+                  color: FileDownloadService.containsFile(entry.audio!) ? Colors.green : Colors.white),
+              const SizedBox(
+                width: 10,
+              ),
               SizedBox(
                 width: 55,
                 child: Text(
-                  (entry.playTime ?? 0) + 20 >= (entry.audioLengthSec ?? 0)
-                      ? "Listened"
-                      : formatTime(remaining.inSeconds),
+                  (entry.playTime ?? 0) + 20 >= (entry.audioLengthSec ?? 0) ? "Listened" : formatTime(remaining.inSeconds),
                 ),
               ),
               AbsorbPointer(
@@ -231,9 +210,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                 width: 110,
                 child: SliderTheme(
                   data: SliderTheme.of(context).copyWith(
-                      thumbColor: Colors.transparent,
-                      thumbShape:
-                          const RoundSliderThumbShape(enabledThumbRadius: 0.0)),
+                      thumbColor: Colors.transparent, thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 0.0)),
                   child: Slider(
                       value: (entry.playTime?.toDouble() ?? 0),
                       onChanged: (double value) {},
@@ -263,26 +240,25 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
   @override
   Widget build(BuildContext context) {
     return widget.episode == null
-        ? SizedBox() :
-    FutureBuilder(
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                '${snapshot.error} occurred',
-                style: const TextStyle(fontSize: 18),
-              ),
-            );
-          } else {
-              return makeCard(context, widget.episode);
-          }
-        } else {
-          return const Center(
-              child: CircularProgressIndicator());
-        }
-      },
-      future: FileDownloadService.getFile(widget.episode.audio!),
-    );
+        ? const SizedBox()
+        : FutureBuilder(
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text(
+                      '${snapshot.error} occurred',
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                  );
+                } else {
+                  return makeCard(context, widget.episode);
+                }
+              } else {
+                return const Center(child: CircularProgressIndicator());
+              }
+            },
+            future: FileDownloadService.getFile(widget.episode.audio!),
+          );
   }
 }
