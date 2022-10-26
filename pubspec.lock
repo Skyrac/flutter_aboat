@@ -632,6 +632,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.4"
+  message_pack_dart:
+    dependency: transitive
+    description:
+      name: message_pack_dart
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.1"
   meta:
     dependency: transitive
     description:
@@ -975,6 +982,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.1"
+  signalr_netcore:
+    dependency: "direct main"
+    description:
+      name: signalr_netcore
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.3.3"
   simple_observable:
     dependency: transitive
     description:
@@ -1015,6 +1029,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.2.1+1"
+  sse_client:
+    dependency: transitive
+    description:
+      name: sse_client
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.0"
   stack_trace:
     dependency: transitive
     description:
@@ -1071,6 +1092,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
+  tuple:
+    dependency: transitive
+    description:
+      name: tuple
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.1"
   typed_data:
     dependency: transitive
     description:

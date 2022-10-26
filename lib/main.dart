@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:Talkaboat/screens/app.screen.dart';
 import 'package:Talkaboat/screens/onboarding/onboarding.screen.dart';
+import 'package:Talkaboat/services/hubs/reward/RewardHubService.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/themes/colors.dart';
 import 'package:Talkaboat/themes/default.theme.dart';
@@ -38,6 +39,7 @@ void main() async {
   );
   await configureDependencies();
   configDio();
+  RewardHubService.connect();
   await getIt<UserService>().getCoreData();
 
   runApp(const MyApp());
