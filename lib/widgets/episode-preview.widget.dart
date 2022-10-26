@@ -15,12 +15,14 @@ import '../utils/common.dart';
 import 'bottom-sheets/playlist.bottom-sheet.dart';
 
 class EpisodePreviewWidget extends StatefulWidget {
-  EpisodePreviewWidget(this.episode, this.direction, this.onPlayEpisode,
+  EpisodePreviewWidget(
+      this.episode, this.direction, this.onPlayEpisode, this.refresh,
       {Key? key})
       : super(key: key);
   Episode episode;
   Axis direction;
   Function onPlayEpisode;
+  Function refresh;
 
   @override
   State<EpisodePreviewWidget> createState() => _EpisodePreviewWidgetState();
@@ -30,6 +32,10 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
   late final audioHandler = getIt<AudioPlayerHandler>();
   final playlistSearchController = TextEditingController();
   final userService = getIt<UserService>();
+  // void refresh() {
+  //   setState(() {});
+  // }
+
   popupMenu(BuildContext context, Episode entry) => <PopupMenuEntry<String>>[
         PopupMenuItem<String>(
             value: 'add',
@@ -113,9 +119,11 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
         onSelected: (value) async {
           switch (value) {
             case 'download':
-              await userService.addToFavorites(entry.podcastId!);
+              if (!userService.isInFavorites(entry.podcastId!)) {
+                await userService.addToFavorites(entry.podcastId!);
+                widget.refresh();
+              }
               await FileDownloadService.cacheOrDelete(entry.audio!);
-              setState(() {});
               break;
             case "add":
               if (!userService.isConnected) {
@@ -147,21 +155,22 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
         },
       );
 
-  Widget makeCard(context, Episode entry) => StreamBuilder<PlaybackState>(
-      stream: audioHandler.playbackState,
-      builder: (context, snapshot) {
-        final playbackState = snapshot.data;
-        final processingState = playbackState?.processingState;
-        final playing = playbackState?.playing ?? false;
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: Container(
-            child: widget.direction == Axis.horizontal
-                ? makeHorizontalListTile(context, entry, playing)
-                : makeVerticalListTile(context, entry, playing),
-          ),
-        );
-      });
+  Widget makeCard(context, Episode entry, Function refresh) =>
+      StreamBuilder<PlaybackState>(
+          stream: audioHandler.playbackState,
+          builder: (context, snapshot) {
+            final playbackState = snapshot.data;
+            final processingState = playbackState?.processingState;
+            final playing = playbackState?.playing ?? false;
+            return ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Container(
+                child: widget.direction == Axis.horizontal
+                    ? makeHorizontalListTile(context, entry, playing)
+                    : makeVerticalListTile(context, entry, playing, refresh),
+              ),
+            );
+          });
 
   Widget makeHorizontalListTile(context, Episode entry, bool playing) =>
       Padding(
@@ -245,7 +254,8 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                     ))),
           ));
 
-  Widget makeVerticalListTile(context, Episode entry, bool playing) {
+  Widget makeVerticalListTile(
+      context, Episode entry, bool playing, Function refresh) {
     final dt =
         DateTime.fromMillisecondsSinceEpoch(entry.pubDateMs?.toInt() ?? 0);
     var dateFormatted = DateFormat('dd.MM.yyyy').format(dt);
@@ -401,10 +411,13 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                               minWidth: 0.0, minHeight: 0.0),
                           padding: const EdgeInsets.all(0),
                           onPressed: (() async {
-                            await userService.addToFavorites(entry.podcastId!);
+                            if (!userService.isInFavorites(entry.podcastId!)) {
+                              await userService
+                                  .addToFavorites(entry.podcastId!);
+                              refresh();
+                            }
                             await FileDownloadService.cacheOrDelete(
                                 entry.audio!);
-                            setState(() {});
                           }),
                           child: FileDownloadService.containsFile(entry.audio!)
                               ? Image.asset(
@@ -450,7 +463,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                     ),
                   );
                 } else {
-                  return makeCard(context, widget.episode);
+                  return makeCard(context, widget.episode, widget.refresh);
                 }
               } else {
                 return const Center(child: CircularProgressIndicator());

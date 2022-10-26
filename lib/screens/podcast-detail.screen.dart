@@ -57,8 +57,11 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
           (BuildContext context, int index) {
             var episode = data[index];
             var episodeIndex = index;
-            return EpisodePreviewWidget(episode, Axis.vertical,
-                () => selectEpisode(episodeIndex, data));
+            return EpisodePreviewWidget(
+                episode,
+                Axis.vertical,
+                () => {selectEpisode(episodeIndex, data)},
+                () => setState(() {}));
           },
           childCount: data.length, // 1000 list items
         ),

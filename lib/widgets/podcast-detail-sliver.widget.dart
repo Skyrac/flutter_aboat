@@ -53,7 +53,7 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                 padding: const EdgeInsets.fromLTRB(18, 5, 18, 10),
                 child: Material(
                   borderRadius: BorderRadius.circular(20),
-                  color: const Color.fromRGBO(29, 40, 58, 0.8),
+                  color: const Color.fromRGBO(29, 40, 58, 0.92),
                   child: Container(
                     padding: const EdgeInsets.fromLTRB(18, 8, 18, 8),
                     child: DecoratedBox(
@@ -90,7 +90,6 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 image: DecorationImage(
-                  opacity: 0.6,
                   image: NetworkImage(podcast.image!),
                   fit: BoxFit.cover,
                 ),
