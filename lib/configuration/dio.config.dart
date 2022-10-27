@@ -5,6 +5,7 @@ import '../injection/injector.dart';
 import '../services/user/user.service.dart';
 
 var options = BaseOptions(
+  //baseUrl: "http://192.168.10.177:5000/",
   baseUrl: 'https://talkaboat.azurewebsites.net/',
   connectTimeout: 5000,
   receiveTimeout: 15000,
