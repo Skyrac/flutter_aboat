@@ -1,6 +1,7 @@
 import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/services/web3/token.service.dart';
+import 'package:Talkaboat/widgets/login-button.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:page_transition/page_transition.dart';
@@ -177,7 +178,7 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                   : SizedBox(
                       height: 140,
                       child: Column(
-                        children: [const Text("Login to use this feature!"), createLoginButton(context)],
+                        children: const [Text("Login to use this feature!"), Center(child: LoginButton())],
                       ),
                     ),
               actions: [
@@ -199,38 +200,4 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
               ],
             ));
   }
-
-  createLoginButton(BuildContext context) => Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 30),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: Card(
-              child: InkWell(
-                onTap: (() {
-                  Navigator.push(
-                      context,
-                      PageTransition(
-                          alignment: Alignment.bottomCenter,
-                          curve: Curves.bounceOut,
-                          type: PageTransitionType.fade,
-                          duration: const Duration(milliseconds: 300),
-                          reverseDuration: const Duration(milliseconds: 200),
-                          child: LoginScreen(true, refreshParent: () => Navigator.pop(context))));
-                }),
-                child: SizedBox(
-                    height: 80,
-                    width: MediaQuery.of(context).size.width,
-                    child: Center(
-                      child: Text(
-                        "Login",
-                        style: Theme.of(context).textTheme.titleLarge,
-                        textAlign: TextAlign.center,
-                      ),
-                    )),
-              ),
-            ),
-          ),
-        ),
-      );
 }

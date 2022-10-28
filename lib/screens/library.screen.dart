@@ -5,6 +5,7 @@ import '../injection/injector.dart';
 import '../models/podcasts/podcast.model.dart';
 import '../models/search/search_result.model.dart';
 import '../services/user/user.service.dart';
+import '../widgets/login-button.widget.dart';
 import '../widgets/podcast-list.widget.dart';
 import 'login.screen.dart';
 
@@ -83,38 +84,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
                       future: userService.getFavorites(),
                     ),
                   )
-                : Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 30),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
-                        child: Card(
-                          child: InkWell(
-                            onTap: (() {
-                              Navigator.push(
-                                  context,
-                                  PageTransition(
-                                      alignment: Alignment.bottomCenter,
-                                      curve: Curves.bounceOut,
-                                      type: PageTransitionType.fade,
-                                      duration: const Duration(milliseconds: 300),
-                                      reverseDuration: const Duration(milliseconds: 200),
-                                      child: LoginScreen(true, refreshParent: () => setState(() {}))));
-                            }),
-                            child: SizedBox(
-                                height: 80,
-                                width: MediaQuery.of(context).size.width,
-                                child: Center(
-                                  child: Text(
-                                    "Login",
-                                    style: Theme.of(context).textTheme.titleLarge,
-                                    textAlign: TextAlign.center,
-                                  ),
-                                )),
-                          ),
-                        ),
-                      ),
-                    ),
-                  )));
+                : const Center(child: LoginButton())));
   }
 }
