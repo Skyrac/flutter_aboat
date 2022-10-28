@@ -1,4 +1,4 @@
-import 'package:Talkaboat/services/hubs/reward/RewardHubService.dart';
+import 'package:Talkaboat/services/hubs/reward/reward-hub.service.dart';
 import 'package:audio_service/audio_service.dart';
 import '../../models/podcasts/episode.model.dart';
 
