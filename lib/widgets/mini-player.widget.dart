@@ -1,3 +1,4 @@
+import 'package:Talkaboat/screens/podcast-episode.screen.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -34,8 +35,11 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
 
   /// A stream reporting the combined state of the current media item and its
   /// current position.
-  Stream<MediaState> get _mediaStateStream => Rx.combineLatest2<MediaItem?, Duration, MediaState>(
-      audioHandler.mediaItem, AudioService.position, (mediaItem, position) => MediaState(mediaItem, position));
+  Stream<MediaState> get _mediaStateStream =>
+      Rx.combineLatest2<MediaItem?, Duration, MediaState>(
+          audioHandler.mediaItem,
+          AudioService.position,
+          (mediaItem, position) => MediaState(mediaItem, position));
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +51,9 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
       margin: const EdgeInsets.only(bottom: 18),
       width: deviceSize.width * 0.9,
       height: 56,
-      decoration: BoxDecoration(color: const Color.fromRGBO(29, 40, 58, 0.7), borderRadius: BorderRadius.circular(10)),
+      decoration: BoxDecoration(
+          color: const Color.fromRGBO(29, 40, 58, 0.7),
+          borderRadius: BorderRadius.circular(10)),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -81,7 +87,11 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
                             type: PageTransitionType.rightToLeftWithFade,
                             duration: const Duration(milliseconds: 500),
                             reverseDuration: const Duration(milliseconds: 500),
-                            child: PodcastDetailScreen(podcastId: widget.episode?.podcastId)))
+                            // child: PodcastDetailScreen(
+                            //     podcastId: widget.episode?.podcastId)
+                            child: PodcastEpisodeScreen(
+                                podcastId: widget.episode?.podcastId,
+                                episode: widget.episode)))
                   }),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -98,12 +108,15 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   CachedNetworkImage(
-                                    imageUrl: widget.episode!.image ?? 'https://picsum.photos/200',
+                                    imageUrl: widget.episode!.image ??
+                                        'https://picsum.photos/200',
                                     fit: BoxFit.fill,
-                                    placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
+                                    placeholder: (_, __) => const Center(
+                                        child: CircularProgressIndicator()),
                                     // progressIndicatorBuilder: (context, url, downloadProgress) =>
                                     //     CircularProgressIndicator(value: downloadProgress.progress),
-                                    errorWidget: (context, url, error) => const Icon(Icons.error),
+                                    errorWidget: (context, url, error) =>
+                                        const Icon(Icons.error),
                                   ),
                                 ],
                               )))
@@ -123,7 +136,10 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
                             widget.episode!.title!,
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(color: Colors.white),
                           ),
                           const SizedBox(
                             height: 5,
@@ -132,7 +148,10 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
                             removeAllHtmlTags(widget.episode!.description!),
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
-                            style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.white),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleSmall
+                                ?.copyWith(color: Colors.white),
                           ),
                           // Text(
                           //   widget.episode!.!,
