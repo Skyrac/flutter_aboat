@@ -3,7 +3,7 @@ class UserInfoData {
   String? email;
   bool? verified;
   List<String>? addresses;
-  double? rewards;
+  int? rewards;
   int? referrer;
   bool? ambassador;
   int? userBadge;
