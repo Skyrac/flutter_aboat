@@ -4,11 +4,9 @@ import 'package:Talkaboat/services/web3/token.service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../models/search/search_result.model.dart';
 import '../screens/login.screen.dart';
-import '../themes/colors.dart';
 import 'bottom-sheets/claim.bottom-sheet.dart';
 
 class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
@@ -29,12 +27,10 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
       children: [
         buildBackground(shrinkOffset, context),
         buildAppBar(shrinkOffset),
-        Positioned(
-          top: top,
-          left: 20,
-          right: 20,
+        Container(
+          padding: const EdgeInsets.only(bottom: 100),
           child: buildFloating(shrinkOffset, context),
-        ),
+        )
       ],
     );
   }
@@ -43,10 +39,40 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
 
   double disappear(double shrinkOffset) => 1 - shrinkOffset / expandedHeight;
 
-  Widget buildAppBar(double shrinkOffset) => AppBar(
-        title: Text(podcast.title!),
-        backgroundColor: DefaultColors.secondaryColorAlphaBlendStrong.shade900,
-        centerTitle: true,
+  Widget buildAppBar(double shrinkOffset) => PreferredSize(
+        preferredSize: Size.fromHeight(expandedHeight),
+        child: AppBar(
+            leading: const SizedBox(),
+            centerTitle: true,
+            bottom: PreferredSize(
+              preferredSize: Size.fromHeight(expandedHeight),
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(18, 5, 18, 10),
+                child: Material(
+                  borderRadius: BorderRadius.circular(20),
+                  color: const Color.fromRGBO(29, 40, 58, 0.92),
+                  child: Container(
+                    padding: const EdgeInsets.fromLTRB(18, 8, 18, 8),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.0),
+                        border: const Border(bottom: BorderSide(color: Color.fromRGBO(164, 202, 255, 1))),
+                      ),
+                      child: const TabBar(
+                        labelColor: Color.fromRGBO(188, 140, 75, 1),
+                        indicatorColor: Color.fromRGBO(188, 140, 75, 1),
+                        unselectedLabelColor: Color.fromRGBO(164, 202, 255, 1),
+                        tabs: [
+                          Tab(text: "Episodes"),
+                          Tab(text: "Details"),
+                          Tab(text: "Community"),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            )),
       );
 
   Widget buildBackground(double shrinkOffset, context) => Opacity(
@@ -55,8 +81,9 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
         children: <Widget>[
           Container(
               padding: const EdgeInsets.only(left: 10.0),
-              height: expandedHeight,
+              height: expandedHeight - 25,
               decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
                 image: DecorationImage(
                   image: NetworkImage(podcast.image!),
                   fit: BoxFit.cover,
@@ -68,39 +95,19 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
   Widget buildFloating(double shrinkOffset, BuildContext context) => Opacity(
         opacity: disappear(shrinkOffset),
         child: SizedBox(
-          height: 200,
+          height: 130,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              SizedBox(
-                width: 240,
-                child: ClipRRect(
-                    borderRadius: BorderRadius.circular(200),
-                    child: Card(
-                        child: buildButton(text: 'Donate', icon: Icons.money, onClick: () => {showDonationModal(context)}))),
-              ),
-              const SizedBox(
-                height: 15,
-              ),
               Row(
                 children: [
                   Expanded(
-                      child: Card(
                     child: buildButton(
-                        text: 'Share',
-                        icon: Icons.share,
-                        onClick: () => {
-                              //TODO: Geräte Abhängigkeit prüfen
-                              Share.share(
-                                  "Check the Podcast ${podcast.title} on Talkaboat.online mobile App! Start listening and earn while supporting new and upcoming podcasters.\n\n Download it now on \nAndroid: https://play.google.com/store/apps/details?id=com.aboat.talkaboat\n",
-                                  subject: "Check this out! A Podcast on Talkaboat.online.")
-                            }),
-                  )),
-                  Expanded(
-                      child: Card(
-                    child: buildButton(
-                        text: 'Claim',
-                        icon: Icons.rv_hookup,
+                        text: 'Ownership',
+                        icon: Image.asset(
+                          "assets/images/person.png",
+                          width: 20,
+                        ),
                         onClick: () => {
                               showModalBottomSheet(
                                   isScrollControlled: true,
@@ -109,7 +116,13 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                                   context: context,
                                   builder: (context) => ClaimBottomSheet(podcastId: podcast.id!))
                             }),
-                  )),
+                  ),
+                  Expanded(
+                    child: buildButton(
+                        text: 'Donate',
+                        icon: Image.asset("assets/images/money.png", width: 28),
+                        onClick: () => {showDonationModal(context)}),
+                  ),
                 ],
               ),
             ],
@@ -117,25 +130,31 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
         ),
       );
 
-  Widget buildButton({required String text, required IconData icon, required Function onClick}) => TextButton(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon),
-            const SizedBox(width: 12),
-            Text(text, style: const TextStyle(fontSize: 20)),
-          ],
+  Widget buildButton({required String text, required Image icon, required void Function()? onClick}) => RawMaterialButton(
+        onPressed: onClick,
+        child: Container(
+          width: 140,
+          height: 40,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: const Color.fromRGBO(15, 23, 41, 1),
+              border: Border.all(color: const Color.fromRGBO(99, 163, 253, 1))),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              icon,
+              const SizedBox(width: 12),
+              Text(text, style: const TextStyle(fontSize: 12, color: Color.fromRGBO(99, 163, 253, 1))),
+            ],
+          ),
         ),
-        onPressed: () {
-          onClick();
-        },
       );
 
   @override
   double get maxExtent => expandedHeight;
 
   @override
-  double get minExtent => kToolbarHeight + 30;
+  double get minExtent => kToolbarHeight + 100;
 
   @override
   bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) => true;
