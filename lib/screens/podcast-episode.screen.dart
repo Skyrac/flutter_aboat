@@ -1,7 +1,6 @@
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -15,7 +14,6 @@ import '../themes/colors.dart';
 import '../utils/scaffold_wave.dart';
 import '../widgets/bottom-sheets/playlist.bottom-sheet.dart';
 import '../widgets/episode-preview.widget.dart';
-import '../widgets/podcast-detail-sliver.widget.dart';
 import '../widgets/podcast-episode-sliver.widget.dart';
 import 'login.screen.dart';
 
@@ -24,12 +22,7 @@ class PodcastEpisodeScreen extends StatefulWidget {
   final Episode? episode;
   final int? podcastId;
   final AppBar? appBar;
-  const PodcastEpisodeScreen(
-      {Key? key,
-      this.podcastSearchResult,
-      this.podcastId,
-      this.appBar,
-      this.episode})
+  const PodcastEpisodeScreen({Key? key, this.podcastSearchResult, this.podcastId, this.appBar, this.episode})
       : super(key: key);
 
   @override
@@ -56,8 +49,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
     if (widget.podcastSearchResult != null) {
       return widget.podcastSearchResult!;
     } else if (widget.podcastId != null) {
-      return await podcastService.getPodcastDetails(
-          widget.podcastId!, sort, -1);
+      return await podcastService.getPodcastDetails(widget.podcastId!, sort, -1);
     } else {
       return null;
     }
@@ -69,10 +61,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
             var episode = data[index];
             var episodeIndex = index;
             return EpisodePreviewWidget(
-                episode,
-                Axis.vertical,
-                () => {selectEpisode(episodeIndex, data)},
-                () => setState(() {}));
+                episode, Axis.vertical, () => {selectEpisode(episodeIndex, data)}, () => setState(() {}));
           },
           childCount: data.length, // 1000 list items
         ),
@@ -81,8 +70,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    userService.UpdatePodcastVisitDate(
-        widget.podcastId ?? widget.podcastSearchResult?.id);
+    userService.UpdatePodcastVisitDate(widget.podcastId ?? widget.podcastSearchResult?.id);
     return Scaffold(
         body: Container(
             decoration: BoxDecoration(
@@ -129,12 +117,12 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                             }),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(Icons.arrow_back),
-                                const SizedBox(
+                              children: const [
+                                Icon(Icons.arrow_back),
+                                SizedBox(
                                   width: 10,
                                 ),
-                                const Text("Back")
+                                Text("Back")
                               ],
                             ),
                           )
@@ -146,9 +134,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
 
   Widget createCustomScrollView(SearchResult podcastSearchResult) {
     final size = MediaQuery.of(context).size;
-    final remaining = Duration(
-        seconds: (widget.episode!.audioLengthSec! - widget.episode!.playTime!)
-            .toInt());
+    final remaining = Duration(seconds: (widget.episode!.audioLengthSec! - widget.episode!.playTime!).toInt());
     return DefaultTabController(
       animationDuration: Duration.zero,
       length: 3,
@@ -169,22 +155,19 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
             Padding(
               padding: const EdgeInsets.only(right: 5),
               child: IconButton(
-                  icon: const Icon(Icons.share,
-                      color: Color.fromRGBO(99, 163, 253, 0.5), size: 36),
+                  icon: const Icon(Icons.share, color: Color.fromRGBO(99, 163, 253, 0.5), size: 36),
                   tooltip: '',
                   onPressed: () => {
                         //TODO: Geräte Abhängigkeit prüfen
                         Share.share(
                             "Check the Podcast ${widget.episode!.title} on Talkaboat.online mobile App! Start listening and earn while supporting new and upcoming podcasters.\n\n Download it now on \nAndroid: https://play.google.com/store/apps/details?id=com.aboat.talkaboat\n",
-                            subject:
-                                "Check this out! A Podcast on Talkaboat.online.")
+                            subject: "Check this out! A Podcast on Talkaboat.online.")
                       }),
             ),
             Padding(
               padding: const EdgeInsets.only(right: 10),
               child: IconButton(
-                icon: const Icon(Icons.format_list_bulleted_add,
-                    color: Color.fromRGBO(99, 163, 253, 0.5), size: 36),
+                icon: const Icon(Icons.format_list_bulleted, color: Color.fromRGBO(99, 163, 253, 0.5), size: 36),
                 tooltip: '',
                 onPressed: () {
                   if (!userService.isConnected) {
@@ -200,12 +183,9 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                   } else {
                     showModalBottomSheet(
                         isScrollControlled: true,
-                        shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.vertical(
-                                top: Radius.circular(20))),
+                        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
                         context: context,
-                        builder: (context) =>
-                            PlaylistBottomSheet(episodeToAdd: widget.episode!));
+                        builder: (context) => PlaylistBottomSheet(episodeToAdd: widget.episode!));
                   }
                 },
               ),
@@ -235,13 +215,10 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                             stream: audioPlayer.playbackState,
                             builder: (context, snapshot) {
                               final playbackState = snapshot.data;
-                              final processingState =
-                                  playbackState?.processingState;
+                              final processingState = playbackState?.processingState;
                               final playing = playbackState?.playing;
-                              if (processingState ==
-                                      AudioProcessingState.loading ||
-                                  processingState ==
-                                      AudioProcessingState.buffering) {
+                              if (processingState == AudioProcessingState.loading ||
+                                  processingState == AudioProcessingState.buffering) {
                                 return RawMaterialButton(
                                   child: Container(
                                     alignment: Alignment.center,
@@ -249,71 +226,50 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                     height: 40,
                                     decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(10),
-                                        border: Border.all(
-                                            width: 1,
-                                            color: const Color.fromRGBO(
-                                                99, 163, 253, 1))),
-                                    child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Container(
-                                            width: 20.0,
-                                            height: 20.0,
-                                            child:
-                                                const CircularProgressIndicator(),
-                                          ),
-                                          const SizedBox(
-                                            width: 10,
-                                          ),
-                                          const Text("Abspielen",
-                                              style: TextStyle(
-                                                  color: Color.fromRGBO(
-                                                      99, 163, 253, 1)))
-                                        ]),
+                                        border: Border.all(width: 1, color: const Color.fromRGBO(99, 163, 253, 1))),
+                                    child: Row(mainAxisAlignment: MainAxisAlignment.center, children: const [
+                                      SizedBox(
+                                        width: 20.0,
+                                        height: 20.0,
+                                        child: CircularProgressIndicator(),
+                                      ),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Text("Abspielen", style: TextStyle(color: Color.fromRGBO(99, 163, 253, 1)))
+                                    ]),
                                   ),
                                   onPressed: () {},
                                 );
                               } else if (playing != true) {
                                 return ButtonEpisode(
-                                    func: audioPlayer.play,
-                                    image: "assets/images/play.png",
-                                    title: "Abspielen");
+                                    func: audioPlayer.play, image: "assets/images/play.png", title: "Abspielen");
                               } else {
                                 return ButtonEpisode(
-                                    func: audioPlayer.pause,
-                                    image: "assets/images/pause.png",
-                                    title: "Abspielen");
+                                    func: audioPlayer.pause, image: "assets/images/pause.png", title: "Abspielen");
                               }
                             },
                           ),
                           const SizedBox(
                             width: 15,
                           ),
-                          FileDownloadService.containsFile(
-                                  widget.episode!.audio!)
+                          FileDownloadService.containsFile(widget.episode!.audio!)
                               ? ButtonEpisode(
                                   func: () async {
-                                    if (!userService.isInFavorites(
-                                        widget.episode!.podcastId!)) {
-                                      await userService.addToFavorites(
-                                          widget.episode!.podcastId!);
+                                    if (!userService.isInFavorites(widget.episode!.podcastId!)) {
+                                      await userService.addToFavorites(widget.episode!.podcastId!);
                                     }
-                                    await FileDownloadService.cacheOrDelete(
-                                        widget.episode!.audio!);
+                                    await FileDownloadService.cacheOrDelete(widget.episode!.audio!);
                                     setState(() {});
                                   },
                                   image: "assets/images/cloud_complete.png",
                                   title: "Download")
                               : ButtonEpisode(
                                   func: () async {
-                                    if (!userService.isInFavorites(
-                                        widget.episode!.podcastId!)) {
-                                      await userService.addToFavorites(
-                                          widget.episode!.podcastId!);
+                                    if (!userService.isInFavorites(widget.episode!.podcastId!)) {
+                                      await userService.addToFavorites(widget.episode!.podcastId!);
                                     }
-                                    await FileDownloadService.cacheOrDelete(
-                                        widget.episode!.audio!);
+                                    await FileDownloadService.cacheOrDelete(widget.episode!.audio!);
                                     setState(() {});
                                   },
                                   image: "assets/images/cloud.png",
@@ -322,8 +278,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                       ),
                     ),
                     FutureBuilder(
-                      future: podcastService.getPodcastDetails(
-                          podcastSearchResult.id!, sort, -1),
+                      future: podcastService.getPodcastDetails(podcastSearchResult.id!, sort, -1),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.done) {
                           if (snapshot.hasError) {
@@ -333,76 +288,58 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                 style: const TextStyle(fontSize: 18),
                               ),
                             );
-                          } else if (snapshot.hasData &&
-                              snapshot.data != null) {
+                          } else if (snapshot.hasData && snapshot.data != null) {
                             // Extracting data from snapshot object
                             return Center(
                               child: Column(
                                 children: [
                                   Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 30),
+                                    padding: const EdgeInsets.symmetric(horizontal: 30),
                                     child: Column(
                                       children: [
                                         Container(
-                                          margin:
-                                              const EdgeInsets.only(top: 10),
+                                          margin: const EdgeInsets.only(top: 10),
                                           height: 40,
                                           alignment: Alignment.centerLeft,
                                           child: Text(
                                             "Allgemeines",
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .titleLarge
-                                                ?.copyWith(
-                                                  color: const Color.fromRGBO(
-                                                      99, 163, 253, 1),
+                                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                                  color: const Color.fromRGBO(99, 163, 253, 1),
                                                 ),
                                           ),
                                         ),
                                         Container(
-                                          margin:
-                                              const EdgeInsets.only(bottom: 10),
-                                          child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                const SizedBox(
-                                                  width: 30,
-                                                  child: Text(
-                                                    "Titel",
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w600),
-                                                  ),
-                                                ),
-                                                const SizedBox(
-                                                  width: 10,
-                                                ),
-                                                SizedBox(
-                                                  width: 250,
-                                                  child: Text(
-                                                    widget.episode!.title!,
-                                                    textAlign: TextAlign.end,
-                                                  ),
-                                                ),
-                                              ]),
+                                          margin: const EdgeInsets.only(bottom: 10),
+                                          child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                                            const SizedBox(
+                                              width: 30,
+                                              child: Text(
+                                                "Titel",
+                                                style: TextStyle(fontWeight: FontWeight.w600),
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              width: 10,
+                                            ),
+                                            SizedBox(
+                                              width: 250,
+                                              child: Text(
+                                                widget.episode!.title!,
+                                                textAlign: TextAlign.end,
+                                              ),
+                                            ),
+                                          ]),
                                         ),
                                         Container(
-                                          margin:
-                                              const EdgeInsets.only(bottom: 10),
+                                          margin: const EdgeInsets.only(bottom: 10),
                                           child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: [
                                               const SizedBox(
                                                 width: 60,
                                                 child: Text(
                                                   "Podcast",
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w600),
+                                                  style: TextStyle(fontWeight: FontWeight.w600),
                                                 ),
                                               ),
                                               const SizedBox(
@@ -411,8 +348,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                               SizedBox(
                                                 width: 250,
                                                 child: Text(
-                                                  snapshot.data!.title
-                                                      .toString(),
+                                                  snapshot.data!.title.toString(),
                                                   textAlign: TextAlign.end,
                                                 ),
                                               ),
@@ -420,124 +356,86 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                           ),
                                         ),
                                         Container(
-                                          margin:
-                                              const EdgeInsets.only(bottom: 10),
+                                          margin: const EdgeInsets.only(bottom: 10),
                                           child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: [
                                               const Text(
                                                 "Dauer",
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.w600),
+                                                style: TextStyle(fontWeight: FontWeight.w600),
                                               ),
                                               Text.rich(TextSpan(children: [
+                                                TextSpan(text: remaining.inHours != 0 ? '${remaining.inHours % 60}st ' : ""),
                                                 TextSpan(
-                                                    text: remaining.inHours != 0
-                                                        ? '${remaining.inHours % 60}st '
-                                                        : ""),
+                                                    text: remaining.inMinutes != 0 ? '${remaining.inMinutes % 60}min ' : ""),
                                                 TextSpan(
-                                                    text: remaining.inMinutes !=
-                                                            0
-                                                        ? '${remaining.inMinutes % 60}min '
-                                                        : ""),
-                                                TextSpan(
-                                                  text:
-                                                      '${remaining.inSeconds % 60}sec',
+                                                  text: '${remaining.inSeconds % 60}sec',
                                                 ),
                                               ])),
                                             ],
                                           ),
                                         ),
                                         Container(
-                                          margin:
-                                              const EdgeInsets.only(bottom: 6),
+                                          margin: const EdgeInsets.only(bottom: 6),
                                           alignment: Alignment.centerLeft,
                                           child: const Text(
                                             "Author",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w600),
+                                            style: TextStyle(fontWeight: FontWeight.w600),
                                           ),
                                         ),
                                         Container(
-                                          margin: const EdgeInsets.fromLTRB(
-                                              20, 0, 0, 10),
+                                          margin: const EdgeInsets.fromLTRB(20, 0, 0, 10),
                                           alignment: Alignment.topLeft,
                                           child: Text(
                                             snapshot.data!.publisher!,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyMedium
-                                                ?.copyWith(
-                                                  color: const Color.fromRGBO(
-                                                      99, 163, 253, 0.5),
+                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                  color: const Color.fromRGBO(99, 163, 253, 0.5),
                                                 ),
                                           ),
                                         ),
                                         Container(
                                           alignment: Alignment.centerLeft,
-                                          margin:
-                                              const EdgeInsets.only(bottom: 7),
+                                          margin: const EdgeInsets.only(bottom: 7),
                                           child: const Text(
                                             "Kategorien",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w600),
+                                            style: TextStyle(fontWeight: FontWeight.w600),
                                           ),
                                         ),
                                         Align(
                                           alignment: Alignment.centerLeft,
                                           child: Container(
-                                              margin: const EdgeInsets.only(
-                                                  bottom: 35),
+                                              margin: const EdgeInsets.only(bottom: 35),
                                               decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
-                                                  color: const Color.fromRGBO(
-                                                      188, 140, 75, 1)),
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  color: const Color.fromRGBO(188, 140, 75, 1)),
                                               width: 100,
                                               height: 35,
                                               child: Center(
                                                   child: Text(
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
+                                                      textAlign: TextAlign.center,
+                                                      overflow: TextOverflow.ellipsis,
                                                       maxLines: 2,
                                                       snapshot.data!.genreIds!,
-                                                      style: const TextStyle(
-                                                          color: Color.fromRGBO(
-                                                              15,
-                                                              23,
-                                                              41,
-                                                              1))))),
+                                                      style: const TextStyle(color: Color.fromRGBO(15, 23, 41, 1))))),
                                         ),
                                         Container(
                                           alignment: Alignment.centerLeft,
-                                          margin:
-                                              const EdgeInsets.only(bottom: 10),
+                                          margin: const EdgeInsets.only(bottom: 10),
                                           child: Text(
                                             "Beschreibung",
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .titleLarge
-                                                ?.copyWith(
-                                                  color: const Color.fromRGBO(
-                                                      99, 163, 253, 1),
+                                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                                  color: const Color.fromRGBO(99, 163, 253, 1),
                                                 ),
                                           ),
                                         ),
                                         Container(
-                                          margin:
-                                              const EdgeInsets.only(bottom: 10),
+                                          margin: const EdgeInsets.only(bottom: 10),
                                           child: Text(
                                             widget.episode!.transcript!,
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .bodyLarge
-                                                ?.copyWith(
-                                                    color: const Color.fromRGBO(
-                                                        99, 163, 253, 1)),
+                                                ?.copyWith(color: const Color.fromRGBO(99, 163, 253, 1)),
                                           ),
                                         )
                                       ],
@@ -614,8 +512,7 @@ class ButtonEpisode extends StatelessWidget {
         height: 40,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-                width: 1, color: const Color.fromRGBO(99, 163, 253, 1))),
+            border: Border.all(width: 1, color: const Color.fromRGBO(99, 163, 253, 1))),
         child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           Image.asset(
             image,
@@ -626,7 +523,7 @@ class ButtonEpisode extends StatelessWidget {
           ),
           Text(
             title,
-            style: TextStyle(color: Color.fromRGBO(99, 163, 253, 1)),
+            style: const TextStyle(color: Color.fromRGBO(99, 163, 253, 1)),
           )
         ]),
       ),
