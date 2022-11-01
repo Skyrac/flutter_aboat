@@ -50,6 +50,8 @@ class UserRepository {
       var convertedData = UserInfoData.fromJson(json.decode(response.data!));
       return convertedData;
     } catch (exception) {
+      print(exception);
+      print((exception as DioError).response!.data);
       return UserInfoData();
     }
   }
