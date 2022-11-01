@@ -4,10 +4,10 @@ import 'package:Talkaboat/screens/favorites.screen.dart';
 import 'package:Talkaboat/screens/search.screen.dart';
 import 'package:Talkaboat/screens/social/social_entry.screen.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lazy_load_indexed_stack/lazy_load_indexed_stack.dart';
 import 'package:open_store/open_store.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -31,6 +31,7 @@ class _AppScreenState extends State<AppScreen> {
   var userService = getIt<UserService>();
   String _currentPage = "Home";
   List<String> pageKeys = ["Home", "Search", "Playlist", "Library", "Social"];
+  // TODO: remove this
   final Map<String, GlobalKey<NavigatorState>> _navigatorKeys = {
     "Home": GlobalKey<NavigatorState>(),
     "Search": GlobalKey<NavigatorState>(),
@@ -41,7 +42,6 @@ class _AppScreenState extends State<AppScreen> {
 
   int currentTabIndex = 0;
   Episode? episode;
-  final GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
 
   Episode? setEpisode(Episode episode) {
     this.episode = episode;
@@ -58,17 +58,6 @@ class _AppScreenState extends State<AppScreen> {
         currentTabIndex = index;
       });
     }
-  }
-
-  Widget _buildOffstageNavigator(String tabItem) {
-    return Offstage(
-        offstage: _currentPage != tabItem,
-        child: Navigator(
-          key: _navigatorKeys[tabItem],
-          onGenerateRoute: (routeSettings) {
-            return MaterialPageRoute(builder: (context) => Tabs[currentTabIndex]);
-          },
-        ));
   }
 
   @override
@@ -143,13 +132,10 @@ class _AppScreenState extends State<AppScreen> {
         return false;
       },
       child: Scaffold(
-        body: Stack(children: <Widget>[
-          _buildOffstageNavigator("Home"),
-          _buildOffstageNavigator("Search"),
-          _buildOffstageNavigator("Playlist"),
-          _buildOffstageNavigator("Library"),
-          _buildOffstageNavigator("Social"),
-        ]),
+        body: LazyLoadIndexedStack(
+          index: currentTabIndex,
+          children: Tabs,
+        ),
         bottomNavigationBar: Container(
           color: const Color.fromRGBO(15, 23, 41, 1),
           child: Column(

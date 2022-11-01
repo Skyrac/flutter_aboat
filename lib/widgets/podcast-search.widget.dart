@@ -66,7 +66,7 @@ class PodcastSearch extends SearchDelegate<String?> {
                         type: PageTransitionType.rightToLeftWithFade,
                         duration: const Duration(milliseconds: 500),
                         reverseDuration: const Duration(milliseconds: 500),
-                        child: LoginScreen(() => {})));
+                        child: LoginScreen(true, refreshParent: () => {})));
               } else {
                 await userService.toggleFavoritesEntry(entry.id);
               }

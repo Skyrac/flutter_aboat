@@ -25,6 +25,7 @@ enum SocialLogin { Google, Facebook, Apple }
 
 class UserService {
   bool newUser = true;
+  bool _guest = false;
   String token = "";
   String firebaseToken = "";
   UserInfoData? userInfo;
@@ -43,6 +44,7 @@ class UserService {
   static const String LAST_NOTIFICATION_UPDATE = "last_update_seen";
 
   get isConnected => token.isNotEmpty && userInfo != null;
+  get guest => _guest;
 
   get availableToken => rewards.vested;
   Stream<Reward> rewardStream() async* {
@@ -80,6 +82,7 @@ class UserService {
     if (lastConnectionState == null) {
       throw Exception("Google Sign-In: Not able to connect with backend");
     }
+    print("lastConnectionState: ${lastConnectionState?.toJson()}");
     return lastConnectionState != null && lastConnectionState!.text != null && lastConnectionState!.text! == "connected";
   }
 
@@ -170,6 +173,10 @@ class UserService {
     await prefs.setBool('newUser', false);
   }
 
+  loginAsGuest() async {
+    _guest = true;
+  }
+
   setInitialValues() async {
     prefs = await SharedPreferences.getInstance();
     newUser = (await prefs.getBool('newUser')) ?? true;
@@ -232,6 +239,8 @@ class UserService {
     if (token.isNotEmpty) {
       await getUserInfo();
       if (userInfo != null) {
+        print(userInfo);
+        _guest = false;
         await getRewards();
         await getFavorites(refresh: true);
         await getFriends();
@@ -301,6 +310,7 @@ class UserService {
       var response = await UserRepository.firebaseRegister(firebaseToken, username, newsletter);
       token = response.data ?? "";
       prefs.setString(TOKEN_IDENTIFIER, token);
+      print("token: $token");
 
       if (token.isNotEmpty) {
         await getCoreData();

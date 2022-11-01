@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1063546575410-g1r97qlbm6595atkk5vhlccuq8fr41qq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.aboat.talkaboat",
+            "certificate_hash": "9bbb3186b2189ef16d8f272bdab59362c395cbb4"
+          }
+        },
+        {
           "client_id": "1063546575410-j07tkmcsdc65bnmhgkorp4d91l3kk5g5.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -27,6 +35,14 @@
           "android_info": {
             "package_name": "com.aboat.talkaboat",
             "certificate_hash": "ae63196bca17393ee1b6a68ad706ec4e3652a708"
+          }
+        },
+        {
+          "client_id": "1063546575410-o1fkpohu432smjehvr06bf18ipiu83kq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.aboat.talkaboat",
+            "certificate_hash": "099aa35e5aad18ee91f3552680a9f3a50af7b449"
           }
         },
         {
@@ -55,16 +71,60 @@
               "client_type": 3
             },
             {
-              "client_id": "1063546575410-h7e4foo0p2q6geegh74g61i7vq7cnhmn.apps.googleusercontent.com",
+              "client_id": "1063546575410-42dcva4lvk662tpr2gb4d14kamq5smh2.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.aboat-entertainment.talkaboat"
+                "bundle_id": "com.aboatentertainment.aboat"
               }
             }
           ]
         }
       },
       "admob_app_id": "ca-app-pub-3269278654019042~2058636520"
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1063546575410:android:4dd64bff866885b978fa2b",
+        "android_client_info": {
+          "package_name": "com.aboatentertainment.aboat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1063546575410-61bip1kq0ifhg9bdc2e0gmt3q0d33eri.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.aboatentertainment.aboat",
+            "certificate_hash": "9bbb3186b2189ef16d8f272bdab59362c395cbb4"
+          }
+        },
+        {
+          "client_id": "1063546575410-e5qq2io7pe8ni4vmfdsam02d0hq9dqd8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7eguIGpuDEBd81EB3nzg5akTbMXzLd7g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1063546575410-e5qq2io7pe8ni4vmfdsam02d0hq9dqd8.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1063546575410-42dcva4lvk662tpr2gb4d14kamq5smh2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.aboatentertainment.aboat"
+              }
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"
