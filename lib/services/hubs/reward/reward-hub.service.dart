@@ -11,22 +11,21 @@ class RewardHubService {
   static final options = HttpConnectionOptions(accessTokenFactory: () async => Future.value(userService.token));
   static final connection = HubConnectionBuilder()
       .withUrl(serverUrl, options: options)
-      .withAutomaticReconnect(retryDelays: [2000, 5000, 10000, 20000])
-      .build();
+      .withAutomaticReconnect(retryDelays: [2000, 5000, 10000, 20000]).build();
 
   static connect() async {
     connection.on("RewardUpdate", updateAndValidateReward);
-    await connection.start()?.then((value) => print("Connected to reward hub"));
+    await connection.start();
+    print("Connected to reward hub");
   }
 
   static void updateAndValidateReward(List<Object?>? arguments) {
-    if(arguments != null && arguments[0] != null) {
+    if (arguments != null && arguments[0] != null) {
       var value = arguments[0];
       var reward = Reward.fromJson(jsonDecode(jsonEncode(value)));
       userService.updateRewards(reward);
     }
   }
-
 
   static dynamic createRequestData(int owner, int asset, int playTime) {
     return {"Owner": owner, "Asset": asset, "PlayTime": playTime};
@@ -37,8 +36,8 @@ class RewardHubService {
       return;
     }
     var state = connection.state;
-    if(state != HubConnectionState.Connected) {
-      if(state != HubConnectionState.Connecting && state != HubConnectionState.Reconnecting) {
+    if (state != HubConnectionState.Connected) {
+      if (state != HubConnectionState.Connecting && state != HubConnectionState.Reconnecting) {
         await connect();
       }
       return;
@@ -52,8 +51,8 @@ class RewardHubService {
       return;
     }
     var state = connection.state;
-    if(state != HubConnectionState.Connected) {
-      if(state != HubConnectionState.Connecting && state != HubConnectionState.Reconnecting) {
+    if (state != HubConnectionState.Connected) {
+      if (state != HubConnectionState.Connecting && state != HubConnectionState.Reconnecting) {
         await connect();
       }
       return;
@@ -67,8 +66,8 @@ class RewardHubService {
       return;
     }
     var state = connection.state;
-    if(state != HubConnectionState.Connected) {
-      if(state != HubConnectionState.Connecting && state != HubConnectionState.Reconnecting) {
+    if (state != HubConnectionState.Connected) {
+      if (state != HubConnectionState.Connecting && state != HubConnectionState.Reconnecting) {
         await connect();
       }
       return;
@@ -82,8 +81,8 @@ class RewardHubService {
       return;
     }
     var state = connection.state;
-    if(state != HubConnectionState.Connected) {
-      if(state != HubConnectionState.Connecting && state != HubConnectionState.Reconnecting) {
+    if (state != HubConnectionState.Connected) {
+      if (state != HubConnectionState.Connecting && state != HubConnectionState.Reconnecting) {
         await connect();
       }
       return;
@@ -97,8 +96,8 @@ class RewardHubService {
       return;
     }
     var state = connection.state;
-    if(state != HubConnectionState.Connected) {
-      if(state != HubConnectionState.Connecting && state != HubConnectionState.Reconnecting) {
+    if (state != HubConnectionState.Connected) {
+      if (state != HubConnectionState.Connecting && state != HubConnectionState.Reconnecting) {
         await connect();
       }
       return;
@@ -112,8 +111,8 @@ class RewardHubService {
       return;
     }
     var state = connection.state;
-    if(state != HubConnectionState.Connected) {
-      if(state != HubConnectionState.Connecting && state != HubConnectionState.Reconnecting) {
+    if (state != HubConnectionState.Connected) {
+      if (state != HubConnectionState.Connecting && state != HubConnectionState.Reconnecting) {
         await connect();
       }
       return;
