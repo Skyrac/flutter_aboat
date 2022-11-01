@@ -6,6 +6,7 @@ import 'package:page_transition/page_transition.dart';
 import '../injection/injector.dart';
 import '../models/playlist/playlist.model.dart';
 import '../services/user/user.service.dart';
+import '../widgets/login-button.widget.dart';
 import 'login.screen.dart';
 
 class PlaylistScreen extends StatefulWidget {
@@ -92,40 +93,6 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
         },
       );
 
-  createLoginButton() => Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 30),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: Card(
-              child: InkWell(
-                onTap: (() {
-                  Navigator.push(
-                      context,
-                      PageTransition(
-                          alignment: Alignment.bottomCenter,
-                          curve: Curves.bounceOut,
-                          type: PageTransitionType.fade,
-                          duration: const Duration(milliseconds: 300),
-                          reverseDuration: const Duration(milliseconds: 200),
-                          child: LoginScreen(true, refreshParent: () => setState(() {}))));
-                }),
-                child: SizedBox(
-                    height: 80,
-                    width: MediaQuery.of(context).size.width,
-                    child: Center(
-                      child: Text(
-                        "Login",
-                        style: Theme.of(context).textTheme.titleLarge,
-                        textAlign: TextAlign.center,
-                      ),
-                    )),
-              ),
-            ),
-          ),
-        ),
-      );
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -146,7 +113,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                     : const SizedBox()
               ],
             ),
-            body: userService.isConnected ? createPlaylistView() : createLoginButton()));
+            body: userService.isConnected ? createPlaylistView() : Center(child: LoginButton())));
   }
 
   createPlaylistView() => FutureBuilder(
