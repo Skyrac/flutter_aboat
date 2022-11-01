@@ -1,9 +1,9 @@
+import 'package:Talkaboat/services/hubs/reward/reward-hub.service.dart';
 import 'package:audio_service/audio_service.dart';
 import '../../models/podcasts/episode.model.dart';
-import '../repositories/tracking.repository.dart';
 
 int heartbeatCounter = 0;
-const heartbeatLimit = 30;
+const heartbeatLimit = 20;
 MediaItem? currentlyPlayingMediaItem;
 Function? setEpisode;
 
@@ -18,12 +18,12 @@ Future<void> receiveUpdate(PlaybackState state, MediaItem? currentMediaItem,
       if (setEpisode != null && episode != null) {
         setEpisode!(episode);
       }
-      await TrackingRepository.Play(podcastId, episodeId, playTime);
+      await RewardHubService.Play(podcastId, episodeId, playTime);
     } else if (!state.playing) {
       if (setEpisode != null && episode != null) {
         setEpisode!(episode);
       }
-      await TrackingRepository.Pause(podcastId, episodeId, playTime);
+      await RewardHubService.Pause(podcastId, episodeId, playTime);
     }
   }
 }
@@ -38,7 +38,7 @@ Future<void> positionUpdate(
       var playTime = position.inSeconds;
       int podcastId = currentMediaItem.extras!["podcastId"] ?? 0;
       int episodeId = currentMediaItem.extras!["episodeId"] ?? 0;
-      await TrackingRepository.Heartbeat(podcastId, episodeId, playTime);
+      await RewardHubService.Heartbeat(podcastId, episodeId, playTime);
     }
   }
 }

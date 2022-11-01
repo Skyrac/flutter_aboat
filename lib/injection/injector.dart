@@ -1,3 +1,4 @@
+import 'package:Talkaboat/services/live/live-session.service.dart';
 import 'package:Talkaboat/services/quests/quest.service.dart';
 import 'package:Talkaboat/services/user/social.service.dart';
 import 'package:Talkaboat/services/web3/token.service.dart';
@@ -26,4 +27,5 @@ Future<void> configureDependencies() async {
   getIt.registerSingleton(await StateService());
   getIt.registerSingleton(TokenService());
   getIt.registerSingleton(QuestService());
+  getIt.registerSingleton(LiveSessionService());
 }
