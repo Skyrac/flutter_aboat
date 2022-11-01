@@ -18,6 +18,7 @@ import '../../models/response.model.dart';
 import '../../models/rewards/reward-detail.model.dart';
 import '../../models/rewards/reward.model.dart';
 import '../../models/user/user-info.model.dart';
+import '../hubs/reward/reward-hub.service.dart';
 import '../repositories/podcast.repository.dart';
 import '../repositories/user.repository.dart';
 
@@ -241,6 +242,7 @@ class UserService {
     print("Get Core Data");
     if (token.isNotEmpty) {
       await getUserInfo();
+      await getIt<RewardHubService>().connect();
       if (userInfo != null) {
         await getRewards();
         await getLibrary(true);
@@ -319,6 +321,8 @@ class UserService {
   }
 
   logout() async {
+
+    await getIt<RewardHubService>().disconnect();
     baseLogin = false;
     token = "";
     userInfo = null;
