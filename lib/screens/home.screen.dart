@@ -2,11 +2,13 @@ import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/services/quests/quest.service.dart';
 import 'package:Talkaboat/services/state/state.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
+import 'package:Talkaboat/themes/colors.dart';
 import 'package:Talkaboat/utils/scaffold_wave.dart';
 import 'package:Talkaboat/widgets/home-categories.dart';
 import 'package:Talkaboat/widgets/home-suggested.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:Talkaboat/widgets/quests/quest-list.widget.dart';
+import 'package:flutter/services.dart';
 import '../widgets/home-app-bar.widget.dart';
 import '../widgets/library-preview.widget.dart';
 
@@ -26,6 +28,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   initState() {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        systemNavigationBarColor: const Color.fromRGBO(29, 40, 58, 1), // navigation bar color
+        statusBarColor: DefaultColors.secondaryColor.shade900 // status bar color
+        ));
     super.initState();
   }
 

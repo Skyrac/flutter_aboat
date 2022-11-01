@@ -50,6 +50,8 @@ class UserRepository {
       var convertedData = UserInfoData.fromJson(json.decode(response.data!));
       return convertedData;
     } catch (exception) {
+      print(exception);
+      print((exception as DioError).response!.data);
       return UserInfoData();
     }
   }
@@ -98,6 +100,7 @@ class UserRepository {
     var data = ResponseModel(status: 0, text: userIdToken);
     var response = await dio.post<String>('/v1/user/login/firebase', data: data);
     var convertedData = ResponseModel.fromJson(json.decode(response.data!));
+    print("firebaseLogin: ${convertedData.toJson()}");
     return convertedData;
   }
 
@@ -106,6 +109,7 @@ class UserRepository {
       var data = ResponseModel(status: 0, text: userIdToken);
       var response = await dio.post<String>('/v1/user/login/firebase/$pin', data: data);
       var convertedData = ResponseModel.fromJson(json.decode(response.data!));
+      print(response.data);
       return convertedData;
     } catch (exception) {
       return ResponseModel();
@@ -114,19 +118,24 @@ class UserRepository {
 
   static Future<ResponseModel> firebaseRegister(String userIdToken, String username, bool newsletter) async {
     try {
-      var response = await dio.post<String>('/v1/user/register/firebase/',
-          data: {"address": "Social: $username", "Signature": userIdToken, "UserName": username, "Newsletter": newsletter});
+      print({"address": "Social: $username", "signature": userIdToken, "userName": username, "newsletter": newsletter});
+      var response = await dio.post<String>('/v1/user/register/firebase',
+          data: {"address": "Social: $username", "signature": userIdToken, "userName": username, "newsletter": newsletter});
       var convertedData = ResponseModel.fromJson(json.decode(response.data!));
+      print(response.data);
       return convertedData;
     } catch (exception) {
+      print(exception);
+      print((exception as DioError).response!.data);
+
       return ResponseModel();
     }
   }
 
   static Future<bool> emailRegister(String email, String pin, String username, bool newsletter) async {
     try {
-      var response = await dio.post<String>('/v1/user/register/email/',
-          data: {"address": email, "signature": pin, "userName": username, "newsletter": newsletter});
+      var response = await dio.post<String>('/v1/user/register/email',
+          data: {"address": email, "guid": pin, "userName": username, "newsletter": newsletter});
       print(response.data);
       return true;
     } catch (exception) {

@@ -28,14 +28,17 @@ class _SettingsAppBarWidgetState extends State<SettingsAppBarWidget> {
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 10),
-          child: userService.userInfo != null &&
-                  userService.userInfo!.userName != null
+          child: userService.userInfo != null && userService.userInfo!.userName != null
               ? IconButton(
                   icon: const Icon(Icons.logout),
                   tooltip: '',
                   onPressed: () async {
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (context) => const LoginScreen(
+                              false,
+                              allowPop: false,
+                            )));
                     await userService.logout();
-                    refresh();
                   },
                 )
               : IconButton(
@@ -50,7 +53,7 @@ class _SettingsAppBarWidgetState extends State<SettingsAppBarWidget> {
                             type: PageTransitionType.fade,
                             duration: const Duration(milliseconds: 300),
                             reverseDuration: const Duration(milliseconds: 200),
-                            child: LoginScreen(refresh)));
+                            child: LoginScreen(true, refreshParent: refresh)));
                   },
                 ),
         )

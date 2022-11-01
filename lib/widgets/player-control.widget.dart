@@ -42,46 +42,10 @@ class _PlayerControlWidgetState extends State<PlayerControlWidget>
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      mainAxisSize: MainAxisSize.min,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        IconButton(
-          icon: const Icon(Icons.arrow_upward),
-          onPressed: () {
-            return;
-            Navigator.push(
-                context,
-                PageTransition(
-                    alignment: Alignment.bottomCenter,
-                    curve: Curves.bounceOut,
-                    type: PageTransitionType.rightToLeftWithFade,
-                    duration: const Duration(milliseconds: 500),
-                    reverseDuration: const Duration(milliseconds: 500),
-                    child: MediaPlayerScreen()));
-            // showSliderDialog(
-            //   context: context,
-            //   title: "Adjust volume",
-            //   divisions: 10,
-            //   min: 0.0,
-            //   max: 1.0,
-            //   value: audioHandler.volume.value,
-            //   stream: audioHandler.volume,
-            //   onChanged: audioHandler.setVolume,
-            // );
-          },
-        ),
-        StreamBuilder<QueueState>(
-          stream: audioHandler.queueState,
-          builder: (context, snapshot) {
-            final queueState = snapshot.data ?? QueueState.empty;
-            return IconButton(
-              icon: const Icon(Icons.skip_previous),
-              onPressed:
-                  queueState.hasPrevious ? audioHandler.skipToPrevious : null,
-            );
-          },
-        ),
         StreamBuilder<PlaybackState>(
           stream: audioHandler.playbackState,
           builder: (context, snapshot) {
@@ -92,35 +56,31 @@ class _PlayerControlWidgetState extends State<PlayerControlWidget>
                 processingState == AudioProcessingState.buffering) {
               return Container(
                 margin: const EdgeInsets.all(8.0),
-                width: 36.0,
-                height: 36.0,
+                width: 20.0,
+                height: 20.0,
                 child: const CircularProgressIndicator(),
               );
             } else if (playing != true) {
               return IconButton(
+                color: const Color.fromRGBO(99, 163, 253, 1),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
                 icon: const Icon(Icons.play_arrow),
-                iconSize: 36.0,
+                iconSize: 34.0,
                 onPressed: audioHandler.play,
               );
             } else {
               return IconButton(
+                color: const Color.fromRGBO(99, 163, 253, 1),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
                 icon: const Icon(Icons.pause),
-                iconSize: 36.0,
+                iconSize: 34.0,
                 onPressed: audioHandler.pause,
               );
             }
           },
         ),
-        StreamBuilder<QueueState>(
-          stream: audioHandler.queueState,
-          builder: (context, snapshot) {
-            final queueState = snapshot.data ?? QueueState.empty;
-            return IconButton(
-              icon: const Icon(Icons.skip_next),
-              onPressed: queueState.hasNext ? audioHandler.skipToNext : null,
-            );
-          },
-        ),
         StreamBuilder<PlaybackState>(
           stream: audioHandler.playbackState,
           builder: (context, snapshot) {
@@ -130,9 +90,9 @@ class _PlayerControlWidgetState extends State<PlayerControlWidget>
             if (processingState == AudioProcessingState.loading ||
                 processingState == AudioProcessingState.buffering) {
               return Container(
-                margin: const EdgeInsets.all(8.0),
-                width: 36.0,
-                height: 36.0,
+                margin: const EdgeInsets.all(0.0),
+                width: 10.0,
+                height: 10.0,
                 child: const CircularProgressIndicator(),
               );
             } else if (playing == true && userService.isConnected) {
@@ -140,37 +100,51 @@ class _PlayerControlWidgetState extends State<PlayerControlWidget>
             } else {
               _controller.stop();
             }
-            return Row(
-              children: [
-                StreamBuilder<Reward>(
-                    stream: userService.rewardStream(),
-                    builder: (context, snapshot) {
-                      return Text(
-                        "${snapshot.data == null || snapshot.data!.total == null ? 0 : snapshot.data?.total?.round()}",
-                        style: Theme.of(context)
-                            .textTheme
-                            .labelMedium
-                            ?.copyWith(color: Colors.black),
-                      );
-                    }),
-                IconButton(
-                  icon: RotationTransition(
-                    turns: Tween(begin: 0.0, end: 1.0).animate(_controller),
-                    child: Image(image: AssetImage('assets/images/aboat.png')),
+            return Container(
+              padding: EdgeInsets.only(right: 2),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  StreamBuilder<Reward>(
+                      stream: userService.rewardStream(),
+                      builder: (context, snapshot) {
+                        return Text(
+                          "${snapshot.data == null || snapshot.data!.total == null ? 0 : snapshot.data?.total?.round()}",
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleSmall
+                              ?.copyWith(fontSize: 10, color: Colors.white),
+                        );
+                      }),
+                  SizedBox(
+                    width: 5,
                   ),
-                  onPressed: () {
-                    Navigator.push(
-            context,
-            PageTransition(
-            alignment: Alignment.bottomCenter,
-            curve: Curves.bounceOut,
-            type: PageTransitionType.rightToLeftWithFade,
-            duration: const Duration(milliseconds: 500),
-            reverseDuration: const Duration(milliseconds: 500),
-            child: SearchAndFilterScreen()));
-            },
-                ),
-              ],
+                  IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    iconSize: 14.0,
+                    icon: RotationTransition(
+                      turns: Tween(begin: 0.0, end: 1.0).animate(_controller),
+                      child: Image(
+                          width: 14,
+                          image: AssetImage('assets/images/aboat.png')),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          PageTransition(
+                              alignment: Alignment.bottomCenter,
+                              curve: Curves.bounceOut,
+                              type: PageTransitionType.rightToLeftWithFade,
+                              duration: const Duration(milliseconds: 500),
+                              reverseDuration:
+                                  const Duration(milliseconds: 500),
+                              child: SearchAndFilterScreen()));
+                    },
+                  ),
+                ],
+              ),
             );
           },
         ),

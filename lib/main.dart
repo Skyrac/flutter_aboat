@@ -1,8 +1,6 @@
 import 'dart:io';
 
-import 'package:Talkaboat/screens/app.screen.dart';
-import 'package:Talkaboat/screens/login.screen.dart';
-import 'package:Talkaboat/screens/onboarding/onboarding.screen.dart';
+import 'package:Talkaboat/screens/root.screen.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/themes/colors.dart';
 import 'package:Talkaboat/themes/default.theme_new.dart';
@@ -25,10 +23,6 @@ void main() async {
     final license = await rootBundle.loadString('assets/google_fonts/OFL.txt');
     yield LicenseEntryWithLineBreaks(['google_fonts'], license);
   });
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      systemNavigationBarColor: const Color.fromRGBO(29, 40, 58, 1), // navigation bar color
-      statusBarColor: DefaultColors.secondaryColor.shade900 // status bar color
-      ));
   ByteData data = await PlatformAssetBundle().load('assets/ca/lets-encrypt-r3.pem');
   SecurityContext.defaultContext.setTrustedCertificatesBytes(data.buffer.asUint8List());
   MobileAds.instance.initialize();
@@ -41,8 +35,6 @@ void main() async {
 
   runApp(const MyApp());
 }
-
-final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -61,15 +53,10 @@ class _MyAppState extends State<MyApp> {
         title: 'Talkaboat',
         theme: NewDefaultTheme.defaultTheme,
         debugShowCheckedModeBanner: false,
-        navigatorObservers: [routeObserver],
         home: AnimatedSplashScreen(
             duration: 2000,
             splash: const Image(width: 250, image: AssetImage('assets/images/talkaboat.png')),
-            nextScreen: userService.newUser
-                ? const OnBoardingScreen()
-                : !userService.isConnected
-                    ? LoginScreen(() => setState(() {}))
-                    : const AppScreen(title: 'Talkaboat'),
+            nextScreen: const RootScreen(),
             splashTransition: SplashTransition.fadeTransition,
             pageTransitionType: PageTransitionType.fade,
             backgroundColor: DefaultColors.secondaryColor.shade900));

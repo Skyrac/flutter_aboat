@@ -4,11 +4,9 @@ import 'package:Talkaboat/services/web3/token.service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../models/search/search_result.model.dart';
 import '../screens/login.screen.dart';
-import '../themes/colors.dart';
 import 'bottom-sheets/claim.bottom-sheet.dart';
 
 class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
@@ -21,8 +19,7 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
   final tokenService = getIt<TokenService>();
   final donationAmountController = TextEditingController();
   @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     const size = 200;
     final top = expandedHeight / 1.1 - shrinkOffset / 3 - size;
     return Stack(
@@ -59,9 +56,7 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                     child: DecoratedBox(
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.0),
-                        border: const Border(
-                            bottom: BorderSide(
-                                color: Color.fromRGBO(164, 202, 255, 1))),
+                        border: const Border(bottom: BorderSide(color: Color.fromRGBO(164, 202, 255, 1))),
                       ),
                       child: const TabBar(
                         labelColor: Color.fromRGBO(188, 140, 75, 1),
@@ -117,11 +112,9 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                               showModalBottomSheet(
                                   isScrollControlled: true,
                                   shape: const RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.vertical(
-                                          top: Radius.circular(20))),
+                                      borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
                                   context: context,
-                                  builder: (context) =>
-                                      ClaimBottomSheet(podcastId: podcast.id!))
+                                  builder: (context) => ClaimBottomSheet(podcastId: podcast.id!))
                             }),
                   ),
                   Expanded(
@@ -137,11 +130,8 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
         ),
       );
 
-  Widget buildButton(
-          {required String text,
-          required Image icon,
-          required Function onClick}) =>
-      RawMaterialButton(
+  Widget buildButton({required String text, required Image icon, required void Function()? onClick}) => RawMaterialButton(
+        onPressed: onClick,
         child: Container(
           width: 140,
           height: 40,
@@ -154,15 +144,10 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
             children: [
               icon,
               const SizedBox(width: 12),
-              Text(text,
-                  style: const TextStyle(
-                      fontSize: 12, color: Color.fromRGBO(99, 163, 253, 1))),
+              Text(text, style: const TextStyle(fontSize: 12, color: Color.fromRGBO(99, 163, 253, 1))),
             ],
           ),
         ),
-        onPressed: () {
-          onClick();
-        },
       );
 
   @override
@@ -184,24 +169,20 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
               content: userService.isConnected
                   ? TextField(
                       controller: donationAmountController,
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
                       inputFormatters: <TextInputFormatter>[
                         FilteringTextInputFormatter.allow(RegExp(r"[0-9.,]")),
                         TextInputFormatter.withFunction((oldValue, newValue) {
                           try {
                             final text = newValue.text.replaceAll(",", ".");
-                            if (text.isEmpty ||
-                                double.parse(text) <=
-                                    userService.availableToken) return newValue;
+                            if (text.isEmpty || double.parse(text) <= userService.availableToken) return newValue;
                           } catch (e) {}
                           return oldValue;
                         }),
                       ],
                       decoration: InputDecoration(
                           hintText: "Donation Amount",
-                          labelText:
-                              "Available ABOAT: ${userService.availableToken.toStringAsFixed(2)}",
+                          labelText: "Available ABOAT: ${userService.availableToken.toStringAsFixed(2)}",
                           labelStyle: Theme.of(context).textTheme.labelLarge,
                           enabledBorder: const UnderlineInputBorder(
                             borderSide: BorderSide(color: Colors.blue),
@@ -215,10 +196,7 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                   : SizedBox(
                       height: 140,
                       child: Column(
-                        children: [
-                          const Text("Login to use this feature!"),
-                          createLoginButton(context)
-                        ],
+                        children: [const Text("Login to use this feature!"), createLoginButton(context)],
                       ),
                     ),
               actions: [
@@ -227,8 +205,7 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                       if (donationAmountController.text.isEmpty) {
                         return;
                       }
-                      tokenService.donate(podcast.id!,
-                          double.parse(donationAmountController.text));
+                      tokenService.donate(podcast.id!, double.parse(donationAmountController.text));
                       donationAmountController.text = "";
                       Navigator.pop(context);
                     }),
@@ -258,7 +235,7 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                           type: PageTransitionType.fade,
                           duration: const Duration(milliseconds: 300),
                           reverseDuration: const Duration(milliseconds: 200),
-                          child: LoginScreen(() => Navigator.pop(context))));
+                          child: LoginScreen(true, refreshParent: () => Navigator.pop(context))));
                 }),
                 child: SizedBox(
                     height: 80,

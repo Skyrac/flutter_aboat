@@ -152,15 +152,17 @@ PageTransition buildSearchScreenTransition(
         backgroundColor: const Color.fromRGBO(29, 40, 58, 1),
         title: Row(children: [
           Text(title ?? ""),
-          Container(
-            padding: const EdgeInsets.only(left: 5),
-            height: 25,
-            child: CachedNetworkImage(
-                imageUrl: imageUrl == null || imageUrl.isEmpty ? 'https://picsum.photos/200' : imageUrl,
-                placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
-                errorWidget: (context, url, error) => const Icon(Icons.error),
-                fit: BoxFit.cover),
-          )
+          imageUrl != null
+              ? Container(
+                  padding: const EdgeInsets.only(left: 5),
+                  height: 25,
+                  child: CachedNetworkImage(
+                      imageUrl: imageUrl,
+                      placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
+                      errorWidget: (context, url, error) => const Icon(Icons.error),
+                      fit: BoxFit.cover),
+                )
+              : const SizedBox()
         ]),
       ),
     ),

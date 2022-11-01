@@ -12,7 +12,8 @@ class PodcastListHorizontal extends StatelessWidget {
   final String? multiplier;
   final void Function()? seeAllCb;
 
-  Widget? buildList(BuildContext context) {
+  @override
+  Widget build(BuildContext context) {
     assert(future != null || data != null);
     if (future != null) {
       return FutureBuilder(
@@ -26,12 +27,20 @@ class PodcastListHorizontal extends StatelessWidget {
                 ),
               );
             } else if (snapshot.hasData && snapshot.data != null) {
-              if (snapshot.data != null && snapshot.data!.isNotEmpty) {
-                return PodcastListWidget(direction: Axis.horizontal, searchResults: snapshot.data!);
+              if (snapshot.data!.isNotEmpty) {
+                return buildView(context, snapshot.data!);
               }
+
+              // request was successfull but we got no data - just show nothing
+              return Container();
             }
             // TODO: display a nice text
-            return Container();
+            return Center(
+              child: Text(
+                'snapshot.hasData: ${snapshot.hasData} snapshot.data: ${snapshot.data != null} snapshot.data!.isNotEmpty: ${snapshot.data!.isNotEmpty}',
+                style: const TextStyle(fontSize: 18),
+              ),
+            );
           }
           return const Center(child: CircularProgressIndicator());
         },
@@ -40,14 +49,13 @@ class PodcastListHorizontal extends StatelessWidget {
     }
 
     if (data != null) {
-      return PodcastListWidget(direction: Axis.horizontal, searchResults: data!);
+      return buildView(context, data!);
     }
 
-    return null;
+    return Container();
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget buildView(BuildContext context, List<Podcast> data) {
     List<Widget> flame = multiplier != null
         ? <Widget>[
             const SizedBox(
@@ -93,7 +101,7 @@ class PodcastListHorizontal extends StatelessWidget {
           : Container(),
       SizedBox(
         height: 150,
-        child: buildList(context),
+        child: PodcastListWidget(direction: Axis.horizontal, searchResults: data),
       )
     ]);
   }

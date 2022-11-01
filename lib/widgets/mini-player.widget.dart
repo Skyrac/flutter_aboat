@@ -1,4 +1,5 @@
 import 'package:Talkaboat/screens/podcast-episode.screen.dart';
+import 'package:Talkaboat/widgets/player-control.widget.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -50,9 +51,9 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
+        children: <Widget>[
           SizedBox(
-            height: 5.5,
+            height: 6,
             width: deviceSize.width * 0.9,
             child: StreamBuilder<MediaState>(
               stream: _mediaStateStream,
@@ -102,8 +103,6 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
                                     imageUrl: widget.episode!.image ?? 'https://picsum.photos/200',
                                     fit: BoxFit.fill,
                                     placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
-                                    // progressIndicatorBuilder: (context, url, downloadProgress) =>
-                                    //     CircularProgressIndicator(value: downloadProgress.progress),
                                     errorWidget: (context, url, error) => const Icon(Icons.error),
                                   ),
                                 ],
@@ -139,6 +138,12 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
                       ),
                     ),
                   ),
+                  AnimatedContainer(
+                      padding: EdgeInsets.only(right: 5),
+                      duration: const Duration(milliseconds: 500),
+                      width: 60,
+                      height: 50,
+                      child: PlayerControlWidget()),
                 ],
               ),
             ),
