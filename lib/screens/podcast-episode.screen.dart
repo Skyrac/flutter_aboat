@@ -246,7 +246,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                     func: audioPlayer.play, image: "assets/images/play.png", title: "Abspielen");
                               } else {
                                 return ButtonEpisode(
-                                    func: audioPlayer.pause, image: "assets/images/pause.png", title: "Abspielen");
+                                    func: audioPlayer.pause, image: "assets/images/pause.png", title: "Pausieren");
                               }
                             },
                           ),

@@ -31,7 +31,6 @@ class _AppScreenState extends State<AppScreen> {
   var userService = getIt<UserService>();
   String _currentPage = "Home";
   List<String> pageKeys = ["Home", "Search", "Playlist", "Library", "Social"];
-  // TODO: remove this
   final Map<String, GlobalKey<NavigatorState>> _navigatorKeys = {
     "Home": GlobalKey<NavigatorState>(),
     "Search": GlobalKey<NavigatorState>(),
@@ -58,6 +57,17 @@ class _AppScreenState extends State<AppScreen> {
         currentTabIndex = index;
       });
     }
+  }
+
+  Widget _buildOffstageNavigator(String tabItem) {
+    return Offstage(
+        offstage: _currentPage != tabItem,
+        child: Navigator(
+          key: _navigatorKeys[tabItem],
+          onGenerateRoute: (routeSettings) {
+            return MaterialPageRoute(builder: (context) => Tabs[currentTabIndex]);
+          },
+        ));
   }
 
   @override
@@ -132,10 +142,13 @@ class _AppScreenState extends State<AppScreen> {
         return false;
       },
       child: Scaffold(
-        body: LazyLoadIndexedStack(
-          index: currentTabIndex,
-          children: Tabs,
-        ),
+        body: LazyLoadIndexedStack(index: currentTabIndex, children: <Widget>[
+          _buildOffstageNavigator("Home"),
+          _buildOffstageNavigator("Search"),
+          _buildOffstageNavigator("Playlist"),
+          _buildOffstageNavigator("Library"),
+          _buildOffstageNavigator("Social"),
+        ]),
         bottomNavigationBar: Container(
           color: const Color.fromRGBO(15, 23, 41, 1),
           child: Column(
