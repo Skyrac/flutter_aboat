@@ -132,16 +132,16 @@ class UserRepository {
     }
   }
 
-  static Future<bool> emailRegister(String email, String pin, String username, bool newsletter) async {
+  static Future<ResponseModel> emailRegister(String email, String pin, String username, bool newsletter) async {
     try {
       var response = await dio.post<String>('/v1/user/register/email',
           data: {"address": email, "guid": pin, "userName": username, "newsletter": newsletter});
       print(response.data);
-      return true;
+      return ResponseModel.fromJson(json.decode(response.data!));
     } catch (exception) {
       print(exception);
       print((exception as DioError).response);
-      return false;
+      return ResponseModel();
     }
   }
 

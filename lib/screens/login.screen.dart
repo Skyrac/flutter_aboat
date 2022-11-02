@@ -95,8 +95,8 @@ class _LoginScreenState extends State<LoginScreen> {
     return false;
   }
 
-  createEmailPinRequestWidget(
-          String labelText, Function callback, TextEditingController textController, String buttonText) =>
+  createEmailPinRequestWidget(BuildContext context, String labelText, void Function(BuildContext context) callback,
+          TextEditingController textController, String buttonText) =>
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 40),
         child: Column(
@@ -130,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                         controller: textController,
                         onSubmitted: (_) async {
-                          callback();
+                          callback(context);
                         },
                         keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
@@ -157,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     borderRadius: BorderRadius.circular(15)),
                 color: const Color.fromRGBO(99, 163, 253, 1),
                 child: InkWell(
-                  onTap: () => callback(),
+                  onTap: () => callback(context),
                   child: Container(
                     height: 40,
                     alignment: Alignment.center,
@@ -362,7 +362,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                             SizedBox(height: size.height * 0.02),
-                            createEmailPinRequestWidget("E-Mail...", () async {
+                            createEmailPinRequestWidget(context, "E-Mail...", (context) async {
+                              final navigator = Navigator.of(context);
                               final bodyMediumTheme = Theme.of(context).textTheme.bodyMedium;
                               await sendPinRequest();
                               final pinResult = await showInputDialog(context, "Confirm PIN", (_) {
@@ -410,14 +411,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                       isLoading = true;
                                     });
                                     final registerResult =
-                                        await UserRepository.emailRegister(emailController.text, pinResult, username, false);
+                                        await userService.emailRegister(emailController.text, pinResult, username, false);
                                     setState(() {
                                       isLoading = false;
                                     });
-                                    if (registerResult) {
+                                    if (registerResult == null) {
+                                      // returns error
                                       //widget.refreshParent();
+                                      navAway(navigator);
                                     } else {
                                       // register error
+                                      // TODO: recover from invalid username
                                       ShowSnackBar(context, "Error registering");
                                     }
                                   } else {

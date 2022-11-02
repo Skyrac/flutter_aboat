@@ -276,6 +276,19 @@ class UserService {
     return true;
   }
 
+  Future<String?> emailRegister(String email, String pin, String username, bool newsletter) async {
+    var response = await UserRepository.emailRegister(email, pin, username, newsletter);
+    if (response.data == null || response.data!.isEmpty) {
+      return response.text;
+    }
+    prefs.setString(TOKEN_IDENTIFIER, response.data!);
+    if (response.data!.isNotEmpty) {
+      await getCoreData();
+      return userInfo != null ? null : "false";
+    }
+    return null;
+  }
+
   //#region Login/Logout
   Future<String> emailLogin(String email, String pin) async {
     token = await UserRepository.emailLogin(email, pin);
@@ -325,7 +338,6 @@ class UserService {
   }
 
   logout() async {
-
     await getIt<RewardHubService>().disconnect();
     baseLogin = false;
     token = "";
