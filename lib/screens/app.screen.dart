@@ -6,6 +6,7 @@ import 'package:Talkaboat/screens/social/social_entry.screen.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lazy_load_indexed_stack/lazy_load_indexed_stack.dart';
 import 'package:open_store/open_store.dart';
@@ -14,6 +15,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import '../injection/injector.dart';
 import '../models/podcasts/episode.model.dart';
 import '../services/audio/audio-handler.services.dart';
+import '../themes/colors.dart';
 import '../widgets/mini-player.widget.dart';
 import 'home.screen.dart';
 import 'library.screen.dart';
@@ -173,6 +175,12 @@ class _AppScreenState extends State<AppScreen> {
                     currentIndex: currentTabIndex,
                     onTap: (index) {
                       _selectTab(pageKeys[index], index);
+                      setState(() {
+                        SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+                            systemNavigationBarColor: const Color.fromRGBO(29, 40, 58, 1),
+                            statusBarColor: DefaultColors.secondaryColor.shade900 // status bar color
+                            ));
+                      });
                     },
                     items: <BottomNavigationBarItem>[
                       BottomNavigationBarItem(
