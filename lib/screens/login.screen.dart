@@ -70,6 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  // returns true if we need to register, false otherwise
   Future<bool> sendLogin(BuildContext context, String email, String pin) async {
     final navigator = Navigator.of(context);
     if (pin.length > 3 && email.isValidEmail()) {
@@ -206,13 +207,14 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
   socialButtonPressed(SocialLogin socialLogin) async {
+    final navigator = Navigator.of(context);
     setState(() {
       isLoading = true;
     });
 
     try {
       if (await userService.socialLogin(socialLogin, context)) {
-        navAway(Navigator.of(context));
+        navAway(navigator);
         return;
       }
     } catch (exception) {
@@ -245,22 +247,7 @@ class _LoginScreenState extends State<LoginScreen> {
         }, "Pin...");
         //showAlert(context, socialLoginPinVerification, "Verify Pin", "Pin", "", verifySocialLoginPin);
       } else if (userService.lastConnectionState?.text == "new_account") {
-        final result = await showInputDialog(
-            context,
-            "Choose an username",
-            (_) => Text.rich(TextSpan(children: [
-                  TextSpan(
-                    text:
-                        'Your username will be shown for in social media features as well as comments and ratings you might leave for podcasts and episodes.',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                ])),
-            "Username...");
-        if (result != null) {
-          registerSocialLogin(result);
-        } else {
-          // cancel
-        }
+        await doSocialRegister(context, Theme.of(context).textTheme.bodyMedium!, navigator, null);
       } else {
         ShowSnackBar(context, "Unresolved response. Please contact an admin.");
       }
@@ -287,24 +274,82 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  registerSocialLogin(String username) async {
-    if (isLoading) {
+  Future<String?> showUsernameDialog(BuildContext context, TextStyle theme, String? rejectedUsername) async {
+    final username = await showInputDialog(
+        context,
+        "Choose an username",
+        (_) => Text.rich(TextSpan(children: [
+              TextSpan(
+                text:
+                    'Your username will be shown for in social media features as well as comments and ratings you might leave for podcasts and episodes.',
+                style: theme,
+              ),
+              rejectedUsername != null
+                  ? TextSpan(
+                      text: 'The username $rejectedUsername is invalid or already taken',
+                      style: theme.copyWith(color: Colors.red.shade100),
+                    )
+                  : const TextSpan()
+            ])),
+        "Username...");
+    return username;
+  }
+
+  Future<void> doEmailRegister(
+      BuildContext context, TextStyle theme, String pinResult, NavigatorState navigator, String? rejectedUsername) async {
+    final username = await showUsernameDialog(context, theme, null);
+    if (username != null) {
+      setState(() {
+        isLoading = true;
+      });
+      final registerResult = await userService.emailRegister(emailController.text, pinResult, username, false);
+      setState(() {
+        isLoading = false;
+      });
+      if (registerResult == null) {
+        // returns error
+        navAway(navigator);
+      } else {
+        // register error
+        if (registerResult.contains("username_invalid")) {
+          await doEmailRegister(context, theme, pinResult, navigator, username);
+        } else {
+          ShowSnackBar(context, "Error registering");
+        }
+      }
+    } else {
+      print("cancel");
+      // cancel
       return;
     }
-    setState(() {
-      isLoading = true;
-    });
-    var successful = await userService.firebaseRegister(username, true);
-    print("successful: $successful");
-    setState(() {
-      isLoading = false;
-    });
-    if (successful) {
+  }
+
+  Future<void> doSocialRegister(
+      BuildContext context, TextStyle theme, NavigatorState navigator, String? rejectedUsername) async {
+    final username = await showUsernameDialog(context, theme, null);
+    if (username != null) {
       setState(() {
-        navAway(Navigator.of(context));
+        isLoading = true;
       });
+      var registerResult = await userService.firebaseRegister(username, true);
+      setState(() {
+        isLoading = false;
+      });
+      if (registerResult == null) {
+        // returns error
+        navAway(navigator);
+      } else {
+        // register error
+        if (registerResult.contains("username_invalid")) {
+          await doSocialRegister(context, theme, navigator, username);
+        } else {
+          ShowSnackBar(context, "Error registering");
+        }
+      }
     } else {
-      ShowSnackBar(context, "Error registering");
+      print("cancel");
+      // cancel
+      return;
     }
   }
 
@@ -394,41 +439,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   isLoading = false;
                                 });
                                 if (loginResult) {
-                                  // new user
-                                  final username = await showInputDialog(
-                                      context,
-                                      "Choose an username",
-                                      (_) => Text.rich(TextSpan(children: [
-                                            TextSpan(
-                                              text:
-                                                  'Your username will be shown for in social media features as well as comments and ratings you might leave for podcasts and episodes.',
-                                              style: bodyMediumTheme,
-                                            ),
-                                          ])),
-                                      "Username...");
-                                  if (username != null) {
-                                    setState(() {
-                                      isLoading = true;
-                                    });
-                                    final registerResult =
-                                        await userService.emailRegister(emailController.text, pinResult, username, false);
-                                    setState(() {
-                                      isLoading = false;
-                                    });
-                                    if (registerResult == null) {
-                                      // returns error
-                                      //widget.refreshParent();
-                                      navAway(navigator);
-                                    } else {
-                                      // register error
-                                      // TODO: recover from invalid username
-                                      ShowSnackBar(context, "Error registering");
-                                    }
-                                  } else {
-                                    print("cancel");
-                                    // cancel
-                                    return;
-                                  }
+                                  await doEmailRegister(context, bodyMediumTheme!, pinResult, navigator, null);
                                 } else {
                                   //loginResult == false -> not a new account
                                 }
