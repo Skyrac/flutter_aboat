@@ -239,7 +239,12 @@ class UserService {
     print("Get Core Data");
     if (token.isNotEmpty) {
       await getUserInfo();
-      await getIt<RewardHubService>().connect();
+      Future.microtask(() {
+        var _rewardService = getIt<RewardHubService>();
+        if (!_rewardService.isConnected) {
+          _rewardService.connect();
+        }
+      });
       if (userInfo != null) {
         print(userInfo);
         _guest = false;
@@ -337,7 +342,7 @@ class UserService {
 
       if (token.isNotEmpty) {
         await getCoreData();
-        return userInfo != null ? "true" : "false";
+        return userInfo != null ? null : "false";
       }
       return "false";
     } catch (ex) {
