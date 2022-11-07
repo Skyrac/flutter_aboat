@@ -42,4 +42,9 @@ abstract class HubService {
     }
     return true;
   }
+
+  bool get isConnected =>
+      connection.state == HubConnectionState.Connected ||
+      connection.state == HubConnectionState.Connecting ||
+      connection.state == HubConnectionState.Reconnecting;
 }

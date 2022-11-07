@@ -72,20 +72,20 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
         child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color: Color.fromRGBO(29, 40, 58, 0.5),
+              color: const Color.fromRGBO(29, 40, 58, 0.5),
             ),
             child: Padding(
               padding: const EdgeInsets.all(10.0),
               child: Column(
                 children: [
                   Container(
-                    margin: EdgeInsets.only(bottom: 10),
+                    margin: const EdgeInsets.only(bottom: 10),
                     child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                       Text(
                         entry.senderName.toString(),
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
                       ),
-                      Text(entry.messageType.toString(), style: TextStyle(color: Color.fromRGBO(99, 163, 253, 1))),
+                      Text(entry.messageType.toString(), style: const TextStyle(color: Color.fromRGBO(99, 163, 253, 1))),
                     ]),
                   ),
                   Padding(
@@ -176,16 +176,18 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
 
   Widget createCustomScrollView(SearchResult podcastSearchResult) {
     Future<List<ChatMessageDto>> getMessages(int roomId, int direction) async {
-      // if checkConnection()
-      // await chatHub.connect();
-
-      // await chatHub.joinRoom(JoinRoomDto(podcastSearchResult.roomId!));
-      return chatHub.getHistory(MessageHistoryRequestDto(roomId: roomId, direction: direction));
-      // return messages;
+      if (!chatHub.isConnected) {
+        await chatHub.connect();
+        await chatHub.joinRoom(JoinRoomDto(roomId));
+        return await chatHub.getHistory(MessageHistoryRequestDto(roomId: roomId, direction: direction));
+      } else {
+        chatHub.joinRoom(JoinRoomDto(roomId));
+        return await chatHub.getHistory(MessageHistoryRequestDto(roomId: roomId, direction: direction));
+      }
     }
 
     Future<Podcast> getPodcastDetail(int podcastId, String sort, int amount) async {
-      if (!userService.isConnected) {
+      if (chatHub.isConnected & userService.isConnected) {
         await chatHub.leaveRoom(JoinRoomDto(podcastId));
         return podcastService.getPodcastDetails(podcastId, sort, amount);
       } else {
@@ -194,6 +196,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
     }
 
     final size = MediaQuery.of(context).size;
+
     return DefaultTabController(
       animationDuration: Duration.zero,
       length: 3,
@@ -435,10 +438,10 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                 pinned: true,
               ),
               SliverToBoxAdapter(
-                child: !userService.isConnected
-                    ? LoginButton()
-                    : FutureBuilder(
-                        builder: (context, snapshot) {
+                child: userService.isConnected
+                    // & chatHub.isConnected
+                    ? FutureBuilder(
+                        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
                           if (snapshot.connectionState == ConnectionState.done) {
                             if (snapshot.hasError) {
                               return SliverToBoxAdapter(
@@ -454,13 +457,45 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                               final data = snapshot.data as List<ChatMessageDto>?;
                               if (data != null && data.isNotEmpty) {
                                 // return Text(data[1].content.toString());
-                                return buildMessages(data);
+                                return Stack(
+                                  alignment: Alignment.bottomCenter,
+                                  children: [
+                                    buildMessages(data),
+                                    Container(
+                                      padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+                                      margin: EdgeInsets.symmetric(horizontal: 20),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        color: Color.fromRGBO(15, 23, 41, 1),
+                                        border: Border.all(
+                                            color: const Color.fromRGBO(99, 163, 253, 1), // set border color
+                                            width: 1.0),
+                                      ),
+                                      child: TextField(
+                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                              color: const Color.fromRGBO(164, 202, 255, 1),
+                                            ),
+                                        keyboardType: TextInputType.text,
+                                        maxLines: null,
+                                        decoration: InputDecoration(
+                                          border: InputBorder.none,
+                                          alignLabelWithHint: true,
+                                          hintText: "Message",
+                                          suffixIcon: const Icon(Icons.send, color: Color.fromRGBO(99, 163, 253, 1)),
+                                          hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                              color: const Color.fromRGBO(135, 135, 135, 1), fontStyle: FontStyle.italic),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
                               }
                             }
                           }
 
                           return Column(
                             children: [
+                              chatHub.isConnected ? Text("User autorised") : SizedBox(),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                                 children: [
@@ -469,7 +504,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                                       height: 30,
                                       color: Colors.blue,
                                       child: RawMaterialButton(
-                                          child: Text("Connect"),
+                                          child: const Text("Connect"),
                                           onPressed: () async {
                                             await chatHub.connect();
                                             // await chatHub.joinRoom(JoinRoomDto(648));
@@ -479,19 +514,25 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                                       height: 30,
                                       color: Colors.blue,
                                       child: RawMaterialButton(
-                                          child: Text("Join the room ${podcastSearchResult.roomId}"),
+                                          child: podcastService.podcast!.roomId != null
+                                              ? Text("Join the room ${podcastService.podcast!.roomId}")
+                                              : Text("Join the room ${podcastSearchResult.roomId!}"),
                                           onPressed: () async {
                                             // await chatHub.connect();
-                                            await chatHub.joinRoom(JoinRoomDto(podcastSearchResult.roomId!));
+                                            podcastService.podcast!.roomId != null
+                                                ? await chatHub.joinRoom(JoinRoomDto(podcastService.podcast!.roomId!))
+                                                : await chatHub.joinRoom(JoinRoomDto(podcastSearchResult.roomId!));
                                           })),
                                   Container(
                                       width: 100,
                                       height: 30,
                                       color: Colors.blue,
                                       child: RawMaterialButton(
-                                          child: Text("leave Room"),
+                                          child: const Text("leave Room"),
                                           onPressed: () async {
-                                            await chatHub.leaveRoom(JoinRoomDto(podcastSearchResult.roomId!));
+                                            podcastService.podcast!.roomId != null
+                                                ? await chatHub.leaveRoom(JoinRoomDto(podcastService.podcast!.roomId!))
+                                                : await chatHub.leaveRoom(JoinRoomDto(podcastSearchResult.roomId!));
                                           })),
                                 ],
                               ),
@@ -499,9 +540,12 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                           );
                           // return const SliverToBoxAdapter(child: Center(child: CircularProgressIndicator()));
                         },
-                        future: getMessages(podcastSearchResult.roomId!, 0),
+                        future: podcastService.podcast!.roomId != null
+                            ? getMessages(podcastService.podcast!.roomId!, 0)
+                            : getMessages(podcastSearchResult.roomId!, 0),
                         // future: chatHub.getHistory(MessageHistoryRequestDto(roomId: podcastSearchResult.roomId!, direction: 0)),
-                      ),
+                      )
+                    : const LoginButton(),
               )
             ],
           ),
