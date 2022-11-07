@@ -12,7 +12,7 @@ import '../screens/podcast-detail.screen.dart';
 import '../services/user/user.service.dart';
 
 class PodcastListWidget extends StatefulWidget {
-  const PodcastListWidget(
+  const PodcastListWidget(this.escapeWithNav,
       {Key? key, required this.searchResults, required this.direction, this.trailing, this.checkUpdate, this.scrollPhysics})
       : super(key: key);
   final List<SearchResult?> searchResults;
@@ -20,6 +20,7 @@ class PodcastListWidget extends StatefulWidget {
   final Function? trailing;
   final bool? checkUpdate;
   final ScrollPhysics? scrollPhysics;
+  final Function escapeWithNav;
   @override
   State<PodcastListWidget> createState() => _PodcastListWidgetState();
 }
@@ -41,15 +42,13 @@ class _PodcastListWidgetState extends State<PodcastListWidget> {
           switch (value) {
             case "toggleLibrary":
               if (!userService.isConnected) {
-                Navigator.push(
-                    context,
-                    PageTransition(
-                        alignment: Alignment.bottomCenter,
-                        curve: Curves.bounceOut,
-                        type: PageTransitionType.rightToLeftWithFade,
-                        duration: const Duration(milliseconds: 500),
-                        reverseDuration: const Duration(milliseconds: 500),
-                        child: LoginScreen(true, refreshParent: () => setState(() {}))));
+                widget.escapeWithNav(PageTransition(
+                    alignment: Alignment.bottomCenter,
+                    curve: Curves.bounceOut,
+                    type: PageTransitionType.rightToLeftWithFade,
+                    duration: const Duration(milliseconds: 500),
+                    reverseDuration: const Duration(milliseconds: 500),
+                    child: LoginScreen(true, refreshParent: () => setState(() {}))));
               } else {
                 await userService.toggleFavoritesEntry(entry.id);
               }
@@ -116,7 +115,7 @@ class _PodcastListWidgetState extends State<PodcastListWidget> {
                 type: PageTransitionType.rightToLeftWithFade,
                 duration: const Duration(milliseconds: 500),
                 reverseDuration: const Duration(milliseconds: 500),
-                child: PodcastDetailScreen(podcastSearchResult: entry)));
+                child: PodcastDetailScreen(widget.escapeWithNav, podcastSearchResult: entry)));
       },
       child: Padding(
           padding: const EdgeInsets.all(10),
@@ -204,7 +203,7 @@ class _PodcastListWidgetState extends State<PodcastListWidget> {
                   type: PageTransitionType.rightToLeftWithFade,
                   duration: const Duration(milliseconds: 500),
                   reverseDuration: const Duration(milliseconds: 500),
-                  child: PodcastDetailScreen(podcastSearchResult: entry)));
+                  child: PodcastDetailScreen(widget.escapeWithNav, podcastSearchResult: entry)));
         },
       );
 

@@ -5,21 +5,20 @@ import 'package:page_transition/page_transition.dart';
 
 import '../injection/injector.dart';
 import '../models/rewards/reward.model.dart';
-import '../screens/media_player.screen.dart';
 import '../services/audio/audio-handler.services.dart';
 import '../services/state/state.service.dart';
 import '../services/user/user.service.dart';
-import '../utils/common.dart';
 
 class PlayerControlWidget extends StatefulWidget {
-  PlayerControlWidget({Key? key}) : super(key: key);
+  const PlayerControlWidget(this.escapeWithNav, {Key? key}) : super(key: key);
+
+  final Function escapeWithNav;
 
   @override
   State<PlayerControlWidget> createState() => _PlayerControlWidgetState();
 }
 
-class _PlayerControlWidgetState extends State<PlayerControlWidget>
-    with SingleTickerProviderStateMixin {
+class _PlayerControlWidgetState extends State<PlayerControlWidget> with SingleTickerProviderStateMixin {
   late final audioHandler = getIt<AudioPlayerHandler>();
   late AnimationController _controller;
   final userService = getIt<UserService>();
@@ -52,8 +51,7 @@ class _PlayerControlWidgetState extends State<PlayerControlWidget>
             final playbackState = snapshot.data;
             final processingState = playbackState?.processingState;
             final playing = playbackState?.playing;
-            if (processingState == AudioProcessingState.loading ||
-                processingState == AudioProcessingState.buffering) {
+            if (processingState == AudioProcessingState.loading || processingState == AudioProcessingState.buffering) {
               return Container(
                 margin: const EdgeInsets.all(8.0),
                 width: 20.0,
@@ -87,8 +85,7 @@ class _PlayerControlWidgetState extends State<PlayerControlWidget>
             final playbackState = snapshot.data;
             final processingState = playbackState?.processingState;
             final playing = playbackState?.playing;
-            if (processingState == AudioProcessingState.loading ||
-                processingState == AudioProcessingState.buffering) {
+            if (processingState == AudioProcessingState.loading || processingState == AudioProcessingState.buffering) {
               return Container(
                 margin: const EdgeInsets.all(0.0),
                 width: 10.0,
@@ -101,7 +98,7 @@ class _PlayerControlWidgetState extends State<PlayerControlWidget>
               _controller.stop();
             }
             return Container(
-              padding: EdgeInsets.only(right: 2),
+              padding: const EdgeInsets.only(right: 2),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -111,13 +108,10 @@ class _PlayerControlWidgetState extends State<PlayerControlWidget>
                       builder: (context, snapshot) {
                         return Text(
                           "${snapshot.data == null || snapshot.data!.total == null ? 0 : snapshot.data?.total?.round()}",
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleSmall
-                              ?.copyWith(fontSize: 10, color: Colors.white),
+                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontSize: 10, color: Colors.white),
                         );
                       }),
-                  SizedBox(
+                  const SizedBox(
                     width: 5,
                   ),
                   IconButton(
@@ -126,9 +120,7 @@ class _PlayerControlWidgetState extends State<PlayerControlWidget>
                     iconSize: 14.0,
                     icon: RotationTransition(
                       turns: Tween(begin: 0.0, end: 1.0).animate(_controller),
-                      child: Image(
-                          width: 14,
-                          image: AssetImage('assets/images/aboat.png')),
+                      child: const Image(width: 14, image: AssetImage('assets/images/aboat.png')),
                     ),
                     onPressed: () {
                       Navigator.push(
@@ -138,9 +130,8 @@ class _PlayerControlWidgetState extends State<PlayerControlWidget>
                               curve: Curves.bounceOut,
                               type: PageTransitionType.rightToLeftWithFade,
                               duration: const Duration(milliseconds: 500),
-                              reverseDuration:
-                                  const Duration(milliseconds: 500),
-                              child: SearchAndFilterScreen()));
+                              reverseDuration: const Duration(milliseconds: 500),
+                              child: SearchAndFilterScreen(widget.escapeWithNav)));
                     },
                   ),
                 ],

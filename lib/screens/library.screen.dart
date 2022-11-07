@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:page_transition/page_transition.dart';
 
 import '../injection/injector.dart';
 import '../models/podcasts/podcast.model.dart';
@@ -7,10 +6,11 @@ import '../models/search/search_result.model.dart';
 import '../services/user/user.service.dart';
 import '../widgets/login-button.widget.dart';
 import '../widgets/podcast-list.widget.dart';
-import 'login.screen.dart';
 
 class LibraryScreen extends StatefulWidget {
-  const LibraryScreen({Key? key}) : super(key: key);
+  const LibraryScreen(this.escapeWithNav, {Key? key}) : super(key: key);
+
+  final Function escapeWithNav;
 
   @override
   State<LibraryScreen> createState() => _LibraryScreenState();
@@ -64,6 +64,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                             final data = snapshot.data as List<Podcast>;
                             if (data.isNotEmpty) {
                               return PodcastListWidget(
+                                widget.escapeWithNav,
                                 searchResults: data,
                                 direction: Axis.vertical,
                                 trailing: buildPopupButton,
@@ -84,6 +85,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
                       future: userService.getFavorites(),
                     ),
                   )
-                : const Center(child: LoginButton())));
+                : Center(child: LoginButton(widget.escapeWithNav))));
   }
 }

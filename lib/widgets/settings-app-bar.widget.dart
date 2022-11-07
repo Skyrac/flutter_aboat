@@ -6,8 +6,9 @@ import '../screens/login.screen.dart';
 import '../services/user/user.service.dart';
 
 class SettingsAppBarWidget extends StatefulWidget {
-  const SettingsAppBarWidget({Key? key, this.refreshParent}) : super(key: key);
+  const SettingsAppBarWidget(this.escapeWithNav, {Key? key, this.refreshParent}) : super(key: key);
   final Function? refreshParent;
+  final Function escapeWithNav;
   @override
   State<SettingsAppBarWidget> createState() => _SettingsAppBarWidgetState();
 }
@@ -45,15 +46,13 @@ class _SettingsAppBarWidgetState extends State<SettingsAppBarWidget> {
                   icon: const Icon(Icons.login),
                   tooltip: '',
                   onPressed: () {
-                    Navigator.push(
-                        context,
-                        PageTransition(
-                            alignment: Alignment.bottomCenter,
-                            curve: Curves.bounceOut,
-                            type: PageTransitionType.fade,
-                            duration: const Duration(milliseconds: 300),
-                            reverseDuration: const Duration(milliseconds: 200),
-                            child: LoginScreen(true, refreshParent: refresh)));
+                    widget.escapeWithNav(PageTransition(
+                        alignment: Alignment.bottomCenter,
+                        curve: Curves.bounceOut,
+                        type: PageTransitionType.fade,
+                        duration: const Duration(milliseconds: 300),
+                        reverseDuration: const Duration(milliseconds: 200),
+                        child: LoginScreen(true, refreshParent: refresh)));
                   },
                 ),
         )

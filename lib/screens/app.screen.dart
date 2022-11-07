@@ -4,6 +4,7 @@ import 'package:Talkaboat/screens/favorites.screen.dart';
 import 'package:Talkaboat/screens/search.screen.dart';
 import 'package:Talkaboat/screens/social/social_entry.screen.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
+import 'package:Talkaboat/utils/common.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -28,7 +29,7 @@ class AppScreen extends StatefulWidget {
   State<AppScreen> createState() => _AppScreenState();
 }
 
-class _AppScreenState extends State<AppScreen> {
+class _AppScreenState extends State<AppScreen> with RouteAware {
   var Tabs;
   var userService = getIt<UserService>();
   String _currentPage = "Home";
@@ -76,13 +77,41 @@ class _AppScreenState extends State<AppScreen> {
   initState() {
     super.initState();
     Tabs = [
-      HomeScreen(setEpisode, _selectTab),
+      HomeScreen(setEpisode, _selectTab, escapeWithNav),
       const SearchScreen(),
       const FavoritesScreen(),
-      const LibraryScreen(),
-      const SocialEntryScreen()
+      LibraryScreen(escapeWithNav),
+      SocialEntryScreen(escapeWithNav)
     ];
     checkUpdates(context);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        systemNavigationBarColor: const Color.fromRGBO(29, 40, 58, 1),
+        statusBarColor: DefaultColors.secondaryColor.shade900 // status bar color
+        ));
+  }
+
+  @override
+  void didPush() {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        systemNavigationBarColor: const Color.fromRGBO(29, 40, 58, 1),
+        statusBarColor: DefaultColors.secondaryColor.shade900 // status bar color
+        ));
   }
 
   checkUpdates(context) async {
@@ -126,8 +155,15 @@ class _AppScreenState extends State<AppScreen> {
 
   final audioPlayerHandler = getIt<AudioPlayerHandler>();
 
+  late BuildContext _context;
+
+  escapeWithNav<T extends Object?>(Route<T> route) {
+    Navigator.of(_context).push(route);
+  }
+
   @override
   Widget build(BuildContext context) {
+    _context = context;
     audioPlayerHandler.setEpisodeRefreshFunction(setEpisode);
     return WillPopScope(
       onWillPop: () async {
@@ -156,7 +192,7 @@ class _AppScreenState extends State<AppScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              MiniPlayerWidget(episode: episode),
+              MiniPlayerWidget(escapeWithNav, episode: episode),
               ClipRRect(
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20.0),
@@ -175,12 +211,6 @@ class _AppScreenState extends State<AppScreen> {
                     currentIndex: currentTabIndex,
                     onTap: (index) {
                       _selectTab(pageKeys[index], index);
-                      setState(() {
-                        SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-                            systemNavigationBarColor: const Color.fromRGBO(29, 40, 58, 1),
-                            statusBarColor: DefaultColors.secondaryColor.shade900 // status bar color
-                            ));
-                      });
                     },
                     items: <BottomNavigationBarItem>[
                       BottomNavigationBarItem(

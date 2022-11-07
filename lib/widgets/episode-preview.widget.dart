@@ -14,11 +14,13 @@ import '../services/user/user.service.dart';
 import 'bottom-sheets/playlist.bottom-sheet.dart';
 
 class EpisodePreviewWidget extends StatefulWidget {
-  const EpisodePreviewWidget(this.episode, this.direction, this.onPlayEpisode, this.refresh, {Key? key}) : super(key: key);
+  const EpisodePreviewWidget(this.episode, this.direction, this.onPlayEpisode, this.refresh, this.escapeWithNav, {Key? key})
+      : super(key: key);
   final Episode? episode;
   final Axis direction;
   final Function onPlayEpisode;
   final Function refresh;
+  final Function escapeWithNav;
 
   @override
   State<EpisodePreviewWidget> createState() => _EpisodePreviewWidgetState();
@@ -112,15 +114,13 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
               break;
             case "add":
               if (!userService.isConnected) {
-                Navigator.push(
-                    context,
-                    PageTransition(
-                        alignment: Alignment.bottomCenter,
-                        curve: Curves.bounceOut,
-                        type: PageTransitionType.rightToLeftWithFade,
-                        duration: const Duration(milliseconds: 500),
-                        reverseDuration: const Duration(milliseconds: 500),
-                        child: LoginScreen(true, refreshParent: () => setState(() {}))));
+                widget.escapeWithNav(PageTransition(
+                    alignment: Alignment.bottomCenter,
+                    curve: Curves.bounceOut,
+                    type: PageTransitionType.rightToLeftWithFade,
+                    duration: const Duration(milliseconds: 500),
+                    reverseDuration: const Duration(milliseconds: 500),
+                    child: LoginScreen(true, refreshParent: () => setState(() {}))));
               } else {
                 showModalBottomSheet(
                     isScrollControlled: true,

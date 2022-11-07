@@ -7,10 +7,11 @@ import '../injection/injector.dart';
 import '../models/playlist/playlist.model.dart';
 import '../services/user/user.service.dart';
 import '../widgets/login-button.widget.dart';
-import 'login.screen.dart';
 
 class PlaylistScreen extends StatefulWidget {
-  const PlaylistScreen({Key? key}) : super(key: key);
+  const PlaylistScreen(this.escapeWithNav, {Key? key}) : super(key: key);
+
+  final Function escapeWithNav;
 
   @override
   State<PlaylistScreen> createState() => _PlaylistScreenState();
@@ -113,7 +114,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                     : const SizedBox()
               ],
             ),
-            body: userService.isConnected ? createPlaylistView() : Center(child: LoginButton())));
+            body: userService.isConnected ? createPlaylistView() : Center(child: LoginButton(widget.escapeWithNav))));
   }
 
   createPlaylistView() => FutureBuilder(

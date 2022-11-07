@@ -4,8 +4,8 @@ import 'package:page_transition/page_transition.dart';
 import '../screens/login.screen.dart';
 
 class LoginButton extends StatefulWidget {
-  const LoginButton({super.key});
-
+  const LoginButton(this.escapeWithNav, {super.key});
+  final Function escapeWithNav;
   @override
   State<LoginButton> createState() => _LoginButtonState();
 }
@@ -15,15 +15,13 @@ class _LoginButtonState extends State<LoginButton> {
   Widget build(BuildContext context) {
     return RawMaterialButton(
         onPressed: (() {
-          Navigator.push(
-              context,
-              PageTransition(
-                  alignment: Alignment.bottomCenter,
-                  curve: Curves.bounceOut,
-                  type: PageTransitionType.fade,
-                  duration: const Duration(milliseconds: 300),
-                  reverseDuration: const Duration(milliseconds: 200),
-                  child: LoginScreen(true, refreshParent: () => setState(() {}))));
+          widget.escapeWithNav(PageTransition(
+              alignment: Alignment.bottomCenter,
+              curve: Curves.bounceOut,
+              type: PageTransitionType.fade,
+              duration: const Duration(milliseconds: 300),
+              reverseDuration: const Duration(milliseconds: 200),
+              child: LoginScreen(true, refreshParent: () => setState(() {}))));
         }),
         child: Container(
             width: 250,

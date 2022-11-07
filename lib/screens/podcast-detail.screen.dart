@@ -1,6 +1,5 @@
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../injection/injector.dart';
@@ -17,8 +16,8 @@ class PodcastDetailScreen extends StatefulWidget {
   final SearchResult? podcastSearchResult;
   final int? podcastId;
   final AppBar? appBar;
-  const PodcastDetailScreen(
-      {Key? key, this.podcastSearchResult, this.podcastId, this.appBar})
+  final Function escapeWithNav;
+  const PodcastDetailScreen(this.escapeWithNav, {Key? key, this.podcastSearchResult, this.podcastId, this.appBar})
       : super(key: key);
 
   @override
@@ -45,8 +44,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
     if (widget.podcastSearchResult != null) {
       return widget.podcastSearchResult!;
     } else if (widget.podcastId != null) {
-      return await podcastService.getPodcastDetails(
-          widget.podcastId!, sort, -1);
+      return await podcastService.getPodcastDetails(widget.podcastId!, sort, -1);
     } else {
       return null;
     }
@@ -57,11 +55,8 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
           (BuildContext context, int index) {
             var episode = data[index];
             var episodeIndex = index;
-            return EpisodePreviewWidget(
-                episode,
-                Axis.vertical,
-                () => {selectEpisode(episodeIndex, data)},
-                () => setState(() {}));
+            return EpisodePreviewWidget(episode, Axis.vertical, () => {selectEpisode(episodeIndex, data)},
+                () => setState(() {}), widget.escapeWithNav);
           },
           childCount: data.length, // 1000 list items
         ),
@@ -70,8 +65,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    userService.UpdatePodcastVisitDate(
-        widget.podcastId ?? widget.podcastSearchResult?.id);
+    userService.UpdatePodcastVisitDate(widget.podcastId ?? widget.podcastSearchResult?.id);
     return Scaffold(
         body: Container(
             decoration: BoxDecoration(
@@ -118,12 +112,12 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                             }),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(Icons.arrow_back),
-                                const SizedBox(
+                              children: const [
+                                Icon(Icons.arrow_back),
+                                SizedBox(
                                   width: 10,
                                 ),
-                                const Text("Back")
+                                Text("Back")
                               ],
                             ),
                           )
@@ -155,15 +149,13 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
             Padding(
               padding: const EdgeInsets.only(right: 5),
               child: IconButton(
-                  icon: const Icon(Icons.share,
-                      color: Color.fromRGBO(99, 163, 253, 0.5), size: 36),
+                  icon: const Icon(Icons.share, color: Color.fromRGBO(99, 163, 253, 0.5), size: 36),
                   tooltip: '',
                   onPressed: () => {
                         //TODO: Geräte Abhängigkeit prüfen
                         Share.share(
                             "Check the Podcast ${podcastSearchResult.title} on Talkaboat.online mobile App! Start listening and earn while supporting new and upcoming podcasters.\n\n Download it now on \nAndroid: https://play.google.com/store/apps/details?id=com.aboat.talkaboat\n",
-                            subject:
-                                "Check this out! A Podcast on Talkaboat.online.")
+                            subject: "Check this out! A Podcast on Talkaboat.online.")
                       }),
             ),
             !userService.isConnected
@@ -172,13 +164,10 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                     ? Padding(
                         padding: const EdgeInsets.only(right: 10),
                         child: IconButton(
-                          icon: const Icon(Icons.favorite,
-                              color: Color.fromRGBO(99, 163, 253, 0.5),
-                              size: 36),
+                          icon: const Icon(Icons.favorite, color: Color.fromRGBO(99, 163, 253, 0.5), size: 36),
                           tooltip: '',
                           onPressed: () async {
-                            await userService
-                                .removeFromFavorites(podcastSearchResult.id!);
+                            await userService.removeFromFavorites(podcastSearchResult.id!);
                             setState(() {});
                           },
                         ),
@@ -186,13 +175,10 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                     : Padding(
                         padding: const EdgeInsets.only(right: 10),
                         child: IconButton(
-                          icon: const Icon(Icons.favorite_border,
-                              color: Color.fromRGBO(99, 163, 253, 0.5),
-                              size: 36),
+                          icon: const Icon(Icons.favorite_border, color: Color.fromRGBO(99, 163, 253, 0.5), size: 36),
                           tooltip: '',
                           onPressed: () async {
-                            await userService
-                                .addToFavorites(podcastSearchResult.id!);
+                            await userService.addToFavorites(podcastSearchResult.id!);
                             setState(() {});
                           },
                         ),
@@ -203,9 +189,8 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
           CustomScrollView(
             slivers: [
               SliverPersistentHeader(
-                delegate: PodcastDetailSliver(
-                    expandedHeight: size.height * 0.4,
-                    podcast: podcastSearchResult),
+                delegate: PodcastDetailSliver(widget.escapeWithNav,
+                    expandedHeight: size.height * 0.4, podcast: podcastSearchResult),
                 pinned: true,
               ),
               FutureBuilder(
@@ -222,32 +207,27 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                       );
                     } else if (snapshot.hasData && snapshot.data != null) {
                       // Extracting data from snapshot object
-                      final data = snapshot.data as List<Episode>?;
-                      if (data != null && data.isNotEmpty) {
-                        return buildEpisodes(data);
+                      if (snapshot.data != null && snapshot.data!.isNotEmpty) {
+                        return buildEpisodes(snapshot.data!);
                       }
                     }
                   }
-                  return const SliverToBoxAdapter(
-                      child: Center(child: CircularProgressIndicator()));
+                  return const SliverToBoxAdapter(child: Center(child: CircularProgressIndicator()));
                 },
-                future: podcastService.getPodcastDetailEpisodes(
-                    podcastSearchResult.id!, sort, -1),
+                future: podcastService.getPodcastDetailEpisodes(podcastSearchResult.id!, sort, -1),
               ),
             ],
           ),
           CustomScrollView(
             slivers: [
               SliverPersistentHeader(
-                delegate: PodcastDetailSliver(
-                    expandedHeight: size.height * 0.4,
-                    podcast: podcastSearchResult),
+                delegate: PodcastDetailSliver(widget.escapeWithNav,
+                    expandedHeight: size.height * 0.4, podcast: podcastSearchResult),
                 pinned: true,
               ),
               SliverToBoxAdapter(
                   child: FutureBuilder(
-                future: podcastService.getPodcastDetails(
-                    podcastSearchResult.id!, sort, -1),
+                future: podcastService.getPodcastDetails(podcastSearchResult.id!, sort, -1),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
                     if (snapshot.hasError) {
@@ -269,46 +249,36 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                               alignment: Alignment.centerLeft,
                               child: Text(
                                 "Allgemeines",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleLarge
-                                    ?.copyWith(
-                                      color:
-                                          const Color.fromRGBO(99, 163, 253, 1),
+                                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                      color: const Color.fromRGBO(99, 163, 253, 1),
                                     ),
                               ),
                             ),
                             Container(
                               margin: const EdgeInsets.only(bottom: 10),
-                              child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    const Text(
-                                      "Titel",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(left: 15),
-                                      child: Text(
-                                        snapshot.data!.title!,
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1,
-                                      ),
-                                    )
-                                  ]),
+                              child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                                const Text(
+                                  "Titel",
+                                  style: TextStyle(fontWeight: FontWeight.w600),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 15),
+                                  child: Text(
+                                    snapshot.data!.title!,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                  ),
+                                )
+                              ]),
                             ),
                             Container(
                               margin: const EdgeInsets.only(bottom: 10),
                               child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   const Text(
                                     "Folgen",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.w600),
+                                    style: TextStyle(fontWeight: FontWeight.w600),
                                   ),
                                   Text(snapshot.data!.totalEpisodes!.toString())
                                 ],
@@ -327,12 +297,8 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                               alignment: Alignment.topLeft,
                               child: Text(
                                 snapshot.data!.publisher!,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium
-                                    ?.copyWith(
-                                      color: const Color.fromRGBO(
-                                          99, 163, 253, 0.5),
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      color: const Color.fromRGBO(99, 163, 253, 0.5),
                                     ),
                               ),
                             ),
@@ -349,9 +315,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                               child: Container(
                                   margin: const EdgeInsets.only(bottom: 35),
                                   decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      color: const Color.fromRGBO(
-                                          188, 140, 75, 1)),
+                                      borderRadius: BorderRadius.circular(10), color: const Color.fromRGBO(188, 140, 75, 1)),
                                   width: 100,
                                   height: 35,
                                   child: Center(
@@ -360,21 +324,15 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                                           overflow: TextOverflow.ellipsis,
                                           maxLines: 2,
                                           snapshot.data!.genreIds!,
-                                          style: const TextStyle(
-                                              color: Color.fromRGBO(
-                                                  15, 23, 41, 1))))),
+                                          style: const TextStyle(color: Color.fromRGBO(15, 23, 41, 1))))),
                             ),
                             Container(
                               alignment: Alignment.centerLeft,
                               margin: const EdgeInsets.only(bottom: 10),
                               child: Text(
                                 "Beschreibung",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleLarge
-                                    ?.copyWith(
-                                      color:
-                                          const Color.fromRGBO(99, 163, 253, 1),
+                                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                      color: const Color.fromRGBO(99, 163, 253, 1),
                                     ),
                               ),
                             ),
@@ -385,9 +343,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyLarge
-                                    ?.copyWith(
-                                        color: const Color.fromRGBO(
-                                            99, 163, 253, 1)),
+                                    ?.copyWith(color: const Color.fromRGBO(99, 163, 253, 1)),
                               ),
                             )
                           ],
@@ -410,9 +366,8 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
           CustomScrollView(
             slivers: [
               SliverPersistentHeader(
-                delegate: PodcastDetailSliver(
-                    expandedHeight: size.height * 0.4,
-                    podcast: podcastSearchResult),
+                delegate: PodcastDetailSliver(widget.escapeWithNav,
+                    expandedHeight: size.height * 0.4, podcast: podcastSearchResult),
                 pinned: true,
               ),
               const SliverToBoxAdapter(child: Center(child: Placeholder()))

@@ -4,6 +4,8 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
+final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
+
 class PositionData {
   final Duration position;
   final Duration bufferedPosition;
@@ -27,8 +29,7 @@ class CustomTrackShape extends RoundedRectSliderTrackShape {
   }) {
     final double? trackHeight = sliderTheme.trackHeight;
     final double trackLeft = offset.dx;
-    final double trackTop =
-        offset.dy + (parentBox.size.height - trackHeight!) / 2;
+    final double trackTop = offset.dy + (parentBox.size.height - trackHeight!) / 2;
     final double trackWidth = parentBox.size.width;
     return Rect.fromLTWH(trackLeft, trackTop, trackWidth, 20);
   }
@@ -123,8 +124,7 @@ class _SeekBarState extends State<SeekBar> {
               child: Slider(
                 min: 0.0,
                 max: widget.duration.inMilliseconds.toDouble(),
-                value: min(widget.bufferedPosition.inMilliseconds.toDouble(),
-                    widget.duration.inMilliseconds.toDouble()),
+                value: min(widget.bufferedPosition.inMilliseconds.toDouble(), widget.duration.inMilliseconds.toDouble()),
                 onChanged: (value) {},
               ),
             ),
@@ -171,7 +171,7 @@ class _SeekBarState extends State<SeekBar> {
                 child: Container(
                   width: 10,
                   height: 6,
-                  color: Color.fromRGBO(15, 23, 41, 1),
+                  color: const Color.fromRGBO(15, 23, 41, 1),
                 ))),
         Positioned(
             top: 0,
@@ -181,7 +181,7 @@ class _SeekBarState extends State<SeekBar> {
                 child: Container(
                   width: 10,
                   height: 6,
-                  color: Color.fromRGBO(15, 23, 41, 1),
+                  color: const Color.fromRGBO(15, 23, 41, 1),
                 ))),
       ],
     );
@@ -197,8 +197,7 @@ class CustomClipperRightCorner extends CustomClipper<Path> {
     Path path = Path()
       ..lineTo(size.width, 0)
       ..lineTo(size.width, size.height)
-      ..arcToPoint(Offset(0, 0),
-          radius: Radius.circular(radius), clockwise: false)
+      ..arcToPoint(const Offset(0, 0), radius: Radius.circular(radius), clockwise: false)
       ..close();
     return path;
   }
@@ -213,8 +212,7 @@ class CustomClipperLeftCorner extends CustomClipper<Path> {
     double radius = 10;
     Path path = Path()
       ..lineTo(size.width, 0)
-      ..arcToPoint(Offset(0, size.height),
-          radius: Radius.circular(radius), clockwise: false)
+      ..arcToPoint(Offset(0, size.height), radius: Radius.circular(radius), clockwise: false)
       ..close();
     return path;
   }
@@ -284,8 +282,7 @@ class LoggingAudioHandler extends CompositeAudioHandler {
   }
 
   @override
-  Future<void> prepareFromMediaId(String mediaId,
-      [Map<String, dynamic>? extras]) {
+  Future<void> prepareFromMediaId(String mediaId, [Map<String, dynamic>? extras]) {
     _log('prepareFromMediaId($mediaId, $extras)');
     return super.prepareFromMediaId(mediaId, extras);
   }
@@ -471,8 +468,7 @@ class LoggingAudioHandler extends CompositeAudioHandler {
   }
 
   @override
-  Future<dynamic> customAction(String name,
-      [Map<String, dynamic>? extras]) async {
+  Future<dynamic> customAction(String name, [Map<String, dynamic>? extras]) async {
     _log('customAction($name, extras)');
     final dynamic result = await super.customAction(name, extras);
     _log('customAction -> $result');
@@ -492,8 +488,7 @@ class LoggingAudioHandler extends CompositeAudioHandler {
   }
 
   @override
-  Future<List<MediaItem>> getChildren(String parentMediaId,
-      [Map<String, dynamic>? options]) async {
+  Future<List<MediaItem>> getChildren(String parentMediaId, [Map<String, dynamic>? options]) async {
     _log('getChildren($parentMediaId, $options)');
     final result = await super.getChildren(parentMediaId, options);
     _log('getChildren -> $result');
@@ -519,8 +514,7 @@ class LoggingAudioHandler extends CompositeAudioHandler {
   }
 
   @override
-  Future<List<MediaItem>> search(String query,
-      [Map<String, dynamic>? extras]) async {
+  Future<List<MediaItem>> search(String query, [Map<String, dynamic>? extras]) async {
     _log('search($query, $extras)');
     final result = await super.search(query, extras);
     _log('search -> $result');
@@ -564,10 +558,7 @@ void showSliderDialog({
           child: Column(
             children: [
               Text('${snapshot.data?.toStringAsFixed(1)}$valueSuffix',
-                  style: const TextStyle(
-                      fontFamily: 'Fixed',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 24.0)),
+                  style: const TextStyle(fontFamily: 'Fixed', fontWeight: FontWeight.bold, fontSize: 24.0)),
               Slider(
                 divisions: divisions,
                 min: min,
@@ -584,23 +575,17 @@ void showSliderDialog({
 }
 
 class QueueState {
-  static const QueueState empty =
-      QueueState([], 0, [], AudioServiceRepeatMode.none);
+  static const QueueState empty = QueueState([], 0, [], AudioServiceRepeatMode.none);
 
   final List<MediaItem> queue;
   final int? queueIndex;
   final List<int>? shuffleIndices;
   final AudioServiceRepeatMode repeatMode;
 
-  const QueueState(
-      this.queue, this.queueIndex, this.shuffleIndices, this.repeatMode);
+  const QueueState(this.queue, this.queueIndex, this.shuffleIndices, this.repeatMode);
 
-  bool get hasPrevious =>
-      repeatMode != AudioServiceRepeatMode.none || (queueIndex ?? 0) > 0;
-  bool get hasNext =>
-      repeatMode != AudioServiceRepeatMode.none ||
-      (queueIndex ?? 0) + 1 < queue.length;
+  bool get hasPrevious => repeatMode != AudioServiceRepeatMode.none || (queueIndex ?? 0) > 0;
+  bool get hasNext => repeatMode != AudioServiceRepeatMode.none || (queueIndex ?? 0) + 1 < queue.length;
 
-  List<int> get indices =>
-      shuffleIndices ?? List.generate(queue.length, (i) => i);
+  List<int> get indices => shuffleIndices ?? List.generate(queue.length, (i) => i);
 }
