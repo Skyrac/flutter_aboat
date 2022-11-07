@@ -4,10 +4,11 @@ import '../themes/colors.dart';
 import '../widgets/podcast-search.widget.dart';
 
 class SearchAndFilterScreen extends StatefulWidget {
-  const SearchAndFilterScreen({this.appBar, this.onlyGenre, Key? key}) : super(key: key);
+  const SearchAndFilterScreen(this.escapeWithNav, {this.appBar, this.onlyGenre, Key? key}) : super(key: key);
 
   final AppBar? appBar;
   final int? onlyGenre;
+  final Function escapeWithNav;
 
   @override
   State<SearchAndFilterScreen> createState() => _SearchAndFilterScreenState();
@@ -44,7 +45,7 @@ class _SearchAndFilterScreenState extends State<SearchAndFilterScreen> {
                 padding: const EdgeInsets.all(20),
                 child: InkWell(
                   onTap: (() {
-                    search = PodcastSearch(selectedLanguages: selectedLanguages, genreIds: []);
+                    search = PodcastSearch(widget.escapeWithNav, selectedLanguages: selectedLanguages, genreIds: []);
                     // placeholder for our places search later
                     showSearch(
                       context: context,

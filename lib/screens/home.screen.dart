@@ -2,20 +2,19 @@ import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/services/quests/quest.service.dart';
 import 'package:Talkaboat/services/state/state.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
-import 'package:Talkaboat/themes/colors.dart';
 import 'package:Talkaboat/utils/scaffold_wave.dart';
 import 'package:Talkaboat/widgets/home-categories.dart';
 import 'package:Talkaboat/widgets/home-suggested.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:Talkaboat/widgets/quests/quest-list.widget.dart';
-import 'package:flutter/services.dart';
 import '../widgets/home-app-bar.widget.dart';
 import '../widgets/library-preview.widget.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen(this.setEpisode, this.selectTab, {Key? key}) : super(key: key);
+  const HomeScreen(this.setEpisode, this.selectTab, this.escapeWithNav, {Key? key}) : super(key: key);
   final Function setEpisode;
   final Function selectTab;
+  final Function escapeWithNav;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -25,15 +24,6 @@ class _HomeScreenState extends State<HomeScreen> {
   final homeState = getIt<StateService>();
   final userService = getIt<UserService>();
   final questService = getIt<QuestService>();
-
-  @override
-  initState() {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        systemNavigationBarColor: const Color.fromRGBO(29, 40, 58, 1), // navigation bar color
-        statusBarColor: DefaultColors.secondaryColor.shade900 // status bar color
-        ));
-    super.initState();
-  }
 
   Widget createTaskBar(BuildContext context, String title) {
     if (!userService.isConnected) {
@@ -71,11 +61,11 @@ class _HomeScreenState extends State<HomeScreen> {
       child: ScaffoldWave(
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(100),
-          child: HomeAppBarWidget(refresh: refresh),
+          child: HomeAppBarWidget(widget.escapeWithNav, refresh: refresh),
         ),
         body: TabBarView(children: [
-          HomeScreenSuggestedTab(widget.selectTab),
-          HomeScreenCategoriesTab(),
+          HomeScreenSuggestedTab(widget.selectTab, widget.escapeWithNav),
+          HomeScreenCategoriesTab(widget.escapeWithNav),
           Container(),
         ]),
       ),
@@ -94,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
         height: height,
         child: Wrap(
           spacing: 10,
-          children: [for (var entry in libraryEntries) LibraryPreviewWidget(podcast: entry)],
+          children: [for (var entry in libraryEntries) LibraryPreviewWidget(widget.escapeWithNav, podcast: entry)],
         ),
       ),
     );
@@ -104,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
 class CustomAppBar extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
-    Path path = new Path();
+    Path path = Path();
 
     path.lineTo(0, size.height);
     path.quadraticBezierTo(size.width / 4, size.height - 40, size.width / 2, size.height - 20);

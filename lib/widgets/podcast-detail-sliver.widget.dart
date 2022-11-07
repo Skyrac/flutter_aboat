@@ -4,17 +4,16 @@ import 'package:Talkaboat/services/web3/token.service.dart';
 import 'package:Talkaboat/widgets/login-button.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:page_transition/page_transition.dart';
 
 import '../models/search/search_result.model.dart';
-import '../screens/login.screen.dart';
 import 'bottom-sheets/claim.bottom-sheet.dart';
 
 class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
   final double expandedHeight;
   final SearchResult podcast;
+  final Function escapeWithNav;
 
-  PodcastDetailSliver({required this.expandedHeight, required this.podcast});
+  PodcastDetailSliver(this.escapeWithNav, {required this.expandedHeight, required this.podcast});
 
   final userService = getIt<UserService>();
   final tokenService = getIt<TokenService>();
@@ -197,7 +196,7 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                   : SizedBox(
                       height: 140,
                       child: Column(
-                        children: const [Text("Login to use this feature!"), Center(child: LoginButton())],
+                        children: [const Text("Login to use this feature!"), Center(child: LoginButton(escapeWithNav))],
                       ),
                     ),
               actions: [

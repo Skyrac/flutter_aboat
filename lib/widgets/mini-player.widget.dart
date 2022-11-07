@@ -14,8 +14,9 @@ import '../services/state/state.service.dart';
 import '../utils/common.dart';
 
 class MiniPlayerWidget extends StatefulWidget {
-  const MiniPlayerWidget({Key? key, required this.episode}) : super(key: key);
+  const MiniPlayerWidget(this.escapeWithNav, {Key? key, required this.episode}) : super(key: key);
   final Episode? episode;
+  final Function escapeWithNav;
 
   @override
   State<MiniPlayerWidget> createState() => _MiniPlayerWidgetState();
@@ -83,7 +84,8 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
                             reverseDuration: const Duration(milliseconds: 500),
                             // child: PodcastDetailScreen(
                             //     podcastId: widget.episode?.podcastId)
-                            child: PodcastEpisodeScreen(podcastId: widget.episode?.podcastId, episode: widget.episode)))
+                            child: PodcastEpisodeScreen(widget.escapeWithNav,
+                                podcastId: widget.episode?.podcastId, episode: widget.episode)))
                   }),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -139,11 +141,11 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
                     ),
                   ),
                   AnimatedContainer(
-                      padding: EdgeInsets.only(right: 5),
+                      padding: const EdgeInsets.only(right: 5),
                       duration: const Duration(milliseconds: 500),
                       width: 60,
                       height: 50,
-                      child: PlayerControlWidget()),
+                      child: PlayerControlWidget(widget.escapeWithNav)),
                 ],
               ),
             ),

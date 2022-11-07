@@ -10,10 +10,12 @@ import '../screens/podcast-detail.screen.dart';
 import '../services/user/user.service.dart';
 
 class PodcastListFavoritesWidget extends StatefulWidget {
-  const PodcastListFavoritesWidget({Key? key, required this.searchResults, this.trailing, this.checkUpdate})
+  const PodcastListFavoritesWidget(this.escapeWithNav,
+      {Key? key, required this.searchResults, this.trailing, this.checkUpdate})
       : super(key: key);
   final List<Podcast?> searchResults;
   final Function? trailing;
+  final Function escapeWithNav;
   final bool? checkUpdate;
   @override
   State<PodcastListFavoritesWidget> createState() => _PodcastListFavoritesWidgetState();
@@ -36,15 +38,13 @@ class _PodcastListFavoritesWidgetState extends State<PodcastListFavoritesWidget>
           switch (value) {
             case "toggleLibrary":
               if (!userService.isConnected) {
-                Navigator.push(
-                    context,
-                    PageTransition(
-                        alignment: Alignment.bottomCenter,
-                        curve: Curves.bounceOut,
-                        type: PageTransitionType.rightToLeftWithFade,
-                        duration: const Duration(milliseconds: 500),
-                        reverseDuration: const Duration(milliseconds: 500),
-                        child: LoginScreen(true, refreshParent: () => setState(() {}))));
+                widget.escapeWithNav(PageTransition(
+                    alignment: Alignment.bottomCenter,
+                    curve: Curves.bounceOut,
+                    type: PageTransitionType.rightToLeftWithFade,
+                    duration: const Duration(milliseconds: 500),
+                    reverseDuration: const Duration(milliseconds: 500),
+                    child: LoginScreen(true, refreshParent: () => setState(() {}))));
               } else {
                 await userService.toggleFavoritesEntry(entry.id);
               }
@@ -125,7 +125,7 @@ class _PodcastListFavoritesWidgetState extends State<PodcastListFavoritesWidget>
                   type: PageTransitionType.rightToLeftWithFade,
                   duration: const Duration(milliseconds: 500),
                   reverseDuration: const Duration(milliseconds: 500),
-                  child: PodcastDetailScreen(podcastSearchResult: entry)));
+                  child: PodcastDetailScreen(widget.escapeWithNav, podcastSearchResult: entry)));
         },
       ));
 

@@ -4,8 +4,10 @@ import 'package:Talkaboat/screens/favorites.screen.dart';
 import 'package:Talkaboat/screens/search.screen.dart';
 import 'package:Talkaboat/screens/social/social_entry.screen.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
+import 'package:Talkaboat/utils/common.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lazy_load_indexed_stack/lazy_load_indexed_stack.dart';
 import 'package:open_store/open_store.dart';
@@ -14,6 +16,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import '../injection/injector.dart';
 import '../models/podcasts/episode.model.dart';
 import '../services/audio/audio-handler.services.dart';
+import '../themes/colors.dart';
 import '../widgets/mini-player.widget.dart';
 import 'home.screen.dart';
 import 'library.screen.dart';
@@ -26,12 +29,11 @@ class AppScreen extends StatefulWidget {
   State<AppScreen> createState() => _AppScreenState();
 }
 
-class _AppScreenState extends State<AppScreen> {
+class _AppScreenState extends State<AppScreen> with RouteAware {
   var Tabs;
   var userService = getIt<UserService>();
   String _currentPage = "Home";
   List<String> pageKeys = ["Home", "Search", "Playlist", "Library", "Social"];
-  // TODO: remove this
   final Map<String, GlobalKey<NavigatorState>> _navigatorKeys = {
     "Home": GlobalKey<NavigatorState>(),
     "Search": GlobalKey<NavigatorState>(),
@@ -60,17 +62,56 @@ class _AppScreenState extends State<AppScreen> {
     }
   }
 
+  Widget _buildOffstageNavigator(String tabItem) {
+    return Offstage(
+        offstage: _currentPage != tabItem,
+        child: Navigator(
+          key: _navigatorKeys[tabItem],
+          onGenerateRoute: (routeSettings) {
+            return MaterialPageRoute(builder: (context) => Tabs[currentTabIndex]);
+          },
+        ));
+  }
+
   @override
   initState() {
     super.initState();
     Tabs = [
-      HomeScreen(setEpisode, _selectTab),
+      HomeScreen(setEpisode, _selectTab, escapeWithNav),
       const SearchScreen(),
       const FavoritesScreen(),
-      const LibraryScreen(),
-      const SocialEntryScreen()
+      LibraryScreen(escapeWithNav),
+      SocialEntryScreen(escapeWithNav)
     ];
     checkUpdates(context);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        systemNavigationBarColor: const Color.fromRGBO(29, 40, 58, 1),
+        statusBarColor: DefaultColors.secondaryColor.shade900 // status bar color
+        ));
+  }
+
+  @override
+  void didPush() {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        systemNavigationBarColor: const Color.fromRGBO(29, 40, 58, 1),
+        statusBarColor: DefaultColors.secondaryColor.shade900 // status bar color
+        ));
   }
 
   checkUpdates(context) async {
@@ -114,8 +155,15 @@ class _AppScreenState extends State<AppScreen> {
 
   final audioPlayerHandler = getIt<AudioPlayerHandler>();
 
+  late BuildContext _context;
+
+  escapeWithNav<T extends Object?>(Route<T> route) {
+    Navigator.of(_context).push(route);
+  }
+
   @override
   Widget build(BuildContext context) {
+    _context = context;
     audioPlayerHandler.setEpisodeRefreshFunction(setEpisode);
     return WillPopScope(
       onWillPop: () async {
@@ -132,16 +180,19 @@ class _AppScreenState extends State<AppScreen> {
         return false;
       },
       child: Scaffold(
-        body: LazyLoadIndexedStack(
-          index: currentTabIndex,
-          children: Tabs,
-        ),
+        body: LazyLoadIndexedStack(index: currentTabIndex, children: <Widget>[
+          _buildOffstageNavigator("Home"),
+          _buildOffstageNavigator("Search"),
+          _buildOffstageNavigator("Playlist"),
+          _buildOffstageNavigator("Library"),
+          _buildOffstageNavigator("Social"),
+        ]),
         bottomNavigationBar: Container(
           color: const Color.fromRGBO(15, 23, 41, 1),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              MiniPlayerWidget(episode: episode),
+              MiniPlayerWidget(escapeWithNav, episode: episode),
               ClipRRect(
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20.0),
