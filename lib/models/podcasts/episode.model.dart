@@ -8,7 +8,7 @@ class Episode extends SearchResult {
   int? podcastId;
   @override
   int? id;
-  JoinRoomDto? roomId;
+  int? roomId;
   String? link;
   String? audio;
   @override

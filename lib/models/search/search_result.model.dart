@@ -2,7 +2,7 @@ import '../chat/join-room-dto.dart';
 
 class SearchResult {
   int? id;
-  JoinRoomDto? roomId;
+  int? roomId;
   String? title;
   String? image;
   String? description;

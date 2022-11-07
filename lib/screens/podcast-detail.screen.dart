@@ -1,12 +1,17 @@
+import 'dart:convert';
+
 import 'package:Talkaboat/services/user/user.service.dart';
+import 'package:Talkaboat/widgets/login-button.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../injection/injector.dart';
 import '../models/chat/chat-dtos.dart';
+import '../models/chat/join-room-dto.dart';
 import '../models/chat/message-history-request-dto.dart';
 import '../models/podcasts/episode.model.dart';
+import '../models/podcasts/podcast.model.dart';
 import '../models/search/search_result.model.dart';
 import '../services/audio/audio-handler.services.dart';
 import '../services/audio/podcast.service.dart';
@@ -30,7 +35,6 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
   final audioPlayer = getIt<AudioPlayerHandler>();
   final podcastService = getIt<PodcastService>();
   final chatHub = getIt<ChatHubService>();
-  final messages = getIt<MessageHistoryRequestDto>();
 
   var sort = "asc";
   var isDescOpen = false;
@@ -54,6 +58,44 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
       return null;
     }
   }
+
+  Widget buildMessages(List<ChatMessageDto> data) => ListView.builder(
+      shrinkWrap: true,
+      itemCount: data.length,
+      scrollDirection: Axis.vertical,
+      itemBuilder: (BuildContext context, int index) {
+        final item = data[index];
+        return buildMessage(context, item);
+      });
+  Widget buildMessage(context, ChatMessageDto entry) => Padding(
+        padding: const EdgeInsets.fromLTRB(20, 7.5, 20, 7.5),
+        child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: Color.fromRGBO(29, 40, 58, 0.5),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(bottom: 10),
+                    child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                      Text(
+                        entry.senderName.toString(),
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
+                      ),
+                      Text(entry.messageType.toString(), style: TextStyle(color: Color.fromRGBO(99, 163, 253, 1))),
+                    ]),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 25),
+                    child: Align(alignment: Alignment.centerLeft, child: Text(entry.content.toString())),
+                  ),
+                ],
+              ),
+            )),
+      );
 
   Widget buildEpisodes(List<Episode> data) => SliverList(
         delegate: SliverChildBuilderDelegate(
@@ -133,6 +175,24 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
   }
 
   Widget createCustomScrollView(SearchResult podcastSearchResult) {
+    Future<List<ChatMessageDto>> getMessages(int roomId, int direction) async {
+      // if checkConnection()
+      // await chatHub.connect();
+
+      // await chatHub.joinRoom(JoinRoomDto(podcastSearchResult.roomId!));
+      return chatHub.getHistory(MessageHistoryRequestDto(roomId: roomId, direction: direction));
+      // return messages;
+    }
+
+    Future<Podcast> getPodcastDetail(int podcastId, String sort, int amount) async {
+      if (!userService.isConnected) {
+        await chatHub.leaveRoom(JoinRoomDto(podcastId));
+        return podcastService.getPodcastDetails(podcastId, sort, amount);
+      } else {
+        return podcastService.getPodcastDetails(podcastId, sort, amount);
+      }
+    }
+
     final size = MediaQuery.of(context).size;
     return DefaultTabController(
       animationDuration: Duration.zero,
@@ -231,7 +291,8 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
               ),
               SliverToBoxAdapter(
                   child: FutureBuilder(
-                future: podcastService.getPodcastDetails(podcastSearchResult.id!, sort, -1),
+                future: getPodcastDetail(podcastSearchResult.id!, sort, -1),
+                // future: podcastService.getPodcastDetails(podcastSearchResult.id!, sort, -1),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
                     if (snapshot.hasError) {
@@ -374,34 +435,73 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                 pinned: true,
               ),
               SliverToBoxAdapter(
-                child: FutureBuilder(
-                  builder: (context, snapshot) {
-                    // return Text("");
-                    if (snapshot.connectionState == ConnectionState.done) {
-                      if (snapshot.hasError) {
-                        return SliverToBoxAdapter(
-                          child: Center(
-                            child: Text(
-                              '${snapshot.error} occurred',
-                              style: const TextStyle(fontSize: 18),
-                            ),
-                          ),
-                        );
-                      } else if (snapshot.hasData && snapshot.data != null) {
-                        final data = snapshot.data;
-                        return Text(data.toString());
-                        // Extracting data from snapshot object
-                        // final data = snapshot.data as List<Episode>?;
-                        // if (data != null && data.isNotEmpty) {
-                        //   return buildEpisodes(data);
-                        // }
-                      }
-                    }
-                    return Text("");
-                    // return const SliverToBoxAdapter(child: Center(child: CircularProgressIndicator()));
-                  },
-                  // future: chatHub.connect(),
-                ),
+                child: !userService.isConnected
+                    ? LoginButton()
+                    : FutureBuilder(
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.done) {
+                            if (snapshot.hasError) {
+                              return SliverToBoxAdapter(
+                                child: Center(
+                                  child: Text(
+                                    '${snapshot.error} occurred',
+                                    style: const TextStyle(fontSize: 18),
+                                  ),
+                                ),
+                              );
+                            } else if (snapshot.hasData && snapshot.data != null) {
+                              // Extracting data from snapshot object
+                              final data = snapshot.data as List<ChatMessageDto>?;
+                              if (data != null && data.isNotEmpty) {
+                                // return Text(data[1].content.toString());
+                                return buildMessages(data);
+                              }
+                            }
+                          }
+
+                          return Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                children: [
+                                  Container(
+                                      width: 100,
+                                      height: 30,
+                                      color: Colors.blue,
+                                      child: RawMaterialButton(
+                                          child: Text("Connect"),
+                                          onPressed: () async {
+                                            await chatHub.connect();
+                                            // await chatHub.joinRoom(JoinRoomDto(648));
+                                          })),
+                                  Container(
+                                      width: 100,
+                                      height: 30,
+                                      color: Colors.blue,
+                                      child: RawMaterialButton(
+                                          child: Text("Join the room ${podcastSearchResult.roomId}"),
+                                          onPressed: () async {
+                                            // await chatHub.connect();
+                                            await chatHub.joinRoom(JoinRoomDto(podcastSearchResult.roomId!));
+                                          })),
+                                  Container(
+                                      width: 100,
+                                      height: 30,
+                                      color: Colors.blue,
+                                      child: RawMaterialButton(
+                                          child: Text("leave Room"),
+                                          onPressed: () async {
+                                            await chatHub.leaveRoom(JoinRoomDto(podcastSearchResult.roomId!));
+                                          })),
+                                ],
+                              ),
+                            ],
+                          );
+                          // return const SliverToBoxAdapter(child: Center(child: CircularProgressIndicator()));
+                        },
+                        future: getMessages(podcastSearchResult.roomId!, 0),
+                        // future: chatHub.getHistory(MessageHistoryRequestDto(roomId: podcastSearchResult.roomId!, direction: 0)),
+                      ),
               )
             ],
           ),
