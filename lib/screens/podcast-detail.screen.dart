@@ -182,12 +182,14 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
 
   Widget createCustomScrollView(SearchResult podcastSearchResult) {
     Future<List<ChatMessageDto>> getMessages(int roomId, int direction) async {
+      print('roomID ${podcastService.podcast!.roomId}');
+      print('roomID2 ${podcastSearchResult.roomId}');
       if (!chatHub.isConnected) {
         await chatHub.connect();
-        await chatHub.joinRoom(JoinRoomDto(roomId));
+        // await chatHub.joinRoom(JoinRoomDto(roomId));
         return await chatHub.getHistory(MessageHistoryRequestDto(roomId: roomId, direction: direction));
       } else {
-        chatHub.joinRoom(JoinRoomDto(roomId));
+        // chatHub.joinRoom(JoinRoomDto(roomId));
         return await chatHub.getHistory(MessageHistoryRequestDto(roomId: roomId, direction: direction));
       }
     }
@@ -203,18 +205,22 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
       //   print('roomID2 ${podcastSearchResult.roomId!}');
       //   return podcastService.getPodcastDetails(podcastId, sort, amount);
       // }
-      print('roomID ${podcastService.podcast!.roomId!}');
-      print('roomID2 ${podcastSearchResult.roomId!}');
-      return podcastService.getPodcastDetails(podcastId, sort, amount);
+
+      if (chatHub.isConnected) {
+        return podcastService.getPodcastDetails(podcastId, sort, amount);
+      } else {
+        await chatHub.connect();
+        return podcastService.getPodcastDetails(podcastId, sort, amount);
+      }
     }
 
     final size = MediaQuery.of(context).size;
-    void initState() {
-      super.initState();
-      _getMessages = podcastService.podcast!.roomId != null
-          ? getMessages(podcastService.podcast!.roomId!, 0)
-          : getMessages(podcastSearchResult.roomId!, 0);
-    }
+    // void initState() {
+    //   super.initState();
+    //   _getMessages = podcastService.podcast!.roomId != null
+    //       ? getMessages(podcastService.podcast!.roomId!, 0)
+    //       : getMessages(podcastSearchResult.roomId!, 0);
+    // }
 
     return DefaultTabController(
       animationDuration: Duration.zero,
@@ -281,9 +287,9 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
               ),
               FutureBuilder(
                 builder: (context, snapshot) {
-                  _getMessages = podcastService.podcast!.roomId != null
-                      ? getMessages(podcastService.podcast!.roomId!, 0)
-                      : getMessages(podcastSearchResult.roomId!, 0);
+                  // _getMessages = podcastService.podcast!.roomId != null
+                  //     ? getMessages(podcastService.podcast!.roomId!, 0)
+                  //     : getMessages(podcastSearchResult.roomId!, 0);
                   if (snapshot.connectionState == ConnectionState.done) {
                     if (snapshot.hasError) {
                       return SliverToBoxAdapter(
@@ -316,8 +322,12 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
               ),
               SliverToBoxAdapter(
                   child: FutureBuilder(
-                future: getPodcastDetail(podcastSearchResult.id!, sort, -1),
-                // future: podcastService.getPodcastDetails(podcastSearchResult.id!, sort, -1),
+                // future: podcastService.podcast!.id! != null
+                //     ? getPodcastDetail(podcastService.podcast!.id!, sort, -1)
+                //     : getPodcastDetail(podcastSearchResult.id!, sort, -1),
+
+                // getPodcastDetail(podcastSearchResult.id!, sort, -1),
+                future: podcastService.getPodcastDetails(podcastSearchResult.id!, sort, -1),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
                     if (snapshot.hasError) {
@@ -460,139 +470,148 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                 pinned: true,
               ),
               SliverToBoxAdapter(
-                child: userService.isConnected
-                    // & chatHub.isConnected
-                    ? FutureBuilder(
-                        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-                          if (snapshot.connectionState == ConnectionState.done) {
-                            if (snapshot.hasError) {
-                              return SliverToBoxAdapter(
-                                child: Center(
-                                  child: Text(
-                                    '${snapshot.error} occurred',
-                                    style: const TextStyle(fontSize: 18),
-                                  ),
-                                ),
-                              );
-                            } else if (snapshot.hasData && snapshot.data != null) {
-                              // Extracting data from snapshot object
-                              final data = snapshot.data as List<ChatMessageDto>?;
-                              if (data != null && data.isNotEmpty) {
-                                // return Text(data[1].content.toString());
-                                return Stack(
-                                  alignment: Alignment.bottomCenter,
-                                  children: [
-                                    buildMessages(data),
-                                    Container(
-                                      padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
-                                      margin: EdgeInsets.symmetric(horizontal: 20),
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        color: Color.fromRGBO(15, 23, 41, 1),
-                                        border: Border.all(
-                                            color: const Color.fromRGBO(99, 163, 253, 1), // set border color
-                                            width: 1.0),
-                                      ),
-                                      child: TextField(
-                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                              color: const Color.fromRGBO(164, 202, 255, 1),
-                                            ),
-                                        keyboardType: TextInputType.text,
-                                        maxLines: null,
-                                        decoration: InputDecoration(
-                                          border: InputBorder.none,
-                                          alignLabelWithHint: true,
-                                          hintText: "Message",
-                                          suffixIcon: const Icon(Icons.send, color: Color.fromRGBO(99, 163, 253, 1)),
-                                          hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                              color: const Color.fromRGBO(135, 135, 135, 1), fontStyle: FontStyle.italic),
-                                        ),
-                                      ),
+                  child:
+                      //userService.isConnected
+                      // & chatHub.isConnected
+                      //?
+                      FutureBuilder(
+                builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    if (snapshot.hasError) {
+                      return SliverToBoxAdapter(
+                        child: Center(
+                          child: Text(
+                            '${snapshot.error} occurred',
+                            style: const TextStyle(fontSize: 18),
+                          ),
+                        ),
+                      );
+                    } else if (snapshot.hasData && snapshot.data != null) {
+                      // Extracting data from snapshot object
+                      final data = snapshot.data as List<ChatMessageDto>?;
+                      if (data != null && data.isNotEmpty) {
+                        // return Text(data[1].content.toString());
+                        return Stack(
+                          alignment: Alignment.bottomCenter,
+                          children: [
+                            buildMessages(data),
+                            Container(
+                              padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+                              margin: EdgeInsets.symmetric(horizontal: 20),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: Color.fromRGBO(15, 23, 41, 1),
+                                border: Border.all(
+                                    color: const Color.fromRGBO(99, 163, 253, 1), // set border color
+                                    width: 1.0),
+                              ),
+                              child: TextField(
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      color: const Color.fromRGBO(164, 202, 255, 1),
                                     ),
-                                  ],
-                                );
-                              }
-                            }
-                          }
+                                keyboardType: TextInputType.text,
+                                maxLines: null,
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  alignLabelWithHint: true,
+                                  hintText: "Message",
+                                  suffixIcon: const Icon(Icons.send, color: Color.fromRGBO(99, 163, 253, 1)),
+                                  hintStyle: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(color: const Color.fromRGBO(135, 135, 135, 1), fontStyle: FontStyle.italic),
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
 
-                          return Column(
-                            children: [
-                              Container(
-                                padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
-                                margin: EdgeInsets.symmetric(horizontal: 20),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: Color.fromRGBO(15, 23, 41, 1),
-                                  border: Border.all(
-                                      color: const Color.fromRGBO(99, 163, 253, 1), // set border color
-                                      width: 1.0),
-                                ),
-                                child: TextField(
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                        color: const Color.fromRGBO(164, 202, 255, 1),
-                                      ),
-                                  keyboardType: TextInputType.text,
-                                  maxLines: null,
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    alignLabelWithHint: true,
-                                    hintText: "Message",
-                                    suffixIcon: const Icon(Icons.send, color: Color.fromRGBO(99, 163, 253, 1)),
-                                    hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                        color: const Color.fromRGBO(135, 135, 135, 1), fontStyle: FontStyle.italic),
-                                  ),
-                                ),
+                  return Column(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+                        margin: EdgeInsets.symmetric(horizontal: 20),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Color.fromRGBO(15, 23, 41, 1),
+                          border: Border.all(
+                              color: const Color.fromRGBO(99, 163, 253, 1), // set border color
+                              width: 1.0),
+                        ),
+                        child: TextField(
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: const Color.fromRGBO(164, 202, 255, 1),
                               ),
-                              chatHub.isConnected ? Text("User autorised") : SizedBox(),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                children: [
-                                  Container(
-                                      width: 100,
-                                      height: 30,
-                                      color: Colors.blue,
-                                      child: RawMaterialButton(
-                                          child: const Text("Connect"),
-                                          onPressed: () async {
-                                            await chatHub.connect();
-                                            // await chatHub.joinRoom(JoinRoomDto(648));
-                                          })),
-                                  Container(
-                                      width: 100,
-                                      height: 30,
-                                      color: Colors.blue,
-                                      child: RawMaterialButton(
-                                          child: podcastService.podcast!.roomId != null
-                                              ? Text("Join the room ${podcastService.podcast!.roomId}")
-                                              : Text("Join the room ${podcastSearchResult.roomId!}"),
-                                          onPressed: () async {
-                                            // await chatHub.connect();
-                                            podcastService.podcast!.roomId != null
-                                                ? await chatHub.joinRoom(JoinRoomDto(podcastService.podcast!.roomId!))
-                                                : await chatHub.joinRoom(JoinRoomDto(podcastSearchResult.roomId!));
-                                          })),
-                                  Container(
-                                      width: 100,
-                                      height: 30,
-                                      color: Colors.blue,
-                                      child: RawMaterialButton(
-                                          child: const Text("leave Room"),
-                                          onPressed: () async {
-                                            podcastService.podcast!.roomId != null
-                                                ? await chatHub.leaveRoom(JoinRoomDto(podcastService.podcast!.roomId!))
-                                                : await chatHub.leaveRoom(JoinRoomDto(podcastSearchResult.roomId!));
-                                          })),
-                                ],
-                              ),
-                            ],
-                          );
-                          // return const SliverToBoxAdapter(child: Center(child: CircularProgressIndicator()));
-                        },
-                        future: _getMessages
-                        // future: chatHub.getHistory(MessageHistoryRequestDto(roomId: podcastSearchResult.roomId!, direction: 0)),
-                        )
-                    : const LoginButton(),
+                          keyboardType: TextInputType.text,
+                          maxLines: null,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            alignLabelWithHint: true,
+                            hintText: "Message",
+                            suffixIcon: const Icon(Icons.send, color: Color.fromRGBO(99, 163, 253, 1)),
+                            hintStyle: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(color: const Color.fromRGBO(135, 135, 135, 1), fontStyle: FontStyle.italic),
+                          ),
+                        ),
+                      ),
+                      chatHub.isConnected ? Text("User autorised") : SizedBox(),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Container(
+                              width: 100,
+                              height: 30,
+                              color: Colors.blue,
+                              child: RawMaterialButton(
+                                  child: const Text("Connect"),
+                                  onPressed: () async {
+                                    await chatHub.connect();
+                                    // await chatHub.joinRoom(JoinRoomDto(648));
+                                  })),
+                          Container(
+                              width: 100,
+                              height: 30,
+                              color: Colors.blue,
+                              child: RawMaterialButton(
+                                  child: podcastService.podcast!.roomId != null
+                                      ? Text("Join the room ${podcastService.podcast!.roomId}")
+                                      : Text("Join the room ${podcastSearchResult.roomId!}"),
+                                  onPressed: () async {
+                                    // await chatHub.connect();
+                                    podcastService.podcast!.roomId != null
+                                        ? await chatHub.joinRoom(JoinRoomDto(podcastService.podcast!.roomId!))
+                                        : await chatHub.joinRoom(JoinRoomDto(podcastSearchResult.roomId!));
+                                  })),
+                          Container(
+                              width: 100,
+                              height: 30,
+                              color: Colors.blue,
+                              child: RawMaterialButton(
+                                  child: const Text("leave Room"),
+                                  onPressed: () async {
+                                    podcastService.podcast!.roomId != null
+                                        ? await chatHub.leaveRoom(JoinRoomDto(podcastService.podcast!.roomId!))
+                                        : await chatHub.leaveRoom(JoinRoomDto(podcastSearchResult.roomId!));
+                                  })),
+                        ],
+                      ),
+                    ],
+                  );
+                  // return const SliverToBoxAdapter(child: Center(child: CircularProgressIndicator()));
+                },
+                future: podcastService.podcast!.roomId != null
+                    ? getMessages(podcastService.podcast!.roomId!, 0)
+                    : getMessages(podcastSearchResult.roomId!, 0),
+                // future: _getMessages
+                // future: chatHub.getHistory(MessageHistoryRequestDto(roomId: podcastSearchResult.roomId!, direction: 0)),
               )
+                  //    : const LoginButton(),
+                  )
             ],
           ),
         ]),
