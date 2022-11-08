@@ -41,9 +41,12 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
   var sort = "asc";
   var isDescOpen = false;
   var userService = getIt<UserService>();
-  void initState() {
+
+  @override
+  initState() {
     super.initState();
     getPodcast = GetPodcast();
+    _getMessages = getMessages();
   }
 
   selectEpisode(int index, List<Episode> data) async {
@@ -180,17 +183,17 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
             )));
   }
 
-  Widget createCustomScrollView(SearchResult podcastSearchResult) {
-    Future<List<ChatMessageDto>> getMessages() async {
-      var podcast = await podcastService.getPodcastDetails(podcastSearchResult.id!, sort, -1);
-      if (!chatHub.isConnected) {
-        await chatHub.connect();
-        return await chatHub.getHistory(MessageHistoryRequestDto(roomId: podcast.roomId!, direction: 0));
-      } else {
-        return await chatHub.getHistory(MessageHistoryRequestDto(roomId: podcast.roomId!, direction: 0));
-      }
+  Future<List<ChatMessageDto>> getMessages() async {
+    var podcast = await podcastService.getPodcastDetails(widget.podcastSearchResult!.id!, sort, -1);
+    if (!chatHub.isConnected) {
+      await chatHub.connect();
+      return await chatHub.getHistory(MessageHistoryRequestDto(roomId: podcast.roomId!, direction: 0));
+    } else {
+      return await chatHub.getHistory(MessageHistoryRequestDto(roomId: podcast.roomId!, direction: 0));
     }
+  }
 
+  Widget createCustomScrollView(SearchResult podcastSearchResult) {
     Future<Podcast> getPodcastDetail(int podcastId, String sort, int amount) async {
       if (chatHub.isConnected) {
         return podcastService.getPodcastDetails(podcastId, sort, amount);
@@ -267,10 +270,6 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
               ),
               FutureBuilder(
                 builder: (context, snapshot) {
-                  // getMessages();
-                  // _getMessages = podcastService.podcast!.roomId != null
-                  //     ? getMessages(podcastService.podcast!.roomId!, 0)
-                  //     : getMessages(podcastSearchResult.roomId!, 0);
                   if (snapshot.connectionState == ConnectionState.done) {
                     if (snapshot.hasError) {
                       return SliverToBoxAdapter(
@@ -303,11 +302,6 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
               ),
               SliverToBoxAdapter(
                   child: FutureBuilder(
-                // future: podcastService.podcast!.id! != null
-                //     ? getPodcastDetail(podcastService.podcast!.id!, sort, -1)
-                //     : getPodcastDetail(podcastSearchResult.id!, sort, -1),
-
-                // getPodcastDetail(podcastSearchResult.id!, sort, -1),
                 future: podcastService.getPodcastDetails(podcastSearchResult.id!, sort, -1),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
@@ -504,88 +498,58 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                               ],
                             ),
                           );
+                        } else {
+                          return SliverToBoxAdapter(
+                              child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 20),
+                            child: Text(
+                              'No data found for this podcast. Please try again later!',
+                              style: TextStyle(fontSize: 18),
+                            ),
+                          ));
                         }
                       }
                     }
 
-                    return SliverToBoxAdapter(
-                      child: Column(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
-                            margin: EdgeInsets.symmetric(horizontal: 20),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: Color.fromRGBO(15, 23, 41, 1),
-                              border: Border.all(
-                                  color: const Color.fromRGBO(99, 163, 253, 1), // set border color
-                                  width: 1.0),
-                            ),
-                            child: TextField(
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: const Color.fromRGBO(164, 202, 255, 1),
-                                  ),
-                              keyboardType: TextInputType.text,
-                              maxLines: null,
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                alignLabelWithHint: true,
-                                hintText: "Message",
-                                suffixIcon: const Icon(Icons.send, color: Color.fromRGBO(99, 163, 253, 1)),
-                                hintStyle: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium
-                                    ?.copyWith(color: const Color.fromRGBO(135, 135, 135, 1), fontStyle: FontStyle.italic),
-                              ),
-                            ),
-                          ),
-                          chatHub.isConnected ? Text("User autorised") : SizedBox(),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Container(
-                                  width: 100,
-                                  height: 30,
-                                  color: Colors.blue,
-                                  child: RawMaterialButton(
-                                      child: const Text("Connect"),
-                                      onPressed: () async {
-                                        await chatHub.connect();
-                                        // await chatHub.joinRoom(JoinRoomDto(648));
-                                      })),
-                              Container(
-                                  width: 100,
-                                  height: 30,
-                                  color: Colors.blue,
-                                  child: RawMaterialButton(
-                                      child: podcastService.podcast != null
-                                          ? Text("Join the room ${podcastService.podcast!.roomId}")
-                                          : Text("Join the room ${podcastSearchResult.roomId!}"),
-                                      onPressed: () async {
-                                        // await chatHub.connect();
-                                        podcastService.podcast != null
-                                            ? await chatHub.joinRoom(JoinRoomDto(podcastService.podcast!.roomId!))
-                                            : await chatHub.joinRoom(JoinRoomDto(podcastSearchResult.roomId!));
-                                      })),
-                              Container(
-                                  width: 100,
-                                  height: 30,
-                                  color: Colors.blue,
-                                  child: RawMaterialButton(
-                                      child: const Text("leave Room"),
-                                      onPressed: () async {
-                                        podcastService.podcast != null
-                                            ? await chatHub.leaveRoom(JoinRoomDto(podcastService.podcast!.roomId!))
-                                            : await chatHub.leaveRoom(JoinRoomDto(podcastSearchResult.roomId!));
-                                      })),
-                            ],
-                          ),
-                        ],
-                      ),
-                    );
-                    // return const SliverToBoxAdapter(child: Center(child: CircularProgressIndicator()));
+                    return SliverToBoxAdapter(child: Center(child: CircularProgressIndicator())
+                        // Column(
+                        //   children: [
+                        //     chatHub.isConnected ? Text("User autorised") : SizedBox(),
+                        //     Row(
+                        //       mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        //       children: [
+                        //         Container(
+                        //             width: 100,
+                        //             height: 30,
+                        //             color: Colors.blue,
+                        //             child: RawMaterialButton(
+                        //                 child: podcastService.podcast != null
+                        //                     ? Text("Join the room ${podcastService.podcast!.roomId}")
+                        //                     : Text("Join the room ${podcastSearchResult.roomId!}"),
+                        //                 onPressed: () async {
+                        //                   // await chatHub.connect();
+                        //                   podcastService.podcast != null
+                        //                       ? await chatHub.joinRoom(JoinRoomDto(podcastService.podcast!.roomId!))
+                        //                       : await chatHub.joinRoom(JoinRoomDto(podcastSearchResult.roomId!));
+                        //                 })),
+                        //         Container(
+                        //             width: 100,
+                        //             height: 30,
+                        //             color: Colors.blue,
+                        //             child: RawMaterialButton(
+                        //                 child: const Text("leave Room"),
+                        //                 onPressed: () async {
+                        //                   podcastService.podcast != null
+                        //                       ? await chatHub.leaveRoom(JoinRoomDto(podcastService.podcast!.roomId!))
+                        //                       : await chatHub.leaveRoom(JoinRoomDto(podcastSearchResult.roomId!));
+                        //                 })),
+                        //       ],
+                        //     ),
+                        //   ],
+                        // ),
+                        );
                   },
-                  future: getMessages())
+                  future: _getMessages)
               //    : const LoginButton(),
             ],
           ),
