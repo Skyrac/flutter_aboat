@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:Talkaboat/services/hubs/chat/chat-hub.service.dart';
 import 'package:Talkaboat/services/user/social.service.dart';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -239,7 +240,8 @@ class UserService {
     print("Get Core Data");
     if (token.isNotEmpty) {
       await getUserInfo();
-      await getIt<RewardHubService>().connect();
+      Future.microtask(() => getIt<RewardHubService>().connect());
+      Future.microtask(() => getIt<ChatHubService>().connect());
       if (userInfo != null) {
         print(userInfo);
         _guest = false;
