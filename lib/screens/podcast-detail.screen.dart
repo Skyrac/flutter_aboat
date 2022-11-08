@@ -35,10 +35,16 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
   final audioPlayer = getIt<AudioPlayerHandler>();
   final podcastService = getIt<PodcastService>();
   final chatHub = getIt<ChatHubService>();
+  Future<SearchResult?>? getPodcast;
+  Future<List<ChatMessageDto>>? _getMessages;
 
   var sort = "asc";
   var isDescOpen = false;
   var userService = getIt<UserService>();
+  void initState() {
+    super.initState();
+    getPodcast = GetPodcast();
+  }
 
   selectEpisode(int index, List<Episode> data) async {
     var selectedEpisode = data[index];
@@ -170,7 +176,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                           )
                         ]));
               },
-              future: GetPodcast(),
+              future: getPodcast,
             )));
   }
 
@@ -187,15 +193,28 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
     }
 
     Future<Podcast> getPodcastDetail(int podcastId, String sort, int amount) async {
-      if (chatHub.isConnected & userService.isConnected) {
-        await chatHub.leaveRoom(JoinRoomDto(podcastId));
-        return podcastService.getPodcastDetails(podcastId, sort, amount);
-      } else {
-        return podcastService.getPodcastDetails(podcastId, sort, amount);
-      }
+      // if (chatHub.isConnected & userService.isConnected) {
+      //   await chatHub.leaveRoom(JoinRoomDto(podcastId));
+      //   print('roomID ${podcastService.podcast!.roomId!}');
+      //   print('roomID2 ${podcastSearchResult.roomId!}');
+      //   return podcastService.getPodcastDetails(podcastId, sort, amount);
+      // } else {
+      //   print('roomID ${podcastService.podcast!.roomId!}');
+      //   print('roomID2 ${podcastSearchResult.roomId!}');
+      //   return podcastService.getPodcastDetails(podcastId, sort, amount);
+      // }
+      print('roomID ${podcastService.podcast!.roomId!}');
+      print('roomID2 ${podcastSearchResult.roomId!}');
+      return podcastService.getPodcastDetails(podcastId, sort, amount);
     }
 
     final size = MediaQuery.of(context).size;
+    void initState() {
+      super.initState();
+      _getMessages = podcastService.podcast!.roomId != null
+          ? getMessages(podcastService.podcast!.roomId!, 0)
+          : getMessages(podcastSearchResult.roomId!, 0);
+    }
 
     return DefaultTabController(
       animationDuration: Duration.zero,
@@ -262,6 +281,9 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
               ),
               FutureBuilder(
                 builder: (context, snapshot) {
+                  _getMessages = podcastService.podcast!.roomId != null
+                      ? getMessages(podcastService.podcast!.roomId!, 0)
+                      : getMessages(podcastSearchResult.roomId!, 0);
                   if (snapshot.connectionState == ConnectionState.done) {
                     if (snapshot.hasError) {
                       return SliverToBoxAdapter(
@@ -495,6 +517,32 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
 
                           return Column(
                             children: [
+                              Container(
+                                padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+                                margin: EdgeInsets.symmetric(horizontal: 20),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: Color.fromRGBO(15, 23, 41, 1),
+                                  border: Border.all(
+                                      color: const Color.fromRGBO(99, 163, 253, 1), // set border color
+                                      width: 1.0),
+                                ),
+                                child: TextField(
+                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                        color: const Color.fromRGBO(164, 202, 255, 1),
+                                      ),
+                                  keyboardType: TextInputType.text,
+                                  maxLines: null,
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    alignLabelWithHint: true,
+                                    hintText: "Message",
+                                    suffixIcon: const Icon(Icons.send, color: Color.fromRGBO(99, 163, 253, 1)),
+                                    hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                        color: const Color.fromRGBO(135, 135, 135, 1), fontStyle: FontStyle.italic),
+                                  ),
+                                ),
+                              ),
                               chatHub.isConnected ? Text("User autorised") : SizedBox(),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -540,11 +588,9 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                           );
                           // return const SliverToBoxAdapter(child: Center(child: CircularProgressIndicator()));
                         },
-                        future: podcastService.podcast!.roomId != null
-                            ? getMessages(podcastService.podcast!.roomId!, 0)
-                            : getMessages(podcastSearchResult.roomId!, 0),
+                        future: _getMessages
                         // future: chatHub.getHistory(MessageHistoryRequestDto(roomId: podcastSearchResult.roomId!, direction: 0)),
-                      )
+                        )
                     : const LoginButton(),
               )
             ],
