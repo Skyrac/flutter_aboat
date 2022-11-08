@@ -1062,9 +1062,11 @@ packages:
   signalr_netcore:
     dependency: "direct main"
     description:
-      name: signalr_netcore
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: master
+      resolved-ref: "3c7ee06c55b1dc5724f1eef55eb913fb72935582"
+      url: "https://github.com/daubit/signalr_client.git"
+    source: git
     version: "1.3.3"
   simple_observable:
     dependency: transitive
