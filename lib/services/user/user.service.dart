@@ -284,8 +284,9 @@ class UserService {
   Future<String?> emailRegister(String email, String pin, String username, bool newsletter) async {
     try {
       var response = await UserRepository.emailRegister(email, pin, username, newsletter);
+      print("response ${response.toJson()}");
       if (response.data == null || response.data!.isEmpty) {
-        return response.text;
+        return response.text ?? "false";
       }
       token = response.data ?? "";
       prefs.setString(TOKEN_IDENTIFIER, token);
@@ -334,7 +335,7 @@ class UserService {
     try {
       var response = await UserRepository.firebaseRegister(firebaseToken, username, newsletter);
       if (response.data == null || response.data!.isEmpty) {
-        return response.text;
+        return response.text ?? "false";
       }
       token = response.data ?? "";
       prefs.setString(TOKEN_IDENTIFIER, token);

@@ -297,7 +297,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> doEmailRegister(
       BuildContext context, TextStyle theme, String pinResult, NavigatorState navigator, String? rejectedUsername) async {
-    final username = await showUsernameDialog(context, theme, null);
+    final username = await showUsernameDialog(context, theme, rejectedUsername);
     if (username != null) {
       setState(() {
         isLoading = true;
@@ -306,12 +306,15 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         isLoading = false;
       });
+      print("registerResult $registerResult");
       if (registerResult == null) {
         // returns error
         navAway(navigator);
       } else {
         // register error
-        if (registerResult.contains("username_invalid")) {
+        if (registerResult.contains("username_invalid") ||
+            registerResult.contains("User or Wallet is already registered!")) {
+          print("invalid $username");
           await doEmailRegister(context, theme, pinResult, navigator, username);
         } else {
           ShowSnackBar(context, "Error registering");
@@ -326,7 +329,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> doSocialRegister(
       BuildContext context, TextStyle theme, NavigatorState navigator, String? rejectedUsername) async {
-    final username = await showUsernameDialog(context, theme, null);
+    final username = await showUsernameDialog(context, theme, rejectedUsername);
     if (username != null) {
       setState(() {
         isLoading = true;

@@ -127,7 +127,12 @@ class UserRepository {
     } catch (exception) {
       print(exception);
       print((exception as DioError).response!.data);
-
+      if ((exception as DioError).response != null) {
+        var data = json.decode((exception as DioError).response!.data);
+        if (data["message"] != null) {
+          return ResponseModel(status: data["statusCode"], text: data["message"]);
+        }
+      }
       return ResponseModel();
     }
   }
@@ -141,6 +146,12 @@ class UserRepository {
     } catch (exception) {
       print(exception);
       print((exception as DioError).response);
+      if ((exception as DioError).response != null) {
+        var data = json.decode((exception as DioError).response!.data);
+        if (data["message"] != null) {
+          return ResponseModel(status: data["statusCode"], text: data["message"]);
+        }
+      }
       return ResponseModel();
     }
   }
