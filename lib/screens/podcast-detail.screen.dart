@@ -183,36 +183,15 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
   Widget createCustomScrollView(SearchResult podcastSearchResult) {
     Future<List<ChatMessageDto>> getMessages() async {
       var podcast = await podcastService.getPodcastDetails(podcastSearchResult.id!, sort, -1);
-
-      return await chatHub.getHistory(MessageHistoryRequestDto(roomId: podcast.roomId!, direction: 0));
+      if (!chatHub.isConnected) {
+        await chatHub.connect();
+        return await chatHub.getHistory(MessageHistoryRequestDto(roomId: podcast.roomId!, direction: 0));
+      } else {
+        return await chatHub.getHistory(MessageHistoryRequestDto(roomId: podcast.roomId!, direction: 0));
+      }
     }
 
-    // Future<List<ChatMessageDto>> getMessages(int roomId, int direction) async {
-    //   GetPodcast();
-    //   print('roomID ${podcastService.podcast!.roomId}');
-    //   print('roomID2 ${podcastSearchResult.roomId}');
-    //   if (!chatHub.isConnected) {
-    //     await chatHub.connect();
-    //     // await chatHub.joinRoom(JoinRoomDto(roomId));
-    //     return await chatHub.getHistory(MessageHistoryRequestDto(roomId: roomId, direction: direction));
-    //   } else {
-    //     // chatHub.joinRoom(JoinRoomDto(roomId));
-    //     return await chatHub.getHistory(MessageHistoryRequestDto(roomId: roomId, direction: direction));
-    //   }
-    // }
-
     Future<Podcast> getPodcastDetail(int podcastId, String sort, int amount) async {
-      // if (chatHub.isConnected & userService.isConnected) {
-      //   await chatHub.leaveRoom(JoinRoomDto(podcastId));
-      //   print('roomID ${podcastService.podcast!.roomId!}');
-      //   print('roomID2 ${podcastSearchResult.roomId!}');
-      //   return podcastService.getPodcastDetails(podcastId, sort, amount);
-      // } else {
-      //   print('roomID ${podcastService.podcast!.roomId!}');
-      //   print('roomID2 ${podcastSearchResult.roomId!}');
-      //   return podcastService.getPodcastDetails(podcastId, sort, amount);
-      // }
-
       if (chatHub.isConnected) {
         return podcastService.getPodcastDetails(podcastId, sort, amount);
       } else {
@@ -222,10 +201,6 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
     }
 
     final size = MediaQuery.of(context).size;
-    // void initState() {
-    //   super.initState();
-    //   _getMessages = getMessages();
-    // }
 
     return DefaultTabController(
       animationDuration: Duration.zero,
@@ -292,7 +267,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
               ),
               FutureBuilder(
                 builder: (context, snapshot) {
-                  getMessages();
+                  // getMessages();
                   // _getMessages = podcastService.podcast!.roomId != null
                   //     ? getMessages(podcastService.podcast!.roomId!, 0)
                   //     : getMessages(podcastSearchResult.roomId!, 0);
@@ -484,12 +459,10 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                           builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
                             if (snapshot.connectionState == ConnectionState.done) {
                               if (snapshot.hasError) {
-                                return SliverToBoxAdapter(
-                                  child: Center(
-                                    child: Text(
-                                      '${snapshot.error} occurred',
-                                      style: const TextStyle(fontSize: 18),
-                                    ),
+                                return Center(
+                                  child: Text(
+                                    '${snapshot.error} occurred',
+                                    style: const TextStyle(fontSize: 18),
                                   ),
                                 );
                               } else if (snapshot.hasData && snapshot.data != null) {
@@ -606,13 +579,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                             );
                             // return const SliverToBoxAdapter(child: Center(child: CircularProgressIndicator()));
                           },
-
-                          // future: podcastService.podcast != null
-                          //     ? getMessages(podcastService.podcast!.roomId!, 0)
-                          //     : getMessages(podcastSearchResult.roomId!, 0),
-                          future: getMessages()
-                          // future: chatHub.getHistory(MessageHistoryRequestDto(roomId: podcastSearchResult.roomId!, direction: 0)),
-                          )
+                          future: getMessages())
                   //    : const LoginButton(),
                   )
             ],
