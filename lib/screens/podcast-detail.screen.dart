@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:Talkaboat/models/chat/create-message-dto.dart';
@@ -6,6 +7,7 @@ import 'package:Talkaboat/widgets/login-button.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:swipe_to/swipe_to.dart';
 
 import '../injection/injector.dart';
 import '../models/chat/chat-dtos.dart';
@@ -35,10 +37,15 @@ class PodcastDetailScreen extends StatefulWidget {
 class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
   final audioPlayer = getIt<AudioPlayerHandler>();
   final podcastService = getIt<PodcastService>();
-  final chatHub = getIt<ChatHubService>();
+  final ChatHubService chatHub = getIt<ChatHubService>();
   List<String> messageType = ["", "Podcast", "Episode"];
+  List<ChatMessageDto> messages = [];
   Future<SearchResult?>? getPodcast;
-  Stream<List<ChatMessageDto>>? _getMessages;
+  Future<List<ChatMessageDto>>? _getMessages;
+  final focusNode = FocusNode();
+
+  final textController = TextEditingController();
+  String? message;
 
   var sort = "asc";
   var isDescOpen = false;
@@ -46,9 +53,9 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
 
   @override
   initState() {
-    super.initState();
     getPodcast = GetPodcast();
     _getMessages = getMessages();
+    super.initState();
   }
 
   selectEpisode(int index, List<Episode> data) async {
@@ -58,6 +65,10 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
     } else {
       await audioPlayer.updateEpisodeQueue(data, index: index);
     }
+  }
+
+  selectMessage(int index, List<ChatMemberDto> data) {
+    var selectedMessage = data[index];
   }
 
   Future<SearchResult?> GetPodcast() async {
@@ -70,46 +81,114 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
     }
   }
 
-  Widget buildMessages(List<ChatMessageDto> data) => ListView.builder(
-      physics: ScrollPhysics(),
-      shrinkWrap: true,
-      itemCount: data.length,
-      scrollDirection: Axis.vertical,
-      itemBuilder: (BuildContext context, int index) {
-        final item = data[index];
-        return buildMessage(context, item);
+  Widget buildMessages(List<ChatMessageDto> data) => StreamBuilder(
+      stream: chatHub.onReceiveMessage,
+      initialData: data,
+      builder: (context, snapshot) {
+        final data2 = snapshot.data as List<ChatMessageDto>;
+        return ListView.builder(
+            physics: ScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: data2.length,
+            scrollDirection: Axis.vertical,
+            itemBuilder: (BuildContext context, int index) {
+              final item = data2[index];
+              var messageIndex = index;
+              return buildMessage(context, item);
+            });
       });
-  Widget buildMessage(context, ChatMessageDto entry) => Padding(
-        padding: const EdgeInsets.fromLTRB(20, 7.5, 20, 7.5),
-        child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: const Color.fromRGBO(29, 40, 58, 0.5),
+
+  void _handleSwipeReply({required bool isLeftSwipe, required String reply}) {
+    Navigator.pop(context);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          reply,
+          textAlign: TextAlign.center,
+        ),
+        backgroundColor: isLeftSwipe ? Colors.red.shade600 : Colors.green.shade600,
+        duration: const Duration(milliseconds: 1000),
+      ),
+    );
+  }
+
+  void _displayInputBottomSheet(bool isLeftSwipe) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Padding(
+          padding: MediaQuery.of(context).viewInsets,
+          child: Container(
+            padding: const EdgeInsets.only(
+              left: 16.0,
+              right: 16.0,
+              top: 16.0,
+              bottom: 16.0,
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: RawMaterialButton(
-                onPressed: () {},
-                child: Column(
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(bottom: 10),
-                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                        Text(
-                          entry.senderName.toString(),
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
-                        ),
-                        Text(messageType[entry.messageType], style: const TextStyle(color: Color.fromRGBO(99, 163, 253, 1))),
-                      ]),
+            child: TextField(
+              autofocus: true,
+              textInputAction: TextInputAction.done,
+              textCapitalization: TextCapitalization.words,
+              onSubmitted: (value) => _handleSwipeReply(isLeftSwipe: isLeftSwipe ? true : false, reply: value),
+              decoration: const InputDecoration(
+                labelText: 'Reply',
+                hintText: 'enter reply here',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(
+                      5.0,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 25),
-                      child: Align(alignment: Alignment.centerLeft, child: Text(entry.content.toString())),
-                    ),
-                  ],
+                  ),
                 ),
               ),
-            )),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget buildMessage(context, ChatMessageDto entry) => Padding(
+        padding: const EdgeInsets.fromLTRB(20, 7.5, 20, 7.5),
+        child: SwipeTo(
+          onLeftSwipe: () {
+            print("swipe");
+            // _displayInputBottomSheet(true);
+            focusNode.requestFocus();
+          },
+          child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: const Color.fromRGBO(29, 40, 58, 0.5),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: RawMaterialButton(
+                  onPressed: () {
+                    print(entry.id);
+                  },
+                  child: Column(
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 10),
+                        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                          Text(
+                            entry.senderName.toString(),
+                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
+                          ),
+                          Text(messageType[entry.messageType],
+                              style: const TextStyle(color: Color.fromRGBO(99, 163, 253, 1))),
+                        ]),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 25),
+                        child: Align(alignment: Alignment.centerLeft, child: Text(entry.content.toString())),
+                      ),
+                    ],
+                  ),
+                ),
+              )),
+        ),
       );
 
   Widget buildEpisodes(List<Episode> data) => SliverList(
@@ -189,25 +268,25 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
             )));
   }
 
-  // Future<List<ChatMessageDto>> getMessages() async {
-  //   var podcast = await podcastService.getPodcastDetails(widget.podcastSearchResult!.id!, sort, -1);
-  //   if (!chatHub.isConnected) {
-  //     await chatHub.connect();
-  //     return await chatHub.getHistory(MessageHistoryRequestDto(roomId: podcast.roomId!, direction: 0));
-  //   } else {
-  //     return await chatHub.getHistory(MessageHistoryRequestDto(roomId: podcast.roomId!, direction: 0));
-  //   }
-  // }
-
-  Stream<List<ChatMessageDto>> getMessages() async* {
+  Future<List<ChatMessageDto>> getMessages() async {
     var podcast = await podcastService.getPodcastDetails(widget.podcastSearchResult!.id!, sort, -1);
     if (!chatHub.isConnected) {
       await chatHub.connect();
-      yield await chatHub.getHistory(MessageHistoryRequestDto(roomId: podcast.roomId!, direction: 0));
+      return await chatHub.getHistory(MessageHistoryRequestDto(roomId: podcast.roomId!, direction: 0));
     } else {
-      yield await chatHub.getHistory(MessageHistoryRequestDto(roomId: podcast.roomId!, direction: 0));
+      return await chatHub.getHistory(MessageHistoryRequestDto(roomId: podcast.roomId!, direction: 0));
     }
   }
+
+  // Stream<List<ChatMessageDto>> getMessages() async* {
+  //   var podcast = await podcastService.getPodcastDetails(widget.podcastSearchResult!.id!, sort, -1);
+  //   if (!chatHub.isConnected) {
+  //     await chatHub.connect();
+  //     yield await chatHub.getHistory(MessageHistoryRequestDto(roomId: podcast.roomId!, direction: 0));
+  //   } else {
+  //     yield await chatHub.getHistory(MessageHistoryRequestDto(roomId: podcast.roomId!, direction: 0));
+  //   }
+  // }
 
   Widget createCustomScrollView(SearchResult podcastSearchResult) {
     Future<Podcast> getPodcastDetail(int podcastId, String sort, int amount) async {
@@ -220,8 +299,6 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
     }
 
     final size = MediaQuery.of(context).size;
-    final textController = TextEditingController();
-    String? message;
 
     return DefaultTabController(
       animationDuration: Duration.zero,
@@ -456,215 +533,232 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
               ))
             ],
           ),
-          CustomScrollView(
-            slivers: [
-              SliverPersistentHeader(
-                delegate: PodcastDetailSliver(expandedHeight: size.height * 0.4, podcast: podcastSearchResult),
-                pinned: true,
-              ),
-              //userService.isConnected
-              // & chatHub.isConnected
-              //?
-              StreamBuilder(
-                stream: _getMessages!,
-                builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    if (snapshot.hasError) {
-                      return SliverToBoxAdapter(
-                        child: Center(
-                          child: Text(
-                            '${snapshot.error} occurred',
-                            style: const TextStyle(fontSize: 18),
-                          ),
-                        ),
-                      );
-                    } else if (snapshot.hasData && snapshot.data != null) {
-                      // Extracting data from snapshot object
-                      final data = snapshot.data as List<ChatMessageDto>?;
-                      if (data != null && data.isNotEmpty) {
-                        // return Text(data[1].content.toString());
-                        return SliverToBoxAdapter(
-                          child: Container(
-                            alignment: Alignment.topCenter,
-                            // height: 400,
-                            child: Stack(
-                              alignment: Alignment.bottomCenter,
-                              children: [
-                                buildMessages(data),
-                                userService.isConnected
-                                    ?
-                                    // MessageInput(message!, textController, podcastSearchResult)
-                                    Container(
-                                        padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
-                                        margin: EdgeInsets.symmetric(horizontal: 20),
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(10),
-                                          color: Color.fromRGBO(15, 23, 41, 1),
-                                          border: Border.all(
-                                              color: const Color.fromRGBO(99, 163, 253, 1), // set border color
-                                              width: 1.0),
-                                        ),
-                                        child: TextField(
-                                          controller: textController,
-                                          onSubmitted: (content) {
-                                            message = content;
-                                            chatHub.sendMessage(
-                                                CreateMessageDto(0, podcastSearchResult.roomId!, content, 0, null, null));
-                                            textController.clear();
-                                            getMessages();
-                                            setState(() {
-                                              getMessages();
-                                            });
-                                          },
-                                          onChanged: (text) {
-                                            print(text);
-                                            message = text;
-                                          },
-                                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                color: const Color.fromRGBO(164, 202, 255, 1),
-                                              ),
-                                          keyboardType: TextInputType.text,
-                                          maxLines: null,
-                                          decoration: InputDecoration(
-                                            border: InputBorder.none,
-                                            alignLabelWithHint: true,
-                                            hintText: "Message",
-                                            suffixIcon: IconButton(
-                                              onPressed: () async {
-                                                var newMessage =
-                                                    CreateMessageDto(0, podcastSearchResult.roomId!, message!, 0, 2, null);
-                                                await chatHub.sendMessage(newMessage);
-                                                // chatHub.receiveNewMessage([newMessage]);
-                                                textController.clear();
-
-                                                getMessages();
-                                                setState(() {
-                                                  getMessages();
-                                                });
-                                              },
-                                              icon: Icon(Icons.send, color: Color.fromRGBO(99, 163, 253, 1)),
-                                            ),
-                                            hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                color: const Color.fromRGBO(135, 135, 135, 1), fontStyle: FontStyle.italic),
-                                          ),
-                                        ),
-                                      )
-                                    : SizedBox(),
-                              ],
-                            ),
-                          ),
-                        );
-                      } else {
-                        return SliverToBoxAdapter(
-                            child: Container(
-                          height: 300,
-                          child: Stack(alignment: Alignment.bottomCenter, children: [
-                            Positioned(
-                              top: 0,
-                              child: Container(
-                                width: MediaQuery.of(context).size.width,
-                                padding: EdgeInsets.symmetric(horizontal: 20),
+          Stack(
+            alignment: Alignment.bottomCenter,
+            children: [
+              CustomScrollView(
+                slivers: [
+                  SliverPersistentHeader(
+                    delegate: PodcastDetailSliver(expandedHeight: size.height * 0.4, podcast: podcastSearchResult),
+                    pinned: true,
+                  ),
+                  //userService.isConnected
+                  // & chatHub.isConnected
+                  //?
+                  FutureBuilder(
+                      // stream: _getMessages,
+                      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                        if (snapshot.connectionState == ConnectionState.done) {
+                          if (snapshot.hasError) {
+                            return SliverToBoxAdapter(
+                              child: Center(
                                 child: Text(
-                                  'No data found for this podcast. Please try again later!',
-                                  style: TextStyle(fontSize: 18),
+                                  '${snapshot.error} occurred',
+                                  style: const TextStyle(fontSize: 18),
                                 ),
                               ),
-                            ),
-                            userService.isConnected
-                                ?
-                                // MessageInput(message!, textController, podcastSearchResult)
-                                Container(
-                                    padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
-                                    margin: EdgeInsets.symmetric(horizontal: 20),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      color: Color.fromRGBO(15, 23, 41, 1),
-                                      border: Border.all(
-                                          color: const Color.fromRGBO(99, 163, 253, 1), // set border color
-                                          width: 1.0),
-                                    ),
-                                    child: TextField(
-                                      controller: textController,
-                                      onSubmitted: (content) async {
-                                        message = content;
-                                        await chatHub.sendMessage(
-                                            CreateMessageDto(0, podcastSearchResult.roomId!, message!, 0, null, null));
-                                        textController.clear();
-                                      },
-                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                            color: const Color.fromRGBO(164, 202, 255, 1),
-                                          ),
-                                      onChanged: (text) {
-                                        print(text);
-                                        message = text;
-                                      },
-                                      keyboardType: TextInputType.text,
-                                      maxLines: null,
-                                      decoration: InputDecoration(
-                                        border: InputBorder.none,
-                                        alignLabelWithHint: true,
-                                        hintText: "Message",
-                                        suffixIcon: IconButton(
-                                          onPressed: () async {
-                                            await chatHub.sendMessage(
-                                                CreateMessageDto(0, podcastSearchResult.roomId!, message!, 0, null, null));
-                                            textController.clear();
-                                          },
-                                          icon: Icon(Icons.send, color: Color.fromRGBO(99, 163, 253, 1)),
-                                        ),
-                                        hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                            color: const Color.fromRGBO(135, 135, 135, 1), fontStyle: FontStyle.italic),
+                            );
+                          } else if (snapshot.hasData && snapshot.data != null) {
+                            // Extracting data from snapshot object
+                            final data = snapshot.data as List<ChatMessageDto>?;
+                            if (data != null && data.isNotEmpty) {
+                              // return Text(data[1].content.toString());
+                              return SliverToBoxAdapter(
+                                child: Container(
+                                  alignment: Alignment.topCenter,
+                                  // height: 400,
+                                  child: Stack(
+                                    alignment: Alignment.bottomCenter,
+                                    children: [
+                                      buildMessages(data),
+                                      // userService.isConnected
+                                      //     ?
+                                      //     // MessageInput(message!, textController, podcastSearchResult)
+                                      //     Container(
+                                      //         padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+                                      //         margin: EdgeInsets.symmetric(horizontal: 20),
+                                      //         decoration: BoxDecoration(
+                                      //           borderRadius: BorderRadius.circular(10),
+                                      //           color: Color.fromRGBO(15, 23, 41, 1),
+                                      //           border: Border.all(
+                                      //               color: const Color.fromRGBO(99, 163, 253, 1), // set border color
+                                      //               width: 1.0),
+                                      //         ),
+                                      //         child: TextField(
+                                      //           controller: textController,
+                                      //           onSubmitted: (content) {
+                                      //             message = content;
+                                      //             chatHub.sendMessage(
+                                      //                 CreateMessageDto(0, podcastSearchResult.roomId!, content, 0, null, null));
+                                      //             textController.clear();
+                                      //             getMessages();
+                                      //             setState(() {
+                                      //               getMessages();
+                                      //             });
+                                      //           },
+                                      //           onChanged: (text) {
+                                      //             print(text);
+                                      //             message = text;
+                                      //           },
+                                      //           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      //                 color: const Color.fromRGBO(164, 202, 255, 1),
+                                      //               ),
+                                      //           keyboardType: TextInputType.text,
+                                      //           maxLines: null,
+                                      //           decoration: InputDecoration(
+                                      //             border: InputBorder.none,
+                                      //             alignLabelWithHint: true,
+                                      //             hintText: "Message",
+                                      //             suffixIcon: IconButton(
+                                      //               onPressed: () async {
+                                      //                 var newMessage =
+                                      //                     CreateMessageDto(0, podcastSearchResult.roomId!, message!, 0, 2, null);
+                                      //                 await chatHub.sendMessage(newMessage);
+                                      //                 // chatHub.onReceiveMessageController.add(newMessage as ChatMessageDto);
+                                      //                 // chatHub.receiveNewMessage([newMessage]);
+                                      //                 textController.clear();
+
+                                      //                 getMessages();
+                                      //                 setState(() {
+                                      //                   getMessages();
+                                      //                 });
+                                      //               },
+                                      //               icon: Icon(Icons.send, color: Color.fromRGBO(99, 163, 253, 1)),
+                                      //             ),
+                                      //             hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      //                 color: const Color.fromRGBO(135, 135, 135, 1),
+                                      //                 fontStyle: FontStyle.italic),
+                                      //           ),
+                                      //         ),
+                                      //       )
+                                      //     : SizedBox(),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            } else {
+                              return SliverToBoxAdapter(
+                                  child: Container(
+                                height: 300,
+                                child: Stack(alignment: Alignment.bottomCenter, children: [
+                                  Positioned(
+                                    top: 0,
+                                    child: Container(
+                                      width: MediaQuery.of(context).size.width,
+                                      padding: EdgeInsets.symmetric(horizontal: 20),
+                                      child: Text(
+                                        'No data found for this podcast. Please try again later!',
+                                        style: TextStyle(fontSize: 18),
                                       ),
                                     ),
-                                  )
-                                : SizedBox(),
-                          ]),
-                        ));
-                      }
-                    }
-                  }
+                                  ),
+                                ]),
+                              ));
+                            }
+                          }
+                        }
 
-                  return SliverToBoxAdapter(child: Center(child: CircularProgressIndicator())
-                      // Column(
-                      //   children: [
-                      //     chatHub.isConnected ? Text("User autorised") : SizedBox(),
-                      //     Row(
-                      //       mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      //       children: [
-                      //         Container(
-                      //             width: 100,
-                      //             height: 30,
-                      //             color: Colors.blue,
-                      //             child: RawMaterialButton(
-                      //                 child: podcastService.podcast != null
-                      //                     ? Text("Join the room ${podcastService.podcast!.roomId}")
-                      //                     : Text("Join the room ${podcastSearchResult.roomId!}"),
-                      //                 onPressed: () async {
-                      //                   // await chatHub.connect();
-                      //                   podcastService.podcast != null
-                      //                       ? await chatHub.joinRoom(JoinRoomDto(podcastService.podcast!.roomId!))
-                      //                       : await chatHub.joinRoom(JoinRoomDto(podcastSearchResult.roomId!));
-                      //                 })),
-                      //         Container(
-                      //             width: 100,
-                      //             height: 30,
-                      //             color: Colors.blue,
-                      //             child: RawMaterialButton(
-                      //                 child: const Text("leave Room"),
-                      //                 onPressed: () async {
-                      //                   podcastService.podcast != null
-                      //                       ? await chatHub.leaveRoom(JoinRoomDto(podcastService.podcast!.roomId!))
-                      //                       : await chatHub.leaveRoom(JoinRoomDto(podcastSearchResult.roomId!));
-                      //                 })),
-                      //       ],
-                      //     ),
-                      //   ],
-                      // ),
-                      );
-                },
-                // future: _getMessages
-              )
-              //    : const LoginButton(),
+                        return SliverToBoxAdapter(
+                            child: Center(
+                          child: CircularProgressIndicator(),
+                        )
+                            // Column(
+                            //   children: [
+                            //     chatHub.isConnected ? Text("User autorised") : SizedBox(),
+                            //     Row(
+                            //       mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            //       children: [
+                            //         Container(
+                            //             width: 100,
+                            //             height: 30,
+                            //             color: Colors.blue,
+                            //             child: RawMaterialButton(
+                            //                 child: podcastService.podcast != null
+                            //                     ? Text("Join the room ${podcastService.podcast!.roomId}")
+                            //                     : Text("Join the room ${podcastSearchResult.roomId!}"),
+                            //                 onPressed: () async {
+                            //                   // await chatHub.connect();
+                            //                   podcastService.podcast != null
+                            //                       ? await chatHub.joinRoom(JoinRoomDto(podcastService.podcast!.roomId!))
+                            //                       : await chatHub.joinRoom(JoinRoomDto(podcastSearchResult.roomId!));
+                            //                 })),
+                            //         Container(
+                            //             width: 100,
+                            //             height: 30,
+                            //             color: Colors.blue,
+                            //             child: RawMaterialButton(
+                            //                 child: const Text("leave Room"),
+                            //                 onPressed: () async {
+                            //                   podcastService.podcast != null
+                            //                       ? await chatHub.leaveRoom(JoinRoomDto(podcastService.podcast!.roomId!))
+                            //                       : await chatHub.leaveRoom(JoinRoomDto(podcastSearchResult.roomId!));
+                            //                 })),
+                            //       ],
+                            //     ),
+                            //   ],
+                            // ),
+                            );
+                      },
+                      future: _getMessages)
+                  //    : const LoginButton(),
+                ],
+              ),
+              userService.isConnected
+                  ? Positioned(
+                      bottom: 50,
+                      child: Container(
+                        width: 350,
+                        height: 50,
+                        padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+                        margin: EdgeInsets.symmetric(horizontal: 20),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Color.fromRGBO(15, 23, 41, 1),
+                          border: Border.all(
+                              color: const Color.fromRGBO(99, 163, 253, 1), // set border color
+                              width: 1.0),
+                        ),
+                        // child: Text("dadasdas"),
+                        child: TextField(
+                          focusNode: focusNode,
+                          controller: textController,
+                          onSubmitted: (content) {
+                            message = content;
+                            chatHub.sendMessage(
+                                CreateMessageDto(0, widget.podcastSearchResult!.roomId!, content, 0, null, null));
+                            textController.clear();
+                          },
+                          onChanged: (text) {
+                            print(text);
+                            message = text;
+                          },
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: const Color.fromRGBO(164, 202, 255, 1),
+                              ),
+                          keyboardType: TextInputType.text,
+                          maxLines: null,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            alignLabelWithHint: true,
+                            hintText: "Message",
+                            suffixIcon: IconButton(
+                              onPressed: () async {
+                                var newMessage = await chatHub.sendMessage(
+                                    CreateMessageDto(0, widget.podcastSearchResult!.roomId!, message!, 0, 2, null));
+                                // chatHub.onReceiveMessageController.add(newMessage as ChatMessageDto);
+                                // chatHub.receiveNewMessage(newMessage);
+                                textController.clear();
+                              },
+                              icon: Icon(Icons.send, color: Color.fromRGBO(99, 163, 253, 1)),
+                            ),
+                            hintStyle: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(color: const Color.fromRGBO(135, 135, 135, 1), fontStyle: FontStyle.italic),
+                          ),
+                        ),
+                      ))
+                  : SizedBox()
             ],
           ),
         ]),
