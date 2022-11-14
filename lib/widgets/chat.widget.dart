@@ -77,6 +77,13 @@ class _ChatState extends State<Chat> {
         return buildMessage(context, item);
       });
 
+  Future<List<ChatMessageDto>> getMessages(int roomId) async {
+    if (!chatService.isConnected) {
+      await chatService.connect();
+    }
+    return await chatService.getHistory(MessageHistoryRequestDto(roomId: roomId, direction: 0));
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
@@ -132,7 +139,7 @@ class _ChatState extends State<Chat> {
                 child: CircularProgressIndicator(),
               );
             },
-            future: chatService.getHistory(MessageHistoryRequestDto(roomId: widget.roomId, direction: 0)));
+            future: getMessages(widget.roomId));
       },
     );
   }

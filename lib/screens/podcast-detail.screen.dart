@@ -9,9 +9,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../injection/injector.dart';
 import '../models/chat/chat-dtos.dart';
-import '../models/chat/message-history-request-dto.dart';
 import '../models/podcasts/episode.model.dart';
-import '../models/podcasts/podcast.model.dart';
 import '../models/search/search_result.model.dart';
 import '../services/audio/audio-handler.services.dart';
 import '../services/audio/podcast.service.dart';
@@ -37,7 +35,6 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
   List<String> messageType = ["", "Podcast", "Episode"];
   List<ChatMessageDto> messages = [];
   Future<SearchResult?>? getPodcast;
-  Future<List<ChatMessageDto>>? _getMessages;
   final focusNode = FocusNode();
 
   final textController = TextEditingController();
@@ -50,7 +47,6 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
   @override
   initState() {
     getPodcast = GetPodcast();
-    _getMessages = getMessages();
     super.initState();
   }
 
@@ -204,34 +200,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
             )));
   }
 
-  Future<List<ChatMessageDto>> getMessages() async {
-    var podcast = await podcastService.getPodcastDetails(widget.podcastSearchResult!.id!, sort, -1);
-    if (!chatService.isConnected) {
-      await chatService.connect();
-    }
-    return await chatService.getHistory(MessageHistoryRequestDto(roomId: podcast.roomId!, direction: 0));
-  }
-
-  // Stream<List<ChatMessageDto>> getMessages() async* {
-  //   var podcast = await podcastService.getPodcastDetails(widget.podcastSearchResult!.id!, sort, -1);
-  //   if (!chatHub.isConnected) {
-  //     await chatHub.connect();
-  //     yield await chatHub.getHistory(MessageHistoryRequestDto(roomId: podcast.roomId!, direction: 0));
-  //   } else {
-  //     yield await chatHub.getHistory(MessageHistoryRequestDto(roomId: podcast.roomId!, direction: 0));
-  //   }
-  // }
-
   Widget createCustomScrollView(SearchResult podcastSearchResult) {
-    Future<Podcast> getPodcastDetail(int podcastId, String sort, int amount) async {
-      if (chatService.isConnected) {
-        return podcastService.getPodcastDetails(podcastId, sort, amount);
-      } else {
-        await chatService.connect();
-        return podcastService.getPodcastDetails(podcastId, sort, amount);
-      }
-    }
-
     final size = MediaQuery.of(context).size;
 
     return DefaultTabController(
@@ -311,9 +280,8 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                       );
                     } else if (snapshot.hasData && snapshot.data != null) {
                       // Extracting data from snapshot object
-                      final data = snapshot.data as List<Episode>?;
-                      if (data != null && data.isNotEmpty) {
-                        return buildEpisodes(data);
+                      if (snapshot.data != null && snapshot.data!.isNotEmpty) {
+                        return buildEpisodes(snapshot.data!);
                       }
                     }
                   }
@@ -481,6 +449,9 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                     delegate: PodcastDetailSliver(expandedHeight: size.height * 0.4, podcast: podcastSearchResult),
                     pinned: true,
                   ),
+                  //userService.isConnected
+                  // & chatHub.isConnected
+                  //?
                   FutureBuilder(
                       future: podcastService.getPodcastDetails(widget.podcastSearchResult!.id!, sort, -1),
                       builder: (builder, snapshot) {
@@ -492,79 +463,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                           child: CircularProgressIndicator(),
                         ));
                       })
-                  //userService.isConnected
-                  // & chatHub.isConnected
-                  //?
-                  /*ChangeNotifierProvider<ChatService>(
-                    create: (_) => chatService,
-                    builder: ((context, _) {
-                      return FutureBuilder(
-                          // stream: _getMessages,
-                          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-                            if (snapshot.connectionState == ConnectionState.done) {
-                              if (snapshot.hasError) {
-                                return SliverToBoxAdapter(
-                                  child: Center(
-                                    child: Text(
-                                      '${snapshot.error} occurred',
-                                      style: const TextStyle(fontSize: 18),
-                                    ),
-                                  ),
-                                );
-                              } else if (snapshot.hasData && snapshot.data != null) {
-                                // Extracting data from snapshot object
-                                final data = snapshot.data as List<ChatMessageDto>?;
-                                if (data != null && data.isNotEmpty) {
-                                  // return Text(data[1].content.toString());
-                                  return SliverToBoxAdapter(
-                                      child: StreamBuilder(
-                                          stream: chatHub.onReceiveMessage,
-                                          builder: ((context, snapshot) {
-                                            if (snapshot.hasData) {
-                                              _newMessages.add(snapshot.data!);
-                                            }
-                                            print("_newMessages length ${_newMessages.length}");
-                                            return Container(
-                                              alignment: Alignment.topCenter,
-                                              // height: 400,
-                                              child: Stack(
-                                                alignment: Alignment.bottomCenter,
-                                                children: [
-                                                  buildMessages([...data, ..._newMessages]),
-                                                ],
-                                              ),
-                                            );
-                                          })));
-                                } else {
-                                  return SliverToBoxAdapter(
-                                      child: SizedBox(
-                                    height: 300,
-                                    child: Stack(alignment: Alignment.bottomCenter, children: [
-                                      Positioned(
-                                        top: 0,
-                                        child: Container(
-                                          width: MediaQuery.of(context).size.width,
-                                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                                          child: const Text(
-                                            'No data found for this podcast. Please try again later!',
-                                            style: TextStyle(fontSize: 18),
-                                          ),
-                                        ),
-                                      ),
-                                    ]),
-                                  ));
-                                }
-                              }
-                            }
 
-                            return const SliverToBoxAdapter(
-                                child: Center(
-                              child: CircularProgressIndicator(),
-                            ));
-                          },
-                          future: _getMessages);
-                    }),
-                  ),*/
                   //    : const LoginButton(),
                 ],
               ),
@@ -590,7 +489,8 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                           onSubmitted: (content) {
                             message = content;
                             chatService.sendMessage(
-                                CreateMessageDto(0, widget.podcastSearchResult!.roomId!, content, 0, null, null));
+                                CreateMessageDto(0, widget.podcastSearchResult!.roomId!, content, 0, null, null),
+                                userService.userInfo!.userName!);
                             textController.clear();
                           },
                           onChanged: (text) {
@@ -608,8 +508,9 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                             hintText: "Message",
                             suffixIcon: IconButton(
                               onPressed: () async {
-                                var newMessage = await chatService.sendMessage(
-                                    CreateMessageDto(0, widget.podcastSearchResult!.roomId!, message!, 0, 2, null));
+                                await chatService.sendMessage(
+                                    CreateMessageDto(0, widget.podcastSearchResult!.roomId!, message!, 0, 2, null),
+                                    userService.userInfo!.userName!);
                                 // chatHub.onReceiveMessageController.add(newMessage as ChatMessageDto);
                                 // chatHub.receiveNewMessage(newMessage);
                                 textController.clear();
