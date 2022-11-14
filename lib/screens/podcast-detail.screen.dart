@@ -156,38 +156,42 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
             // _displayInputBottomSheet(true);
             focusNode.requestFocus();
           },
-          child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: const Color.fromRGBO(29, 40, 58, 0.5),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: RawMaterialButton(
-                  onPressed: () {
-                    print(entry.id);
-                  },
-                  child: Column(
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.only(bottom: 10),
-                        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                          Text(
-                            entry.senderName.toString(),
-                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
-                          ),
-                          Text(messageType[entry.messageType],
-                              style: const TextStyle(color: Color.fromRGBO(99, 163, 253, 1))),
-                        ]),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 25),
-                        child: Align(alignment: Alignment.centerLeft, child: Text(entry.content.toString())),
-                      ),
-                    ],
-                  ),
+          child: RawMaterialButton(
+            onLongPress: () {},
+            onPressed: () {},
+            child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: const Color.fromRGBO(29, 40, 58, 0.5),
                 ),
-              )),
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: RawMaterialButton(
+                    onPressed: () {
+                      print(entry.id);
+                    },
+                    child: Column(
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 10),
+                          child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                            Text(
+                              entry.senderName.toString(),
+                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
+                            ),
+                            Text(messageType[entry.messageType],
+                                style: const TextStyle(color: Color.fromRGBO(99, 163, 253, 1))),
+                          ]),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 25),
+                          child: Align(alignment: Alignment.centerLeft, child: Text(entry.content.toString())),
+                        ),
+                      ],
+                    ),
+                  ),
+                )),
+          ),
         ),
       );
 
@@ -427,18 +431,23 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                             Container(
                               margin: const EdgeInsets.only(bottom: 10),
                               child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                                const Text(
-                                  "Titel",
-                                  style: TextStyle(fontWeight: FontWeight.w600),
+                                const SizedBox(
+                                  width: 30,
+                                  child: Text(
+                                    "Titel",
+                                    style: TextStyle(fontWeight: FontWeight.w600),
+                                  ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 15),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                SizedBox(
+                                  width: 250,
                                   child: Text(
                                     snapshot.data!.title!,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
+                                    textAlign: TextAlign.end,
                                   ),
-                                )
+                                ),
                               ]),
                             ),
                             Container(
