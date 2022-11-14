@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:Talkaboat/models/chat/create-message-dto.dart';
+import 'package:Talkaboat/models/chat/delete-message-dto.dart';
+import 'package:Talkaboat/models/chat/edit-message-dto.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/widgets/login-button.widget.dart';
 import 'package:flutter/material.dart';
@@ -149,51 +151,106 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
   }
 
   Widget buildMessage(context, ChatMessageDto entry) => Padding(
-        padding: const EdgeInsets.fromLTRB(20, 7.5, 20, 7.5),
-        child: SwipeTo(
-          onLeftSwipe: () {
-            print("swipe");
-            // _displayInputBottomSheet(true);
-            focusNode.requestFocus();
+      padding: const EdgeInsets.fromLTRB(20, 7.5, 20, 7.5),
+      child: userService.isConnected
+          ? SwipeTo(
+              onLeftSwipe: () {
+                print("swipe");
+                // _displayInputBottomSheet(true);
+                focusNode.requestFocus();
+              },
+              child: RawMaterialButton(onLongPress: () {}, onPressed: () {}, child: messageItem(entry)),
+            )
+          : messageItem(entry));
+
+  Widget messageItem(ChatMessageDto entry) => Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: const Color.fromRGBO(29, 40, 58, 0.5),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: GestureDetector(
+          onLongPressStart: (LongPressStartDetails details) {
+            userService.isConnected ? _showPopupMenu(details.globalPosition, entry) : print("object");
           },
           child: RawMaterialButton(
-            onLongPress: () {},
-            onPressed: () {},
-            child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: const Color.fromRGBO(29, 40, 58, 0.5),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: RawMaterialButton(
-                    onPressed: () {
-                      print(entry.id);
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(bottom: 10),
-                          child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                            Text(
-                              entry.senderName.toString(),
-                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
-                            ),
-                            Text(messageType[entry.messageType],
-                                style: const TextStyle(color: Color.fromRGBO(99, 163, 253, 1))),
-                          ]),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 25),
-                          child: Align(alignment: Alignment.centerLeft, child: Text(entry.content.toString())),
-                        ),
-                      ],
+            onPressed: () {
+              // print(entry.id);
+              // showMenu(context: context, position: position, items: items)
+            },
+            child: Column(
+              children: [
+                Container(
+                  margin: const EdgeInsets.only(bottom: 10),
+                  child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                    Text(
+                      entry.senderName.toString(),
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
                     ),
-                  ),
-                )),
+                    Text(messageType[entry.messageType], style: const TextStyle(color: Color.fromRGBO(99, 163, 253, 1))),
+                  ]),
+                ),
+                entry.answeredMessage != null
+                    ? Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Color.fromRGBO(48, 73, 123, 1),
+                        ),
+                        width: 250,
+                        child: Expanded(
+                            child: Center(
+                                child: Text(
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
+                          entry.answeredMessage!.content,
+                        ))),
+                      )
+                    : Container(),
+                Padding(
+                  padding: const EdgeInsets.only(right: 25),
+                  child: Align(alignment: Alignment.centerLeft, child: Text(entry.content.toString())),
+                ),
+              ],
+            ),
           ),
         ),
-      );
+      ));
+
+  _showPopupMenu(Offset offset, ChatMessageDto entry) async {
+    double left = offset.dx;
+    double top = offset.dy;
+    final result = await showMenu(
+      color: const Color.fromRGBO(15, 23, 41, 1),
+      shape: const RoundedRectangleBorder(
+        side: BorderSide(color: Color.fromRGBO(188, 140, 75, 1)),
+        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+      ),
+      context: context,
+      position: RelativeRect.fromLTRB(left, top, 0, 0),
+      items: [
+        PopupMenuItem<String>(child: const Text('Answer'), value: 'Answer'),
+        PopupMenuItem<String>(child: const Text('Edit'), value: 'Edit'),
+        PopupMenuItem<String>(child: const Text('Delete'), value: 'Delete'),
+      ],
+      elevation: 8.0,
+    );
+    switch (result) {
+      case 'Answer':
+        print('Answer');
+
+        break;
+      case 'Edit':
+        print('Edit');
+        // chatHub.editMessage(EditMessageDto(entry.id, entry.chatRoomId));
+        break;
+      case 'Delete':
+        chatHub.deleteMessage(DeleteMessageDto(entry.id, entry.chatRoomId));
+        // print('Delete');
+        break;
+    }
+  }
 
   Widget buildEpisodes(List<Episode> data) => SliverList(
         delegate: SliverChildBuilderDelegate(
