@@ -1,26 +1,21 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:Talkaboat/models/chat/create-message-dto.dart';
 import 'package:Talkaboat/models/chat/delete-message-dto.dart';
 import 'package:Talkaboat/models/chat/edit-message-dto.dart';
+import 'package:Talkaboat/services/hubs/chat/chat.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
-import 'package:Talkaboat/widgets/login-button.widget.dart';
+import 'package:Talkaboat/widgets/chat.widget.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:swipe_to/swipe_to.dart';
 
 import '../injection/injector.dart';
 import '../models/chat/chat-dtos.dart';
-import '../models/chat/join-room-dto.dart';
-import '../models/chat/message-history-request-dto.dart';
 import '../models/podcasts/episode.model.dart';
-import '../models/podcasts/podcast.model.dart';
 import '../models/search/search_result.model.dart';
 import '../services/audio/audio-handler.services.dart';
 import '../services/audio/podcast.service.dart';
-import '../services/hubs/chat/chat-hub.service.dart';
 import '../themes/colors.dart';
 import '../utils/scaffold_wave.dart';
 import '../widgets/episode-preview.widget.dart';
@@ -39,11 +34,10 @@ class PodcastDetailScreen extends StatefulWidget {
 class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
   final audioPlayer = getIt<AudioPlayerHandler>();
   final podcastService = getIt<PodcastService>();
-  final ChatHubService chatHub = getIt<ChatHubService>();
+  final ChatService chatService = getIt<ChatService>();
   List<String> messageType = ["", "Podcast", "Episode"];
   List<ChatMessageDto> messages = [];
   Future<SearchResult?>? getPodcast;
-  Future<List<ChatMessageDto>>? _getMessages;
   final focusNode = FocusNode();
 
   final textController = TextEditingController();
@@ -56,7 +50,6 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
   @override
   initState() {
     getPodcast = GetPodcast();
-    _getMessages = getMessages();
     super.initState();
   }
 
@@ -82,23 +75,6 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
       return null;
     }
   }
-
-  Widget buildMessages(List<ChatMessageDto> data) => StreamBuilder(
-      stream: chatHub.onReceiveMessage,
-      initialData: data,
-      builder: (context, snapshot) {
-        final data2 = snapshot.data as List<ChatMessageDto>;
-        return ListView.builder(
-            physics: ScrollPhysics(),
-            shrinkWrap: true,
-            itemCount: data2.length,
-            scrollDirection: Axis.vertical,
-            itemBuilder: (BuildContext context, int index) {
-              final item = data2[index];
-              var messageIndex = index;
-              return buildMessage(context, item);
-            });
-      });
 
   void _handleSwipeReply({required bool isLeftSwipe, required String reply}) {
     Navigator.pop(context);
@@ -246,7 +222,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
         // chatHub.editMessage(EditMessageDto(entry.id, entry.chatRoomId));
         break;
       case 'Delete':
-        chatHub.deleteMessage(DeleteMessageDto(entry.id, entry.chatRoomId));
+        chatService.deleteMessage(DeleteMessageDto(entry.id, entry.chatRoomId));
         // print('Delete');
         break;
     }
@@ -314,12 +290,12 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                             }),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(Icons.arrow_back),
-                                const SizedBox(
+                              children: const [
+                                Icon(Icons.arrow_back),
+                                SizedBox(
                                   width: 10,
                                 ),
-                                const Text("Back")
+                                Text("Back")
                               ],
                             ),
                           )
@@ -329,36 +305,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
             )));
   }
 
-  Future<List<ChatMessageDto>> getMessages() async {
-    var podcast = await podcastService.getPodcastDetails(widget.podcastSearchResult!.id!, sort, -1);
-    if (!chatHub.isConnected) {
-      await chatHub.connect();
-      return await chatHub.getHistory(MessageHistoryRequestDto(roomId: podcast.roomId!, direction: 0));
-    } else {
-      return await chatHub.getHistory(MessageHistoryRequestDto(roomId: podcast.roomId!, direction: 0));
-    }
-  }
-
-  // Stream<List<ChatMessageDto>> getMessages() async* {
-  //   var podcast = await podcastService.getPodcastDetails(widget.podcastSearchResult!.id!, sort, -1);
-  //   if (!chatHub.isConnected) {
-  //     await chatHub.connect();
-  //     yield await chatHub.getHistory(MessageHistoryRequestDto(roomId: podcast.roomId!, direction: 0));
-  //   } else {
-  //     yield await chatHub.getHistory(MessageHistoryRequestDto(roomId: podcast.roomId!, direction: 0));
-  //   }
-  // }
-
   Widget createCustomScrollView(SearchResult podcastSearchResult) {
-    Future<Podcast> getPodcastDetail(int podcastId, String sort, int amount) async {
-      if (chatHub.isConnected) {
-        return podcastService.getPodcastDetails(podcastId, sort, amount);
-      } else {
-        await chatHub.connect();
-        return podcastService.getPodcastDetails(podcastId, sort, amount);
-      }
-    }
-
     final size = MediaQuery.of(context).size;
 
     return DefaultTabController(
@@ -438,9 +385,8 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                       );
                     } else if (snapshot.hasData && snapshot.data != null) {
                       // Extracting data from snapshot object
-                      final data = snapshot.data as List<Episode>?;
-                      if (data != null && data.isNotEmpty) {
-                        return buildEpisodes(data);
+                      if (snapshot.data != null && snapshot.data!.isNotEmpty) {
+                        return buildEpisodes(snapshot.data!);
                       }
                     }
                   }
@@ -612,160 +558,17 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                   // & chatHub.isConnected
                   //?
                   FutureBuilder(
-                      // stream: _getMessages,
-                      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-                        if (snapshot.connectionState == ConnectionState.done) {
-                          if (snapshot.hasError) {
-                            return SliverToBoxAdapter(
-                              child: Center(
-                                child: Text(
-                                  '${snapshot.error} occurred',
-                                  style: const TextStyle(fontSize: 18),
-                                ),
-                              ),
-                            );
-                          } else if (snapshot.hasData && snapshot.data != null) {
-                            // Extracting data from snapshot object
-                            final data = snapshot.data as List<ChatMessageDto>?;
-                            if (data != null && data.isNotEmpty) {
-                              // return Text(data[1].content.toString());
-                              return SliverToBoxAdapter(
-                                child: Container(
-                                  alignment: Alignment.topCenter,
-                                  // height: 400,
-                                  child: Stack(
-                                    alignment: Alignment.bottomCenter,
-                                    children: [
-                                      buildMessages(data),
-                                      // userService.isConnected
-                                      //     ?
-                                      //     // MessageInput(message!, textController, podcastSearchResult)
-                                      //     Container(
-                                      //         padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
-                                      //         margin: EdgeInsets.symmetric(horizontal: 20),
-                                      //         decoration: BoxDecoration(
-                                      //           borderRadius: BorderRadius.circular(10),
-                                      //           color: Color.fromRGBO(15, 23, 41, 1),
-                                      //           border: Border.all(
-                                      //               color: const Color.fromRGBO(99, 163, 253, 1), // set border color
-                                      //               width: 1.0),
-                                      //         ),
-                                      //         child: TextField(
-                                      //           controller: textController,
-                                      //           onSubmitted: (content) {
-                                      //             message = content;
-                                      //             chatHub.sendMessage(
-                                      //                 CreateMessageDto(0, podcastSearchResult.roomId!, content, 0, null, null));
-                                      //             textController.clear();
-                                      //             getMessages();
-                                      //             setState(() {
-                                      //               getMessages();
-                                      //             });
-                                      //           },
-                                      //           onChanged: (text) {
-                                      //             print(text);
-                                      //             message = text;
-                                      //           },
-                                      //           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                      //                 color: const Color.fromRGBO(164, 202, 255, 1),
-                                      //               ),
-                                      //           keyboardType: TextInputType.text,
-                                      //           maxLines: null,
-                                      //           decoration: InputDecoration(
-                                      //             border: InputBorder.none,
-                                      //             alignLabelWithHint: true,
-                                      //             hintText: "Message",
-                                      //             suffixIcon: IconButton(
-                                      //               onPressed: () async {
-                                      //                 var newMessage =
-                                      //                     CreateMessageDto(0, podcastSearchResult.roomId!, message!, 0, 2, null);
-                                      //                 await chatHub.sendMessage(newMessage);
-                                      //                 // chatHub.onReceiveMessageController.add(newMessage as ChatMessageDto);
-                                      //                 // chatHub.receiveNewMessage([newMessage]);
-                                      //                 textController.clear();
-
-                                      //                 getMessages();
-                                      //                 setState(() {
-                                      //                   getMessages();
-                                      //                 });
-                                      //               },
-                                      //               icon: Icon(Icons.send, color: Color.fromRGBO(99, 163, 253, 1)),
-                                      //             ),
-                                      //             hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                      //                 color: const Color.fromRGBO(135, 135, 135, 1),
-                                      //                 fontStyle: FontStyle.italic),
-                                      //           ),
-                                      //         ),
-                                      //       )
-                                      //     : SizedBox(),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            } else {
-                              return SliverToBoxAdapter(
-                                  child: Container(
-                                height: 300,
-                                child: Stack(alignment: Alignment.bottomCenter, children: [
-                                  Positioned(
-                                    top: 0,
-                                    child: Container(
-                                      width: MediaQuery.of(context).size.width,
-                                      padding: EdgeInsets.symmetric(horizontal: 20),
-                                      child: Text(
-                                        'No data found for this podcast. Please try again later!',
-                                        style: TextStyle(fontSize: 18),
-                                      ),
-                                    ),
-                                  ),
-                                ]),
-                              ));
-                            }
-                          }
+                      future: podcastService.getPodcastDetails(widget.podcastSearchResult!.id!, sort, -1),
+                      builder: (builder, snapshot) {
+                        if (snapshot.hasData && snapshot.data != null) {
+                          return SliverToBoxAdapter(child: Chat(roomId: snapshot.data!.roomId!));
                         }
-
-                        return SliverToBoxAdapter(
+                        return const SliverToBoxAdapter(
                             child: Center(
                           child: CircularProgressIndicator(),
-                        )
-                            // Column(
-                            //   children: [
-                            //     chatHub.isConnected ? Text("User autorised") : SizedBox(),
-                            //     Row(
-                            //       mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            //       children: [
-                            //         Container(
-                            //             width: 100,
-                            //             height: 30,
-                            //             color: Colors.blue,
-                            //             child: RawMaterialButton(
-                            //                 child: podcastService.podcast != null
-                            //                     ? Text("Join the room ${podcastService.podcast!.roomId}")
-                            //                     : Text("Join the room ${podcastSearchResult.roomId!}"),
-                            //                 onPressed: () async {
-                            //                   // await chatHub.connect();
-                            //                   podcastService.podcast != null
-                            //                       ? await chatHub.joinRoom(JoinRoomDto(podcastService.podcast!.roomId!))
-                            //                       : await chatHub.joinRoom(JoinRoomDto(podcastSearchResult.roomId!));
-                            //                 })),
-                            //         Container(
-                            //             width: 100,
-                            //             height: 30,
-                            //             color: Colors.blue,
-                            //             child: RawMaterialButton(
-                            //                 child: const Text("leave Room"),
-                            //                 onPressed: () async {
-                            //                   podcastService.podcast != null
-                            //                       ? await chatHub.leaveRoom(JoinRoomDto(podcastService.podcast!.roomId!))
-                            //                       : await chatHub.leaveRoom(JoinRoomDto(podcastSearchResult.roomId!));
-                            //                 })),
-                            //       ],
-                            //     ),
-                            //   ],
-                            // ),
-                            );
-                      },
-                      future: _getMessages)
+                        ));
+                      })
+
                   //    : const LoginButton(),
                 ],
               ),
@@ -775,11 +578,11 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                       child: Container(
                         width: 350,
                         height: 50,
-                        padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
-                        margin: EdgeInsets.symmetric(horizontal: 20),
+                        padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
+                        margin: const EdgeInsets.symmetric(horizontal: 20),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
-                          color: Color.fromRGBO(15, 23, 41, 1),
+                          color: const Color.fromRGBO(15, 23, 41, 1),
                           border: Border.all(
                               color: const Color.fromRGBO(99, 163, 253, 1), // set border color
                               width: 1.0),
@@ -790,8 +593,9 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                           controller: textController,
                           onSubmitted: (content) {
                             message = content;
-                            chatHub.sendMessage(
-                                CreateMessageDto(0, widget.podcastSearchResult!.roomId!, content, 0, null, null));
+                            chatService.sendMessage(
+                                CreateMessageDto(0, widget.podcastSearchResult!.roomId!, content, 0, null, null),
+                                userService.userInfo!.userName!);
                             textController.clear();
                           },
                           onChanged: (text) {
@@ -809,13 +613,14 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                             hintText: "Message",
                             suffixIcon: IconButton(
                               onPressed: () async {
-                                var newMessage = await chatHub.sendMessage(
-                                    CreateMessageDto(0, widget.podcastSearchResult!.roomId!, message!, 0, 2, null));
+                                await chatService.sendMessage(
+                                    CreateMessageDto(0, widget.podcastSearchResult!.roomId!, message!, 0, 2, null),
+                                    userService.userInfo!.userName!);
                                 // chatHub.onReceiveMessageController.add(newMessage as ChatMessageDto);
                                 // chatHub.receiveNewMessage(newMessage);
                                 textController.clear();
                               },
-                              icon: Icon(Icons.send, color: Color.fromRGBO(99, 163, 253, 1)),
+                              icon: const Icon(Icons.send, color: Color.fromRGBO(99, 163, 253, 1)),
                             ),
                             hintStyle: Theme.of(context)
                                 .textTheme
@@ -824,7 +629,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                           ),
                         ),
                       ))
-                  : SizedBox()
+                  : const SizedBox()
             ],
           ),
         ]),

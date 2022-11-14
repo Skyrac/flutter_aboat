@@ -51,7 +51,7 @@ class UserRepository {
       return convertedData;
     } catch (exception) {
       print(exception);
-      print((exception as DioError).response!.data);
+      //print((exception as DioError).response?.data);
       return UserInfoData();
     }
   }
