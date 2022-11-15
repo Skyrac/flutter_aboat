@@ -17,7 +17,7 @@ import '../../models/podcasts/podcast.model.dart';
 import '../../models/response.model.dart';
 import '../../models/rewards/reward-detail.model.dart';
 import '../../models/rewards/reward.model.dart';
-import '../../models/user/user-info.model.dart';
+import '../../models/user/user-info-model.dart';
 import '../hubs/reward/reward-hub.service.dart';
 import '../repositories/podcast.repository.dart';
 import '../repositories/user.repository.dart';
@@ -273,6 +273,7 @@ class UserService {
   }
 
   Future<bool> getUserInfo() async {
+    print("Get User Info");
     userInfo = await UserRepository.getUserInfo();
     if (userInfo == null || userInfo!.userName == null) {
       logout();

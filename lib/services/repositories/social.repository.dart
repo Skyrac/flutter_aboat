@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import '../../configuration/dio.config.dart';
 import '../../models/user/social-user.model.dart';
-import '../../models/user/user-info.model.dart';
+import '../../models/user/user-info-model.dart';
 
 class SocialRepository {
   SocialRepository._();

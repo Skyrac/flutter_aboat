@@ -6,7 +6,7 @@ import '../../configuration/dio.config.dart';
 import '../../models/response.model.dart';
 import '../../models/rewards/reward-detail.model.dart';
 import '../../models/rewards/reward.model.dart';
-import '../../models/user/user-info.model.dart';
+import '../../models/user/user-info-model.dart';
 
 class UserRepository {
   UserRepository._();
@@ -47,6 +47,7 @@ class UserRepository {
   static Future<UserInfoData> getUserInfo() async {
     try {
       var response = await dio.get<String>('/v1/user/profile');
+     print(response.data);
       var convertedData = UserInfoData.fromJson(json.decode(response.data!));
       return convertedData;
     } catch (exception) {

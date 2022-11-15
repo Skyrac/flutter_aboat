@@ -1,6 +1,5 @@
 import 'package:Talkaboat/services/repositories/social.repository.dart';
 import '../../models/user/social-user.model.dart';
-import '../../models/user/user-info.model.dart';
 
 class SocialService {
 
