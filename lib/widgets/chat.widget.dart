@@ -99,11 +99,18 @@ class _ChatState extends State<Chat> {
               setState(() {
                 selectedIndex = index;
               });
-              !userService.isConnected
-                  ? print(entry.id)
-                  : userService.userInfo!.userName! == entry.senderName
-                      ? _showPopupMenuOwner(details.globalPosition, entry)
-                      : _showPopupMenu(details.globalPosition, entry);
+              if (userService.isConnected) {
+                if (userService.userInfo!.userName! == entry.senderName) {
+                  _showPopupMenuOwner(details.globalPosition, entry);
+                } else {
+                  _showPopupMenu(details.globalPosition, entry);
+                }
+              }
+              // !userService.isConnected
+              //     ? print(entry.id)
+              //     : userService.userInfo!.userName! == entry.senderName
+              //         ? _showPopupMenuOwner(details.globalPosition, entry)
+              //         : _showPopupMenu(details.globalPosition, entry);
             },
             child: RawMaterialButton(
               // onLongPress: () {},
@@ -129,8 +136,20 @@ class _ChatState extends State<Chat> {
                                 entry.senderName.toString(),
                                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
                               ),
-                              Text(messageType[entry.messageType],
-                                  style: const TextStyle(color: Color.fromRGBO(99, 163, 253, 1))),
+                              selectedIndex == index
+                                  ? IconButton(
+                                      padding: EdgeInsets.zero,
+                                      constraints: const BoxConstraints(),
+                                      onPressed: () {
+                                        chatService.deleteMessage(DeleteMessageDto(entry.id, entry.chatRoomId));
+                                      },
+                                      icon: Icon(
+                                        Icons.delete,
+                                        color: Color.fromRGBO(154, 0, 0, 1),
+                                        size: 28,
+                                      ))
+                                  : Text(messageType[entry.messageType],
+                                      style: const TextStyle(color: Color.fromRGBO(99, 163, 253, 1))),
                             ]),
                           ),
                           entry.answeredMessage != null
@@ -175,7 +194,6 @@ class _ChatState extends State<Chat> {
       scrollDirection: Axis.vertical,
       itemBuilder: (BuildContext context, int index) {
         final item = data[index];
-        var messageIndex = index;
         return buildMessage(context, item, index);
       });
 
