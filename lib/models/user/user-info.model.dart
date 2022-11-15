@@ -6,7 +6,7 @@ class UserInfoData {
   num? rewards;
   int? referrer;
   bool? ambassador;
-  int? userBadge;
+  Map<String, dynamic>? userBadge;
   bool? artist;
 
   UserInfoData(
@@ -28,7 +28,7 @@ class UserInfoData {
     rewards = json['rewards'];
     referrer = json['referrer'];
     ambassador = json['ambassador'];
-    userBadge = json['userBadge'];
+    userBadge = json['userBadge']['userBadge'];
     artist = json['artist'];
   }
 

@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:Talkaboat/screens/favorites.screen.dart';
-import 'package:Talkaboat/screens/search.screen.dart';
+import 'package:Talkaboat/screens/livestream-overview.screen.dart';
 import 'package:Talkaboat/screens/social/social_entry.screen.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/utils/common.dart';
@@ -30,7 +30,7 @@ class AppScreen extends StatefulWidget {
 }
 
 class _AppScreenState extends State<AppScreen> with RouteAware {
-  var Tabs;
+  late List<Widget> Tabs;
   var userService = getIt<UserService>();
   String _currentPage = "Home";
   List<String> pageKeys = ["Home", "Search", "Playlist", "Library", "Social"];
@@ -78,7 +78,7 @@ class _AppScreenState extends State<AppScreen> with RouteAware {
     super.initState();
     Tabs = [
       HomeScreen(setEpisode, _selectTab, escapeWithNav),
-      const SearchScreen(),
+      LivestreamOverviewScreen(escapeWithNav),
       const FavoritesScreen(),
       LibraryScreen(escapeWithNav),
       SocialEntryScreen(escapeWithNav)
