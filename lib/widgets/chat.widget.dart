@@ -5,10 +5,14 @@ import 'package:Talkaboat/services/hubs/chat/chat.service.dart';
 import 'package:flutter/material.dart';
 import 'package:swipe_to/swipe_to.dart';
 
+import '../models/chat/delete-message-dto.dart';
+import '../services/user/user.service.dart';
+
 class Chat extends StatefulWidget {
   final int roomId;
+  final ValueChanged<ChatMessageDto> onSwipedMessage;
 
-  const Chat({Key? key, required this.roomId}) : super(key: key);
+  const Chat({Key? key, required this.roomId, required this.onSwipedMessage}) : super(key: key);
 
   @override
   State<Chat> createState() => _ChatState();
@@ -18,50 +22,148 @@ class _ChatState extends State<Chat> {
   final chatService = getIt<ChatService>();
   final focusNode = FocusNode();
   final List<String> messageType = ["", "Podcast", "Episode"];
+  var userService = getIt<UserService>();
+  int? selectedIndex;
 
-  Widget buildMessage(context, ChatMessageDto entry) => Padding(
+  _showPopupMenu(Offset offset, ChatMessageDto entry) async {
+    double left = offset.dx;
+    double top = offset.dy;
+    final result = await showMenu(
+      color: const Color.fromRGBO(15, 23, 41, 1),
+      shape: const RoundedRectangleBorder(
+        side: BorderSide(color: Color.fromRGBO(188, 140, 75, 1)),
+        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+      ),
+      context: context,
+      position: RelativeRect.fromLTRB(left, top, 0, 0),
+      items: [
+        PopupMenuItem<String>(child: const Text('Answer'), value: 'Answer'),
+      ],
+      elevation: 8.0,
+    );
+    switch (result) {
+      case 'Answer':
+        print('Answer');
+        widget.onSwipedMessage(entry);
+        break;
+    }
+  }
+
+  _showPopupMenuOwner(Offset offset, ChatMessageDto entry) async {
+    double left = offset.dx;
+    double top = offset.dy;
+    final result = await showMenu(
+      color: const Color.fromRGBO(15, 23, 41, 1),
+      shape: const RoundedRectangleBorder(
+        side: BorderSide(color: Color.fromRGBO(188, 140, 75, 1)),
+        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+      ),
+      context: context,
+      position: RelativeRect.fromLTRB(left, top, 0, 0),
+      items: [
+        PopupMenuItem<String>(child: const Text('Answer'), value: 'Answer'),
+        PopupMenuItem<String>(child: const Text('Edit'), value: 'Edit'),
+        PopupMenuItem<String>(child: const Text('Delete'), value: 'Delete'),
+      ],
+      elevation: 8.0,
+    );
+    switch (result) {
+      case 'Answer':
+        print('Answer');
+        widget.onSwipedMessage(entry);
+        break;
+      case 'Edit':
+        print('Edit');
+        focusNode.requestFocus();
+        // chatHub.editMessage(EditMessageDto(entry.id, entry.chatRoomId));
+        break;
+      case 'Delete':
+        chatService.deleteMessage(DeleteMessageDto(entry.id, entry.chatRoomId));
+        // print('Delete');
+        break;
+    }
+  }
+
+  Widget buildMessage(context, ChatMessageDto entry, int index) => Padding(
         padding: const EdgeInsets.fromLTRB(20, 7.5, 20, 7.5),
         child: SwipeTo(
           onLeftSwipe: () {
             print("swipe");
-            // _displayInputBottomSheet(true);
-            focusNode.requestFocus();
+            widget.onSwipedMessage(entry);
+            setState(() {
+              selectedIndex = index;
+            });
           },
-          child: RawMaterialButton(
-            onLongPress: () {},
-            onPressed: () {},
-            child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: const Color.fromRGBO(29, 40, 58, 0.5),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: RawMaterialButton(
-                    onPressed: () {
-                      print(entry.id);
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(bottom: 10),
-                          child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                            Text(
-                              entry.senderName.toString(),
-                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
-                            ),
-                            Text(messageType[entry.messageType],
-                                style: const TextStyle(color: Color.fromRGBO(99, 163, 253, 1))),
-                          ]),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 25),
-                          child: Align(alignment: Alignment.centerLeft, child: Text(entry.content.toString())),
-                        ),
-                      ],
-                    ),
+          child: GestureDetector(
+            onLongPressStart: (LongPressStartDetails details) {
+              setState(() {
+                selectedIndex = index;
+              });
+              !userService.isConnected
+                  ? print(entry.id)
+                  : userService.userInfo!.userName! == entry.senderName
+                      ? _showPopupMenuOwner(details.globalPosition, entry)
+                      : _showPopupMenu(details.globalPosition, entry);
+            },
+            child: RawMaterialButton(
+              // onLongPress: () {},
+              onPressed: () {},
+              child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: selectedIndex == index ? Color.fromRGBO(99, 163, 253, 1) : Color.fromRGBO(29, 40, 58, 0.5),
                   ),
-                )),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+
+                    child: RawMaterialButton(
+                      onPressed: () {
+                        print(entry.id);
+                      },
+                      child: Column(
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(bottom: 10),
+                            child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                              Text(
+                                entry.senderName.toString(),
+                                style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
+                              ),
+                              Text(messageType[entry.messageType],
+                                  style: const TextStyle(color: Color.fromRGBO(99, 163, 253, 1))),
+                            ]),
+                          ),
+                          entry.answeredMessage != null
+                              ? Container(
+                                  padding: EdgeInsets.all(5),
+                                  margin: EdgeInsets.only(bottom: 5),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: Color.fromRGBO(48, 73, 123, 1),
+                                  ),
+                                  width: 300,
+                                  //child: Expanded(
+                                  child: Center(
+                                      child: Text(
+                                    textAlign: TextAlign.center,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 2,
+                                    entry.answeredMessage!.content,
+                                  ))
+                                  //)
+                                  ,
+                                )
+                              : Container(),
+                          Padding(
+                            padding: const EdgeInsets.only(right: 25),
+                            child: Align(alignment: Alignment.centerLeft, child: Text(entry.content.toString())),
+                          ),
+                        ],
+                      ),
+                    ),
+                    //),
+                  )),
+            ),
           ),
         ),
       );
@@ -74,7 +176,7 @@ class _ChatState extends State<Chat> {
       itemBuilder: (BuildContext context, int index) {
         final item = data[index];
         var messageIndex = index;
-        return buildMessage(context, item);
+        return buildMessage(context, item, index);
       });
 
   Future<List<ChatMessageDto>> getMessages(int roomId) async {

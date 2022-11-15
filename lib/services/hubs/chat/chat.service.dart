@@ -116,7 +116,7 @@ class ChatService extends ChangeNotifier {
 
   deleteMessage(DeleteMessageDto message) async {
     await _hub.deleteMessage(message);
-    _reconcileRemoveMessage(message.roomId, message.roomId);
+    _reconcileRemoveMessage(message.roomId, message.messageId);
   }
 
   joinRoom(JoinRoomDto data) async {
