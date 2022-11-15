@@ -21,7 +21,7 @@ workflows:
           include: true
     scripts:
       - keychain initialize
-      - keychan add-certificates
+      - keychain add-certificates
       - xcode-project use-profiles
       - flutter packages pub get
       - flutter build ipa --export-options-plist ~/export_options.plist
