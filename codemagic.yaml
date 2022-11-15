@@ -1,0 +1,52 @@
+# Automatically generated on 2022-11-15 UTC from https://codemagic.io/app/63736ca622caac5d8f9ffc18/settings
+# Note that this configuration is not an exact match to UI settings. Review and adjust as necessary.
+
+workflows:
+  default-workflow:
+    name: Default Workflow
+    max_build_duration: 60
+    environment:
+      ios_signing:
+        provisioning_profiles:
+          - store-profile
+        certificates:
+          - dist-certs
+
+      flutter: default
+      xcode: latest
+      cocoapods: default
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: master
+          include: true
+          source: true
+      tag_patterns:
+        - pattern: '*'
+          include: true
+    scripts:
+      - flutter packages pub get
+      - find . -name "Podfile" -execdir pod install \;
+      - keychain initialize
+      - name: Set up code signing settings on Xcode project
+        script: xcode-project use-profiles
+      - keychain add-certificates
+      - xcode-project use-profiles
+      - flutter build ipa --export-options-plist ~/export_options.plist
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - '*.snap'
+      - build/windows/**/*.msix
+      - flutter_drive.log
+    publishing:
+      email:
+        recipients:
+          - fabian.reichenberg@aboat-entertainment.com
+      app_store_connect:
+        api_key: Encrypted(Z0FBQUFBQmpjM1YwOERmZjRnRXZ0M2ZBeW9YLUlHLWJta1l0RjRKRDBLQlhPNDc2R09KZ3ZCYVJTb1BpOWFodkk4OWJ2WDRjN3RKcmZHQ3hPZHZqeHFVcUo2bDFzN3NwRHJqNnk0d3VhTlJUZ2VOdVYwUFR6Mm5ua2NHOTFQM0hJd1g2TEZXUjRpWnM4dk5EWTYwN2N3blZLR05nblVscE0xbGQ2bGRwYjluakhOeUgtQkp3djFOcHVHRWpxTEU4TlN1S1BLV1AwWEJ5MjRrVXRQNUFJOGpkRmFMaFhFb25rdllIN1ktaXlobjRrNGZHcUhkWGZVVmpoekJVRFFoQVNTTWEtR1BidWNhSzJYQWVMYjZ1Vk5iOWpMTmk0NHNDSFhxMzBILUFFSlRQdTVzUlNtM0FvMUJ5UzRmelFtdm5aZDdreDJWMDhwR2Jyb3FvcFBkTnhuNHRhNzFpeC1LQ3htQmxtOWxRdTYxcy1IQWxkQl9KOU5hUmlCSzg3Q2JRZUMyd2ZTdTc2Z3hWWGo0aE85b1hxZ0RwNTNrMGRmVElmWXJNd2gzOVQyWE9kdjhqMlNOU2hhST0=)
+        key_id: N8W77PCK54
+        issuer_id: 98e59553-080f-41c0-b0a8-14de0c3303a2
+        submit_to_testflight: true
+        submit_to_app_store: false
