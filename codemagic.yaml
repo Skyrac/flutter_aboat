@@ -7,8 +7,10 @@ workflows:
     max_build_duration: 60
     environment:
       ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.aboat-entertainment.talkaboat
+        provisioning_profiles:
+          - store-profile
+        certificates:
+          - dist-certs
     triggering:
       events:
         - push
