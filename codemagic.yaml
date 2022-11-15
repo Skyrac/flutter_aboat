@@ -7,10 +7,8 @@ workflows:
     max_build_duration: 60
     environment:
       ios_signing:
-        provisioning_profiles:
-          - store-profile
-        certificates:
-          - dist-certs
+        distribution_type: app_store
+        bundle_identifier: com.aboat-entertainment.talkaboat
     triggering:
       events:
         - push
@@ -22,6 +20,8 @@ workflows:
         - pattern: '*'
           include: true
     scripts:
+      - keychain initialize
+      - keychan add-certificates
       - xcode-project use-profiles
       - flutter packages pub get
       - flutter build ipa --export-options-plist ~/export_options.plist
