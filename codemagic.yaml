@@ -11,10 +11,6 @@ workflows:
           - store-profile
         certificates:
           - dist-certs
-
-      flutter: default
-      xcode: latest
-      cocoapods: default
     triggering:
       events:
         - push
@@ -26,20 +22,11 @@ workflows:
         - pattern: '*'
           include: true
     scripts:
-      - flutter packages pub get
-      - find . -name "Podfile" -execdir pod install \;
-      - keychain initialize
-      - name: Set up code signing settings on Xcode project
-        script: xcode-project use-profiles
-      - keychain add-certificates
       - xcode-project use-profiles
+      - flutter packages pub get
       - flutter build ipa --export-options-plist ~/export_options.plist
     artifacts:
       - build/ios/ipa/*.ipa
-      - /tmp/xcodebuild_logs/*.log
-      - '*.snap'
-      - build/windows/**/*.msix
-      - flutter_drive.log
     publishing:
       email:
         recipients:
