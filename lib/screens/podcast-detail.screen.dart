@@ -41,8 +41,6 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
   final focusNode = FocusNode();
   ChatMessageDto? replyMessage;
   ChatMessageDto? editedMessage;
-
-  final textController = TextEditingController();
   String? message;
 
   var sort = "asc";
@@ -160,6 +158,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
     final isReplying = replyMessage != null;
     final isEdit = editedMessage != null;
 
+    final textEditController = TextController(text: editedMessage != null ? editedMessage!.content : "");
     return DefaultTabController(
       animationDuration: Duration.zero,
       length: 3,
@@ -451,79 +450,82 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                               width: 1.0),
                         ),
                         // child: Text("dadasdas"),
-                        child: TextField(
-                          focusNode: focusNode,
-                          controller: isEdit ? TextController(text: editedMessage!.content) : textController,
-                          onSubmitted: (content) {
-                            message = content;
-                            if (isReplying) {
-                              chatService.sendMessage(
-                                  CreateMessageDto(0, widget.podcastSearchResult!.roomId!, content, 0, 2, replyMessage!.id),
-                                  userService.userInfo!.userName!);
-                              textController.clear();
-                            } else if (isEdit) {
-                              chatService.editMessage(
-                                EditMessageDto(editedMessage!.id, editedMessage!.chatRoomId, content),
-                              );
-                              textController.clear();
-                            } else {
-                              chatService.sendMessage(
-                                  CreateMessageDto(0, widget.podcastSearchResult!.roomId!, content, 0, null, null),
-                                  userService.userInfo!.userName!);
-                              textController.clear();
-                            }
-                            cancelReplyAndEdit();
-                          },
-                          onChanged: (text) {
-                            print(text);
-                            message = text;
-                          },
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: const Color.fromRGBO(164, 202, 255, 1),
-                              ),
-                          keyboardType: TextInputType.text,
-                          maxLines: null,
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            alignLabelWithHint: true,
-                            hintText: "Message",
-                            prefixText: isReplying
-                                ? "Answer: "
-                                : isEdit
-                                    ? "Edit: "
-                                    : "",
-                            prefixStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: const Color.fromRGBO(99, 163, 253, 1),
+                        child: Builder(builder: (context) {
+                          return TextField(
+                            focusNode: focusNode,
+                            controller: textEditController,
+                            onSubmitted: (content) {
+                              message = content;
+                              if (isReplying) {
+                                chatService.sendMessage(
+                                    CreateMessageDto(
+                                        0, widget.podcastSearchResult!.roomId!, content, 0, 2, replyMessage!.id),
+                                    userService.userInfo!.userName!);
+                                textEditController.clear();
+                              } else if (isEdit) {
+                                chatService.editMessage(
+                                  EditMessageDto(editedMessage!.id, editedMessage!.chatRoomId, content),
+                                );
+                                textEditController.clear();
+                              } else {
+                                chatService.sendMessage(
+                                    CreateMessageDto(0, widget.podcastSearchResult!.roomId!, content, 0, null, null),
+                                    userService.userInfo!.userName!);
+                                textEditController.clear();
+                              }
+                              cancelReplyAndEdit();
+                            },
+                            onChanged: (text) {
+                              print(text);
+                              message = text;
+                            },
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: const Color.fromRGBO(164, 202, 255, 1),
                                 ),
-                            suffixIcon: IconButton(
-                              onPressed: () async {
-                                if (isReplying) {
-                                  chatService.sendMessage(
-                                      CreateMessageDto(
-                                          0, widget.podcastSearchResult!.roomId!, message!, 0, 2, replyMessage!.id),
-                                      userService.userInfo!.userName!);
-                                  textController.clear();
-                                } else if (isEdit) {
-                                  chatService.editMessage(
-                                    EditMessageDto(editedMessage!.id, editedMessage!.chatRoomId, message!),
-                                  );
-                                  textController.clear();
-                                } else {
-                                  chatService.sendMessage(
-                                      CreateMessageDto(0, widget.podcastSearchResult!.roomId!, message!, 0, null, null),
-                                      userService.userInfo!.userName!);
-                                  textController.clear();
-                                }
-                                cancelReplyAndEdit();
-                              },
-                              icon: const Icon(Icons.send, color: Color.fromRGBO(99, 163, 253, 1)),
+                            keyboardType: TextInputType.text,
+                            maxLines: null,
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              alignLabelWithHint: true,
+                              hintText: "Message",
+                              prefixText: isReplying
+                                  ? "Answer: "
+                                  : isEdit
+                                      ? "Edit: "
+                                      : "",
+                              prefixStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: const Color.fromRGBO(99, 163, 253, 1),
+                                  ),
+                              suffixIcon: IconButton(
+                                onPressed: () async {
+                                  if (isReplying) {
+                                    chatService.sendMessage(
+                                        CreateMessageDto(
+                                            0, widget.podcastSearchResult!.roomId!, message!, 0, 2, replyMessage!.id),
+                                        userService.userInfo!.userName!);
+                                    textEditController.clear();
+                                  } else if (isEdit) {
+                                    chatService.editMessage(
+                                      EditMessageDto(editedMessage!.id, editedMessage!.chatRoomId, message!),
+                                    );
+                                    textEditController.clear();
+                                  } else {
+                                    chatService.sendMessage(
+                                        CreateMessageDto(0, widget.podcastSearchResult!.roomId!, message!, 0, null, null),
+                                        userService.userInfo!.userName!);
+                                    textEditController.clear();
+                                  }
+                                  cancelReplyAndEdit();
+                                },
+                                icon: const Icon(Icons.send, color: Color.fromRGBO(99, 163, 253, 1)),
+                              ),
+                              hintStyle: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(color: const Color.fromRGBO(135, 135, 135, 1), fontStyle: FontStyle.italic),
                             ),
-                            hintStyle: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(color: const Color.fromRGBO(135, 135, 135, 1), fontStyle: FontStyle.italic),
-                          ),
-                        ),
+                          );
+                        }),
                       ))
                   : const SizedBox()
             ],
