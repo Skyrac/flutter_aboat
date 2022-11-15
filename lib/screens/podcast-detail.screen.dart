@@ -40,6 +40,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
   Future<SearchResult?>? getPodcast;
   final focusNode = FocusNode();
   ChatMessageDto? replyMessage;
+  ChatMessageDto? editedMessage;
 
   final textController = TextEditingController();
   String? message;
@@ -76,158 +77,6 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
       return null;
     }
   }
-
-  // void _handleSwipeReply({required bool isLeftSwipe, required String reply}) {
-  //   Navigator.pop(context);
-  //   ScaffoldMessenger.of(context).showSnackBar(
-  //     SnackBar(
-  //       content: Text(
-  //         reply,
-  //         textAlign: TextAlign.center,
-  //       ),
-  //       backgroundColor: isLeftSwipe ? Colors.red.shade600 : Colors.green.shade600,
-  //       duration: const Duration(milliseconds: 1000),
-  //     ),
-  //   );
-  // }
-
-  // void _displayInputBottomSheet(bool isLeftSwipe) {
-  //   showModalBottomSheet(
-  //     context: context,
-  //     builder: (context) {
-  //       return Padding(
-  //         padding: MediaQuery.of(context).viewInsets,
-  //         child: Container(
-  //           padding: const EdgeInsets.only(
-  //             left: 16.0,
-  //             right: 16.0,
-  //             top: 16.0,
-  //             bottom: 16.0,
-  //           ),
-  //           child: TextField(
-  //             autofocus: true,
-  //             textInputAction: TextInputAction.done,
-  //             textCapitalization: TextCapitalization.words,
-  //             onSubmitted: (value) => _handleSwipeReply(isLeftSwipe: isLeftSwipe ? true : false, reply: value),
-  //             decoration: const InputDecoration(
-  //               labelText: 'Reply',
-  //               hintText: 'enter reply here',
-  //               border: OutlineInputBorder(
-  //                 borderRadius: BorderRadius.all(
-  //                   Radius.circular(
-  //                     5.0,
-  //                   ),
-  //                 ),
-  //               ),
-  //             ),
-  //           ),
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
-
-  // Widget buildMessage(context, ChatMessageDto entry) => Padding(
-  //     padding: const EdgeInsets.fromLTRB(20, 7.5, 20, 7.5),
-  //     child: userService.isConnected
-  //         ? SwipeTo(
-  //             onLeftSwipe: () {
-  //               print("swipe");
-  //               // _displayInputBottomSheet(true);
-  //               focusNode.requestFocus();
-  //             },
-  //             child: RawMaterialButton(onLongPress: () {}, onPressed: () {}, child: messageItem(entry)),
-  //           )
-  //         : messageItem(entry));
-
-  // Widget messageItem(ChatMessageDto entry) => Container(
-  //     decoration: BoxDecoration(
-  //       borderRadius: BorderRadius.circular(10),
-  //       color: const Color.fromRGBO(29, 40, 58, 0.5),
-  //     ),
-  //     child: Padding(
-  //       padding: const EdgeInsets.all(10.0),
-  //       child: GestureDetector(
-  //         onLongPressStart: (LongPressStartDetails details) {
-  //           userService.isConnected ? _showPopupMenu(details.globalPosition, entry) : print("object");
-  //         },
-  //         child: RawMaterialButton(
-  //           onPressed: () {
-  //             // print(entry.id);
-  //             // showMenu(context: context, position: position, items: items)
-  //           },
-  //           child: Column(
-  //             children: [
-  //               Container(
-  //                 margin: const EdgeInsets.only(bottom: 10),
-  //                 child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-  //                   Text(
-  //                     entry.senderName.toString(),
-  //                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
-  //                   ),
-  //                   Text(messageType[entry.messageType], style: const TextStyle(color: Color.fromRGBO(99, 163, 253, 1))),
-  //                 ]),
-  //               ),
-  //               entry.answeredMessage != null
-  //                   ? Container(
-  //                       decoration: BoxDecoration(
-  //                         borderRadius: BorderRadius.circular(10),
-  //                         color: Color.fromRGBO(48, 73, 123, 1),
-  //                       ),
-  //                       width: 250,
-  //                       child: Expanded(
-  //                           child: Center(
-  //                               child: Text(
-  //                         textAlign: TextAlign.center,
-  //                         overflow: TextOverflow.ellipsis,
-  //                         maxLines: 2,
-  //                         entry.answeredMessage!.content,
-  //                       ))),
-  //                     )
-  //                   : Container(),
-  //               Padding(
-  //                 padding: const EdgeInsets.only(right: 25),
-  //                 child: Align(alignment: Alignment.centerLeft, child: Text(entry.content.toString())),
-  //               ),
-  //             ],
-  //           ),
-  //         ),
-  //       ),
-  //     ));
-
-  // _showPopupMenu(Offset offset, ChatMessageDto entry) async {
-  //   double left = offset.dx;
-  //   double top = offset.dy;
-  //   final result = await showMenu(
-  //     color: const Color.fromRGBO(15, 23, 41, 1),
-  //     shape: const RoundedRectangleBorder(
-  //       side: BorderSide(color: Color.fromRGBO(188, 140, 75, 1)),
-  //       borderRadius: BorderRadius.all(Radius.circular(10.0)),
-  //     ),
-  //     context: context,
-  //     position: RelativeRect.fromLTRB(left, top, 0, 0),
-  //     items: [
-  //       PopupMenuItem<String>(child: const Text('Answer'), value: 'Answer'),
-  //       PopupMenuItem<String>(child: const Text('Edit'), value: 'Edit'),
-  //       PopupMenuItem<String>(child: const Text('Delete'), value: 'Delete'),
-  //     ],
-  //     elevation: 8.0,
-  //   );
-  //   switch (result) {
-  //     case 'Answer':
-  //       print('Answer');
-
-  //       break;
-  //     case 'Edit':
-  //       print('Edit');
-  //       // chatHub.editMessage(EditMessageDto(entry.id, entry.chatRoomId));
-  //       break;
-  //     case 'Delete':
-  //       chatService.deleteMessage(DeleteMessageDto(entry.id, entry.chatRoomId));
-  //       // print('Delete');
-  //       break;
-  //   }
-  // }
 
   Widget buildEpisodes(List<Episode> data) => SliverList(
         delegate: SliverChildBuilderDelegate(
@@ -309,6 +158,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
   Widget createCustomScrollView(SearchResult podcastSearchResult) {
     final size = MediaQuery.of(context).size;
     final isReplying = replyMessage != null;
+    final isEdit = editedMessage != null;
 
     return DefaultTabController(
       animationDuration: Duration.zero,
@@ -570,6 +420,10 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                               replyToMessage(message);
                               focusNode.requestFocus();
                             },
+                            onEditMessage: (message) {
+                              editMessage(message);
+                              focusNode.requestFocus();
+                            },
                           ));
                         }
                         return const SliverToBoxAdapter(
@@ -599,18 +453,26 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                         // child: Text("dadasdas"),
                         child: TextField(
                           focusNode: focusNode,
-                          controller: textController,
+                          controller: isEdit ? TextController(text: editedMessage!.content) : textController,
                           onSubmitted: (content) {
                             message = content;
-                            isReplying
-                                ? chatService.sendMessage(
-                                    CreateMessageDto(
-                                        0, widget.podcastSearchResult!.roomId!, content, 0, 2, replyMessage!.id),
-                                    userService.userInfo!.userName!)
-                                : chatService.sendMessage(
-                                    CreateMessageDto(0, widget.podcastSearchResult!.roomId!, content, 0, null, null),
-                                    userService.userInfo!.userName!);
-                            textController.clear();
+                            if (isReplying) {
+                              chatService.sendMessage(
+                                  CreateMessageDto(0, widget.podcastSearchResult!.roomId!, content, 0, 2, replyMessage!.id),
+                                  userService.userInfo!.userName!);
+                              textController.clear();
+                            } else if (isEdit) {
+                              chatService.editMessage(
+                                EditMessageDto(editedMessage!.id, editedMessage!.chatRoomId, content),
+                              );
+                              textController.clear();
+                            } else {
+                              chatService.sendMessage(
+                                  CreateMessageDto(0, widget.podcastSearchResult!.roomId!, content, 0, null, null),
+                                  userService.userInfo!.userName!);
+                              textController.clear();
+                            }
+                            cancelReplyAndEdit();
                           },
                           onChanged: (text) {
                             print(text);
@@ -625,17 +487,34 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                             border: InputBorder.none,
                             alignLabelWithHint: true,
                             hintText: "Message",
+                            prefixText: isReplying
+                                ? "Answer: "
+                                : isEdit
+                                    ? "Edit: "
+                                    : "",
+                            prefixStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: const Color.fromRGBO(99, 163, 253, 1),
+                                ),
                             suffixIcon: IconButton(
                               onPressed: () async {
-                                isReplying
-                                    ? chatService.sendMessage(
-                                        CreateMessageDto(
-                                            0, widget.podcastSearchResult!.roomId!, message!, 0, null, replyMessage!.id),
-                                        userService.userInfo!.userName!)
-                                    : chatService.sendMessage(
-                                        CreateMessageDto(0, widget.podcastSearchResult!.roomId!, message!, 0, null, null),
-                                        userService.userInfo!.userName!);
-                                textController.clear();
+                                if (isReplying) {
+                                  chatService.sendMessage(
+                                      CreateMessageDto(
+                                          0, widget.podcastSearchResult!.roomId!, message!, 0, 2, replyMessage!.id),
+                                      userService.userInfo!.userName!);
+                                  textController.clear();
+                                } else if (isEdit) {
+                                  chatService.editMessage(
+                                    EditMessageDto(editedMessage!.id, editedMessage!.chatRoomId, message!),
+                                  );
+                                  textController.clear();
+                                } else {
+                                  chatService.sendMessage(
+                                      CreateMessageDto(0, widget.podcastSearchResult!.roomId!, message!, 0, null, null),
+                                      userService.userInfo!.userName!);
+                                  textController.clear();
+                                }
+                                cancelReplyAndEdit();
                               },
                               icon: const Icon(Icons.send, color: Color.fromRGBO(99, 163, 253, 1)),
                             ),
@@ -658,5 +537,29 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
     setState(() {
       replyMessage = message;
     });
+  }
+
+  void editMessage(ChatMessageDto message) {
+    setState(() {
+      editedMessage = message;
+    });
+  }
+
+  void cancelReplyAndEdit() {
+    setState(() {
+      replyMessage = null;
+      editedMessage = null;
+    });
+  }
+}
+
+class TextController extends TextEditingController {
+  TextController({String? text}) {
+    this.text = text!;
+  }
+
+  set text(String newText) {
+    value = value.copyWith(
+        text: newText, selection: TextSelection.collapsed(offset: newText.length), composing: TextRange.empty);
   }
 }

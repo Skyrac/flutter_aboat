@@ -11,8 +11,9 @@ import '../services/user/user.service.dart';
 class Chat extends StatefulWidget {
   final int roomId;
   final ValueChanged<ChatMessageDto> onSwipedMessage;
+  final ValueChanged<ChatMessageDto> onEditMessage;
 
-  const Chat({Key? key, required this.roomId, required this.onSwipedMessage}) : super(key: key);
+  const Chat({Key? key, required this.roomId, required this.onSwipedMessage, required this.onEditMessage}) : super(key: key);
 
   @override
   State<Chat> createState() => _ChatState();
@@ -74,7 +75,7 @@ class _ChatState extends State<Chat> {
         break;
       case 'Edit':
         print('Edit');
-        focusNode.requestFocus();
+        widget.onEditMessage(entry);
         // chatHub.editMessage(EditMessageDto(entry.id, entry.chatRoomId));
         break;
       case 'Delete':
