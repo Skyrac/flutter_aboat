@@ -32,9 +32,9 @@ workflows:
         - pattern: '*'
           include: true
     scripts:
-      - keychain initialize
-      - app-store-connect fetch-signing-files $BUNDLE_ID --type IOS_APP_STORE --create
-      - keychain add-certificates
+      #- keychain initialize
+      #- app-store-connect fetch-signing-files $BUNDLE_ID --type IOS_APP_STORE --create
+      #- keychain add-certificates
       - xcode-project use-profiles
       - flutter packages pub get
       - find . -name "Podfile" -execdir pod install \;
