@@ -139,6 +139,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
   Widget createCustomScrollView(SearchResult podcastSearchResult) {
     final size = MediaQuery.of(context).size;
     final remaining = Duration(seconds: (widget.episode!.audioLengthSec! - widget.episode!.playTime!).toInt());
+    final episodeTime = Duration(seconds: widget.episode!.audioLengthSec!.toInt());
     return DefaultTabController(
       animationDuration: Duration.zero,
       length: 3,
@@ -377,11 +378,14 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                                 style: TextStyle(fontWeight: FontWeight.w600),
                                               ),
                                               Text.rich(TextSpan(children: [
-                                                TextSpan(text: remaining.inHours != 0 ? '${remaining.inHours % 60}st ' : ""),
                                                 TextSpan(
-                                                    text: remaining.inMinutes != 0 ? '${remaining.inMinutes % 60}min ' : ""),
+                                                    text: episodeTime.inHours != 0 ? '${episodeTime.inHours % 60}st ' : ""),
                                                 TextSpan(
-                                                  text: '${remaining.inSeconds % 60}sec',
+                                                    text: episodeTime.inMinutes != 0
+                                                        ? '${episodeTime.inMinutes % 60}min '
+                                                        : ""),
+                                                TextSpan(
+                                                  text: '${episodeTime.inSeconds % 60}sec',
                                                 ),
                                               ])),
                                             ],
