@@ -9,8 +9,10 @@ workflows:
       groups:
         - app_store_credentials
       ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.aboat-entertainment.talkaboat
+        provisioning_profiles:
+          - store-profile
+        certificates:
+          - dist-certs
       vars:
         XCODE_WORKSPACE: "Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
