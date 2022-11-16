@@ -32,6 +32,13 @@ class _ChatState extends State<Chat> {
   final List<String> messageType = ["", "Podcast", "Episode"];
   var userService = getIt<UserService>();
   int? selectedIndex;
+  Future<List<ChatMessageDto>>? _getMessages;
+
+  @override
+  initState() {
+    super.initState();
+    _getMessages = getMessages(widget.roomId);
+  }
 
   _showPopupMenu(Offset offset, ChatMessageDto entry) async {
     double left = offset.dx;
@@ -206,8 +213,9 @@ class _ChatState extends State<Chat> {
       itemCount: data.length,
       scrollDirection: Axis.vertical,
       itemBuilder: (BuildContext context, int index) {
-        final item = data[index];
-        return buildMessage(context, item, index);
+        var item = data[index];
+        var messageIndex = index;
+        return buildMessage(context, item, messageIndex);
       });
 
   Future<List<ChatMessageDto>> getMessages(int roomId) async {
@@ -272,7 +280,7 @@ class _ChatState extends State<Chat> {
                 child: CircularProgressIndicator(),
               );
             },
-            future: getMessages(widget.roomId));
+            future: _getMessages);
       },
     );
   }
