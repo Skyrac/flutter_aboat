@@ -19,7 +19,7 @@ import '../../models/podcasts/podcast.model.dart';
 import '../../models/response.model.dart';
 import '../../models/rewards/reward-detail.model.dart';
 import '../../models/rewards/reward.model.dart';
-import '../../models/user/user-info.model.dart';
+import '../../models/user/user-info-model.dart';
 import '../hubs/reward/reward-hub.service.dart';
 import '../repositories/podcast.repository.dart';
 import '../repositories/user.repository.dart';
@@ -271,6 +271,7 @@ class UserService {
   }
 
   Future<bool> getUserInfo() async {
+    print("Get User Info");
     userInfo = await UserRepository.getUserInfo();
     if (userInfo == null || userInfo!.userName == null) {
       logout();
@@ -280,16 +281,22 @@ class UserService {
   }
 
   Future<String?> emailRegister(String email, String pin, String username, bool newsletter) async {
-    var response = await UserRepository.emailRegister(email, pin, username, newsletter);
-    if (response.data == null || response.data!.isEmpty) {
-      return response.text;
+    try {
+      var response = await UserRepository.emailRegister(email, pin, username, newsletter);
+      print("response ${response.toJson()}");
+      if (response.data == null || response.data!.isEmpty) {
+        return response.text ?? "false";
+      }
+      token = response.data ?? "";
+      prefs.setString(TOKEN_IDENTIFIER, token);
+      if (token.isNotEmpty) {
+        await getCoreData();
+        return userInfo != null ? null : "false";
+      }
+      return "false";
+    } catch (_) {
+      return "false";
     }
-    prefs.setString(TOKEN_IDENTIFIER, response.data!);
-    if (response.data!.isNotEmpty) {
-      await getCoreData();
-      return userInfo != null ? null : "false";
-    }
-    return null;
   }
 
   //#region Login/Logout
@@ -323,20 +330,23 @@ class UserService {
     return false;
   }
 
-  Future<bool> firebaseRegister(String username, bool newsletter) async {
+  Future<String?> firebaseRegister(String username, bool newsletter) async {
     try {
       var response = await UserRepository.firebaseRegister(firebaseToken, username, newsletter);
+      if (response.data == null || response.data!.isEmpty) {
+        return response.text ?? "false";
+      }
       token = response.data ?? "";
       prefs.setString(TOKEN_IDENTIFIER, token);
       print("token: $token");
 
       if (token.isNotEmpty) {
         await getCoreData();
-        return userInfo != null;
+        return userInfo != null ? null : "false";
       }
-      return false;
+      return "false";
     } catch (ex) {
-      return false;
+      return "false";
     }
   }
 
@@ -523,5 +533,4 @@ class UserService {
   }
 
   //#endregion
-
 }

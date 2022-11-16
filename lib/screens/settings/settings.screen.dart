@@ -10,8 +10,9 @@ import '../../utils/modal.widget.dart';
 import '../../widgets/settings-app-bar.widget.dart';
 
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({Key? key, this.refresh}) : super(key: key);
+  const SettingsScreen(this.escapeWithNav, {Key? key, this.refresh}) : super(key: key);
   final Function? refresh;
+  final Function escapeWithNav;
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
@@ -82,7 +83,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SettingsAppBarWidget(refreshParent: refresh),
+            SettingsAppBarWidget(widget.escapeWithNav, refreshParent: refresh),
             const SizedBox(height: 10),
             getUserCard(),
             const SizedBox(height: 10),
@@ -164,7 +165,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  createMenuPoint(Widget title, click, onlyWhenSignedIn, {showTrailing: true}) {
+  createMenuPoint(Widget title, click, onlyWhenSignedIn, {showTrailing = true}) {
     return !onlyWhenSignedIn || userService.isConnected
         ? Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 5),

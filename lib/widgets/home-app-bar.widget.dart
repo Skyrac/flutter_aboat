@@ -6,8 +6,9 @@ import 'package:page_transition/page_transition.dart';
 import '../screens/settings/settings.screen.dart';
 
 class HomeAppBarWidget extends StatelessWidget {
-  const HomeAppBarWidget({Key? key, this.refresh}) : super(key: key);
+  const HomeAppBarWidget(this.escapeWithNav, {Key? key, this.refresh}) : super(key: key);
   final Function? refresh;
+  final Function escapeWithNav;
   @override
   Widget build(BuildContext context) {
     return AppBar(
@@ -104,7 +105,7 @@ class HomeAppBarWidget extends StatelessWidget {
                       type: PageTransitionType.rightToLeftWithFade,
                       duration: const Duration(milliseconds: 500),
                       reverseDuration: const Duration(milliseconds: 500),
-                      child: SettingsScreen(refresh: refresh)));
+                      child: SettingsScreen(escapeWithNav, refresh: refresh)));
             },
           ),
         )

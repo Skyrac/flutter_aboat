@@ -16,7 +16,8 @@ class PodcastSearch extends SearchDelegate<String?> {
   String previousSearch = "";
   final List<String> selectedLanguages;
   final List<int> genreIds;
-  PodcastSearch({required this.selectedLanguages, required this.genreIds});
+  final Function escapeWithNav;
+  PodcastSearch(this.escapeWithNav, {required this.selectedLanguages, required this.genreIds});
 
   Future<List<SearchResult>?> queryChanged(String query) async {
     debouncer.value = query;
@@ -58,15 +59,13 @@ class PodcastSearch extends SearchDelegate<String?> {
           switch (value) {
             case "toggleLibrary":
               if (!userService.isConnected) {
-                Navigator.push(
-                    context,
-                    PageTransition(
-                        alignment: Alignment.bottomCenter,
-                        curve: Curves.bounceOut,
-                        type: PageTransitionType.rightToLeftWithFade,
-                        duration: const Duration(milliseconds: 500),
-                        reverseDuration: const Duration(milliseconds: 500),
-                        child: LoginScreen(true, refreshParent: () => {})));
+                escapeWithNav(PageTransition(
+                    alignment: Alignment.bottomCenter,
+                    curve: Curves.bounceOut,
+                    type: PageTransitionType.rightToLeftWithFade,
+                    duration: const Duration(milliseconds: 500),
+                    reverseDuration: const Duration(milliseconds: 500),
+                    child: LoginScreen(true, refreshParent: () => {})));
               } else {
                 await userService.toggleFavoritesEntry(entry.id);
               }
@@ -140,7 +139,7 @@ class PodcastSearch extends SearchDelegate<String?> {
                           );
                         } else if (snapshot.hasData && snapshot.data != null && snapshot.data!.isNotEmpty) {
                           if (snapshot.data != null && snapshot.data!.isNotEmpty) {
-                            return PodcastListWidget(
+                            return PodcastListWidget(escapeWithNav,
                                 direction: Axis.vertical, searchResults: snapshot.data!, trailing: buildPopupButton);
                           }
                         } else {
@@ -159,7 +158,8 @@ class PodcastSearch extends SearchDelegate<String?> {
                     },
                     future: queryChanged(query),
                   )
-                : PodcastListWidget(direction: Axis.vertical, searchResults: searchResults, trailing: buildPopupButton));
+                : PodcastListWidget(escapeWithNav,
+                    direction: Axis.vertical, searchResults: searchResults, trailing: buildPopupButton));
   }
 
   @override
@@ -172,7 +172,8 @@ class PodcastSearch extends SearchDelegate<String?> {
           DefaultColors.secondaryColor.shade900
         ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
         child: searchResults.isNotEmpty
-            ? PodcastListWidget(direction: Axis.vertical, searchResults: searchResults, trailing: buildPopupButton)
+            ? PodcastListWidget(escapeWithNav,
+                direction: Axis.vertical, searchResults: searchResults, trailing: buildPopupButton)
             : FutureBuilder<List<SearchResult>?>(
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
@@ -185,7 +186,7 @@ class PodcastSearch extends SearchDelegate<String?> {
                       );
                     } else if (snapshot.hasData && snapshot.data != null && snapshot.data!.isNotEmpty) {
                       if (snapshot.data != null && snapshot.data!.isNotEmpty) {
-                        return PodcastListWidget(
+                        return PodcastListWidget(escapeWithNav,
                             direction: Axis.vertical, searchResults: snapshot.data!, trailing: buildPopupButton);
                       }
                     } else {

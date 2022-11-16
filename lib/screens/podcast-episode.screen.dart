@@ -22,7 +22,9 @@ class PodcastEpisodeScreen extends StatefulWidget {
   final Episode? episode;
   final int? podcastId;
   final AppBar? appBar;
-  const PodcastEpisodeScreen({Key? key, this.podcastSearchResult, this.podcastId, this.appBar, this.episode})
+  final Function escapeWithNav;
+  const PodcastEpisodeScreen(this.escapeWithNav,
+      {Key? key, this.podcastSearchResult, this.podcastId, this.appBar, this.episode})
       : super(key: key);
 
   @override
@@ -60,8 +62,8 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
           (BuildContext context, int index) {
             var episode = data[index];
             var episodeIndex = index;
-            return EpisodePreviewWidget(
-                episode, Axis.vertical, () => {selectEpisode(episodeIndex, data)}, () => setState(() {}));
+            return EpisodePreviewWidget(episode, Axis.vertical, () => {selectEpisode(episodeIndex, data)},
+                () => setState(() {}), widget.escapeWithNav);
           },
           childCount: data.length, // 1000 list items
         ),
@@ -171,15 +173,13 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                 tooltip: '',
                 onPressed: () {
                   if (!userService.isConnected) {
-                    Navigator.push(
-                        context,
-                        PageTransition(
-                            alignment: Alignment.bottomCenter,
-                            curve: Curves.bounceOut,
-                            type: PageTransitionType.rightToLeftWithFade,
-                            duration: const Duration(milliseconds: 500),
-                            reverseDuration: const Duration(milliseconds: 500),
-                            child: LoginScreen(true, refreshParent: () => setState(() {}))));
+                    widget.escapeWithNav(PageTransition(
+                        alignment: Alignment.bottomCenter,
+                        curve: Curves.bounceOut,
+                        type: PageTransitionType.rightToLeftWithFade,
+                        duration: const Duration(milliseconds: 500),
+                        reverseDuration: const Duration(milliseconds: 500),
+                        child: LoginScreen(true, refreshParent: () => setState(() {}))));
                   } else {
                     showModalBottomSheet(
                         isScrollControlled: true,
@@ -246,7 +246,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                     func: audioPlayer.play, image: "assets/images/play.png", title: "Abspielen");
                               } else {
                                 return ButtonEpisode(
-                                    func: audioPlayer.pause, image: "assets/images/pause.png", title: "Abspielen");
+                                    func: audioPlayer.pause, image: "assets/images/pause.png", title: "Pausieren");
                               }
                             },
                           ),

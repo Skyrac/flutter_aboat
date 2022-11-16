@@ -4,6 +4,7 @@ import 'package:Talkaboat/screens/root.screen.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/themes/colors.dart';
 import 'package:Talkaboat/themes/default.theme_new.dart';
+import 'package:Talkaboat/utils/common.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -52,6 +53,7 @@ class _MyAppState extends State<MyApp> {
         title: 'Talkaboat',
         theme: NewDefaultTheme.defaultTheme,
         debugShowCheckedModeBanner: false,
+        navigatorObservers: [routeObserver],
         home: AnimatedSplashScreen(
             duration: 2000,
             splash: const Image(width: 250, image: AssetImage('assets/images/talkaboat.png')),

@@ -25,7 +25,9 @@ class PodcastDetailScreen extends StatefulWidget {
   final SearchResult? podcastSearchResult;
   final int? podcastId;
   final AppBar? appBar;
-  const PodcastDetailScreen({Key? key, this.podcastSearchResult, this.podcastId, this.appBar}) : super(key: key);
+  final Function escapeWithNav;
+  const PodcastDetailScreen(this.escapeWithNav, {Key? key, this.podcastSearchResult, this.podcastId, this.appBar})
+      : super(key: key);
 
   @override
   State<PodcastDetailScreen> createState() => _PodcastDetailScreenState();
@@ -81,8 +83,8 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
           (BuildContext context, int index) {
             var episode = data[index];
             var episodeIndex = index;
-            return EpisodePreviewWidget(
-                episode, Axis.vertical, () => {selectEpisode(episodeIndex, data)}, () => setState(() {}));
+            return EpisodePreviewWidget(episode, Axis.vertical, () => {selectEpisode(episodeIndex, data)},
+                () => setState(() {}), widget.escapeWithNav);
           },
           childCount: data.length, // 1000 list items
         ),
@@ -219,7 +221,8 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
           CustomScrollView(
             slivers: [
               SliverPersistentHeader(
-                delegate: PodcastDetailSliver(expandedHeight: size.height * 0.4, podcast: podcastSearchResult),
+                delegate: PodcastDetailSliver(widget.escapeWithNav,
+                    expandedHeight: size.height * 0.4, podcast: podcastSearchResult),
                 pinned: true,
               ),
               FutureBuilder(
@@ -250,7 +253,8 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
           CustomScrollView(
             slivers: [
               SliverPersistentHeader(
-                delegate: PodcastDetailSliver(expandedHeight: size.height * 0.4, podcast: podcastSearchResult),
+                delegate: PodcastDetailSliver(widget.escapeWithNav,
+                    expandedHeight: size.height * 0.4, podcast: podcastSearchResult),
                 pinned: true,
               ),
               SliverToBoxAdapter(
@@ -285,23 +289,18 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                             Container(
                               margin: const EdgeInsets.only(bottom: 10),
                               child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                                const SizedBox(
-                                  width: 30,
-                                  child: Text(
-                                    "Titel",
-                                    style: TextStyle(fontWeight: FontWeight.w600),
-                                  ),
+                                const Text(
+                                  "Titel",
+                                  style: TextStyle(fontWeight: FontWeight.w600),
                                 ),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                SizedBox(
-                                  width: 250,
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 15),
                                   child: Text(
                                     snapshot.data!.title!,
-                                    textAlign: TextAlign.end,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
                                   ),
-                                ),
+                                )
                               ]),
                             ),
                             Container(
@@ -402,7 +401,8 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
               CustomScrollView(
                 slivers: [
                   SliverPersistentHeader(
-                    delegate: PodcastDetailSliver(expandedHeight: size.height * 0.4, podcast: podcastSearchResult),
+                    delegate: PodcastDetailSliver(widget.escapeWithNav,
+                        expandedHeight: size.height * 0.4, podcast: podcastSearchResult),
                     pinned: true,
                   ),
                   FutureBuilder(

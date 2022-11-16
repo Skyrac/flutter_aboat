@@ -4,15 +4,15 @@ import 'package:Talkaboat/models/user/social-user.model.dart';
 import 'package:Talkaboat/services/user/social.service.dart';
 import 'package:Talkaboat/widgets/login-button.widget.dart';
 import 'package:flutter/material.dart';
-import 'package:page_transition/page_transition.dart';
 
 import '../../injection/injector.dart';
 import '../../services/user/user.service.dart';
 import '../../themes/colors.dart';
-import '../login.screen.dart';
 
 class SocialEntryScreen extends StatefulWidget {
-  const SocialEntryScreen({Key? key}) : super(key: key);
+  const SocialEntryScreen(this.escapeWithNav, {Key? key}) : super(key: key);
+
+  final Function escapeWithNav;
 
   @override
   State<SocialEntryScreen> createState() => _SocialEntryScreenState();
@@ -94,7 +94,7 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
                     createFriendBody(),
                   ],
                 )
-              : Center(child: const LoginButton())),
+              : Center(child: LoginButton(widget.escapeWithNav))),
     );
   }
 
@@ -189,7 +189,7 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
     List<Widget> widgets = [];
     data.forEach((element) {
       widgets.add(Card(
-          child: Container(
+          child: SizedBox(
               height: 120,
               width: width,
               child: Row(

@@ -7,7 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
 class HomeScreenCategoriesTab extends StatefulWidget {
-  const HomeScreenCategoriesTab({Key? key}) : super(key: key);
+  const HomeScreenCategoriesTab(this.escapeWithNav, {Key? key}) : super(key: key);
+
+  final Function escapeWithNav;
 
   @override
   State<HomeScreenCategoriesTab> createState() => _HomeScreenCategoriesTabState();
@@ -117,7 +119,10 @@ class _HomeScreenCategoriesTabState extends State<HomeScreenCategoriesTab> {
                     type: PageTransitionType.rightToLeftWithFade,
                     duration: const Duration(milliseconds: 500),
                     reverseDuration: const Duration(milliseconds: 500),
-                    child: CategoryScreen(category)));
+                    child: CategoryScreen(
+                      category,
+                      widget.escapeWithNav,
+                    )));
               },
               child: Padding(
                 padding: const EdgeInsets.only(top: 10, bottom: 10, left: 10),
