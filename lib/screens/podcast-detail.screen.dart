@@ -405,33 +405,28 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                     delegate: PodcastDetailSliver(expandedHeight: size.height * 0.4, podcast: podcastSearchResult),
                     pinned: true,
                   ),
-                  //userService.isConnected
-                  // & chatHub.isConnected
-                  //?
                   FutureBuilder(
                       future: podcastService.getPodcastDetails(widget.podcastSearchResult!.id!, sort, -1),
                       builder: (builder, snapshot) {
                         if (snapshot.hasData && snapshot.data != null) {
                           return SliverToBoxAdapter(
                               child: Chat(
-                            roomId: snapshot.data!.roomId!,
-                            onSwipedMessage: (message) {
-                              replyToMessage(message);
-                              focusNode.requestFocus();
-                            },
-                            onEditMessage: (message) {
-                              editMessage(message);
-                              focusNode.requestFocus();
-                            },
-                          ));
+                                  roomId: snapshot.data!.roomId!,
+                                  onSwipedMessage: (message) {
+                                    replyToMessage(message);
+                                    focusNode.requestFocus();
+                                  },
+                                  onEditMessage: (message) {
+                                    editMessage(message);
+                                    focusNode.requestFocus();
+                                  },
+                                  cancelReplyAndEdit: cancelReplyAndEdit));
                         }
                         return const SliverToBoxAdapter(
                             child: Center(
                           child: CircularProgressIndicator(),
                         ));
                       })
-
-                  //    : const LoginButton(),
                 ],
               ),
               userService.isConnected
@@ -449,7 +444,6 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                               color: const Color.fromRGBO(99, 163, 253, 1), // set border color
                               width: 1.0),
                         ),
-                        // child: Text("dadasdas"),
                         child: Builder(builder: (context) {
                           return TextField(
                             focusNode: focusNode,
@@ -537,12 +531,14 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
 
   void replyToMessage(ChatMessageDto message) {
     setState(() {
+      editedMessage = null;
       replyMessage = message;
     });
   }
 
   void editMessage(ChatMessageDto message) {
     setState(() {
+      replyMessage = null;
       editedMessage = message;
     });
   }

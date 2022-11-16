@@ -12,8 +12,15 @@ class Chat extends StatefulWidget {
   final int roomId;
   final ValueChanged<ChatMessageDto> onSwipedMessage;
   final ValueChanged<ChatMessageDto> onEditMessage;
+  final Function? cancelReplyAndEdit;
 
-  const Chat({Key? key, required this.roomId, required this.onSwipedMessage, required this.onEditMessage}) : super(key: key);
+  const Chat(
+      {Key? key,
+      required this.roomId,
+      required this.onSwipedMessage,
+      required this.onEditMessage,
+      required this.cancelReplyAndEdit})
+      : super(key: key);
 
   @override
   State<Chat> createState() => _ChatState();
@@ -44,7 +51,6 @@ class _ChatState extends State<Chat> {
     );
     switch (result) {
       case 'Answer':
-        print('Answer');
         widget.onSwipedMessage(entry);
         break;
     }
@@ -70,17 +76,17 @@ class _ChatState extends State<Chat> {
     );
     switch (result) {
       case 'Answer':
-        print('Answer');
         widget.onSwipedMessage(entry);
         break;
       case 'Edit':
-        print('Edit');
         widget.onEditMessage(entry);
-        // chatHub.editMessage(EditMessageDto(entry.id, entry.chatRoomId));
         break;
       case 'Delete':
         chatService.deleteMessage(DeleteMessageDto(entry.id, entry.chatRoomId));
-        // print('Delete');
+        setState(() {
+          selectedIndex = null;
+        });
+        widget.cancelReplyAndEdit!();
         break;
     }
   }
@@ -89,7 +95,6 @@ class _ChatState extends State<Chat> {
         padding: const EdgeInsets.fromLTRB(20, 7.5, 20, 7.5),
         child: SwipeTo(
           onLeftSwipe: () {
-            print("swipe");
             widget.onSwipedMessage(entry);
             setState(() {
               selectedIndex = index;
@@ -107,83 +112,90 @@ class _ChatState extends State<Chat> {
                   _showPopupMenu(details.globalPosition, entry);
                 }
               }
-              // !userService.isConnected
-              //     ? print(entry.id)
-              //     : userService.userInfo!.userName! == entry.senderName
-              //         ? _showPopupMenuOwner(details.globalPosition, entry)
-              //         : _showPopupMenu(details.globalPosition, entry);
             },
-            child: RawMaterialButton(
-              // onLongPress: () {},
-              onPressed: () {},
-              child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: selectedIndex == index ? Color.fromRGBO(99, 163, 253, 1) : Color.fromRGBO(29, 40, 58, 0.5),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-
-                    child: RawMaterialButton(
-                      onPressed: () {
-                        print(entry.id);
-                      },
-                      child: Column(
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(bottom: 10),
-                            child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                              Text(
-                                entry.senderName.toString(),
-                                style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
-                              ),
-                              selectedIndex == index
-                                  ? IconButton(
-                                      padding: EdgeInsets.zero,
-                                      constraints: const BoxConstraints(),
-                                      onPressed: () {
-                                        chatService.deleteMessage(DeleteMessageDto(entry.id, entry.chatRoomId));
-                                      },
-                                      icon: Icon(
-                                        Icons.delete,
-                                        color: Color.fromRGBO(154, 0, 0, 1),
-                                        size: 28,
-                                      ))
-                                  : Text(messageType[entry.messageType],
-                                      style: const TextStyle(color: Color.fromRGBO(99, 163, 253, 1))),
-                            ]),
+            child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: selectedIndex == index ? Color.fromRGBO(99, 163, 253, 1) : Color.fromRGBO(29, 40, 58, 0.5),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Column(
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 10),
+                        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                          Text(
+                            entry.senderName.toString(),
+                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
                           ),
-                          entry.answeredMessage != null
-                              ? Container(
-                                  padding: EdgeInsets.all(5),
-                                  margin: EdgeInsets.only(bottom: 5),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    color: Color.fromRGBO(48, 73, 123, 1),
-                                  ),
-                                  width: 300,
-                                  //child: Expanded(
-                                  child: Center(
-                                      child: Text(
-                                    textAlign: TextAlign.center,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 2,
-                                    entry.answeredMessage!.content,
-                                  ))
-                                  //)
-                                  ,
+                          selectedIndex == index
+                              ? Row(
+                                  children: [
+                                    IconButton(
+                                        padding: EdgeInsets.zero,
+                                        constraints: const BoxConstraints(),
+                                        onPressed: () {
+                                          setState(() {
+                                            selectedIndex = null;
+                                          });
+                                          widget.cancelReplyAndEdit!();
+                                        },
+                                        icon: Icon(
+                                          Icons.cancel,
+                                          color: Color.fromRGBO(154, 0, 0, 1),
+                                          size: 28,
+                                        )),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    IconButton(
+                                        padding: EdgeInsets.zero,
+                                        constraints: const BoxConstraints(),
+                                        onPressed: () {
+                                          chatService.deleteMessage(DeleteMessageDto(entry.id, entry.chatRoomId));
+                                          setState(() {
+                                            selectedIndex = null;
+                                          });
+                                          widget.cancelReplyAndEdit!();
+                                        },
+                                        icon: Icon(
+                                          Icons.delete,
+                                          color: Color.fromRGBO(154, 0, 0, 1),
+                                          size: 28,
+                                        )),
+                                  ],
                                 )
-                              : Container(),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 25),
-                            child: Align(alignment: Alignment.centerLeft, child: Text(entry.content.toString())),
-                          ),
-                        ],
+                              : Text(messageType[entry.messageType],
+                                  style: const TextStyle(color: Color.fromRGBO(99, 163, 253, 1))),
+                        ]),
                       ),
-                    ),
-                    //),
-                  )),
-            ),
+                      entry.answeredMessage != null
+                          ? Container(
+                              padding: EdgeInsets.all(5),
+                              margin: EdgeInsets.only(bottom: 5),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: Color.fromRGBO(48, 73, 123, 1),
+                              ),
+                              width: 300,
+                              //child: Expanded(
+                              child: Center(
+                                  child: Text(
+                                textAlign: TextAlign.center,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
+                                entry.answeredMessage!.content,
+                              )),
+                            )
+                          : Container(),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 25),
+                        child: Align(alignment: Alignment.centerLeft, child: Text(entry.content.toString())),
+                      ),
+                    ],
+                  ),
+                )),
           ),
         ),
       );
