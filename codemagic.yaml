@@ -6,6 +6,7 @@ workflows:
     name: Default Workflow
     max_build_duration: 60
     environment:
+      groups:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.aboat-entertainment.talkaboat
@@ -21,7 +22,7 @@ workflows:
           include: true
     scripts:
       - keychain initialize
-      - app-store-connect fetch-signing-files com.aboat-entertainment.talkaboat --issuer-id 98e59553-080f-41c0-b0a8-14de0c3303a2 --key-id N8W77PCK54 --type IOS_APP_STORE --create
+      - app-store-connect fetch-signing-files com.aboat-entertainment.talkaboat --issuer-id 98e59553-080f-41c0-b0a8-14de0c3303a2 --key-id N8W77PCK54 --private-key  Encrypted(Z0FBQUFBQmpjM1YwOERmZjRnRXZ0M2ZBeW9YLUlHLWJta1l0RjRKRDBLQlhPNDc2R09KZ3ZCYVJTb1BpOWFodkk4OWJ2WDRjN3RKcmZHQ3hPZHZqeHFVcUo2bDFzN3NwRHJqNnk0d3VhTlJUZ2VOdVYwUFR6Mm5ua2NHOTFQM0hJd1g2TEZXUjRpWnM4dk5EWTYwN2N3blZLR05nblVscE0xbGQ2bGRwYjluakhOeUgtQkp3djFOcHVHRWpxTEU4TlN1S1BLV1AwWEJ5MjRrVXRQNUFJOGpkRmFMaFhFb25rdllIN1ktaXlobjRrNGZHcUhkWGZVVmpoekJVRFFoQVNTTWEtR1BidWNhSzJYQWVMYjZ1Vk5iOWpMTmk0NHNDSFhxMzBILUFFSlRQdTVzUlNtM0FvMUJ5UzRmelFtdm5aZDdreDJWMDhwR2Jyb3FvcFBkTnhuNHRhNzFpeC1LQ3htQmxtOWxRdTYxcy1IQWxkQl9KOU5hUmlCSzg3Q2JRZUMyd2ZTdTc2Z3hWWGo0aE85b1hxZ0RwNTNrMGRmVElmWXJNd2gzOVQyWE9kdjhqMlNOU2hhST0=) --type IOS_APP_STORE --create
       - keychain add-certificates
       - xcode-project use-profiles
       - flutter packages pub get
