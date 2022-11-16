@@ -21,7 +21,7 @@ workflows:
           include: true
     scripts:
       - keychain initialize
-      - app-store-connect fetch-signing-files com.aboat-entertainment.talkaboat --type IOS_APP_STORE --create
+      - app-store-connect fetch-signing-files com.aboat-entertainment.talkaboat --issuer-id 98e59553-080f-41c0-b0a8-14de0c3303a2 --type IOS_APP_STORE --create
       - keychain add-certificates
       - xcode-project use-profiles
       - flutter packages pub get
