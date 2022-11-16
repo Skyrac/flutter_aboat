@@ -257,18 +257,23 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                             Container(
                               margin: const EdgeInsets.only(bottom: 10),
                               child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                                const Text(
-                                  "Titel",
-                                  style: TextStyle(fontWeight: FontWeight.w600),
+                                const SizedBox(
+                                  width: 30,
+                                  child: Text(
+                                    "Titel",
+                                    style: TextStyle(fontWeight: FontWeight.w600),
+                                  ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 15),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                SizedBox(
+                                  width: 250,
                                   child: Text(
                                     snapshot.data!.title!,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
+                                    textAlign: TextAlign.end,
                                   ),
-                                )
+                                ),
                               ]),
                             ),
                             Container(

@@ -1,6 +1,8 @@
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:audio_service/audio_service.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -243,10 +245,16 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                 );
                               } else if (playing != true) {
                                 return ButtonEpisode(
-                                    func: audioPlayer.play, image: "assets/images/play.png", title: "Abspielen");
+                                    func: audioPlayer.play,
+                                    image: "assets/images/play.png",
+                                    title: "Abspielen",
+                                    borderAndTextColor: Color.fromRGBO(99, 163, 253, 1));
                               } else {
                                 return ButtonEpisode(
-                                    func: audioPlayer.pause, image: "assets/images/pause.png", title: "Pausieren");
+                                    func: audioPlayer.pause,
+                                    image: "assets/images/pause.png",
+                                    title: "Stop",
+                                    borderAndTextColor: Color.fromRGBO(188, 140, 75, 1));
                               }
                             },
                           ),
@@ -263,7 +271,9 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                     setState(() {});
                                   },
                                   image: "assets/images/cloud_complete.png",
-                                  title: "Download")
+                                  title: "Download",
+                                  borderAndTextColor: Color.fromRGBO(76, 175, 80, 1),
+                                )
                               : ButtonEpisode(
                                   func: () async {
                                     if (!userService.isInFavorites(widget.episode!.podcastId!)) {
@@ -273,7 +283,9 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                     setState(() {});
                                   },
                                   image: "assets/images/cloud.png",
-                                  title: "Download")
+                                  title: "Download",
+                                  borderAndTextColor: Color.fromRGBO(99, 163, 253, 1),
+                                )
                         ],
                       ),
                     ),
@@ -470,7 +482,133 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                     episode: widget.episode!),
                 pinned: true,
               ),
-              const SliverToBoxAdapter(child: Center(child: Placeholder()))
+              SliverToBoxAdapter(
+                  child: Center(
+                      child: FutureBuilder(
+                          future: podcastService.getPodcastDetails(podcastSearchResult.id!, sort, -1),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.done) {
+                              if (snapshot.hasError) {
+                                return Center(
+                                  child: Text(
+                                    '${snapshot.error} occurred',
+                                    style: const TextStyle(fontSize: 18),
+                                  ),
+                                );
+                              } else if (snapshot.hasData && snapshot.data != null) {
+                                final podcast = snapshot.data;
+                                // Extracting data from snapshot object
+                                return Container(
+                                  padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+                                  height: 105,
+                                  width: MediaQuery.of(context).size.width,
+                                  child: RawMaterialButton(
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+                                    onPressed: () {},
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        color: Colors.transparent,
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.only(right: 5),
+                                            width: 100,
+                                            height: 100,
+                                            child: Center(
+                                              child: Stack(
+                                                children: [
+                                                  ClipRRect(
+                                                      borderRadius: BorderRadius.circular(10),
+                                                      child: SizedBox(
+                                                          child: CachedNetworkImage(
+                                                        imageUrl: podcast!.image ?? 'https://picsum.photos/200',
+                                                        cacheManager: CacheManager(Config(
+                                                            widget.episode!.image ?? 'https://picsum.photos/200',
+                                                            stalePeriod: const Duration(days: 2))),
+                                                        fit: BoxFit.fill,
+                                                        placeholder: (_, __) =>
+                                                            const Center(child: CircularProgressIndicator()),
+                                                        errorWidget: (context, url, error) => const Icon(Icons.error),
+                                                      ))),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            width: 10,
+                                          ),
+                                          SizedBox(
+                                            height: 105,
+                                            width: 218,
+                                            child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Flexible(
+                                                  fit: FlexFit.loose,
+                                                  child: Text(
+                                                    podcast.title!,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    maxLines: 1,
+                                                    style: const TextStyle(
+                                                        color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12),
+                                                  ),
+                                                ),
+                                                Flexible(
+                                                  fit: FlexFit.loose,
+                                                  child: Text(removeAllHtmlTags(podcast.publisher!),
+                                                      overflow: TextOverflow.ellipsis,
+                                                      maxLines: 2,
+                                                      style: const TextStyle(color: Colors.white, fontSize: 12)),
+                                                ),
+                                                Row(
+                                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  children: [
+                                                    Row(
+                                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                      children: [
+                                                        Text('${podcast.totalEpisodes!.toString()} Episodes     - ',
+                                                            style: Theme.of(context).textTheme.titleMedium),
+                                                        const SizedBox(
+                                                          width: 10,
+                                                        ),
+                                                        const Image(
+                                                          image: AssetImage("assets/icons/icon_fire.png"),
+                                                        ),
+                                                        const SizedBox(
+                                                          width: 10,
+                                                        ),
+                                                        Text("Reward x1.5", style: Theme.of(context).textTheme.titleMedium)
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          buildPopupButton(context, widget.episode!),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                return const Center(
+                                  child: Text(
+                                    'No data found for this podcast. Please try again later!',
+                                    style: TextStyle(fontSize: 18),
+                                  ),
+                                );
+                              }
+                            }
+                            return SizedBox();
+                          })))
             ],
           ),
           CustomScrollView(
@@ -489,18 +627,129 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
       ),
     );
   }
+
+  buildPopupButton(context, Episode entry) => PopupMenuButton(
+        padding: const EdgeInsets.symmetric(vertical: 15),
+        shape: const RoundedRectangleBorder(
+          side: BorderSide(color: Color.fromRGBO(188, 140, 75, 1)),
+          borderRadius: BorderRadius.all(Radius.circular(10.0)),
+        ),
+        constraints: const BoxConstraints.expand(width: 196, height: 110),
+        color: const Color.fromRGBO(15, 23, 41, 1),
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(14, 30, 14, 30),
+          child: Image.asset(
+            "assets/images/options.png",
+            width: 6,
+          ),
+        ),
+        onSelected: (value) async {
+          switch (value) {
+            case 'download':
+              if (!userService.isInFavorites(entry.podcastId!)) {
+                await userService.addToFavorites(entry.podcastId!);
+                // widget.refresh();
+              }
+              await FileDownloadService.cacheOrDelete(entry.audio!);
+              break;
+            case "add":
+              if (!userService.isConnected) {
+                widget.escapeWithNav(PageTransition(
+                    alignment: Alignment.bottomCenter,
+                    curve: Curves.bounceOut,
+                    type: PageTransitionType.rightToLeftWithFade,
+                    duration: const Duration(milliseconds: 500),
+                    reverseDuration: const Duration(milliseconds: 500),
+                    child: LoginScreen(true, refreshParent: () => setState(() {}))));
+              } else {
+                showModalBottomSheet(
+                    isScrollControlled: true,
+                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+                    context: context,
+                    builder: (context) => PlaylistBottomSheet(episodeToAdd: entry));
+              }
+              break;
+          }
+          setState(() {});
+        },
+        itemBuilder: (BuildContext context) {
+          return popupMenu(context, entry);
+        },
+      );
+
+  popupMenu(BuildContext context, Episode entry) => <PopupMenuEntry<String>>[
+        const PopupMenuItem<String>(value: 'add', child: Card(child: Text('Add to playlist'))),
+        PopupMenuItem<String>(
+            value: 'add',
+            child: Container(
+                width: 176,
+                height: 30,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    color: const Color.fromRGBO(29, 40, 58, 0.97),
+                    border: Border.all(color: const Color.fromRGBO(188, 140, 75, 0.25))),
+                child: Row(
+                  children: [
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    const Icon(Icons.format_list_bulleted, color: Color.fromRGBO(99, 163, 253, 1), size: 25),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Text('Add to playlist',
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(color: const Color.fromRGBO(99, 163, 253, 1))),
+                  ],
+                ))),
+        PopupMenuItem<String>(
+            value: 'download',
+            child: Container(
+                width: 176,
+                height: 30,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    color: const Color.fromRGBO(29, 40, 58, 0.97),
+                    border: Border.all(color: const Color.fromRGBO(188, 140, 75, 0.25))),
+                child: Row(
+                  children: [
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Image.asset(
+                      "assets/images/cloud.png",
+                      width: 22,
+                      fit: BoxFit.cover,
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Text(FileDownloadService.containsFile(entry.audio!) ? 'Delete' : 'Download',
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(color: const Color.fromRGBO(99, 163, 253, 1))),
+                  ],
+                ))),
+      ];
+
+  String removeAllHtmlTags(String htmlText) {
+    RegExp exp = RegExp(r"<[^>]*>", multiLine: true, caseSensitive: true);
+
+    return htmlText.replaceAll(exp, '');
+  }
 }
 
 class ButtonEpisode extends StatelessWidget {
   final String image;
   final String title;
   final VoidCallback func;
+  final Color borderAndTextColor;
 
   const ButtonEpisode({
     super.key,
     required this.image,
     required this.func,
     required this.title,
+    required this.borderAndTextColor,
   });
 
   @override
@@ -510,9 +759,8 @@ class ButtonEpisode extends StatelessWidget {
       child: Container(
         width: 130,
         height: 40,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(width: 1, color: const Color.fromRGBO(99, 163, 253, 1))),
+        decoration:
+            BoxDecoration(borderRadius: BorderRadius.circular(10), border: Border.all(width: 1, color: borderAndTextColor)),
         child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           Image.asset(
             image,
@@ -523,7 +771,7 @@ class ButtonEpisode extends StatelessWidget {
           ),
           Text(
             title,
-            style: const TextStyle(color: Color.fromRGBO(99, 163, 253, 1)),
+            style: TextStyle(color: borderAndTextColor),
           )
         ]),
       ),
