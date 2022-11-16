@@ -6,9 +6,19 @@ workflows:
     name: Default Workflow
     max_build_duration: 60
     environment:
+      groups:
+        - app_store_credentials
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.aboat-entertainment.talkaboat
+      vars:
+        XCODE_WORKSPACE: "Runner.xcworkspace"
+        XCODE_SCHEME: "Runner"
+        BUNDLE_ID: "com.aboat-entertainment.talkaboat"
+        APP_STORE_ID: 1637833839
+      flutter: stable
+      xcode: latest
+      cocoapods: default
     triggering:
       events:
         - push
@@ -21,7 +31,7 @@ workflows:
           include: true
     scripts:
       - keychain initialize
-      - app-store-connect fetch-signing-files com.aboat-entertainment.talkaboat --issuer-id 98e59553-080f-41c0-b0a8-14de0c3303a2 --key-id N8W77PCK54 --private-key Encrypted(Z0FBQUFBQmpjM1YwOERmZjRnRXZ0M2ZBeW9YLUlHLWJta1l0RjRKRDBLQlhPNDc2R09KZ3ZCYVJTb1BpOWFodkk4OWJ2WDRjN3RKcmZHQ3hPZHZqeHFVcUo2bDFzN3NwRHJqNnk0d3VhTlJUZ2VOdVYwUFR6Mm5ua2NHOTFQM0hJd1g2TEZXUjRpWnM4dk5EWTYwN2N3blZLR05nblVscE0xbGQ2bGRwYjluakhOeUgtQkp3djFOcHVHRWpxTEU4TlN1S1BLV1AwWEJ5MjRrVXRQNUFJOGpkRmFMaFhFb25rdllIN1ktaXlobjRrNGZHcUhkWGZVVmpoekJVRFFoQVNTTWEtR1BidWNhSzJYQWVMYjZ1Vk5iOWpMTmk0NHNDSFhxMzBILUFFSlRQdTVzUlNtM0FvMUJ5UzRmelFtdm5aZDdreDJWMDhwR2Jyb3FvcFBkTnhuNHRhNzFpeC1LQ3htQmxtOWxRdTYxcy1IQWxkQl9KOU5hUmlCSzg3Q2JRZUMyd2ZTdTc2Z3hWWGo0aE85b1hxZ0RwNTNrMGRmVElmWXJNd2gzOVQyWE9kdjhqMlNOU2hhST0=) --type IOS_APP_STORE --create
+      - app-store-connect fetch-signing-files $BUNDLE_ID --type IOS_APP_STORE --create
       - keychain add-certificates
       - xcode-project use-profiles
       - flutter packages pub get
@@ -37,8 +47,8 @@ workflows:
         recipients:
           - fabian.reichenberg@aboat-entertainment.com
       app_store_connect:
-        api_key: Encrypted(Z0FBQUFBQmpjM1YwOERmZjRnRXZ0M2ZBeW9YLUlHLWJta1l0RjRKRDBLQlhPNDc2R09KZ3ZCYVJTb1BpOWFodkk4OWJ2WDRjN3RKcmZHQ3hPZHZqeHFVcUo2bDFzN3NwRHJqNnk0d3VhTlJUZ2VOdVYwUFR6Mm5ua2NHOTFQM0hJd1g2TEZXUjRpWnM4dk5EWTYwN2N3blZLR05nblVscE0xbGQ2bGRwYjluakhOeUgtQkp3djFOcHVHRWpxTEU4TlN1S1BLV1AwWEJ5MjRrVXRQNUFJOGpkRmFMaFhFb25rdllIN1ktaXlobjRrNGZHcUhkWGZVVmpoekJVRFFoQVNTTWEtR1BidWNhSzJYQWVMYjZ1Vk5iOWpMTmk0NHNDSFhxMzBILUFFSlRQdTVzUlNtM0FvMUJ5UzRmelFtdm5aZDdreDJWMDhwR2Jyb3FvcFBkTnhuNHRhNzFpeC1LQ3htQmxtOWxRdTYxcy1IQWxkQl9KOU5hUmlCSzg3Q2JRZUMyd2ZTdTc2Z3hWWGo0aE85b1hxZ0RwNTNrMGRmVElmWXJNd2gzOVQyWE9kdjhqMlNOU2hhST0=)
-        key_id: N8W77PCK54
-        issuer_id: 98e59553-080f-41c0-b0a8-14de0c3303a2
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
+        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
         submit_to_testflight: true
         submit_to_app_store: false
