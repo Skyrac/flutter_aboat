@@ -28,6 +28,8 @@ class AsyncMutex {
 }
 
 class ChatService extends ChangeNotifier {
+  static final List<String> messageType = ["", "Podcast", "Episode"];
+
   final ChatHubService _hub = ChatHubService();
   final Map<int, List<ChatMessageDto>?> _rooms = {};
   final AsyncMutex _mutex = AsyncMutex();
@@ -38,7 +40,10 @@ class ChatService extends ChangeNotifier {
     _mutex.run(() {
       if (_rooms[message.chatRoomId] != null) {
         if (_rooms[message.chatRoomId]!.any((x) => x.id < 0 && x.content == message.content)) {
-          int index = _rooms[message.chatRoomId]!.indexWhere((x) => x.id == message.id);
+          int index = _rooms[message.chatRoomId]!.indexWhere((x) => x.id < 0 && x.content == message.content);
+          if (index != -1) {
+            throw "unreachable";
+          }
           _rooms[message.chatRoomId]!.removeAt(index);
           _rooms[message.chatRoomId]!.insert(index, message);
         } else {
@@ -64,19 +69,6 @@ class ChatService extends ChangeNotifier {
     });
   }
 
-  _reconcileEditMessagePartial(int roomId, int messageId, String content) {
-    _mutex.run(() {
-      if (_rooms[roomId] != null) {
-        int index = _rooms[roomId]!.indexWhere((x) => x.id == messageId);
-        _rooms[roomId]![index].isEdited = true;
-        _rooms[roomId]![index].content = content;
-        notifyListeners();
-      } else {
-        print("Tried to edit message that was not cached localy");
-      }
-    });
-  }
-
   _reconcileRemoveMessage(int roomId, int messageId) {
     _mutex.run(() {
       if (_rooms[roomId] != null) {
@@ -95,28 +87,17 @@ class ChatService extends ChangeNotifier {
     _hub.onReceiveMessage.listen((event) => _reconcileNewMessage(event));
   }
 
-  int nonce = -1;
   //#region RPC Calls
   sendMessage(CreateMessageDto message, String username) async {
     await _hub.sendMessage(message);
-    _reconcileNewMessage(ChatMessageDto(
-        chatRoomId: message.chatRoomId,
-        messageType: message.messageType,
-        id: nonce,
-        content: message.content,
-        senderName: username,
-        isEdited: false));
-    nonce--;
   }
 
   editMessage(EditMessageDto message) async {
     await _hub.editMessage(message);
-    _reconcileEditMessagePartial(message.roomId, message.messageId, message.message);
   }
 
   deleteMessage(DeleteMessageDto message) async {
     await _hub.deleteMessage(message);
-    _reconcileRemoveMessage(message.roomId, message.messageId);
   }
 
   joinRoom(JoinRoomDto data) async {
