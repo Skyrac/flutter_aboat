@@ -7,20 +7,16 @@ import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 
 class LiveSessionService {
   static const String appId = "c0ad2b8f2be149788fabb9d916f0fbef";
-  int _uid = 0;
   int? _remoteUid;
   bool _isJoined = false;
   bool _isHost = false;
-  String _connectedRoom = "";
   String _roomGuid = "";
   late RtcEngine _agoraEngine;
 
   bool get isJoined => _isJoined;
   bool get isHost => _isHost;
-  String get connectedRoom => _connectedRoom;
   String get roomGuid => _roomGuid;
   int? get remoteUid => _remoteUid;
-  int get uid => _uid;
   RtcEngine get agoraEngine => _agoraEngine;
 
   Future<String> getToken(String roomId) async {
@@ -39,12 +35,16 @@ class LiveSessionService {
       RtcEngineEventHandler(
         onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
           _isJoined = true;
+          print("joined channel ${connection.channelId} ${connection.localUid}");
         },
         onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
           _remoteUid = remoteUid;
         },
         onUserOffline: (RtcConnection connection, int remoteUid, UserOfflineReasonType reason) {
           _remoteUid = null;
+        },
+        onError: (err, msg) {
+          print("error $err $msg");
         },
       ),
     );
@@ -59,33 +59,32 @@ class LiveSessionService {
     //await joinAsHost(response!.configuration!.roomName, response.guid);
   }
 
-  Future<void> joinAsViewer(String roomName, String roomId) async {
+  Future<void> joinAsViewer(String roomId) async {
     ChannelMediaOptions options = const ChannelMediaOptions(
       clientRoleType: ClientRoleType.clientRoleAudience,
       channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
     );
-    await join(roomName, roomId, options);
+    await join(roomId, options);
   }
 
-  Future<void> joinAsHost(String roomName, String roomId) async {
+  Future<void> joinAsHost(String roomId) async {
     ChannelMediaOptions options = const ChannelMediaOptions(
       clientRoleType: ClientRoleType.clientRoleBroadcaster,
       channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
     );
 
-    await join(roomName, roomId, options);
+    await join(roomId, options);
     await agoraEngine.startPreview();
   }
 
-  Future<void> join(String roomName, String roomGuid, ChannelMediaOptions options) async {
+  Future<void> join(String roomGuid, ChannelMediaOptions options) async {
     await setupVideoSdkEngine();
-    _connectedRoom = roomName;
     _roomGuid = roomGuid;
     await agoraEngine.joinChannel(
       token: await getToken(roomGuid),
       channelId: roomGuid,
       options: options,
-      uid: uid,
+      uid: 0,
     );
   }
 
