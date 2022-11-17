@@ -4,6 +4,7 @@ import '../injection/injector.dart';
 import '../models/podcasts/podcast.model.dart';
 import '../models/search/search_result.model.dart';
 import '../services/user/user.service.dart';
+import '../utils/scaffold_wave.dart';
 import '../widgets/login-button.widget.dart';
 import '../widgets/podcast-list.widget.dart';
 
@@ -45,7 +46,11 @@ class _LibraryScreenState extends State<LibraryScreen> {
   Widget build(BuildContext context) {
     userService.SetLastFavoritesNotifcationUpdate();
     return SafeArea(
-        child: Scaffold(
+        child: ScaffoldWave(
+            appBar: AppBar(
+              backgroundColor: const Color.fromRGBO(29, 40, 58, 1),
+              title: const Text("Playlists"),
+            ),
             body: userService.isConnected
                 ? Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20),

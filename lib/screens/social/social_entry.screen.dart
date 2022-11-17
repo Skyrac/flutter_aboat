@@ -4,10 +4,12 @@ import 'package:Talkaboat/models/user/social-user.model.dart';
 import 'package:Talkaboat/services/user/social.service.dart';
 import 'package:Talkaboat/widgets/login-button.widget.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../injection/injector.dart';
 import '../../services/user/user.service.dart';
 import '../../themes/colors.dart';
+import '../../utils/scaffold_wave.dart';
 
 class SocialEntryScreen extends StatefulWidget {
   const SocialEntryScreen(this.escapeWithNav, {Key? key}) : super(key: key);
@@ -53,49 +55,56 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-          appBar: AppBar(
-            title: Text(
-              "Social",
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white),
-            ),
-            actions: const [
-              /*
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 0),
-                    child: IconButton(
-                      icon: Icon(Icons.add, color: Colors.white),
-                      onPressed: () {
-                      print(_tabController.index);
-                      },
+      child: DefaultTabController(
+        length: 2,
+        child: ScaffoldWave(
+            appBar: PreferredSize(
+                preferredSize: const Size.fromHeight(100),
+                child: AppBar(
+                  backgroundColor: const Color.fromRGBO(29, 40, 58, 1),
+                  leadingWidth: 45,
+                  titleSpacing: 10,
+                  bottom: PreferredSize(
+                    preferredSize: const Size.fromHeight(48),
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.0),
+                          border: const Border(bottom: BorderSide(color: Color.fromRGBO(164, 202, 255, 1))),
+                        ),
+                        child: const TabBar(
+                          labelColor: Color.fromRGBO(188, 140, 75, 1),
+                          indicatorColor: Color.fromRGBO(188, 140, 75, 1),
+                          unselectedLabelColor: Color.fromRGBO(164, 202, 255, 1),
+                          tabs: [
+                            Tab(
+                              icon: Icon(Icons.feed, color: Colors.white),
+                            ),
+                            Tab(
+                                icon: Icon(
+                              Icons.emoji_people,
+                              color: Colors.white,
+                            )),
+                          ],
+                        ),
+                      ),
                     ),
-                  )
-                    */
-            ],
-            bottom: TabBar(
-              controller: _tabController,
-              tabs: const [
-                Tab(
-                  icon: Icon(Icons.feed, color: Colors.white),
-                ),
-                Tab(
-                    icon: Icon(
-                  Icons.emoji_people,
-                  color: Colors.white,
+                  ),
+                  title: Container(margin: EdgeInsets.fromLTRB(7, 5, 0, 0), child: Text("Social")),
                 )),
-              ],
-            ),
-          ),
-          body: userService.isConnected
-              ? TabBarView(
-                  controller: _tabController,
-                  children: [
-                    createFeedBody(),
-                    createFriendBody(),
-                  ],
-                )
-              : Center(child: LoginButton(widget.escapeWithNav))),
+            body: userService.isConnected
+                ? TabBarView(
+                    children: [
+                      createFeedBody(),
+                      createFriendBody(),
+                    ],
+                  )
+                : Center(child: LoginButton(widget.escapeWithNav))),
+      ),
     );
+    //);
   }
 
   Widget createFeedBody() {
@@ -108,42 +117,45 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(mainAxisSize: MainAxisSize.max, children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                  width: size.width / 4 * 3,
-                  child: TextField(
-                      controller: friendController,
-                      decoration: InputDecoration(
-                        hintText: 'Search friends...',
-                        suffixIcon: IconButton(
-                          onPressed: friendController.clear,
-                          icon: Icon(Icons.clear,
-                              color: friendController.text.isEmpty ? Colors.transparent : DefaultColors.primaryColor),
-                        ),
-                      ))),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
-                child: Card(
-                  child: InkWell(
-                      onTap: (() async {
-                        setState(() {});
-                      }),
-                      child: const Icon(
-                        Icons.search,
-                        size: 30,
-                      )),
-                ),
-              )
-            ],
-          ),
+          buildSearchField(context),
           Expanded(
             child: SizedBox(
                 width: size.width > 640 ? 640 : size.width,
                 child: friendController.text.isEmpty ? showFriends() : showFriendsAndPossibleFriends()),
           )
         ]),
+      ),
+    );
+  }
+
+  String search = '';
+
+  Widget buildSearchField(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 70, vertical: 10),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Container(
+          decoration: const BoxDecoration(
+              color: Color.fromRGBO(29, 40, 58, 1.0),
+              border: Border(bottom: BorderSide(width: 2, color: Color.fromRGBO(188, 140, 75, 1.0)))),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Center(
+              child: TextField(
+                controller: friendController,
+                onChanged: ((text) {
+                  setState(() {
+                    search = text.toLowerCase();
+                  });
+                }),
+                decoration: const InputDecoration(
+                    border: InputBorder.none, hintText: "Search for category...", suffixIcon: Icon(Icons.search)),
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
