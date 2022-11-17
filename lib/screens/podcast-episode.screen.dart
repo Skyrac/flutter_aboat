@@ -13,6 +13,7 @@ import '../services/audio/audio-handler.services.dart';
 import '../services/audio/podcast.service.dart';
 import '../services/downloading/file-downloader.service.dart';
 import '../themes/colors.dart';
+import '../utils/common.dart';
 import '../utils/scaffold_wave.dart';
 import '../widgets/bottom-sheets/playlist.bottom-sheet.dart';
 import '../widgets/episode-preview.widget.dart';
@@ -210,83 +211,256 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                   children: [
                     Container(
                       margin: const EdgeInsets.only(top: 20),
-                      height: 40,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      // height: 40,
+                      child: Column(
                         children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              StreamBuilder<PlaybackState>(
+                                stream: audioPlayer.playbackState,
+                                builder: (context, snapshot) {
+                                  final playbackState = snapshot.data;
+                                  final processingState = playbackState?.processingState;
+                                  final playing = playbackState?.playing;
+                                  if (processingState == AudioProcessingState.loading ||
+                                      processingState == AudioProcessingState.buffering) {
+                                    return RawMaterialButton(
+                                      child: Container(
+                                        alignment: Alignment.center,
+                                        width: 130,
+                                        height: 40,
+                                        decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(10),
+                                            border: Border.all(width: 1, color: const Color.fromRGBO(99, 163, 253, 1))),
+                                        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: const [
+                                          SizedBox(
+                                            width: 20.0,
+                                            height: 20.0,
+                                            child: CircularProgressIndicator(),
+                                          ),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          Text("Abspielen", style: TextStyle(color: Color.fromRGBO(99, 163, 253, 1)))
+                                        ]),
+                                      ),
+                                      onPressed: () {},
+                                    );
+                                  } else if (playing != true) {
+                                    return ButtonEpisode(
+                                        func: audioPlayer.play,
+                                        image: "assets/images/play.png",
+                                        title: "Abspielen",
+                                        borderAndTextColor: Color.fromRGBO(99, 163, 253, 1));
+                                  } else {
+                                    return ButtonEpisode(
+                                        func: audioPlayer.pause,
+                                        image: "assets/images/pause.png",
+                                        title: "Stop",
+                                        borderAndTextColor: Color.fromRGBO(188, 140, 75, 1));
+                                  }
+                                },
+                              ),
+                              const SizedBox(
+                                width: 15,
+                              ),
+                              FileDownloadService.containsFile(widget.episode!.audio!)
+                                  ? ButtonEpisode(
+                                      func: () async {
+                                        if (!userService.isInFavorites(widget.episode!.podcastId!)) {
+                                          await userService.addToFavorites(widget.episode!.podcastId!);
+                                        }
+                                        await FileDownloadService.cacheOrDelete(widget.episode!.audio!);
+                                        setState(() {});
+                                      },
+                                      image: "assets/images/cloud_complete.png",
+                                      title: "Download",
+                                      borderAndTextColor: Color.fromRGBO(76, 175, 80, 1),
+                                    )
+                                  : ButtonEpisode(
+                                      func: () async {
+                                        if (!userService.isInFavorites(widget.episode!.podcastId!)) {
+                                          await userService.addToFavorites(widget.episode!.podcastId!);
+                                        }
+                                        await FileDownloadService.cacheOrDelete(widget.episode!.audio!);
+                                        setState(() {});
+                                      },
+                                      image: "assets/images/cloud.png",
+                                      title: "Download",
+                                      borderAndTextColor: Color.fromRGBO(99, 163, 253, 1),
+                                    )
+                            ],
+                          ),
                           StreamBuilder<PlaybackState>(
-                            stream: audioPlayer.playbackState,
-                            builder: (context, snapshot) {
-                              final playbackState = snapshot.data;
-                              final processingState = playbackState?.processingState;
-                              final playing = playbackState?.playing;
-                              if (processingState == AudioProcessingState.loading ||
-                                  processingState == AudioProcessingState.buffering) {
-                                return RawMaterialButton(
-                                  child: Container(
-                                    alignment: Alignment.center,
-                                    width: 130,
-                                    height: 40,
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        border: Border.all(width: 1, color: const Color.fromRGBO(99, 163, 253, 1))),
-                                    child: Row(mainAxisAlignment: MainAxisAlignment.center, children: const [
-                                      SizedBox(
-                                        width: 20.0,
-                                        height: 20.0,
-                                        child: CircularProgressIndicator(),
+                              stream: audioPlayer.playbackState,
+                              builder: (context, snapshot) {
+                                final playbackState = snapshot.data;
+                                final processingState = playbackState?.processingState;
+                                final playing = playbackState?.playing;
+                                final episodeTime = Duration(seconds: widget.episode!.audioLengthSec!.toInt());
+                                final listeningTime = Duration(
+                                    seconds: widget.episode!.playTime!.toInt() == null
+                                        ? 0
+                                        : widget.episode!.playTime!.toInt() >= widget.episode!.audioLengthSec!.toInt()
+                                            ? widget.episode!.audioLengthSec!.toInt()
+                                            : widget.episode!.playTime!.toInt());
+
+                                if (playing != true) {
+                                  return
+                                      // AbsorbPointer(
+                                      // child:
+                                      Column(
+                                    children: [
+                                      Container(
+                                        margin: EdgeInsets.only(top: 10),
+                                        padding: const EdgeInsets.symmetric(horizontal: 30),
+                                        child: Row(
+                                          children: [
+                                            Text.rich(TextSpan(children: [
+                                              TextSpan(
+                                                  text: listeningTime.inHours != 0 ? '${listeningTime.inHours % 60}st ' : "",
+                                                  style: const TextStyle(color: Color.fromRGBO(99, 163, 253, 1))),
+                                              TextSpan(
+                                                  text: listeningTime.inMinutes != 0
+                                                      ? '${listeningTime.inMinutes % 60}min '
+                                                      : "",
+                                                  style: const TextStyle(color: Color.fromRGBO(99, 163, 253, 1))),
+                                              TextSpan(
+                                                text: '${listeningTime.inSeconds % 60}sec',
+                                                style: const TextStyle(color: Color.fromRGBO(99, 163, 253, 1)),
+                                              ),
+                                            ])),
+                                            Text(
+                                              "/",
+                                              style: TextStyle(color: Color.fromRGBO(99, 163, 253, 1)),
+                                            ),
+                                            Text.rich(TextSpan(children: [
+                                              TextSpan(
+                                                  text: episodeTime.inHours != 0 ? '${episodeTime.inHours % 60}st ' : "",
+                                                  style: const TextStyle(color: Color.fromRGBO(99, 163, 253, 1))),
+                                              TextSpan(
+                                                  text:
+                                                      episodeTime.inMinutes != 0 ? '${episodeTime.inMinutes % 60}min ' : "",
+                                                  style: const TextStyle(color: Color.fromRGBO(99, 163, 253, 1))),
+                                              TextSpan(
+                                                text: '${episodeTime.inSeconds % 60}sec',
+                                                style: const TextStyle(color: Color.fromRGBO(99, 163, 253, 1)),
+                                              ),
+                                            ])),
+                                          ],
+                                        ),
                                       ),
-                                      SizedBox(
-                                        width: 10,
+                                      Container(
+                                        margin: EdgeInsets.only(top: 5),
+                                        decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(10),
+                                            border: Border.all(color: Color.fromRGBO(99, 163, 253, 1))),
+                                        height: 10,
+                                        width: 333,
+                                        child: SliderTheme(
+                                          data: SliderTheme.of(context).copyWith(
+                                              trackHeight: 8.0,
+                                              thumbColor: Color.fromRGBO(99, 163, 253, 1),
+                                              thumbShape: RoundSliderThumbShape(enabledThumbRadius: 5),
+                                              // thumbShape: HiddenThumbComponentShape(),
+                                              activeTrackColor: Color.fromRGBO(99, 163, 253, 1),
+                                              inactiveTrackColor: Color.fromRGBO(15, 23, 41, 1),
+                                              trackShape: CustomTrackShape()
+                                              // thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 0.0)
+                                              ),
+                                          child: Slider(
+                                              value: (widget.episode!.playTime!.toDouble() == null
+                                                  ? 0
+                                                  : widget.episode!.playTime!.toDouble() >=
+                                                          widget.episode!.audioLengthSec!.toDouble()
+                                                      ? widget.episode!.audioLengthSec!.toDouble()
+                                                      : widget.episode!.playTime!.toDouble()),
+                                              onChanged: (double value) {},
+                                              min: 0,
+                                              max: widget.episode!.audioLengthSec?.toDouble() ?? 0),
+                                        ),
+                                        // )
                                       ),
-                                      Text("Abspielen", style: TextStyle(color: Color.fromRGBO(99, 163, 253, 1)))
-                                    ]),
-                                  ),
-                                  onPressed: () {},
-                                );
-                              } else if (playing != true) {
-                                return ButtonEpisode(
-                                    func: audioPlayer.play,
-                                    image: "assets/images/play.png",
-                                    title: "Abspielen",
-                                    borderAndTextColor: Color.fromRGBO(99, 163, 253, 1));
-                              } else {
-                                return ButtonEpisode(
-                                    func: audioPlayer.pause,
-                                    image: "assets/images/pause.png",
-                                    title: "Stop",
-                                    borderAndTextColor: Color.fromRGBO(188, 140, 75, 1));
-                              }
-                            },
-                          ),
-                          const SizedBox(
-                            width: 15,
-                          ),
-                          FileDownloadService.containsFile(widget.episode!.audio!)
-                              ? ButtonEpisode(
-                                  func: () async {
-                                    if (!userService.isInFavorites(widget.episode!.podcastId!)) {
-                                      await userService.addToFavorites(widget.episode!.podcastId!);
-                                    }
-                                    await FileDownloadService.cacheOrDelete(widget.episode!.audio!);
-                                    setState(() {});
-                                  },
-                                  image: "assets/images/cloud_complete.png",
-                                  title: "Download",
-                                  borderAndTextColor: Color.fromRGBO(76, 175, 80, 1),
-                                )
-                              : ButtonEpisode(
-                                  func: () async {
-                                    if (!userService.isInFavorites(widget.episode!.podcastId!)) {
-                                      await userService.addToFavorites(widget.episode!.podcastId!);
-                                    }
-                                    await FileDownloadService.cacheOrDelete(widget.episode!.audio!);
-                                    setState(() {});
-                                  },
-                                  image: "assets/images/cloud.png",
-                                  title: "Download",
-                                  borderAndTextColor: Color.fromRGBO(99, 163, 253, 1),
-                                )
+                                    ],
+                                  );
+                                } else {
+                                  return
+                                      // AbsorbPointer(
+                                      //     child:
+                                      Column(
+                                    children: [
+                                      Container(
+                                        margin: EdgeInsets.only(top: 10),
+                                        padding: const EdgeInsets.symmetric(horizontal: 30),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text.rich(TextSpan(children: [
+                                              TextSpan(
+                                                  text: listeningTime.inHours != 0 ? '${listeningTime.inHours % 60}st ' : "",
+                                                  style: const TextStyle(color: Color.fromRGBO(188, 140, 75, 1))),
+                                              TextSpan(
+                                                  text: listeningTime.inMinutes != 0
+                                                      ? '${listeningTime.inMinutes % 60}min '
+                                                      : "",
+                                                  style: const TextStyle(color: Color.fromRGBO(188, 140, 75, 1))),
+                                              TextSpan(
+                                                text: '${listeningTime.inSeconds % 60}sec',
+                                                style: const TextStyle(color: Color.fromRGBO(188, 140, 75, 1)),
+                                              ),
+                                            ])),
+                                            Text.rich(TextSpan(children: [
+                                              TextSpan(
+                                                  text: episodeTime.inHours != 0 ? '${episodeTime.inHours % 60}st ' : "",
+                                                  style: const TextStyle(color: Color.fromRGBO(188, 140, 75, 1))),
+                                              TextSpan(
+                                                  text:
+                                                      episodeTime.inMinutes != 0 ? '${episodeTime.inMinutes % 60}min ' : "",
+                                                  style: const TextStyle(color: Color.fromRGBO(188, 140, 75, 1))),
+                                              TextSpan(
+                                                text: '${episodeTime.inSeconds % 60}sec',
+                                                style: const TextStyle(color: Color.fromRGBO(188, 140, 75, 1)),
+                                              ),
+                                            ])),
+                                          ],
+                                        ),
+                                      ),
+                                      Container(
+                                        margin: EdgeInsets.only(top: 5),
+                                        decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(10),
+                                            border: Border.all(color: Color.fromRGBO(188, 140, 75, 1))),
+                                        height: 10,
+                                        width: 333,
+                                        child: SliderTheme(
+                                          data: SliderTheme.of(context).copyWith(
+                                              trackHeight: 8.0,
+                                              thumbColor: Color.fromRGBO(188, 140, 75, 1),
+                                              thumbShape: RoundSliderThumbShape(enabledThumbRadius: 5),
+                                              // thumbShape: HiddenThumbComponentShape(),
+                                              inactiveTrackColor: Color.fromRGBO(15, 23, 41, 1),
+                                              activeTrackColor: Color.fromRGBO(188, 140, 75, 1),
+                                              trackShape: CustomTrackShape()
+                                              // thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 0.0)
+                                              ),
+                                          child: Slider(
+                                              value: (widget.episode!.playTime!.toDouble() == null
+                                                  ? 0
+                                                  : widget.episode!.playTime!.toDouble() >=
+                                                          widget.episode!.audioLengthSec!.toDouble()
+                                                      ? widget.episode!.audioLengthSec!.toDouble()
+                                                      : widget.episode!.playTime!.toDouble()),
+                                              onChanged: (double value) {},
+                                              min: 0,
+                                              max: widget.episode!.audioLengthSec?.toDouble() ?? 0),
+                                        ),
+                                        //)
+                                      ),
+                                    ],
+                                  );
+                                }
+                              }),
                         ],
                       ),
                     ),
@@ -780,5 +954,22 @@ class ButtonEpisode extends StatelessWidget {
         ]),
       ),
     );
+  }
+}
+
+class CustomTrackShape extends RoundedRectSliderTrackShape {
+  @override
+  Rect getPreferredRect({
+    required RenderBox parentBox,
+    Offset offset = Offset.zero,
+    required SliderThemeData sliderTheme,
+    bool isEnabled = false,
+    bool isDiscrete = false,
+  }) {
+    final double? trackHeight = sliderTheme.trackHeight;
+    final double trackLeft = offset.dx;
+    final double trackTop = offset.dy + (parentBox.size.height - trackHeight!) / 2;
+    final double trackWidth = parentBox.size.width;
+    return Rect.fromLTWH(trackLeft, trackTop, trackWidth, 8);
   }
 }
