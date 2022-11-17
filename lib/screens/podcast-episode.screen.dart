@@ -4,12 +4,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../injection/injector.dart';
 import '../models/podcasts/episode.model.dart';
 import '../models/search/search_result.model.dart';
 import '../services/audio/audio-handler.services.dart';
+import '../services/audio/media.state.dart';
 import '../services/audio/podcast.service.dart';
 import '../services/downloading/file-downloader.service.dart';
 import '../themes/colors.dart';
@@ -26,8 +28,9 @@ class PodcastEpisodeScreen extends StatefulWidget {
   final int? podcastId;
   final AppBar? appBar;
   final Function escapeWithNav;
+  final Duration position;
   const PodcastEpisodeScreen(this.escapeWithNav,
-      {Key? key, this.podcastSearchResult, this.podcastId, this.appBar, this.episode})
+      {Key? key, this.podcastSearchResult, this.podcastId, this.appBar, this.episode, required this.position})
       : super(key: key);
 
   @override
@@ -40,6 +43,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
   var sort = "asc";
   var isDescOpen = false;
   var userService = getIt<UserService>();
+  late final audioHandler = getIt<AudioPlayerHandler>();
 
   selectEpisode(int index, List<Episode> data) async {
     var selectedEpisode = data[index];
@@ -137,6 +141,9 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
             )));
   }
 
+  Stream<MediaState> get _mediaStateStream => Rx.combineLatest2<MediaItem?, Duration, MediaState>(
+      audioHandler.mediaItem, AudioService.position, (mediaItem, position) => MediaState(mediaItem, position));
+
   Widget createCustomScrollView(SearchResult podcastSearchResult) {
     final size = MediaQuery.of(context).size;
     final remaining = Duration(seconds: (widget.episode!.audioLengthSec! - widget.episode!.playTime!).toInt());
@@ -211,7 +218,6 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                   children: [
                     Container(
                       margin: const EdgeInsets.only(top: 20),
-                      // height: 40,
                       child: Column(
                         children: [
                           Row(
@@ -307,158 +313,162 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                             : widget.episode!.playTime!.toInt());
 
                                 if (playing != true) {
-                                  return
-                                      // AbsorbPointer(
-                                      // child:
-                                      Column(
-                                    children: [
-                                      Container(
-                                        margin: EdgeInsets.only(top: 10),
-                                        padding: const EdgeInsets.symmetric(horizontal: 30),
-                                        child: Row(
+                                  return StreamBuilder<MediaState>(
+                                      stream: _mediaStateStream,
+                                      builder: (context, snapshot) {
+                                        final mediaState = snapshot.data;
+                                        final duration = mediaState?.mediaItem?.duration ?? Duration.zero;
+                                        final position = mediaState?.position ?? widget.position;
+                                        var sec = position.inSeconds;
+                                        var min = position.inMinutes;
+                                        var hours = position.inHours;
+                                        return Column(
                                           children: [
-                                            Text.rich(TextSpan(children: [
-                                              TextSpan(
-                                                  text: listeningTime.inHours != 0 ? '${listeningTime.inHours % 60}st ' : "",
-                                                  style: const TextStyle(color: Color.fromRGBO(99, 163, 253, 1))),
-                                              TextSpan(
-                                                  text: listeningTime.inMinutes != 0
-                                                      ? '${listeningTime.inMinutes % 60}min '
-                                                      : "",
-                                                  style: const TextStyle(color: Color.fromRGBO(99, 163, 253, 1))),
-                                              TextSpan(
-                                                text: '${listeningTime.inSeconds % 60}sec',
-                                                style: const TextStyle(color: Color.fromRGBO(99, 163, 253, 1)),
+                                            Container(
+                                              margin: EdgeInsets.only(top: 10),
+                                              padding: const EdgeInsets.symmetric(horizontal: 30),
+                                              child: Row(
+                                                children: [
+                                                  Text.rich(TextSpan(children: [
+                                                    TextSpan(
+                                                        text: hours != 0 ? '${hours % 60}st ' : "",
+                                                        style: const TextStyle(color: Color.fromRGBO(99, 163, 253, 1))),
+                                                    TextSpan(
+                                                        text: min != 0 ? '${min % 60}min ' : "",
+                                                        style: const TextStyle(color: Color.fromRGBO(99, 163, 253, 1))),
+                                                    TextSpan(
+                                                      text: '${sec % 60}sec',
+                                                      style: const TextStyle(color: Color.fromRGBO(99, 163, 253, 1)),
+                                                    ),
+                                                  ])),
+                                                  Text(
+                                                    "/",
+                                                    style: TextStyle(color: Color.fromRGBO(99, 163, 253, 1)),
+                                                  ),
+                                                  Text.rich(TextSpan(children: [
+                                                    TextSpan(
+                                                        text:
+                                                            episodeTime.inHours != 0 ? '${episodeTime.inHours % 60}st ' : "",
+                                                        style: const TextStyle(color: Color.fromRGBO(99, 163, 253, 1))),
+                                                    TextSpan(
+                                                        text: episodeTime.inMinutes != 0
+                                                            ? '${episodeTime.inMinutes % 60}min '
+                                                            : "",
+                                                        style: const TextStyle(color: Color.fromRGBO(99, 163, 253, 1))),
+                                                    TextSpan(
+                                                      text: '${episodeTime.inSeconds % 60}sec',
+                                                      style: const TextStyle(color: Color.fromRGBO(99, 163, 253, 1)),
+                                                    ),
+                                                  ])),
+                                                ],
                                               ),
-                                            ])),
-                                            Text(
-                                              "/",
-                                              style: TextStyle(color: Color.fromRGBO(99, 163, 253, 1)),
                                             ),
-                                            Text.rich(TextSpan(children: [
-                                              TextSpan(
-                                                  text: episodeTime.inHours != 0 ? '${episodeTime.inHours % 60}st ' : "",
-                                                  style: const TextStyle(color: Color.fromRGBO(99, 163, 253, 1))),
-                                              TextSpan(
-                                                  text:
-                                                      episodeTime.inMinutes != 0 ? '${episodeTime.inMinutes % 60}min ' : "",
-                                                  style: const TextStyle(color: Color.fromRGBO(99, 163, 253, 1))),
-                                              TextSpan(
-                                                text: '${episodeTime.inSeconds % 60}sec',
-                                                style: const TextStyle(color: Color.fromRGBO(99, 163, 253, 1)),
+                                            Container(
+                                              margin: EdgeInsets.only(top: 5),
+                                              decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  border: Border.all(color: Color.fromRGBO(99, 163, 253, 1))),
+                                              height: 10,
+                                              width: 333,
+                                              child: SliderTheme(
+                                                data: SliderTheme.of(context).copyWith(
+                                                    trackHeight: 8.0,
+                                                    thumbColor: Color.fromRGBO(99, 163, 253, 1),
+                                                    thumbShape: RoundSliderThumbShape(enabledThumbRadius: 5),
+                                                    // thumbShape: HiddenThumbComponentShape(),
+                                                    activeTrackColor: Color.fromRGBO(99, 163, 253, 1),
+                                                    inactiveTrackColor: Color.fromRGBO(15, 23, 41, 1),
+                                                    trackShape: CustomTrackShape()
+                                                    // thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 0.0)
+                                                    ),
+                                                child: Slider(
+                                                    value: (position.inSeconds.toDouble()),
+                                                    onChanged: (double value) {},
+                                                    min: 0,
+                                                    max: widget.episode!.audioLengthSec?.toDouble() ?? 0),
                                               ),
-                                            ])),
+                                              // )
+                                            ),
                                           ],
-                                        ),
-                                      ),
-                                      Container(
-                                        margin: EdgeInsets.only(top: 5),
-                                        decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(10),
-                                            border: Border.all(color: Color.fromRGBO(99, 163, 253, 1))),
-                                        height: 10,
-                                        width: 333,
-                                        child: SliderTheme(
-                                          data: SliderTheme.of(context).copyWith(
-                                              trackHeight: 8.0,
-                                              thumbColor: Color.fromRGBO(99, 163, 253, 1),
-                                              thumbShape: RoundSliderThumbShape(enabledThumbRadius: 5),
-                                              // thumbShape: HiddenThumbComponentShape(),
-                                              activeTrackColor: Color.fromRGBO(99, 163, 253, 1),
-                                              inactiveTrackColor: Color.fromRGBO(15, 23, 41, 1),
-                                              trackShape: CustomTrackShape()
-                                              // thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 0.0)
-                                              ),
-                                          child: Slider(
-                                              value: (widget.episode!.playTime!.toDouble() == null
-                                                  ? 0
-                                                  : widget.episode!.playTime!.toDouble() >=
-                                                          widget.episode!.audioLengthSec!.toDouble()
-                                                      ? widget.episode!.audioLengthSec!.toDouble()
-                                                      : widget.episode!.playTime!.toDouble()),
-                                              onChanged: (double value) {},
-                                              min: 0,
-                                              max: widget.episode!.audioLengthSec?.toDouble() ?? 0),
-                                        ),
-                                        // )
-                                      ),
-                                    ],
-                                  );
+                                        );
+                                      });
                                 } else {
-                                  return
-                                      // AbsorbPointer(
-                                      //     child:
-                                      Column(
-                                    children: [
-                                      Container(
-                                        margin: EdgeInsets.only(top: 10),
-                                        padding: const EdgeInsets.symmetric(horizontal: 30),
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  return StreamBuilder<MediaState>(
+                                      stream: _mediaStateStream,
+                                      builder: (context, snapshot) {
+                                        final mediaState = snapshot.data;
+                                        final duration = mediaState?.mediaItem?.duration ?? Duration.zero;
+                                        final position = mediaState?.position ?? widget.position;
+                                        var sec = position.inSeconds;
+                                        var min = position.inMinutes;
+                                        var hours = position.inHours;
+                                        return Column(
                                           children: [
-                                            Text.rich(TextSpan(children: [
-                                              TextSpan(
-                                                  text: listeningTime.inHours != 0 ? '${listeningTime.inHours % 60}st ' : "",
-                                                  style: const TextStyle(color: Color.fromRGBO(188, 140, 75, 1))),
-                                              TextSpan(
-                                                  text: listeningTime.inMinutes != 0
-                                                      ? '${listeningTime.inMinutes % 60}min '
-                                                      : "",
-                                                  style: const TextStyle(color: Color.fromRGBO(188, 140, 75, 1))),
-                                              TextSpan(
-                                                text: '${listeningTime.inSeconds % 60}sec',
-                                                style: const TextStyle(color: Color.fromRGBO(188, 140, 75, 1)),
+                                            Container(
+                                              margin: EdgeInsets.only(top: 10),
+                                              padding: const EdgeInsets.symmetric(horizontal: 30),
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  Text.rich(TextSpan(children: [
+                                                    TextSpan(
+                                                        text: hours != 0 ? '${hours % 60}st ' : "",
+                                                        style: const TextStyle(color: Color.fromRGBO(188, 140, 75, 1))),
+                                                    TextSpan(
+                                                        text: min != 0 ? '${min % 60}min ' : "",
+                                                        style: const TextStyle(color: Color.fromRGBO(188, 140, 75, 1))),
+                                                    TextSpan(
+                                                      text: '${sec % 60}sec',
+                                                      style: const TextStyle(color: Color.fromRGBO(188, 140, 75, 1)),
+                                                    ),
+                                                  ])),
+                                                  Text.rich(TextSpan(children: [
+                                                    TextSpan(
+                                                        text:
+                                                            episodeTime.inHours != 0 ? '${episodeTime.inHours % 60}st ' : "",
+                                                        style: const TextStyle(color: Color.fromRGBO(188, 140, 75, 1))),
+                                                    TextSpan(
+                                                        text: episodeTime.inMinutes != 0
+                                                            ? '${episodeTime.inMinutes % 60}min '
+                                                            : "",
+                                                        style: const TextStyle(color: Color.fromRGBO(188, 140, 75, 1))),
+                                                    TextSpan(
+                                                      text: '${episodeTime.inSeconds % 60}sec',
+                                                      style: const TextStyle(color: Color.fromRGBO(188, 140, 75, 1)),
+                                                    ),
+                                                  ])),
+                                                ],
                                               ),
-                                            ])),
-                                            Text.rich(TextSpan(children: [
-                                              TextSpan(
-                                                  text: episodeTime.inHours != 0 ? '${episodeTime.inHours % 60}st ' : "",
-                                                  style: const TextStyle(color: Color.fromRGBO(188, 140, 75, 1))),
-                                              TextSpan(
-                                                  text:
-                                                      episodeTime.inMinutes != 0 ? '${episodeTime.inMinutes % 60}min ' : "",
-                                                  style: const TextStyle(color: Color.fromRGBO(188, 140, 75, 1))),
-                                              TextSpan(
-                                                text: '${episodeTime.inSeconds % 60}sec',
-                                                style: const TextStyle(color: Color.fromRGBO(188, 140, 75, 1)),
+                                            ),
+                                            Container(
+                                              margin: EdgeInsets.only(top: 5),
+                                              decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  border: Border.all(color: Color.fromRGBO(188, 140, 75, 1))),
+                                              height: 10,
+                                              width: 333,
+                                              child: SliderTheme(
+                                                data: SliderTheme.of(context).copyWith(
+                                                    trackHeight: 8.0,
+                                                    thumbColor: Color.fromRGBO(188, 140, 75, 1),
+                                                    thumbShape: RoundSliderThumbShape(enabledThumbRadius: 5),
+                                                    // thumbShape: HiddenThumbComponentShape(),
+                                                    inactiveTrackColor: Color.fromRGBO(15, 23, 41, 1),
+                                                    activeTrackColor: Color.fromRGBO(188, 140, 75, 1),
+                                                    trackShape: CustomTrackShape()
+                                                    // thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 0.0)
+                                                    ),
+                                                child: Slider(
+                                                    value: (position.inSeconds.toDouble()),
+                                                    onChanged: (double value) {},
+                                                    min: 0,
+                                                    max: widget.episode!.audioLengthSec?.toDouble() ?? 0),
                                               ),
-                                            ])),
+                                              //)
+                                            ),
                                           ],
-                                        ),
-                                      ),
-                                      Container(
-                                        margin: EdgeInsets.only(top: 5),
-                                        decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(10),
-                                            border: Border.all(color: Color.fromRGBO(188, 140, 75, 1))),
-                                        height: 10,
-                                        width: 333,
-                                        child: SliderTheme(
-                                          data: SliderTheme.of(context).copyWith(
-                                              trackHeight: 8.0,
-                                              thumbColor: Color.fromRGBO(188, 140, 75, 1),
-                                              thumbShape: RoundSliderThumbShape(enabledThumbRadius: 5),
-                                              // thumbShape: HiddenThumbComponentShape(),
-                                              inactiveTrackColor: Color.fromRGBO(15, 23, 41, 1),
-                                              activeTrackColor: Color.fromRGBO(188, 140, 75, 1),
-                                              trackShape: CustomTrackShape()
-                                              // thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 0.0)
-                                              ),
-                                          child: Slider(
-                                              value: (widget.episode!.playTime!.toDouble() == null
-                                                  ? 0
-                                                  : widget.episode!.playTime!.toDouble() >=
-                                                          widget.episode!.audioLengthSec!.toDouble()
-                                                      ? widget.episode!.audioLengthSec!.toDouble()
-                                                      : widget.episode!.playTime!.toDouble()),
-                                              onChanged: (double value) {},
-                                              min: 0,
-                                              max: widget.episode!.audioLengthSec?.toDouble() ?? 0),
-                                        ),
-                                        //)
-                                      ),
-                                    ],
-                                  );
+                                        );
+                                      });
                                 }
                               }),
                         ],
