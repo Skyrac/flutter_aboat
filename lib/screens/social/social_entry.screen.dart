@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:Talkaboat/models/user/social-user.model.dart';
 import 'package:Talkaboat/services/user/social.service.dart';
 import 'package:Talkaboat/widgets/login-button.widget.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../injection/injector.dart';
@@ -114,8 +116,7 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
   Widget createFriendBody() {
     var size = MediaQuery.of(context).size;
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
+      child: Container(
         child: Column(mainAxisSize: MainAxisSize.max, children: [
           buildSearchField(context),
           Expanded(
@@ -150,7 +151,7 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
                   });
                 }),
                 decoration: const InputDecoration(
-                    border: InputBorder.none, hintText: "Search for category...", suffixIcon: Icon(Icons.search)),
+                    border: InputBorder.none, hintText: "Search friends...", suffixIcon: Icon(Icons.search)),
                 style: Theme.of(context).textTheme.titleLarge,
               ),
             ),
@@ -200,18 +201,36 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
     double width = size.width > 640 ? 640 : size.width;
     List<Widget> widgets = [];
     data.forEach((element) {
-      widgets.add(Card(
-          child: SizedBox(
-              height: 120,
+      widgets.add(Padding(
+          padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+          child: Container(
               width: width,
               child: Row(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.network(element.image ??
-                            "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=wavatar&f=y")),
+                  Container(
+                    padding: const EdgeInsets.only(right: 5),
+                    width: 100,
+                    height: 100,
+                    child: Center(
+                      child: Stack(
+                        children: [
+                          ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: SizedBox(
+                                  child: CachedNetworkImage(
+                                imageUrl: element.image ??
+                                    "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=wavatar&f=y",
+                                cacheManager: CacheManager(Config(
+                                    element.image ??
+                                        "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=wavatar&f=y",
+                                    stalePeriod: const Duration(days: 2))),
+                                fit: BoxFit.fill,
+                                placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
+                                errorWidget: (context, url, error) => const Icon(Icons.error),
+                              ))),
+                        ],
+                      ),
+                    ),
                   ),
                   Padding(
                       padding: const EdgeInsets.symmetric(vertical: 15.0),

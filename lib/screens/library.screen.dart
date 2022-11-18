@@ -53,7 +53,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
             ),
             body: userService.isConnected
                 ? Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: FutureBuilder(
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.done) {
