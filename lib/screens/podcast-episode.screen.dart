@@ -242,11 +242,10 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                   onPressed: () {},
                                 );
                               } else if (playing != true) {
-                                return ButtonEpisode(
-                                    func: audioPlayer.play, image: "assets/images/play.png", title: "Abspielen");
+                                return ButtonEpisode(func: audioPlayer.play, image: "assets/images/play.png", title: "Play");
                               } else {
                                 return ButtonEpisode(
-                                    func: audioPlayer.pause, image: "assets/images/pause.png", title: "Pausieren");
+                                    func: audioPlayer.pause, image: "assets/images/pause.png", title: "Stop");
                               }
                             },
                           ),
@@ -302,7 +301,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                           height: 40,
                                           alignment: Alignment.centerLeft,
                                           child: Text(
-                                            "Allgemeines",
+                                            "General",
                                             style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                                   color: const Color.fromRGBO(99, 163, 253, 1),
                                                 ),
@@ -314,7 +313,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                             const SizedBox(
                                               width: 30,
                                               child: Text(
-                                                "Titel",
+                                                "Title",
                                                 style: TextStyle(fontWeight: FontWeight.w600),
                                               ),
                                             ),
@@ -361,11 +360,11 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: [
                                               const Text(
-                                                "Dauer",
+                                                "Duration",
                                                 style: TextStyle(fontWeight: FontWeight.w600),
                                               ),
                                               Text.rich(TextSpan(children: [
-                                                TextSpan(text: remaining.inHours != 0 ? '${remaining.inHours % 60}st ' : ""),
+                                                TextSpan(text: remaining.inHours != 0 ? '${remaining.inHours % 60}hr ' : ""),
                                                 TextSpan(
                                                     text: remaining.inMinutes != 0 ? '${remaining.inMinutes % 60}min ' : ""),
                                                 TextSpan(
@@ -379,7 +378,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                           margin: const EdgeInsets.only(bottom: 6),
                                           alignment: Alignment.centerLeft,
                                           child: const Text(
-                                            "Author",
+                                            "Authors",
                                             style: TextStyle(fontWeight: FontWeight.w600),
                                           ),
                                         ),
@@ -397,7 +396,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                           alignment: Alignment.centerLeft,
                                           margin: const EdgeInsets.only(bottom: 7),
                                           child: const Text(
-                                            "Kategorien",
+                                            "Categories",
                                             style: TextStyle(fontWeight: FontWeight.w600),
                                           ),
                                         ),
@@ -422,7 +421,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                           alignment: Alignment.centerLeft,
                                           margin: const EdgeInsets.only(bottom: 10),
                                           child: Text(
-                                            "Beschreibung",
+                                            "Description",
                                             style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                                   color: const Color.fromRGBO(99, 163, 253, 1),
                                                 ),
