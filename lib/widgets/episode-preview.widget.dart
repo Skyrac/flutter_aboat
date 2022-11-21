@@ -323,7 +323,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                           children: [
                             Text.rich(TextSpan(children: [
                               TextSpan(
-                                  text: remaining.inHours != 0 ? '${remaining.inHours % 60}st ' : "",
+                                  text: remaining.inHours != 0 ? '${remaining.inHours % 60}hr ' : "",
                                   style: const TextStyle(fontSize: 10)),
                               TextSpan(
                                   text: remaining.inMinutes != 0 ? '${remaining.inMinutes % 60}min ' : "",
