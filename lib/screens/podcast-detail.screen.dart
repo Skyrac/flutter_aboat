@@ -33,17 +33,9 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
   final audioPlayer = getIt<AudioPlayerHandler>();
   final podcastService = getIt<PodcastService>();
   final ChatService chatService = getIt<ChatService>();
-  List<String> messageType = ["", "Podcast", "Episode"];
-  List<ChatMessageDto> messages = [];
-
-  var sort = "asc";
-  var isDescOpen = false;
-  var userService = getIt<UserService>();
-
-  @override
-  initState() {
-    super.initState();
-  }
+  final userService = getIt<UserService>();
+  final sort = "asc";
+  final isDescOpen = false;
 
   selectEpisode(int index, List<Episode> data) async {
     var selectedEpisode = data[index];
@@ -391,6 +383,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                 if (snapshot.hasData && snapshot.data != null) {
                   return Chat(
                     roomId: snapshot.data!.roomId!,
+                    messageType: 1,
                     header: SliverPersistentHeader(
                       delegate: PodcastDetailSliver(widget.escapeWithNav,
                           expandedHeight: size.height * 0.4, podcast: podcastSearchResult),

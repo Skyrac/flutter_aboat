@@ -113,6 +113,31 @@ class ChatMessageTile extends StatelessWidget {
                 padding: const EdgeInsets.all(10.0),
                 child: Column(
                   children: [
+                    message.answeredMessage != null
+                        ? Container(
+                            padding: const EdgeInsets.all(5),
+                            margin: const EdgeInsets.only(bottom: 5),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: const Color.fromRGBO(48, 73, 123, 1),
+                            ),
+                            child: Row(children: [
+                              Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                                  child: Text(
+                                    message.answeredMessage!.senderName.toString(),
+                                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
+                                  )),
+                              Center(
+                                  child: Text(
+                                textAlign: TextAlign.center,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                message.answeredMessage!.content,
+                              ))
+                            ]),
+                          )
+                        : const SizedBox(),
                     Container(
                       margin: const EdgeInsets.only(bottom: 10),
                       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -157,25 +182,6 @@ class ChatMessageTile extends StatelessWidget {
                                 style: const TextStyle(color: Color.fromRGBO(99, 163, 253, 1))),
                       ]),
                     ),
-                    message.answeredMessage != null
-                        ? Container(
-                            padding: const EdgeInsets.all(5),
-                            margin: const EdgeInsets.only(bottom: 5),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: const Color.fromRGBO(48, 73, 123, 1),
-                            ),
-                            width: 300,
-                            //child: Expanded(
-                            child: Center(
-                                child: Text(
-                              textAlign: TextAlign.center,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 2,
-                              message.answeredMessage!.content,
-                            )),
-                          )
-                        : Container(),
                     Padding(
                       padding: const EdgeInsets.only(right: 25),
                       child: Align(alignment: Alignment.centerLeft, child: Text(message.content.toString())),

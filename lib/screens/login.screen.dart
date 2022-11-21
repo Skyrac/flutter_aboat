@@ -229,7 +229,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ShowSnackBar(context, "Check your E-Mail and Verify the Pin");
         final bodyMediumTheme = Theme.of(context).textTheme.bodyMedium;
         final pinResult = await showInputDialog(context, "Confirm PIN", (_) {
-          return Text.rich(TextSpan(children: [
+          return [
             TextSpan(
               text: 'You should receive a PIN on ',
               style: bodyMediumTheme,
@@ -243,8 +243,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   ' to verify your login. If you have no account registered under your email, you’ll be asked to setup an username after sign in.',
               style: bodyMediumTheme,
             ),
-          ]));
-        }, "Pin...");
+          ];
+        }, "Pin...", (pin) => pin.length >= 7, "Invalid Pin");
         //showAlert(context, socialLoginPinVerification, "Verify Pin", "Pin", "", verifySocialLoginPin);
       } else if (userService.lastConnectionState?.text == "new_account") {
         await doSocialRegister(context, Theme.of(context).textTheme.bodyMedium!, navigator, null);
@@ -278,7 +278,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final username = await showInputDialog(
         context,
         "Choose an username",
-        (_) => Text.rich(TextSpan(children: [
+        (_) => [
               TextSpan(
                 text:
                     'Your username will be shown for in social media features as well as comments and ratings you might leave for podcasts and episodes.',
@@ -290,8 +290,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: theme.copyWith(color: Colors.red.shade100),
                     )
                   : const TextSpan()
-            ])),
-        "Username...");
+            ],
+        "Username...",
+        null,
+        null);
     return username;
   }
 
@@ -415,7 +417,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               final bodyMediumTheme = Theme.of(context).textTheme.bodyMedium;
                               await sendPinRequest();
                               final pinResult = await showInputDialog(context, "Confirm PIN", (_) {
-                                return Text.rich(TextSpan(children: [
+                                return [
                                   TextSpan(
                                     text: 'You should receive a PIN on ',
                                     style: bodyMediumTheme,
@@ -429,8 +431,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                         ' to verify your login. If you have no account registered under your email, you’ll be asked to setup an username after sign in.',
                                     style: bodyMediumTheme,
                                   ),
-                                ]));
-                              }, "Pin...");
+                                ];
+                              }, "Pin...", (pin) => pin.length >= 7, "Invalid Pin");
                               if (pinResult != null) {
                                 // Confirm
                                 setState(() {
@@ -535,12 +537,19 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<String?> showInputDialog(
-      BuildContext context, String title, Text Function(BuildContext context) textBuilder, String hintText) async {
+      BuildContext context,
+      String title,
+      List<TextSpan> Function(BuildContext context) textBuilder,
+      String hintText,
+      bool Function(String)? validate,
+      String? validateErrorTest) async {
     final textController = TextEditingController();
     return showDialog<String>(
       context: context,
       builder: (BuildContext context) {
-        return Builder(builder: (context) {
+        bool isValid = true;
+        final bodyMediumTheme = Theme.of(context).textTheme.bodyMedium;
+        return StatefulBuilder(builder: (context, setState) {
           return Container(
             width: 150,
             height: 150,
@@ -570,7 +579,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 23.5),
-                        child: textBuilder(context),
+                        child: Text.rich(TextSpan(children: [
+                          ...textBuilder(context),
+                          validateErrorTest != null && !isValid
+                              ? TextSpan(
+                                  text: validateErrorTest,
+                                  style: bodyMediumTheme?.copyWith(fontWeight: FontWeight.w600),
+                                )
+                              : const TextSpan()
+                        ])),
                       ),
                       const SizedBox(
                         height: 10,
@@ -623,7 +640,20 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                             RawMaterialButton(
                               onPressed: () {
-                                Navigator.of(context).pop(textController.text);
+                                if (validate != null) {
+                                  bool _valid = validate(textController.text);
+                                  if (_valid) {
+                                    Navigator.of(context).pop(textController.text);
+                                  } else {
+                                    setState(
+                                      () {
+                                        isValid = false;
+                                      },
+                                    );
+                                  }
+                                } else {
+                                  Navigator.of(context).pop(textController.text);
+                                }
                               },
                               child: Container(
                                 decoration: BoxDecoration(
