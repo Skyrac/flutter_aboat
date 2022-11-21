@@ -33,16 +33,9 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
   final audioPlayer = getIt<AudioPlayerHandler>();
   final podcastService = getIt<PodcastService>();
   final ChatService chatService = getIt<ChatService>();
-  List<ChatMessageDto> messages = [];
-
-  var sort = "asc";
-  var isDescOpen = false;
-  var userService = getIt<UserService>();
-
-  @override
-  initState() {
-    super.initState();
-  }
+  final userService = getIt<UserService>();
+  final sort = "asc";
+  final isDescOpen = false;
 
   selectEpisode(int index, List<Episode> data) async {
     var selectedEpisode = data[index];
