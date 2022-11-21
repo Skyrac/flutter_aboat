@@ -275,7 +275,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                                               SizedBox(
                                                                 width: 10,
                                                               ),
-                                                              Text("Abspielen",
+                                                              Text("Play",
                                                                   style: TextStyle(color: Color.fromRGBO(99, 163, 253, 1)))
                                                             ]),
                                                       ),
