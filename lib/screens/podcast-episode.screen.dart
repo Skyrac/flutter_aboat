@@ -17,7 +17,6 @@ import '../services/audio/media.state.dart';
 import '../services/audio/podcast.service.dart';
 import '../services/downloading/file-downloader.service.dart';
 import '../themes/colors.dart';
-import '../utils/common.dart';
 import '../utils/scaffold_wave.dart';
 import '../widgets/bottom-sheets/playlist.bottom-sheet.dart';
 import '../widgets/episode-preview.widget.dart';
@@ -42,10 +41,10 @@ class PodcastEpisodeScreen extends StatefulWidget {
 class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
   final audioPlayer = getIt<AudioPlayerHandler>();
   final podcastService = getIt<PodcastService>();
-  var sort = "asc";
-  var isDescOpen = false;
-  var userService = getIt<UserService>();
-  late final audioHandler = getIt<AudioPlayerHandler>();
+  final sort = "asc";
+  final isDescOpen = false;
+  final userService = getIt<UserService>();
+  final audioHandler = getIt<AudioPlayerHandler>();
 
   selectEpisode(int index, List<Episode> data) async {
     var selectedEpisode = data[index];
@@ -53,16 +52,6 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
       audioPlayer.togglePlaybackState();
     } else {
       await audioPlayer.updateEpisodeQueue(data, index: index);
-    }
-  }
-
-  Future<SearchResult?> GetPodcast() async {
-    if (widget.podcastSearchResult != null) {
-      return widget.podcastSearchResult!;
-    } else if (widget.podcastId != null) {
-      return await podcastService.getPodcastDetails(widget.podcastId!, sort, -1);
-    } else {
-      return null;
     }
   }
 
@@ -139,7 +128,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                           )
                         ]));
               },
-              future: GetPodcast(),
+              future: getPodcast(widget.episode, widget.podcastId),
             )));
   }
 
@@ -148,7 +137,6 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
 
   Widget createCustomScrollView(SearchResult podcastSearchResult) {
     final size = MediaQuery.of(context).size;
-    final remaining = Duration(seconds: (widget.episode!.audioLengthSec! - widget.episode!.playTime!).toInt());
     return DefaultTabController(
       animationDuration: Duration.zero,
       length: 3,
@@ -235,9 +223,6 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                 final mediaState = snapshot.data;
                                 final duration = mediaState?.mediaItem?.duration ?? Duration.zero;
                                 final position = mediaState?.position ?? widget.position;
-                                var sec = position.inSeconds;
-                                var min = position.inMinutes;
-                                var hours = position.inHours;
                                 return Column(
                                   children: [
                                     Container(
@@ -286,13 +271,13 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                                         func: audioPlayer.play,
                                                         image: "assets/images/play.png",
                                                         title: "Play",
-                                                        borderAndTextColor: Color.fromRGBO(99, 163, 253, 1));
+                                                        borderAndTextColor: const Color.fromRGBO(99, 163, 253, 1));
                                                   } else {
                                                     return ButtonEpisode(
                                                         func: audioPlayer.pause,
                                                         image: "assets/images/pause.png",
                                                         title: "Stop",
-                                                        borderAndTextColor: Color.fromRGBO(188, 140, 75, 1));
+                                                        borderAndTextColor: const Color.fromRGBO(188, 140, 75, 1));
                                                   }
                                                 },
                                               ),
@@ -310,7 +295,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                                       },
                                                       image: "assets/images/cloud_complete.png",
                                                       title: "Downloaded",
-                                                      borderAndTextColor: Color.fromRGBO(76, 175, 80, 1),
+                                                      borderAndTextColor: const Color.fromRGBO(76, 175, 80, 1),
                                                     )
                                                   : ButtonEpisode(
                                                       func: () async {
@@ -322,7 +307,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                                       },
                                                       image: "assets/images/cloud.png",
                                                       title: "Download",
-                                                      borderAndTextColor: Color.fromRGBO(99, 163, 253, 1),
+                                                      borderAndTextColor: const Color.fromRGBO(99, 163, 253, 1),
                                                     )
                                             ],
                                           ),
@@ -330,14 +315,13 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                               stream: audioPlayer.playbackState,
                                               builder: (context, snapshot) {
                                                 final playbackState = snapshot.data;
-                                                final processingState = playbackState?.processingState;
                                                 final playing = playbackState?.playing;
                                                 if (playing != true) {
-                                                  return buildEpisodeDetails(
-                                                      context, position, duration, Color.fromRGBO(99, 163, 253, 1), false);
+                                                  return buildEpisodeDetails(context, position, duration,
+                                                      const Color.fromRGBO(99, 163, 253, 1), false);
                                                 } else {
-                                                  return buildEpisodeDetails(
-                                                      context, position, duration, Color.fromRGBO(188, 140, 75, 1), true);
+                                                  return buildEpisodeDetails(context, position, duration,
+                                                      const Color.fromRGBO(188, 140, 75, 1), true);
                                                 }
                                               }),
                                         ],
@@ -514,7 +498,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                           );
                         }
                       }
-                      return SizedBox();
+                      return const SizedBox();
                     }),
               )
             ],
@@ -612,11 +596,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                                       style: const TextStyle(color: Colors.white, fontSize: 12)),
                                                 ),
                                                 FutureBuilder(
-                                                    future: Future.wait([
-                                                      podcastService.search(podcast.title!, rank: PodcastRank.NewComer),
-                                                      podcastService.search(podcast.title!, rank: PodcastRank.Receiver),
-                                                      podcastService.search(podcast.title!, rank: PodcastRank.Hodler),
-                                                    ]),
+                                                    future: getPodcast(widget.episode, widget.podcastId),
                                                     builder: (context, snapshot) {
                                                       if (snapshot.connectionState == ConnectionState.done) {
                                                         if (snapshot.hasError) {
@@ -627,69 +607,46 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                                             ),
                                                           );
                                                         }
-                                                        // Extracting data from snapshot object
-                                                        var reward;
-                                                        final allData = snapshot.data as List<List<Podcast>>;
-                                                        final newcomers = allData[0];
-                                                        final receiver = allData[1];
-                                                        final hodler = allData[2];
-                                                        for (final el in newcomers) {
-                                                          if (el.title == podcast.title!) {
-                                                            reward = "x1.5";
-                                                            break;
-                                                          }
+                                                        if (snapshot.data != null) {
+                                                          final podcast = snapshot.data!;
+                                                          final rank = PodcastRankfromNumber(podcast.rank);
+                                                          String? reward = PodcastMultiplerfromRank(rank);
+                                                          return reward != null
+                                                              ? Row(
+                                                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                                                  mainAxisAlignment: MainAxisAlignment.start,
+                                                                  children: [
+                                                                    Text(
+                                                                        '${podcast.totalEpisodes!.toString()} Episodes     - ',
+                                                                        style: Theme.of(context).textTheme.titleMedium),
+                                                                    const SizedBox(
+                                                                      width: 10,
+                                                                    ),
+                                                                    const Image(
+                                                                      image: AssetImage("assets/icons/icon_fire.png"),
+                                                                    ),
+                                                                    const SizedBox(
+                                                                      width: 10,
+                                                                    ),
+                                                                    Text("Reward $reward",
+                                                                        style: Theme.of(context).textTheme.titleMedium)
+                                                                  ],
+                                                                )
+                                                              : Row(
+                                                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                                                  mainAxisAlignment: MainAxisAlignment.start,
+                                                                  children: [
+                                                                    Text(
+                                                                        '${podcast.totalEpisodes!.toString()} Episodes       ',
+                                                                        style: Theme.of(context).textTheme.titleMedium),
+                                                                    const SizedBox(
+                                                                      width: 10,
+                                                                    ),
+                                                                  ],
+                                                                );
                                                         }
-                                                        if (reward == null) {
-                                                          for (final el in receiver) {
-                                                            if (el.title == podcast.title!) {
-                                                              reward = "x1.25";
-                                                              break;
-                                                            }
-                                                          }
-                                                        }
-                                                        if (reward == null) {
-                                                          for (final el in hodler) {
-                                                            if (el.title == podcast.title!) {
-                                                              reward = "x1.1";
-                                                              break;
-                                                            }
-                                                          }
-                                                        }
-                                                        return reward != null
-                                                            ? Row(
-                                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                                children: [
-                                                                  Text(
-                                                                      '${podcast.totalEpisodes!.toString()} Episodes     - ',
-                                                                      style: Theme.of(context).textTheme.titleMedium),
-                                                                  const SizedBox(
-                                                                    width: 10,
-                                                                  ),
-                                                                  const Image(
-                                                                    image: AssetImage("assets/icons/icon_fire.png"),
-                                                                  ),
-                                                                  const SizedBox(
-                                                                    width: 10,
-                                                                  ),
-                                                                  Text("Reward ${reward}",
-                                                                      style: Theme.of(context).textTheme.titleMedium)
-                                                                ],
-                                                              )
-                                                            : Row(
-                                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                                children: [
-                                                                  Text(
-                                                                      '${podcast.totalEpisodes!.toString()} Episodes       ',
-                                                                      style: Theme.of(context).textTheme.titleMedium),
-                                                                  const SizedBox(
-                                                                    width: 10,
-                                                                  ),
-                                                                ],
-                                                              );
                                                       }
-                                                      return Container(
+                                                      return const SizedBox(
                                                           width: 15.0, height: 15.0, child: CircularProgressIndicator());
                                                     }),
                                               ],
@@ -710,7 +667,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                 );
                               }
                             }
-                            return SizedBox();
+                            return const SizedBox();
                           })))
             ],
           ),
@@ -734,7 +691,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
   buildEpisodeDetails(context, Duration position, Duration duration, Color color, bool isPlay) => Column(
         children: [
           Container(
-            margin: EdgeInsets.only(top: 10),
+            margin: const EdgeInsets.only(top: 10),
             padding: const EdgeInsets.symmetric(horizontal: 30),
             child: Row(
               mainAxisAlignment: isPlay ? MainAxisAlignment.spaceBetween : MainAxisAlignment.start,
@@ -749,7 +706,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                   ),
                 ])),
                 isPlay
-                    ? SizedBox()
+                    ? const SizedBox()
                     : Text(
                         "/",
                         style: TextStyle(color: color),
@@ -767,7 +724,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
             ),
           ),
           Container(
-            margin: EdgeInsets.only(top: 5),
+            margin: const EdgeInsets.only(top: 5),
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), border: Border.all(color: color)),
             height: 10,
             width: 333,
@@ -775,10 +732,10 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
               data: SliderTheme.of(context).copyWith(
                   trackHeight: 8.0,
                   thumbColor: color,
-                  thumbShape: RoundSliderThumbShape(enabledThumbRadius: 5),
+                  thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 5),
                   // thumbShape: HiddenThumbComponentShape(),
                   activeTrackColor: color,
-                  inactiveTrackColor: Color.fromRGBO(15, 23, 41, 1),
+                  inactiveTrackColor: const Color.fromRGBO(15, 23, 41, 1),
                   trackShape: CustomTrackShape()
                   // thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 0.0)
                   ),
@@ -900,6 +857,18 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
     RegExp exp = RegExp(r"<[^>]*>", multiLine: true, caseSensitive: true);
 
     return htmlText.replaceAll(exp, '');
+  }
+
+  Future<Podcast?> getPodcast(Episode? episode, int? podcastId) {
+    if (episode != null) {
+      if (episode.podcast != null) {
+        return Future.value(episode.podcast);
+      }
+    }
+    if (podcastId != null || (episode != null && episode.podcastId != null)) {
+      return podcastService.getPodcastDetails(podcastId ?? episode!.podcastId!, sort, 1);
+    }
+    return Future.value(null);
   }
 }
 
