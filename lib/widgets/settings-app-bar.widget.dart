@@ -34,12 +34,14 @@ class _SettingsAppBarWidgetState extends State<SettingsAppBarWidget> {
                   icon: const Icon(Icons.logout),
                   tooltip: '',
                   onPressed: () async {
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (context) => const LoginScreen(
-                              false,
-                              allowPop: false,
-                            )));
                     await userService.logout();
+                    widget.escapeWithNav(PageTransition(
+                        alignment: Alignment.bottomCenter,
+                        curve: Curves.bounceOut,
+                        type: PageTransitionType.fade,
+                        duration: const Duration(milliseconds: 300),
+                        reverseDuration: const Duration(milliseconds: 200),
+                        child: LoginScreen(true, refreshParent: refresh)));
                   },
                 )
               : IconButton(
