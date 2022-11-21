@@ -71,6 +71,7 @@ class Podcast extends SearchResult {
       podcastId = json['id'];
       id = json['id'];
     }
+    roomId = json['roomId'];
     image = json['image'];
     genreIds = json['genres'];
     thumbnail = json['thumbnail'];
@@ -113,6 +114,7 @@ class Podcast extends SearchResult {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['podcastId'] = podcastId;
     data['id'] = podcastId;
+    data['roomId'] = roomId;
     data['image'] = image;
     data['genres'] = genreIds;
     data['thumbnail'] = thumbnail;

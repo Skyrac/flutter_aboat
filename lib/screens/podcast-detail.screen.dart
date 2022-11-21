@@ -1,8 +1,13 @@
+import 'dart:async';
+
+import 'package:Talkaboat/services/hubs/chat/chat.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
+import 'package:Talkaboat/widgets/chat.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../injection/injector.dart';
+import '../models/chat/chat-dtos.dart';
 import '../models/podcasts/episode.model.dart';
 import '../models/search/search_result.model.dart';
 import '../services/audio/audio-handler.services.dart';
@@ -27,9 +32,18 @@ class PodcastDetailScreen extends StatefulWidget {
 class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
   final audioPlayer = getIt<AudioPlayerHandler>();
   final podcastService = getIt<PodcastService>();
+  final ChatService chatService = getIt<ChatService>();
+  List<String> messageType = ["", "Podcast", "Episode"];
+  List<ChatMessageDto> messages = [];
+
   var sort = "asc";
   var isDescOpen = false;
   var userService = getIt<UserService>();
+
+  @override
+  initState() {
+    super.initState();
+  }
 
   selectEpisode(int index, List<Episode> data) async {
     var selectedEpisode = data[index];
@@ -40,7 +54,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
     }
   }
 
-  Future<SearchResult?> GetPodcast() async {
+  Future<SearchResult?> getPodcast() async {
     if (widget.podcastSearchResult != null) {
       return widget.podcastSearchResult!;
     } else if (widget.podcastId != null) {
@@ -123,12 +137,13 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                           )
                         ]));
               },
-              future: GetPodcast(),
+              future: getPodcast(),
             )));
   }
 
   Widget createCustomScrollView(SearchResult podcastSearchResult) {
     final size = MediaQuery.of(context).size;
+
     return DefaultTabController(
       animationDuration: Duration.zero,
       length: 3,
@@ -368,16 +383,25 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
               ))
             ],
           ),
-          CustomScrollView(
-            slivers: [
-              SliverPersistentHeader(
-                delegate: PodcastDetailSliver(widget.escapeWithNav,
-                    expandedHeight: size.height * 0.4, podcast: podcastSearchResult),
-                pinned: true,
-              ),
-              const SliverToBoxAdapter(child: Center(child: Placeholder()))
-            ],
-          ),
+          FutureBuilder(
+              future: podcastSearchResult.roomId != null
+                  ? Future.value(podcastSearchResult)
+                  : podcastService.getPodcastDetails(widget.podcastSearchResult!.id!, sort, -1),
+              builder: ((context, snapshot) {
+                if (snapshot.hasData && snapshot.data != null) {
+                  return Chat(
+                    roomId: snapshot.data!.roomId!,
+                    header: SliverPersistentHeader(
+                      delegate: PodcastDetailSliver(widget.escapeWithNav,
+                          expandedHeight: size.height * 0.4, podcast: podcastSearchResult),
+                      pinned: true,
+                    ),
+                  );
+                }
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              })),
         ]),
       ),
     );
