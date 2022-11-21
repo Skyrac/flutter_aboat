@@ -285,7 +285,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                                     return ButtonEpisode(
                                                         func: audioPlayer.play,
                                                         image: "assets/images/play.png",
-                                                        title: "Abspielen",
+                                                        title: "Play",
                                                         borderAndTextColor: Color.fromRGBO(99, 163, 253, 1));
                                                   } else {
                                                     return ButtonEpisode(
@@ -309,7 +309,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                                         setState(() {});
                                                       },
                                                       image: "assets/images/cloud_complete.png",
-                                                      title: "Download",
+                                                      title: "Downloaded",
                                                       borderAndTextColor: Color.fromRGBO(76, 175, 80, 1),
                                                     )
                                                   : ButtonEpisode(
