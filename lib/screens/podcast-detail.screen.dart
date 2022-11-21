@@ -263,7 +263,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                               height: 40,
                               alignment: Alignment.centerLeft,
                               child: Text(
-                                "Allgemeines",
+                                "General",
                                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                       color: const Color.fromRGBO(99, 163, 253, 1),
                                     ),
@@ -297,7 +297,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   const Text(
-                                    "Folgen",
+                                    "Episodes",
                                     style: TextStyle(fontWeight: FontWeight.w600),
                                   ),
                                   Text(snapshot.data!.totalEpisodes!.toString())
@@ -308,7 +308,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                               margin: const EdgeInsets.only(bottom: 6),
                               alignment: Alignment.centerLeft,
                               child: const Text(
-                                "Author",
+                                "Authors",
                                 style: TextStyle(fontWeight: FontWeight.w600),
                               ),
                             ),
@@ -326,7 +326,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                               alignment: Alignment.centerLeft,
                               margin: const EdgeInsets.only(bottom: 7),
                               child: const Text(
-                                "Kategorien",
+                                "Categories",
                                 style: TextStyle(fontWeight: FontWeight.w600),
                               ),
                             ),
@@ -350,7 +350,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                               alignment: Alignment.centerLeft,
                               margin: const EdgeInsets.only(bottom: 10),
                               child: Text(
-                                "Beschreibung",
+                                "Description",
                                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                       color: const Color.fromRGBO(99, 163, 253, 1),
                                     ),
