@@ -21,12 +21,13 @@ class _LiveSessionVideoPanelState extends State<LiveSessionVideoPanel> {
       );
     } else if (liveSession.isHost) {
       // Local user joined as a host
-      return AgoraVideoView(
+      return SizedBox();
+      /*return AgoraVideoView(
         controller: VideoViewController(
           rtcEngine: liveSession.agoraEngine,
           canvas: VideoCanvas(uid: liveSession.uid),
         ),
-      );
+      );*/
     } else {
       // Local user joined as audience
       if (liveSession.remoteUid != null) {

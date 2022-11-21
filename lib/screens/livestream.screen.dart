@@ -5,9 +5,10 @@ import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/material.dart';
 
 class LivestreamScreen extends StatefulWidget {
-  const LivestreamScreen({Key? key, required this.roomId, required this.isHost}) : super(key: key);
+  const LivestreamScreen({Key? key, required this.roomId, required this.roomName, required this.isHost}) : super(key: key);
 
   final String roomId;
+  final String roomName;
   final bool isHost;
 
   @override
@@ -17,14 +18,20 @@ class LivestreamScreen extends StatefulWidget {
 class _LivestreamScreenState extends State<LivestreamScreen> {
   final LiveSessionService _liveService = getIt<LiveSessionService>();
 
-  int? _remoteUid;
-
   @override
   void initState() {
     super.initState();
     if (widget.isHost) {
-      _liveService.joinAsHost(widget.roomId);
+      _liveService.joinAsHost(widget.roomId, widget.roomName);
+    } else {
+      _liveService.joinAsViewer(widget.roomId, widget.roomName);
     }
+  }
+
+  @override
+  void dispose() {
+    _liveService.leave();
+    super.dispose();
   }
 
   // Create UI with local view and remote view
@@ -34,38 +41,32 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
       appBar: AppBar(
         title: const Text('Agora Video Call'),
       ),
-      body: Stack(
-        children: [
-          Align(
-            alignment: Alignment.topLeft,
-            child: SizedBox(
-              width: 100,
-              height: 150,
-              child: Center(
-                child: _liveService.isJoined
-                    ? AgoraVideoView(
-                        controller: VideoViewController(
-                          rtcEngine: _liveService.agoraEngine,
-                          canvas: const VideoCanvas(uid: 0),
-                        ),
-                      )
-                    : const CircularProgressIndicator(),
-              ),
-            ),
-          ),
-        ],
+      body: AnimatedBuilder(
+        animation: _liveService,
+        builder: (context, child) {
+          return _liveService.isHost
+              ? _liveService.isJoined
+                  ? AgoraVideoView(
+                      controller: VideoViewController(
+                        rtcEngine: _liveService.agoraEngine,
+                        canvas: const VideoCanvas(uid: 0),
+                      ),
+                    )
+                  : const CircularProgressIndicator()
+              : _remoteVideo();
+        },
       ),
     );
   }
 
   // Display remote user's video
   Widget _remoteVideo() {
-    if (_remoteUid != null) {
+    if (_liveService.remoteUid != null) {
       return AgoraVideoView(
         controller: VideoViewController.remote(
           rtcEngine: _liveService.agoraEngine,
-          canvas: VideoCanvas(uid: _remoteUid),
-          connection: const RtcConnection(channelId: "test"),
+          canvas: VideoCanvas(uid: _liveService.remoteUid),
+          connection: RtcConnection(channelId: widget.roomName),
         ),
       );
     } else {

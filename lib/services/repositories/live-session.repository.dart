@@ -11,22 +11,9 @@ class LiveSessionRepository {
   static const API = "/v1/live";
 
   static Future<List<LiveSession>> getLiveSessions(String search, int amount, int offset) async {
-    return Future.value([
-      LiveSession(
-          guid: "3",
-          hosts: [1, 2, 3],
-          superHost: 3,
-          started: "wann",
-          configuration: LiveSessionConfiguration(
-              roomName: "room",
-              password: "pw",
-              onlyClubhouse: false,
-              onlySuperhostCanAddHost: true,
-              onlySuperhostCanRemoveHost: true))
-    ]);
-    /*try {
+    try {
       final body = {"amount": amount, "offset": offset, "queue": search};
-      var response = await dio.get<String>('$API/rooms/$amount/$offset');
+      var response = await dio.post<String>('$API/rooms/search', data: body);
       print(response.data);
       var list = List<LiveSession>.from(json.decode(response.data!).map((data) => LiveSession.fromJson(data)));
       return list;
@@ -34,7 +21,7 @@ class LiveSessionRepository {
       print(ex);
       print((ex as DioError).response?.data);
       return List.empty();
-    }*/
+    }
   }
 
   static Future<ResponseModel> getToken(String roomGuid) async {

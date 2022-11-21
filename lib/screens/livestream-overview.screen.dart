@@ -259,6 +259,7 @@ class _LivestreamOverviewScreenState extends State<LivestreamOverviewScreen> {
                             reverseDuration: const Duration(milliseconds: 200),
                             child: LivestreamScreen(
                               roomId: response.guid,
+                              roomName: response.configuration!.roomName,
                               isHost: true,
                             ),
                           ));
