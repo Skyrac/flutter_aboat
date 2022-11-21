@@ -1,5 +1,6 @@
 import 'package:Talkaboat/models/podcasts/podcast.model.dart';
 
+import '../chat/join-room-dto.dart';
 import '../search/search_result.model.dart';
 
 class Episode extends SearchResult {
@@ -7,6 +8,7 @@ class Episode extends SearchResult {
   int? podcastId;
   @override
   int? id;
+  int? roomId;
   String? link;
   String? audio;
   @override
@@ -28,6 +30,7 @@ class Episode extends SearchResult {
       {this.episodeId,
       this.podcastId,
       this.id,
+      this.roomId,
       this.link,
       this.audio,
       this.image,
@@ -46,12 +49,12 @@ class Episode extends SearchResult {
     episodeId = json['episodeId'];
     podcastId = json['podcastId'];
     id = json['episodeId'];
+    roomId = json['roomId'];
     link = json['link'];
     audio = json['audio'];
     image = json['image'];
     title = json['title'];
-    podcast =
-        json['podcast'] != null ? Podcast.fromJson(json['podcast']) : null;
+    podcast = json['podcast'] != null ? Podcast.fromJson(json['podcast']) : null;
     thumbnail = json['thumbnail'];
     transcript = json['transcript'];
     description = json['description'];
@@ -68,6 +71,7 @@ class Episode extends SearchResult {
     data['episodeId'] = episodeId;
     data['podcastId'] = podcastId;
     data['id'] = episodeId;
+    data['roomId'] = roomId;
     data['link'] = link;
     data['audio'] = audio;
     data['image'] = image;

@@ -1,4 +1,4 @@
-import 'package:Talkaboat/services/hubs/chat/chat-hub.service.dart';
+import 'package:Talkaboat/services/hubs/chat/chat.service.dart';
 import 'package:Talkaboat/services/hubs/reward/reward-hub.service.dart';
 import 'package:Talkaboat/services/live/live-session.service.dart';
 import 'package:Talkaboat/services/quests/quest.service.dart';
@@ -26,10 +26,10 @@ Future<void> configureDependencies() async {
   getIt.registerSingleton(SocialService());
   getIt.registerSingleton(await UserService.init());
   getIt.registerSingleton(PodcastService());
-  getIt.registerSingleton(await StateService());
+  getIt.registerSingleton(StateService());
   getIt.registerSingleton(TokenService());
   getIt.registerSingleton(QuestService());
   getIt.registerSingleton(LiveSessionService());
   getIt.registerSingleton(RewardHubService());
-  getIt.registerSingleton(ChatHubService());
+  getIt.registerSingleton(ChatService());
 }
