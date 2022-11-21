@@ -9,6 +9,8 @@ import 'package:share_plus/share_plus.dart';
 
 import '../injection/injector.dart';
 import '../models/podcasts/episode.model.dart';
+import '../models/podcasts/podcast-rank.model.dart';
+import '../models/podcasts/podcast.model.dart';
 import '../models/search/search_result.model.dart';
 import '../services/audio/audio-handler.services.dart';
 import '../services/audio/media.state.dart';
@@ -609,30 +611,87 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                                       maxLines: 2,
                                                       style: const TextStyle(color: Colors.white, fontSize: 12)),
                                                 ),
-                                                Row(
-                                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                  children: [
-                                                    Row(
-                                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                      children: [
-                                                        Text('${podcast.totalEpisodes!.toString()} Episodes     - ',
-                                                            style: Theme.of(context).textTheme.titleMedium),
-                                                        const SizedBox(
-                                                          width: 10,
-                                                        ),
-                                                        const Image(
-                                                          image: AssetImage("assets/icons/icon_fire.png"),
-                                                        ),
-                                                        const SizedBox(
-                                                          width: 10,
-                                                        ),
-                                                        Text("Reward x1.5", style: Theme.of(context).textTheme.titleMedium)
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
+                                                FutureBuilder(
+                                                    future: Future.wait([
+                                                      podcastService.search(podcast.title!, rank: PodcastRank.NewComer),
+                                                      podcastService.search(podcast.title!, rank: PodcastRank.Receiver),
+                                                      podcastService.search(podcast.title!, rank: PodcastRank.Hodler),
+                                                    ]),
+                                                    builder: (context, snapshot) {
+                                                      if (snapshot.connectionState == ConnectionState.done) {
+                                                        if (snapshot.hasError) {
+                                                          return Center(
+                                                            child: Text(
+                                                              '${snapshot.error} occurred',
+                                                              style: const TextStyle(fontSize: 18),
+                                                            ),
+                                                          );
+                                                        }
+                                                        // Extracting data from snapshot object
+                                                        var reward;
+                                                        final allData = snapshot.data as List<List<Podcast>>;
+                                                        final newcomers = allData[0];
+                                                        final receiver = allData[1];
+                                                        final hodler = allData[2];
+                                                        for (final el in newcomers) {
+                                                          if (el.title == podcast.title!) {
+                                                            reward = "x1.5";
+                                                            break;
+                                                          }
+                                                        }
+                                                        if (reward == null) {
+                                                          for (final el in receiver) {
+                                                            if (el.title == podcast.title!) {
+                                                              reward = "x1.25";
+                                                              break;
+                                                            }
+                                                          }
+                                                        }
+                                                        if (reward == null) {
+                                                          for (final el in hodler) {
+                                                            if (el.title == podcast.title!) {
+                                                              reward = "x1.1";
+                                                              break;
+                                                            }
+                                                          }
+                                                        }
+                                                        return reward != null
+                                                            ? Row(
+                                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                                children: [
+                                                                  Text(
+                                                                      '${podcast.totalEpisodes!.toString()} Episodes     - ',
+                                                                      style: Theme.of(context).textTheme.titleMedium),
+                                                                  const SizedBox(
+                                                                    width: 10,
+                                                                  ),
+                                                                  const Image(
+                                                                    image: AssetImage("assets/icons/icon_fire.png"),
+                                                                  ),
+                                                                  const SizedBox(
+                                                                    width: 10,
+                                                                  ),
+                                                                  Text("Reward ${reward}",
+                                                                      style: Theme.of(context).textTheme.titleMedium)
+                                                                ],
+                                                              )
+                                                            : Row(
+                                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                                children: [
+                                                                  Text(
+                                                                      '${podcast.totalEpisodes!.toString()} Episodes       ',
+                                                                      style: Theme.of(context).textTheme.titleMedium),
+                                                                  const SizedBox(
+                                                                    width: 10,
+                                                                  ),
+                                                                ],
+                                                              );
+                                                      }
+                                                      return Container(
+                                                          width: 15.0, height: 15.0, child: CircularProgressIndicator());
+                                                    }),
                                               ],
                                             ),
                                           ),
