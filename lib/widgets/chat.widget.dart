@@ -13,9 +13,10 @@ import '../services/user/user.service.dart';
 
 class Chat extends StatefulWidget {
   final int roomId;
+  final int messageType;
   final SliverPersistentHeader? header;
 
-  const Chat({Key? key, required this.roomId, this.header}) : super(key: key);
+  const Chat({Key? key, required this.roomId, required this.messageType, this.header}) : super(key: key);
 
   @override
   State<Chat> createState() => _ChatState();
@@ -24,7 +25,6 @@ class Chat extends StatefulWidget {
 class _ChatState extends State<Chat> {
   final chatService = getIt<ChatService>();
   final focusNode = FocusNode();
-  final List<String> messageType = ["", "Podcast", "Episode"];
   var userService = getIt<UserService>();
   int? selectedIndex;
   Future<List<ChatMessageDto>>? _getMessages;
@@ -192,7 +192,8 @@ class _ChatState extends State<Chat> {
                       onSubmitted: (content) {
                         messageRaw = content;
                         if (isReplying) {
-                          chatService.sendMessage(CreateMessageDto(0, widget.roomId, content, 0, 2, replyMessage!.id),
+                          chatService.sendMessage(
+                              CreateMessageDto(0, widget.roomId, content, widget.messageType, 2, replyMessage!.id),
                               userService.userInfo!.userName!);
                           textEditController.clear();
                         } else if (isEdit) {
@@ -202,7 +203,8 @@ class _ChatState extends State<Chat> {
                           textEditController.clear();
                         } else {
                           chatService.sendMessage(
-                              CreateMessageDto(0, widget.roomId, content, 0, null, null), userService.userInfo!.userName!);
+                              CreateMessageDto(0, widget.roomId, content, widget.messageType, null, null),
+                              userService.userInfo!.userName!);
                           textEditController.clear();
                         }
                         cancelReplyAndEdit();
@@ -232,7 +234,7 @@ class _ChatState extends State<Chat> {
                           onPressed: () async {
                             if (isReplying) {
                               chatService.sendMessage(
-                                  CreateMessageDto(0, widget.roomId, messageRaw!, 0, 2, replyMessage!.id),
+                                  CreateMessageDto(0, widget.roomId, messageRaw!, widget.messageType, 2, replyMessage!.id),
                                   userService.userInfo!.userName!);
                               textEditController.clear();
                             } else if (isEdit) {
@@ -241,7 +243,8 @@ class _ChatState extends State<Chat> {
                               );
                               textEditController.clear();
                             } else {
-                              chatService.sendMessage(CreateMessageDto(0, widget.roomId, messageRaw!, 0, null, null),
+                              chatService.sendMessage(
+                                  CreateMessageDto(0, widget.roomId, messageRaw!, widget.messageType, null, null),
                                   userService.userInfo!.userName!);
                               textEditController.clear();
                             }

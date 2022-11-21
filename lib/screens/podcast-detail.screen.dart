@@ -33,7 +33,6 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
   final audioPlayer = getIt<AudioPlayerHandler>();
   final podcastService = getIt<PodcastService>();
   final ChatService chatService = getIt<ChatService>();
-  List<String> messageType = ["", "Podcast", "Episode"];
   List<ChatMessageDto> messages = [];
 
   var sort = "asc";
@@ -386,6 +385,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                 if (snapshot.hasData && snapshot.data != null) {
                   return Chat(
                     roomId: snapshot.data!.roomId!,
+                    messageType: 1,
                     header: SliverPersistentHeader(
                       delegate: PodcastDetailSliver(widget.escapeWithNav,
                           expandedHeight: size.height * 0.4, podcast: podcastSearchResult),
