@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:Talkaboat/services/hubs/chat/chat-hub.service.dart';
 import 'package:Talkaboat/services/hubs/chat/chat.service.dart';
 import 'package:Talkaboat/services/user/social.service.dart';
 import 'package:crypto/crypto.dart';
