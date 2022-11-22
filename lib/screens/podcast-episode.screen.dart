@@ -19,6 +19,7 @@ import '../services/downloading/file-downloader.service.dart';
 import '../themes/colors.dart';
 import '../utils/scaffold_wave.dart';
 import '../widgets/bottom-sheets/playlist.bottom-sheet.dart';
+import '../widgets/chat.widget.dart';
 import '../widgets/episode-preview.widget.dart';
 import '../widgets/podcast-episode-sliver.widget.dart';
 import 'login.screen.dart';
@@ -45,6 +46,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
   final isDescOpen = false;
   final userService = getIt<UserService>();
   final audioHandler = getIt<AudioPlayerHandler>();
+  Future<SearchResult?>? _getPodcast;
 
   selectEpisode(int index, List<Episode> data) async {
     var selectedEpisode = data[index];
@@ -53,6 +55,12 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
     } else {
       await audioPlayer.updateEpisodeQueue(data, index: index);
     }
+  }
+
+  @override
+  initState() {
+    super.initState();
+    _getPodcast = getPodcast(widget.episode, widget.podcastId);
   }
 
   Widget buildEpisodes(List<Episode> data) => SliverList(
@@ -128,7 +136,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                           )
                         ]));
               },
-              future: getPodcast(widget.episode, widget.podcastId),
+              future: _getPodcast,
             )));
   }
 
@@ -291,7 +299,6 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                                           await userService.addToFavorites(widget.episode!.podcastId!);
                                                         }
                                                         await FileDownloadService.cacheOrDelete(widget.episode!.audio!);
-                                                        setState(() {});
                                                       },
                                                       image: "assets/images/cloud_complete.png",
                                                       title: "Downloaded",
@@ -303,7 +310,6 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                                           await userService.addToFavorites(widget.episode!.podcastId!);
                                                         }
                                                         await FileDownloadService.cacheOrDelete(widget.episode!.audio!);
-                                                        setState(() {});
                                                       },
                                                       image: "assets/images/cloud.png",
                                                       title: "Download",
@@ -671,18 +677,25 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                           })))
             ],
           ),
-          CustomScrollView(
-            slivers: [
-              SliverPersistentHeader(
-                delegate: PodcastEpisodeSliver(
-                    expandedHeight: size.height * 0.4,
-                    // podcast: podcastSearchResult,
-                    episode: widget.episode!),
-                pinned: true,
-              ),
-              const SliverToBoxAdapter(child: Center(child: Placeholder()))
-            ],
-          ),
+          FutureBuilder(
+              future: podcastSearchResult.roomId != null
+                  ? Future.value(podcastSearchResult)
+                  : podcastService.getPodcastDetails(widget.podcastSearchResult!.id!, sort, -1),
+              builder: ((context, snapshot) {
+                if (snapshot.hasData && snapshot.data != null) {
+                  return Chat(
+                    roomId: snapshot.data!.roomId!,
+                    messageType: 2,
+                    header: SliverPersistentHeader(
+                      delegate: PodcastEpisodeSliver(expandedHeight: size.height * 0.4, episode: widget.episode!),
+                      pinned: true,
+                    ),
+                  );
+                }
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              })),
         ]),
       ),
     );

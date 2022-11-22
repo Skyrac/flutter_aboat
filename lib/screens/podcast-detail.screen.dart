@@ -36,6 +36,13 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
   final userService = getIt<UserService>();
   final sort = "asc";
   final isDescOpen = false;
+  Future<SearchResult?>? _getPodcast;
+
+  @override
+  initState() {
+    super.initState();
+    _getPodcast = getPodcast();
+  }
 
   selectEpisode(int index, List<Episode> data) async {
     var selectedEpisode = data[index];
@@ -129,13 +136,12 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                           )
                         ]));
               },
-              future: getPodcast(),
+              future: _getPodcast,
             )));
   }
 
   Widget createCustomScrollView(SearchResult podcastSearchResult) {
     final size = MediaQuery.of(context).size;
-
     return DefaultTabController(
       animationDuration: Duration.zero,
       length: 3,
@@ -168,6 +174,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
             !userService.isConnected
                 ? const SizedBox()
                 : userService.isInFavorites(podcastSearchResult.id!)
+                    // : isFav
                     ? Padding(
                         padding: const EdgeInsets.only(right: 10),
                         child: IconButton(
