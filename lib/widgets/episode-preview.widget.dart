@@ -35,7 +35,6 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
   // }
 
   popupMenu(BuildContext context, Episode entry) => <PopupMenuEntry<String>>[
-        const PopupMenuItem<String>(value: 'add', child: Card(child: Text('Add to playlist'))),
         PopupMenuItem<String>(
             value: 'add',
             child: Container(
@@ -218,6 +217,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
     final dt = DateTime.fromMillisecondsSinceEpoch(entry.pubDateMs?.toInt() ?? 0);
     var dateFormatted = DateFormat('dd.MM.yyyy').format(dt);
     final remaining = Duration(seconds: (entry.audioLengthSec! - entry.playTime!).toInt());
+    final episodeTime = Duration(seconds: widget.episode!.audioLengthSec!.toInt());
     return Container(
       padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
       height: 105,
@@ -312,7 +312,20 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                                       Text('Playing', style: TextStyle(fontSize: 10)),
                                     ],
                                   )
-                                : const SizedBox(),
+                                : remaining.inSeconds <= 0
+                                    ? Row(
+                                        children: [
+                                          Icon(Icons.check, color: Color.fromRGBO(76, 175, 80, 1), size: 15),
+                                          SizedBox(
+                                            width: 2,
+                                          ),
+                                          Text(
+                                            "Gehört",
+                                            style: TextStyle(fontSize: 10),
+                                          ),
+                                        ],
+                                      )
+                                    : const SizedBox(),
                             Container(
                               padding: const EdgeInsets.only(top: 3),
                               child: Text(dateFormatted.toString(), style: const TextStyle(fontSize: 10)),
@@ -326,10 +339,10 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                                   text: remaining.inHours != 0 ? '${remaining.inHours % 60}hr ' : "",
                                   style: const TextStyle(fontSize: 10)),
                               TextSpan(
-                                  text: remaining.inMinutes != 0 ? '${remaining.inMinutes % 60}min ' : "",
+                                  text: episodeTime.inMinutes != 0 ? '${episodeTime.inMinutes % 60}min ' : "",
                                   style: const TextStyle(fontSize: 10)),
                               TextSpan(
-                                text: '${remaining.inSeconds % 60}sec',
+                                text: '${episodeTime.inSeconds % 60}sec',
                                 style: const TextStyle(fontSize: 10),
                               ),
                             ])),
@@ -349,6 +362,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                               refresh();
                             }
                             await FileDownloadService.cacheOrDelete(entry.audio!);
+                            setState(() {});
                           }),
                           child: FileDownloadService.containsFile(entry.audio!)
                               ? Image.asset(

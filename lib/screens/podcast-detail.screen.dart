@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../injection/injector.dart';
-import '../models/chat/chat-dtos.dart';
 import '../models/podcasts/episode.model.dart';
 import '../models/search/search_result.model.dart';
 import '../services/audio/audio-handler.services.dart';
@@ -36,6 +35,13 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
   final userService = getIt<UserService>();
   final sort = "asc";
   final isDescOpen = false;
+  Future<SearchResult?>? _getPodcast;
+
+  @override
+  initState() {
+    super.initState();
+    _getPodcast = getPodcast();
+  }
 
   selectEpisode(int index, List<Episode> data) async {
     var selectedEpisode = data[index];
@@ -129,13 +135,12 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                           )
                         ]));
               },
-              future: getPodcast(),
+              future: _getPodcast,
             )));
   }
 
   Widget createCustomScrollView(SearchResult podcastSearchResult) {
     final size = MediaQuery.of(context).size;
-
     return DefaultTabController(
       animationDuration: Duration.zero,
       length: 3,
@@ -168,6 +173,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
             !userService.isConnected
                 ? const SizedBox()
                 : userService.isInFavorites(podcastSearchResult.id!)
+                    // : isFav
                     ? Padding(
                         padding: const EdgeInsets.only(right: 10),
                         child: IconButton(
@@ -264,18 +270,23 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                             Container(
                               margin: const EdgeInsets.only(bottom: 10),
                               child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                                const Text(
-                                  "Title",
-                                  style: TextStyle(fontWeight: FontWeight.w600),
+                                const SizedBox(
+                                  width: 30,
+                                  child: Text(
+                                    "Titel",
+                                    style: TextStyle(fontWeight: FontWeight.w600),
+                                  ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 15),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                SizedBox(
+                                  width: 250,
                                   child: Text(
                                     snapshot.data!.title!,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
+                                    textAlign: TextAlign.end,
                                   ),
-                                )
+                                ),
                               ]),
                             ),
                             Container(

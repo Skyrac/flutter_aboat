@@ -178,7 +178,8 @@ class ChatMessageTile extends StatelessWidget {
                                       )),
                                 ],
                               )
-                            : Text(ChatService.messageType[message.messageType],
+                            : Text(
+                                "${ChatService.messageType[message.messageType]}${message.messageType == 2 ? " ${message.messageType}" : ""}",
                                 style: const TextStyle(color: Color.fromRGBO(99, 163, 253, 1))),
                       ]),
                     ),

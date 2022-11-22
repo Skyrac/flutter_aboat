@@ -89,24 +89,24 @@ class ChatService extends ChangeNotifier {
 
   //#region RPC Calls
   sendMessage(CreateMessageDto message, String username) async {
-    await _hub.sendMessage(message);
+    _hub.sendMessage(message);
   }
 
   editMessage(EditMessageDto message) async {
-    await _hub.editMessage(message);
+    _hub.editMessage(message);
   }
 
   deleteMessage(DeleteMessageDto message) async {
-    await _hub.deleteMessage(message);
+    _hub.deleteMessage(message);
   }
 
   joinRoom(JoinRoomDto data) async {
-    await _hub.joinRoom(data);
+    _hub.joinRoom(data);
     _rooms[data.roomId] = List.empty(growable: true);
   }
 
   leaveRoom(JoinRoomDto data) async {
-    await _hub.leaveRoom(data);
+    _hub.leaveRoom(data);
     _rooms[data.roomId] = null;
   }
 

@@ -172,7 +172,7 @@ class _ChatState extends State<Chat> {
         ),
         userService.isConnected
             ? Positioned(
-                bottom: 50,
+                bottom: 10,
                 child: Container(
                   width: 350,
                   height: 50,
