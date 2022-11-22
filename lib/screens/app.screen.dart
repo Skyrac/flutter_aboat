@@ -30,7 +30,7 @@ class AppScreen extends StatefulWidget {
 }
 
 class _AppScreenState extends State<AppScreen> with RouteAware {
-  var Tabs;
+  late List<Widget> Tabs;
   var userService = getIt<UserService>();
   String _currentPage = "Home";
   List<String> pageKeys = ["Home", "Search", "Playlist", "Library", "Social"];
@@ -78,8 +78,8 @@ class _AppScreenState extends State<AppScreen> with RouteAware {
     super.initState();
     Tabs = [
       HomeScreen(setEpisode, _selectTab, escapeWithNav),
-      const SearchScreen(),
-      const FavoritesScreen(),
+      SearchScreen(escapeWithNav: escapeWithNav),
+      FavoritesScreen(escapeWithNav: escapeWithNav),
       LibraryScreen(escapeWithNav),
       SocialEntryScreen(escapeWithNav)
     ];
