@@ -192,7 +192,7 @@ class _AppScreenState extends State<AppScreen> with RouteAware {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              MiniPlayerWidget(escapeWithNav, episode: episode),
+              MiniPlayerWidget(escapeWithNav, episode: episode, navKey: _navigatorKeys[pageKeys[currentTabIndex]]!),
               ClipRRect(
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20.0),

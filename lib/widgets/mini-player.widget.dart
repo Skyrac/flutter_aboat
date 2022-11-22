@@ -14,9 +14,10 @@ import '../services/state/state.service.dart';
 import '../utils/common.dart';
 
 class MiniPlayerWidget extends StatefulWidget {
-  const MiniPlayerWidget(this.escapeWithNav, {Key? key, required this.episode}) : super(key: key);
+  const MiniPlayerWidget(this.escapeWithNav, {Key? key, required this.episode, required this.navKey}) : super(key: key);
   final Episode? episode;
   final Function escapeWithNav;
+  final GlobalKey<NavigatorState> navKey;
 
   @override
   State<MiniPlayerWidget> createState() => _MiniPlayerWidgetState();
@@ -72,16 +73,14 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
                   padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
                   child: InkWell(
                     onTap: (() async => {
-                          Navigator.push(
-                              context,
-                              PageTransition(
-                                  alignment: Alignment.bottomCenter,
-                                  curve: Curves.bounceOut,
-                                  type: PageTransitionType.rightToLeftWithFade,
-                                  duration: const Duration(milliseconds: 500),
-                                  reverseDuration: const Duration(milliseconds: 500),
-                                  child: PodcastEpisodeScreen(widget.escapeWithNav,
-                                      podcastId: widget.episode?.podcastId, episode: widget.episode, position: position)))
+                          widget.navKey.currentState!.push(PageTransition(
+                              alignment: Alignment.bottomCenter,
+                              curve: Curves.bounceOut,
+                              type: PageTransitionType.rightToLeftWithFade,
+                              duration: const Duration(milliseconds: 500),
+                              reverseDuration: const Duration(milliseconds: 500),
+                              child: PodcastEpisodeScreen(widget.escapeWithNav,
+                                  podcastId: widget.episode?.podcastId, episode: widget.episode, position: position)))
                         }),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
