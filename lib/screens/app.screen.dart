@@ -78,8 +78,8 @@ class _AppScreenState extends State<AppScreen> with RouteAware {
     super.initState();
     Tabs = [
       HomeScreen(setEpisode, _selectTab, escapeWithNav),
-      const SearchScreen(),
-      const FavoritesScreen(),
+      SearchScreen(escapeWithNav),
+      FavoritesScreen(escapeWithNav),
       LibraryScreen(escapeWithNav),
       SocialEntryScreen(escapeWithNav)
     ];

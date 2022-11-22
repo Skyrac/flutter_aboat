@@ -683,14 +683,14 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                   : podcastService.getPodcastDetails(widget.podcastSearchResult!.id!, sort, -1),
               builder: ((context, snapshot) {
                 if (snapshot.hasData && snapshot.data != null) {
-                  return Chat(
+                  return SizedBox(); /*Chat(
                     roomId: snapshot.data!.roomId!,
                     messageType: 2,
                     header: SliverPersistentHeader(
                       delegate: PodcastEpisodeSliver(expandedHeight: size.height * 0.4, episode: widget.episode!),
                       pinned: true,
                     ),
-                  );
+                  );*/
                 }
                 return const Center(
                   child: CircularProgressIndicator(),

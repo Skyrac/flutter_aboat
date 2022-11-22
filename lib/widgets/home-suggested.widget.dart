@@ -38,7 +38,7 @@ class _HomeScreenSuggestedTabState extends State<HomeScreenSuggestedTab> {
               multiplier: "x1.5", seeAllCb: (() {
             Navigator.push(
               context,
-              buildSearchScreenTransition(rank: PodcastRank.NewComer, title: "Newcomers"),
+              buildSearchScreenTransition(widget.escapeWithNav, rank: PodcastRank.NewComer, title: "Newcomers"),
             );
           })),
           const SizedBox(height: 20),
@@ -48,7 +48,7 @@ class _HomeScreenSuggestedTabState extends State<HomeScreenSuggestedTab> {
               multiplier: "x1.25", seeAllCb: (() {
             Navigator.push(
               context,
-              buildSearchScreenTransition(rank: PodcastRank.Receiver, title: "Receivers"),
+              buildSearchScreenTransition(widget.escapeWithNav, rank: PodcastRank.Receiver, title: "Receivers"),
             );
           })),
           const SizedBox(height: 20),
@@ -58,7 +58,7 @@ class _HomeScreenSuggestedTabState extends State<HomeScreenSuggestedTab> {
               multiplier: "x1.1", seeAllCb: (() {
             Navigator.push(
               context,
-              buildSearchScreenTransition(rank: PodcastRank.Hodler, title: "Hodlers"),
+              buildSearchScreenTransition(widget.escapeWithNav, rank: PodcastRank.Hodler, title: "Hodlers"),
             );
           })),
           const SizedBox(height: 5),

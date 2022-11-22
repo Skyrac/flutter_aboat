@@ -69,7 +69,9 @@ class HomeAppBarWidget extends StatelessWidget {
                       type: PageTransitionType.rightToLeftWithFade,
                       duration: const Duration(milliseconds: 500),
                       reverseDuration: const Duration(milliseconds: 500),
-                      child: const SearchScreen()));
+                      child: SearchScreen(
+                        escapeWithNav,
+                      )));
             },
           ),
         ),

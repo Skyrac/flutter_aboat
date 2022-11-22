@@ -1,13 +1,15 @@
 import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/models/podcasts/podcast.model.dart';
+import 'package:Talkaboat/screens/podcast-detail.screen.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 
 class PodcastListTileWidget extends StatefulWidget {
-  const PodcastListTileWidget(this.podcast, {this.stateChangeCb, Key? key})
-      : super(key: key);
+  const PodcastListTileWidget(this.podcast, this.escapeWithNav, {this.stateChangeCb, Key? key}) : super(key: key);
   final Podcast podcast;
+  final Function escapeWithNav;
   final void Function()? stateChangeCb;
   @override
   State<PodcastListTileWidget> createState() => _PodcastListTileWidgetState();
@@ -28,8 +30,7 @@ class _PodcastListTileWidgetState extends State<PodcastListTileWidget> {
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                     color: const Color.fromRGBO(29, 40, 58, 0.97),
-                    border: Border.all(
-                        color: const Color.fromRGBO(188, 140, 75, 0.25)),
+                    border: Border.all(color: const Color.fromRGBO(188, 140, 75, 0.25)),
                     borderRadius: BorderRadius.circular(10)),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -53,8 +54,7 @@ class _PodcastListTileWidgetState extends State<PodcastListTileWidget> {
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                     color: const Color.fromRGBO(29, 40, 58, 0.97),
-                    border: Border.all(
-                        color: const Color.fromRGBO(188, 140, 75, 0.25)),
+                    border: Border.all(color: const Color.fromRGBO(188, 140, 75, 0.25)),
                     borderRadius: BorderRadius.circular(10)),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -84,7 +84,13 @@ class _PodcastListTileWidgetState extends State<PodcastListTileWidget> {
         child: InkWell(
           borderRadius: BorderRadius.circular(10),
           onTap: () {
-            print("outer");
+            Navigator.of(context).push(PageTransition(
+                alignment: Alignment.bottomCenter,
+                curve: Curves.bounceOut,
+                type: PageTransitionType.rightToLeftWithFade,
+                duration: const Duration(milliseconds: 500),
+                reverseDuration: const Duration(milliseconds: 500),
+                child: PodcastDetailScreen(widget.escapeWithNav, podcastSearchResult: widget.podcast)));
           },
           child: Row(children: [
             SizedBox(
@@ -94,16 +100,12 @@ class _PodcastListTileWidgetState extends State<PodcastListTileWidget> {
                 borderRadius: BorderRadius.circular(10),
                 child: SizedBox(
                   child: CachedNetworkImage(
-                    imageUrl: widget.podcast.image == null
-                        ? ''
-                        : widget.podcast.image!,
+                    imageUrl: widget.podcast.image == null ? '' : widget.podcast.image!,
                     fit: BoxFit.fill,
-                    placeholder: (_, __) =>
-                        const Center(child: CircularProgressIndicator()),
+                    placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
                     // progressIndicatorBuilder: (context, url, downloadProgress) =>
                     //     CircularProgressIndicator(value: downloadProgress.progress),
-                    errorWidget: (context, url, error) =>
-                        const Icon(Icons.error),
+                    errorWidget: (context, url, error) => const Icon(Icons.error),
                   ),
                 ),
               ),
@@ -112,53 +114,44 @@ class _PodcastListTileWidgetState extends State<PodcastListTileWidget> {
               flex: 3,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.podcast.title!,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      Text(
-                        widget.podcast.description!,
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.titleSmall,
-                      ),
-                      const Spacer(),
-                      Row(children: [
-                        Text(
-                          "${widget.podcast.totalEpisodes!} Episodes",
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.titleSmall,
-                        ),
-                        ...(widget.podcast.totalEpisodes! < 5
-                            ? [
-                                Text(" - ",
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style:
-                                        Theme.of(context).textTheme.titleSmall),
-                                const Image(
-                                  image:
-                                      AssetImage("assets/icons/icon_fire.png"),
-                                ),
-                                Text(" Reward x1.5",
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style:
-                                        Theme.of(context).textTheme.titleSmall),
-                              ]
-                            : [])
-                      ]),
-                    ]),
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(
+                    widget.podcast.title!,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  Text(
+                    widget.podcast.description!,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  const Spacer(),
+                  Row(children: [
+                    Text(
+                      "${widget.podcast.totalEpisodes!} Episodes",
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    ...(widget.podcast.totalEpisodes! < 5
+                        ? [
+                            Text(" - ",
+                                maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleSmall),
+                            const Image(
+                              image: AssetImage("assets/icons/icon_fire.png"),
+                            ),
+                            Text(" Reward x1.5",
+                                maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleSmall),
+                          ]
+                        : [])
+                  ]),
+                ]),
               ),
             ),
             !userService.isConnected
-                ? SizedBox()
+                ? const SizedBox()
                 : SizedBox(
                     height: 90,
                     width: 40,
@@ -169,15 +162,13 @@ class _PodcastListTileWidgetState extends State<PodcastListTileWidget> {
                         onSelected: (value) async {
                           switch (value) {
                             case "add_to_avorites":
-                              await userService
-                                  .addToFavorites(widget.podcast.id!);
+                              await userService.addToFavorites(widget.podcast.id!);
                               if (widget.stateChangeCb != null) {
                                 widget.stateChangeCb!();
                               }
                               break;
                             case "remove_to_avorites":
-                              await userService
-                                  .removeFromFavorites(widget.podcast.id!);
+                              await userService.removeFromFavorites(widget.podcast.id!);
                               if (widget.stateChangeCb != null) {
                                 widget.stateChangeCb!();
                               }
