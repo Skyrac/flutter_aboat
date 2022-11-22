@@ -1,8 +1,8 @@
 //
 //  Generated file. Do not edit.
 //
-// clang-format off
 
+// clang-format off
 
 #ifndef GeneratedPluginRegistrant_h
 #define GeneratedPluginRegistrant_h
