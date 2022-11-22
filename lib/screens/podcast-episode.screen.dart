@@ -299,6 +299,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                                           await userService.addToFavorites(widget.episode!.podcastId!);
                                                         }
                                                         await FileDownloadService.cacheOrDelete(widget.episode!.audio!);
+                                                        setState(() {});
                                                       },
                                                       image: "assets/images/cloud_complete.png",
                                                       title: "Downloaded",
@@ -310,6 +311,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                                           await userService.addToFavorites(widget.episode!.podcastId!);
                                                         }
                                                         await FileDownloadService.cacheOrDelete(widget.episode!.audio!);
+                                                        setState(() {});
                                                       },
                                                       image: "assets/images/cloud.png",
                                                       title: "Download",
@@ -813,7 +815,6 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
       );
 
   popupMenu(BuildContext context, Episode entry) => <PopupMenuEntry<String>>[
-        const PopupMenuItem<String>(value: 'add', child: Card(child: Text('Add to playlist'))),
         PopupMenuItem<String>(
             value: 'add',
             child: Container(

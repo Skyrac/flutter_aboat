@@ -35,7 +35,6 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
   // }
 
   popupMenu(BuildContext context, Episode entry) => <PopupMenuEntry<String>>[
-        const PopupMenuItem<String>(value: 'add', child: Card(child: Text('Add to playlist'))),
         PopupMenuItem<String>(
             value: 'add',
             child: Container(
@@ -363,6 +362,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                               refresh();
                             }
                             await FileDownloadService.cacheOrDelete(entry.audio!);
+                            setState(() {});
                           }),
                           child: FileDownloadService.containsFile(entry.audio!)
                               ? Image.asset(
