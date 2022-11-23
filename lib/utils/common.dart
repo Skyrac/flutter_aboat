@@ -33,6 +33,12 @@ Widget buildCategoryBadges(BuildContext context, String genres) {
   );
 }
 
+String removeAllHtmlTags(String htmlText) {
+  RegExp exp = RegExp(r"<[^>]*>", multiLine: true, caseSensitive: true);
+
+  return htmlText.replaceAll(exp, '');
+}
+
 final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
 class PositionData {
