@@ -160,7 +160,10 @@ class _PodcastListWidgetState extends State<PodcastListWidget> {
             child: widget.trailing == null ? buildPopupButton(context, entry) : widget.trailing!(context, entry)),*/
           ])));
 
-  Widget makeVerticalListTile(context, SearchResult entry) => PodcastListTileWidget(entry as Podcast);
+  Widget makeVerticalListTile(context, SearchResult entry) => PodcastListTileWidget(
+        entry as Podcast,
+        escapeWithNav: widget.escapeWithNav,
+      );
 
   Widget makeVerticalListTileold(context, SearchResult entry) => ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),

@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:Talkaboat/services/hubs/chat/chat.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
+import 'package:Talkaboat/utils/common.dart';
 import 'package:Talkaboat/widgets/chat.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../injection/injector.dart';
-import '../models/chat/chat-dtos.dart';
 import '../models/podcasts/episode.model.dart';
 import '../models/search/search_result.model.dart';
 import '../services/audio/audio-handler.services.dart';
@@ -36,6 +36,13 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
   final userService = getIt<UserService>();
   final sort = "asc";
   final isDescOpen = false;
+  Future<SearchResult?>? _getPodcast;
+
+  @override
+  initState() {
+    super.initState();
+    _getPodcast = getPodcast();
+  }
 
   selectEpisode(int index, List<Episode> data) async {
     var selectedEpisode = data[index];
@@ -129,13 +136,12 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                           )
                         ]));
               },
-              future: getPodcast(),
+              future: _getPodcast,
             )));
   }
 
   Widget createCustomScrollView(SearchResult podcastSearchResult) {
     final size = MediaQuery.of(context).size;
-
     return DefaultTabController(
       animationDuration: Duration.zero,
       length: 3,
@@ -168,6 +174,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
             !userService.isConnected
                 ? const SizedBox()
                 : userService.isInFavorites(podcastSearchResult.id!)
+                    // : isFav
                     ? Padding(
                         padding: const EdgeInsets.only(right: 10),
                         child: IconButton(
@@ -264,18 +271,23 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                             Container(
                               margin: const EdgeInsets.only(bottom: 10),
                               child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                                const Text(
-                                  "Title",
-                                  style: TextStyle(fontWeight: FontWeight.w600),
+                                const SizedBox(
+                                  width: 30,
+                                  child: Text(
+                                    "Titel",
+                                    style: TextStyle(fontWeight: FontWeight.w600),
+                                  ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 15),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                SizedBox(
+                                  width: 250,
                                   child: Text(
                                     snapshot.data!.title!,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
+                                    textAlign: TextAlign.end,
                                   ),
-                                )
+                                ),
                               ]),
                             ),
                             Container(
@@ -317,22 +329,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                                 style: TextStyle(fontWeight: FontWeight.w600),
                               ),
                             ),
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Container(
-                                  margin: const EdgeInsets.only(bottom: 35),
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10), color: const Color.fromRGBO(188, 140, 75, 1)),
-                                  width: 100,
-                                  height: 35,
-                                  child: Center(
-                                      child: Text(
-                                          textAlign: TextAlign.center,
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 2,
-                                          snapshot.data!.genreIds!,
-                                          style: const TextStyle(color: Color.fromRGBO(15, 23, 41, 1))))),
-                            ),
+                            buildCategoryBadges(context, snapshot.data!.genreIds!),
                             Container(
                               alignment: Alignment.centerLeft,
                               margin: const EdgeInsets.only(bottom: 10),

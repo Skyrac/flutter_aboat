@@ -21,6 +21,7 @@ class SearchScreen extends StatefulWidget {
       this.onlyRank,
       this.refreshOnStateChange,
       this.customSearchFunc,
+      required this.escapeWithNav,
       Key? key})
       : super(key: key);
 
@@ -29,6 +30,7 @@ class SearchScreen extends StatefulWidget {
   final PodcastRank? onlyRank;
   final String? initialValue;
   final bool? refreshOnStateChange;
+  final Function escapeWithNav;
   final Future<List<Podcast>> Function(String text, int amount, int offset)? customSearchFunc;
 
   @override
@@ -53,6 +55,13 @@ class _SearchScreenState extends State<SearchScreen> {
     debouncer.values.listen((val) {
       _pagingController.refresh();
     });
+    _controller.addListener(scrollUpdate);
+  }
+
+  scrollUpdate() {
+    setState(() {
+      offset = _controller.offset;
+    });
   }
 
   Future<void> _fetchPage(int pageKey) async {
@@ -75,16 +84,18 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   final ScrollController _controller = ScrollController();
+  double offset = 0;
 
   @override
   Widget build(BuildContext context) {
     return ScaffoldWave(
+      physics: const NeverScrollableScrollPhysics(),
       appBar: widget.appBar ?? buildAppbar(),
       body: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SizedBox(
-            height: _controller.positions.isEmpty ? 0 : min(_controller.offset, 66),
+          const SizedBox(
+            height: 66,
           ),
           SearchBar(
             initialSearch: widget.initialValue,
@@ -106,6 +117,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     borderRadius: BorderRadius.circular(10),
                     child: PodcastListTileWidget(
                       item,
+                      escapeWithNav: widget.escapeWithNav,
                       stateChangeCb: widget.refreshOnStateChange != null && widget.refreshOnStateChange! == true
                           ? () {
                               _pagingController.refresh();
@@ -132,12 +144,19 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void dispose() {
     _pagingController.dispose();
+    _controller.removeListener(scrollUpdate);
+    _controller.dispose();
     super.dispose();
   }
 }
 
 PageTransition buildSearchScreenTransition(
-    {String? intitialValue, int? genreId, PodcastRank? rank, String? title, String? imageUrl}) {
+    {String? intitialValue,
+    int? genreId,
+    PodcastRank? rank,
+    String? title,
+    String? imageUrl,
+    required Function escapeWithNav}) {
   return PageTransition(
     alignment: Alignment.bottomCenter,
     curve: Curves.bounceOut,
@@ -145,6 +164,7 @@ PageTransition buildSearchScreenTransition(
     duration: const Duration(milliseconds: 300),
     reverseDuration: const Duration(milliseconds: 200),
     child: SearchScreen(
+      escapeWithNav: escapeWithNav,
       onlyGenre: genreId,
       onlyRank: rank,
       initialValue: intitialValue,

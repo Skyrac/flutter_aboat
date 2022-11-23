@@ -88,6 +88,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
             Navigator.push(
               context,
               buildSearchScreenTransition(
+                  escapeWithNav: widget.escapeWithNav,
                   genreId: widget.category.genreId,
                   intitialValue: text,
                   imageUrl: widget.category.imageUrl,
@@ -105,6 +106,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   Navigator.push(
                     context,
                     buildSearchScreenTransition(
+                        escapeWithNav: widget.escapeWithNav,
                         genreId: widget.category.genreId,
                         rank: PodcastRank.NewComer,
                         imageUrl: widget.category.imageUrl,
@@ -144,6 +146,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   Navigator.push(
                     context,
                     buildSearchScreenTransition(
+                        escapeWithNav: widget.escapeWithNav,
                         genreId: widget.category.genreId,
                         rank: PodcastRank.Receiver,
                         imageUrl: widget.category.imageUrl,
@@ -167,6 +170,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   Navigator.push(
                     context,
                     buildSearchScreenTransition(
+                        escapeWithNav: widget.escapeWithNav,
                         genreId: widget.category.genreId,
                         rank: PodcastRank.Hodler,
                         imageUrl: widget.category.imageUrl,
