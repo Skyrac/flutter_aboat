@@ -56,13 +56,13 @@ class _ChatState extends State<Chat> {
   @override
   initState() {
     super.initState();
-    chatService.joinRoom(JoinRoomDto(widget.roomId));
+    Future.microtask(() => chatService.joinRoom(JoinRoomDto(widget.roomId)));
     _getMessages = getMessages(widget.roomId);
   }
 
   @override
   dispose() {
-    chatService.leaveRoom(JoinRoomDto(widget.roomId));
+    Future.microtask(() => chatService.leaveRoom(JoinRoomDto(widget.roomId)));
     super.dispose();
   }
 

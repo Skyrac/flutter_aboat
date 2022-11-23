@@ -251,5 +251,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSCameraUsageDescription</key>
+    <string>To capture video for livestreaming please grant camera access</string>
 </dict>
 </plist>

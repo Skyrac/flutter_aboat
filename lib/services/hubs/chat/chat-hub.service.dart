@@ -59,23 +59,23 @@ class ChatHubService extends HubService {
 
   //#region RPC Calls
   sendMessage(CreateMessageDto message) async {
-    await connection.invoke("SendMessage", args: <Object>[message]);
+    return await connection.invoke("SendMessage", args: <Object>[message]);
   }
 
   editMessage(EditMessageDto message) async {
-    await connection.invoke("EditMessage", args: <Object>[message]);
+    return await connection.invoke("EditMessage", args: <Object>[message]);
   }
 
   deleteMessage(DeleteMessageDto message) async {
-    await connection.invoke("DeleteMessage", args: <Object>[message]);
+    return await connection.invoke("DeleteMessage", args: <Object>[message]);
   }
 
   joinRoom(JoinRoomDto data) async {
-    await connection.invoke("JoinRoom", args: <Object>[data]);
+    return await connection.invoke("JoinRoom", args: <Object>[data]);
   }
 
   leaveRoom(JoinRoomDto data) async {
-    await connection.invoke("LeaveRoom", args: <Object>[data]);
+    return await connection.invoke("LeaveRoom", args: <Object>[data]);
   }
 
   Future<List<ChatMessageDto>> getHistory(MessageHistoryRequestDto data) async {

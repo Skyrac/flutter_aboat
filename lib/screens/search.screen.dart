@@ -55,6 +55,13 @@ class _SearchScreenState extends State<SearchScreen> {
     debouncer.values.listen((val) {
       _pagingController.refresh();
     });
+    _controller.addListener(scrollUpdate);
+  }
+
+  scrollUpdate() {
+    setState(() {
+      offset = _controller.offset;
+    });
   }
 
   Future<void> _fetchPage(int pageKey) async {
@@ -77,16 +84,18 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   final ScrollController _controller = ScrollController();
+  double offset = 0;
 
   @override
   Widget build(BuildContext context) {
     return ScaffoldWave(
+      physics: const NeverScrollableScrollPhysics(),
       appBar: widget.appBar ?? buildAppbar(),
       body: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SizedBox(
-            height: _controller.positions.isEmpty ? 0 : min(_controller.offset, 66),
+          const SizedBox(
+            height: 66,
           ),
           SearchBar(
             initialSearch: widget.initialValue,
@@ -135,6 +144,8 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void dispose() {
     _pagingController.dispose();
+    _controller.removeListener(scrollUpdate);
+    _controller.dispose();
     super.dispose();
   }
 }

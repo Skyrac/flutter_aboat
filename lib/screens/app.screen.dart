@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:Talkaboat/screens/favorites.screen.dart';
+import 'package:Talkaboat/screens/playlist.screen.dart';
 import 'package:Talkaboat/screens/search.screen.dart';
 import 'package:Talkaboat/screens/social/social_entry.screen.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
@@ -19,7 +19,6 @@ import '../services/audio/audio-handler.services.dart';
 import '../themes/colors.dart';
 import '../widgets/mini-player.widget.dart';
 import 'home.screen.dart';
-import 'library.screen.dart';
 
 class AppScreen extends StatefulWidget {
   const AppScreen({Key? key, required this.title}) : super(key: key);
@@ -31,7 +30,7 @@ class AppScreen extends StatefulWidget {
 
 class _AppScreenState extends State<AppScreen> with RouteAware {
   late List<Widget> Tabs;
-  var userService = getIt<UserService>();
+  final userService = getIt<UserService>();
   String _currentPage = "Home";
   List<String> pageKeys = ["Home", "Search", "Playlist", "Library", "Social"];
   final Map<String, GlobalKey<NavigatorState>> _navigatorKeys = {
@@ -79,8 +78,22 @@ class _AppScreenState extends State<AppScreen> with RouteAware {
     Tabs = [
       HomeScreen(setEpisode, _selectTab, escapeWithNav),
       SearchScreen(escapeWithNav: escapeWithNav),
-      FavoritesScreen(escapeWithNav: escapeWithNav),
-      LibraryScreen(escapeWithNav),
+      SearchScreen(
+        escapeWithNav: escapeWithNav,
+        customSearchFunc: ((text, amount, offset) async {
+          return Future.value((await userService.getFavorites())
+              .where((element) => element.title?.contains(text) ?? false)
+              .skip(offset)
+              .take(amount)
+              .toList());
+        }),
+        refreshOnStateChange: true,
+        appBar: AppBar(
+          backgroundColor: const Color.fromRGBO(29, 40, 58, 1),
+          title: const Text("Favorites"),
+        ),
+      ),
+      PlaylistScreen(escapeWithNav),
       SocialEntryScreen(escapeWithNav)
     ];
     checkUpdates(context);
@@ -198,43 +211,40 @@ class _AppScreenState extends State<AppScreen> with RouteAware {
                   topLeft: Radius.circular(20.0),
                   topRight: Radius.circular(20.0),
                 ),
-                child: SizedBox(
-                  height: 70,
-                  child: BottomNavigationBar(
-                    backgroundColor: const Color.fromRGBO(29, 40, 58, 1),
-                    type: BottomNavigationBarType.fixed,
-                    selectedFontSize: 0,
-                    unselectedFontSize: 0,
-                    elevation: 0,
-                    showSelectedLabels: false,
-                    showUnselectedLabels: false,
-                    currentIndex: currentTabIndex,
-                    onTap: (index) {
-                      _selectTab(pageKeys[index], index);
-                    },
-                    items: <BottomNavigationBarItem>[
-                      BottomNavigationBarItem(
-                          icon: buttonNavbar("assets/images/home.png", 20, 20, "Home"),
-                          activeIcon: buttonNavbarActiv("assets/images/home.png", 20, 20, "Home"),
-                          label: ''),
-                      BottomNavigationBarItem(
-                          icon: buttonNavbar("assets/images/live.png", 29, 20, "Live"),
-                          activeIcon: buttonNavbarActiv("assets/images/live.png", 29, 20, "Live"),
-                          label: ''),
-                      BottomNavigationBarItem(
-                          icon: buttonNavbar("assets/images/favorites.png", 20, 20, "Favorites"),
-                          activeIcon: buttonNavbarActiv("assets/images/favorites.png", 20, 20, "Favorites"),
-                          label: ''),
-                      BottomNavigationBarItem(
-                          icon: buttonNavbar("assets/images/playlist.png", 30, 20, "Playlists"),
-                          activeIcon: buttonNavbarActiv("assets/images/playlist.png", 30, 20, "Playlists"),
-                          label: ''),
-                      BottomNavigationBarItem(
-                          icon: buttonNavbar("assets/images/social.png", 20, 20, "Social"),
-                          activeIcon: buttonNavbarActiv("assets/images/social.png", 20, 20, "Social"),
-                          label: ''),
-                    ],
-                  ),
+                child: BottomNavigationBar(
+                  backgroundColor: const Color.fromRGBO(29, 40, 58, 1),
+                  type: BottomNavigationBarType.fixed,
+                  selectedFontSize: 0,
+                  unselectedFontSize: 0,
+                  elevation: 0,
+                  showSelectedLabels: false,
+                  showUnselectedLabels: false,
+                  currentIndex: currentTabIndex,
+                  onTap: (index) {
+                    _selectTab(pageKeys[index], index);
+                  },
+                  items: <BottomNavigationBarItem>[
+                    BottomNavigationBarItem(
+                        icon: buttonNavbar("assets/images/home.png", 20, 20, "Home"),
+                        activeIcon: buttonNavbarActiv("assets/images/home.png", 20, 20, "Home"),
+                        label: ''),
+                    BottomNavigationBarItem(
+                        icon: buttonNavbar("assets/images/live.png", 29, 20, "Live"),
+                        activeIcon: buttonNavbarActiv("assets/images/live.png", 29, 20, "Live"),
+                        label: ''),
+                    BottomNavigationBarItem(
+                        icon: buttonNavbar("assets/images/favorites.png", 20, 20, "Favorites"),
+                        activeIcon: buttonNavbarActiv("assets/images/favorites.png", 20, 20, "Favorites"),
+                        label: ''),
+                    BottomNavigationBarItem(
+                        icon: buttonNavbar("assets/images/playlist.png", 30, 20, "Playlists"),
+                        activeIcon: buttonNavbarActiv("assets/images/playlist.png", 30, 20, "Playlists"),
+                        label: ''),
+                    BottomNavigationBarItem(
+                        icon: buttonNavbar("assets/images/social.png", 20, 20, "Social"),
+                        activeIcon: buttonNavbarActiv("assets/images/social.png", 20, 20, "Social"),
+                        label: ''),
+                  ],
                 ),
               ),
             ],
