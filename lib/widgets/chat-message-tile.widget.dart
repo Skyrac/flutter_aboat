@@ -5,17 +5,19 @@ import 'package:flutter/material.dart';
 import 'package:swipe_to/swipe_to.dart';
 
 class ChatMessageTile extends StatelessWidget {
-  const ChatMessageTile(
-      {super.key,
-      required this.message,
-      required this.onSwipedMessage,
-      required this.onEditMessage,
-      required this.onDeleteMessage,
-      required this.cancelReplyAndEdit,
-      required this.selectIndex,
-      required this.index,
-      required this.selectedIndex,
-      required this.userService});
+  const ChatMessageTile({
+    super.key,
+    required this.message,
+    required this.onSwipedMessage,
+    required this.onEditMessage,
+    required this.onDeleteMessage,
+    required this.cancelReplyAndEdit,
+    required this.selectIndex,
+    required this.index,
+    required this.selectedIndex,
+    required this.userService,
+    required this.scrollto,
+  });
 
   final ChatMessageDto message;
   final UserService userService;
@@ -24,6 +26,7 @@ class ChatMessageTile extends StatelessWidget {
   final void Function(ChatMessageDto) onDeleteMessage;
   final void Function() cancelReplyAndEdit;
   final void Function(int?) selectIndex;
+  final void Function(int?) scrollto;
   final int index;
   final int? selectedIndex;
 

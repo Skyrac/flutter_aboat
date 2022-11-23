@@ -7,6 +7,7 @@ import 'package:Talkaboat/models/chat/message-history-request-dto.dart';
 import 'package:Talkaboat/services/hubs/chat/chat.service.dart';
 import 'package:Talkaboat/widgets/chat-message-tile.widget.dart';
 import 'package:flutter/material.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 import '../models/chat/delete-message-dto.dart';
 import '../services/user/user.service.dart';
@@ -58,6 +59,19 @@ class _ChatState extends State<Chat> {
     super.initState();
     chatService.joinRoom(JoinRoomDto(widget.roomId));
     _getMessages = getMessages(widget.roomId);
+
+    // itemListener.itemPositions.addListener(() {
+    //   final indices = itemListener.itemPositions.value
+    //       .where((item) {
+    //         final isTopVisible = item.itemLeadingEdge >= 0;
+    //         final isBottomVisible = item.itemTrailingEdge <= 1;
+
+    //         return isTopVisible && isBottomVisible;
+    //       })
+    //       .map((item) => item.index)
+    //       .toList();
+    // });
+    // WidgetsBinding.instance.addPostFrameCallback((_) => scrollToMessage(message));
   }
 
   @override
@@ -66,31 +80,61 @@ class _ChatState extends State<Chat> {
     super.dispose();
   }
 
-  Widget buildMessages(List<ChatMessageDto> data) => ListView.builder(
-      physics: const ScrollPhysics(),
-      shrinkWrap: true,
+  final itemController = ItemScrollController();
+  final itemListener = ItemPositionsListener.create();
+
+  // @override
+  // void initState() {
+  //   super.initState();
+
+  //   itemListener.itemPositions.addListener(() {
+  //     final indices = itemListener.itemPositions.value.map((item) => item.index).toSet();
+
+  //     print(indices);
+  //   });
+  // };
+
+  Future scrollToMessage(message) async {
+    itemController.scrollTo(index: 2, duration: Duration(milliseconds: 100), alignment: 0.1);
+  }
+
+  Widget buildMessages(List<ChatMessageDto> data) => ScrollablePositionedList.builder(
+      itemScrollController: itemController,
+      // itemPositionsListener: itemListener,
+      // physics: NeverScrollableScrollPhysics(),
       itemCount: data.length,
-      scrollDirection: Axis.vertical,
+      shrinkWrap: true,
+      // scrollDirection: Axis.vertical,
       itemBuilder: (BuildContext context, int index) {
         var item = data[index];
-        return ChatMessageTile(
-            message: item,
-            onSwipedMessage: (message) {
-              replyToMessage(message);
-              focusNode.requestFocus();
-            },
-            onEditMessage: (message) {
-              editMessage(message);
-              focusNode.requestFocus();
-            },
-            onDeleteMessage: (message) => chatService.deleteMessage(DeleteMessageDto(message.id, message.chatRoomId)),
-            cancelReplyAndEdit: cancelReplyAndEdit,
-            selectIndex: (index) => setState(() {
-                  selectedIndex = index;
-                }),
-            index: index,
-            selectedIndex: selectedIndex,
-            userService: userService);
+        return Stack(
+          children: [
+            ChatMessageTile(
+                message: item,
+                onSwipedMessage: (message) {
+                  replyToMessage(message);
+                  focusNode.requestFocus();
+                },
+                onEditMessage: (message) {
+                  editMessage(message);
+                  focusNode.requestFocus();
+                },
+                onDeleteMessage: (message) => chatService.deleteMessage(DeleteMessageDto(message.id, message.chatRoomId)),
+                cancelReplyAndEdit: cancelReplyAndEdit,
+                selectIndex: (index) => setState(() {
+                      selectedIndex = index;
+                    }),
+                index: index,
+                selectedIndex: selectedIndex,
+                userService: userService,
+                scrollto: (message) => scrollToMessage(message)),
+            IconButton(
+              icon: const Icon(Icons.more_vert),
+              onPressed: () => scrollToMessage(2),
+              // onPressed: () => {},
+            ),
+          ],
+        );
       });
 
   Future<List<ChatMessageDto>> getMessages(int roomId) async {
@@ -130,15 +174,24 @@ class _ChatState extends State<Chat> {
                           // Extracting data from snapshot object
                           if (snapshot.data != null && snapshot.data!.isNotEmpty) {
                             // return Text(data[1].content.toString());
-                            return Container(
-                              alignment: Alignment.topCenter,
-                              // height: 400,
-                              child: Stack(
-                                alignment: Alignment.bottomCenter,
-                                children: [
-                                  buildMessages(snapshot.data!),
-                                ],
-                              ),
+                            return SingleChildScrollView(
+                              child: Container(
+                                  alignment: Alignment.topCenter,
+                                  // height: 400,
+                                  child: Container(
+                                    child: Container(
+                                      height: 500,
+                                      // height: MediaQuery.of(context).size.height,
+                                      child: buildMessages(snapshot.data!),
+                                    ),
+                                  )
+                                  // Stack(
+                                  //   alignment: Alignment.bottomCenter,
+                                  //   children: [
+                                  //     buildMessages(snapshot.data!),
+                                  //   ],
+                                  // ),
+                                  ),
                             );
                           } else {
                             return SizedBox(
