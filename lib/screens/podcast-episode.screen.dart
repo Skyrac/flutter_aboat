@@ -1,4 +1,5 @@
 import 'package:Talkaboat/services/user/user.service.dart';
+import 'package:Talkaboat/utils/common.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -450,24 +451,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                                     style: TextStyle(fontWeight: FontWeight.w600),
                                                   ),
                                                 ),
-                                                Align(
-                                                  alignment: Alignment.centerLeft,
-                                                  child: Container(
-                                                      margin: const EdgeInsets.only(bottom: 35),
-                                                      decoration: BoxDecoration(
-                                                          borderRadius: BorderRadius.circular(10),
-                                                          color: const Color.fromRGBO(188, 140, 75, 1)),
-                                                      width: 100,
-                                                      height: 35,
-                                                      child: Center(
-                                                          child: Text(
-                                                              textAlign: TextAlign.center,
-                                                              overflow: TextOverflow.ellipsis,
-                                                              maxLines: 2,
-                                                              episodeItem.genreIds!,
-                                                              style:
-                                                                  const TextStyle(color: Color.fromRGBO(15, 23, 41, 1))))),
-                                                ),
+                                                buildCategoryBadges(context, episodeItem.genreIds!),
                                                 Container(
                                                   alignment: Alignment.centerLeft,
                                                   margin: const EdgeInsets.only(bottom: 10),
