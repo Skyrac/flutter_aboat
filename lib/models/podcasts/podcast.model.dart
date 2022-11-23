@@ -32,6 +32,7 @@ class Podcast extends SearchResult {
   bool? explicitContent;
   int? latestPubDateMs;
   int? earliestPubDateMs;
+  int? rank;
   DateTime? lastUpdate;
 
   Podcast(
@@ -95,6 +96,7 @@ class Podcast extends SearchResult {
         });
       }
     }
+    rank = json['rank'];
     title = json['title'];
     country = json['country'];
     website = json['website'];
@@ -129,6 +131,7 @@ class Podcast extends SearchResult {
     if (episodes != null) {
       data['episodes'] = episodes!.map((v) => v.toJson()).toList();
     }
+    data['rank'] = rank;
     data['title'] = title;
     data['country'] = country;
     data['website'] = website;
