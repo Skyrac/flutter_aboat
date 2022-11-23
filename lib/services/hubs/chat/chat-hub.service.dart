@@ -59,33 +59,58 @@ class ChatHubService extends HubService {
 
   //#region RPC Calls
   sendMessage(CreateMessageDto message) async {
-    return await connection.invoke("SendMessage", args: <Object>[message]);
+    try {
+      return await connection.invoke("SendMessage", args: <Object>[message]);
+    } catch (e) {
+      print(e);
+    }
   }
 
   editMessage(EditMessageDto message) async {
-    return await connection.invoke("EditMessage", args: <Object>[message]);
+    try {
+      return await connection.invoke("EditMessage", args: <Object>[message]);
+    } catch (e) {
+      print(e);
+    }
   }
 
   deleteMessage(DeleteMessageDto message) async {
-    return await connection.invoke("DeleteMessage", args: <Object>[message]);
+    try {
+      return await connection.invoke("DeleteMessage", args: <Object>[message]);
+    } catch (e) {
+      print(e);
+    }
   }
 
   joinRoom(JoinRoomDto data) async {
-    return await connection.invoke("JoinRoom", args: <Object>[data]);
+    try {
+      return await connection.invoke("JoinRoom", args: <Object>[data]);
+    } catch (e) {
+      print(e);
+    }
   }
 
   leaveRoom(JoinRoomDto data) async {
-    return await connection.invoke("LeaveRoom", args: <Object>[data]);
+    try {
+      return await connection.invoke("LeaveRoom", args: <Object>[data]);
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future<List<ChatMessageDto>> getHistory(MessageHistoryRequestDto data) async {
-    var response = await connection.invoke("GetHistory", args: <Object>[data]);
-    if (response == null) {
+    try {
+      var response = await connection.invoke("GetHistory", args: <Object>[data]);
+      if (response == null) {
+        return List.empty();
+      }
+      var convertedData =
+          List<ChatMessageDto>.from(json.decode(json.encode(response)).map((data) => ChatMessageDto.fromJson(data)));
+      return convertedData;
+    } catch (e) {
+      print(e);
       return List.empty();
     }
-    var convertedData =
-        List<ChatMessageDto>.from(json.decode(json.encode(response)).map((data) => ChatMessageDto.fromJson(data)));
-    return convertedData;
   }
   //#endregion
 }

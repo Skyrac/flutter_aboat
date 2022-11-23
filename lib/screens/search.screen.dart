@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/models/podcasts/podcast-rank.model.dart';
 import 'package:Talkaboat/models/podcasts/podcast.model.dart';
