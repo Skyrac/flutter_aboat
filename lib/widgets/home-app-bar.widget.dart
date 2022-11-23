@@ -75,7 +75,7 @@ class HomeAppBarWidget extends StatelessWidget {
             },
           ),
         ),
-        Padding(
+        /*Padding(
           padding: const EdgeInsets.only(right: 15),
           child: IconButton(
             icon: Image.asset(
@@ -87,7 +87,7 @@ class HomeAppBarWidget extends StatelessWidget {
             tooltip: '',
             onPressed: () {},
           ),
-        ),
+        ),*/
         Padding(
           padding: const EdgeInsets.only(right: 10),
           child: IconButton(
