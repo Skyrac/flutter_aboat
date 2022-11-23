@@ -21,8 +21,13 @@ abstract class HubService {
   }
 
   connect() async {
-    await connection.start();
-    print("Connected to ${hubName}-hub");
+    try {
+      print("current state ${connection.state}");
+      await connection.start();
+      print("Connected to ${hubName}-hub");
+    } catch (e) {
+      print(e);
+    }
   }
 
   disconnect() async {

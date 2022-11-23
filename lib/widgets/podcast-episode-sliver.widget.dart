@@ -7,13 +7,10 @@ import '../models/podcasts/episode.model.dart';
 
 class PodcastEpisodeSliver extends SliverPersistentHeaderDelegate {
   final double expandedHeight;
-  // final SearchResult podcast;
+  final TabController? controller;
   final Episode episode;
 
-  PodcastEpisodeSliver(
-      {required this.expandedHeight,
-      // required this.podcast,
-      required this.episode});
+  PodcastEpisodeSliver({required this.expandedHeight, required this.episode, this.controller});
 
   final userService = getIt<UserService>();
   final tokenService = getIt<TokenService>();
@@ -55,11 +52,12 @@ class PodcastEpisodeSliver extends SliverPersistentHeaderDelegate {
                         color: Colors.white.withOpacity(0.0),
                         border: const Border(bottom: BorderSide(color: Color.fromRGBO(164, 202, 255, 1))),
                       ),
-                      child: const TabBar(
-                        labelColor: Color.fromRGBO(188, 140, 75, 1),
-                        indicatorColor: Color.fromRGBO(188, 140, 75, 1),
-                        unselectedLabelColor: Color.fromRGBO(164, 202, 255, 1),
-                        tabs: [
+                      child: TabBar(
+                        controller: controller,
+                        labelColor: const Color.fromRGBO(188, 140, 75, 1),
+                        indicatorColor: const Color.fromRGBO(188, 140, 75, 1),
+                        unselectedLabelColor: const Color.fromRGBO(164, 202, 255, 1),
+                        tabs: const [
                           Tab(text: "Details"),
                           Tab(text: "Podcast"),
                           Tab(text: "Community"),

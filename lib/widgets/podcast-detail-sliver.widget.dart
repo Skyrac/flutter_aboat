@@ -12,8 +12,9 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
   final double expandedHeight;
   final SearchResult podcast;
   final Function escapeWithNav;
+  final TabController? controller;
 
-  PodcastDetailSliver(this.escapeWithNav, {required this.expandedHeight, required this.podcast});
+  PodcastDetailSliver(this.escapeWithNav, {required this.expandedHeight, required this.podcast, this.controller});
 
   final userService = getIt<UserService>();
   final tokenService = getIt<TokenService>();
@@ -58,11 +59,12 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                         color: Colors.white.withOpacity(0.0),
                         border: const Border(bottom: BorderSide(color: Color.fromRGBO(164, 202, 255, 1))),
                       ),
-                      child: const TabBar(
-                        labelColor: Color.fromRGBO(188, 140, 75, 1),
-                        indicatorColor: Color.fromRGBO(188, 140, 75, 1),
-                        unselectedLabelColor: Color.fromRGBO(164, 202, 255, 1),
-                        tabs: [
+                      child: TabBar(
+                        controller: controller,
+                        labelColor: const Color.fromRGBO(188, 140, 75, 1),
+                        indicatorColor: const Color.fromRGBO(188, 140, 75, 1),
+                        unselectedLabelColor: const Color.fromRGBO(164, 202, 255, 1),
+                        tabs: const [
                           Tab(text: "Episodes"),
                           Tab(text: "Details"),
                           Tab(text: "Community"),
