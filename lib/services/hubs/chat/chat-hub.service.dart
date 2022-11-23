@@ -60,7 +60,7 @@ class ChatHubService extends HubService {
   //#region RPC Calls
   sendMessage(CreateMessageDto message) async {
     try {
-      await connection.invoke("SendMessage", args: <Object>[message]);
+      return await connection.invoke("SendMessage", args: <Object>[message]);
     } catch (e) {
       print(e);
     }
@@ -68,7 +68,7 @@ class ChatHubService extends HubService {
 
   editMessage(EditMessageDto message) async {
     try {
-      await connection.invoke("EditMessage", args: <Object>[message]);
+      return await connection.invoke("EditMessage", args: <Object>[message]);
     } catch (e) {
       print(e);
     }
@@ -76,7 +76,7 @@ class ChatHubService extends HubService {
 
   deleteMessage(DeleteMessageDto message) async {
     try {
-      await connection.invoke("DeleteMessage", args: <Object>[message]);
+      return await connection.invoke("DeleteMessage", args: <Object>[message]);
     } catch (e) {
       print(e);
     }
@@ -84,7 +84,7 @@ class ChatHubService extends HubService {
 
   joinRoom(JoinRoomDto data) async {
     try {
-      await connection.invoke("JoinRoom", args: <Object>[data]);
+      return await connection.invoke("JoinRoom", args: <Object>[data]);
     } catch (e) {
       print(e);
     }
@@ -92,7 +92,7 @@ class ChatHubService extends HubService {
 
   leaveRoom(JoinRoomDto data) async {
     try {
-      await connection.invoke("LeaveRoom", args: <Object>[data]);
+      return await connection.invoke("LeaveRoom", args: <Object>[data]);
     } catch (e) {
       print(e);
     }

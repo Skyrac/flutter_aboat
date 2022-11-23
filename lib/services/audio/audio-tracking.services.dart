@@ -7,10 +7,9 @@ int heartbeatCounter = 0;
 const heartbeatLimit = 20;
 MediaItem? currentlyPlayingMediaItem;
 Function? setEpisode;
-late RewardHubService _rewardHub = getIt<RewardHubService>();
+RewardHubService _rewardHub = getIt<RewardHubService>();
 
-Future<void> receiveUpdate(PlaybackState state, MediaItem? currentMediaItem,
-    Duration position, Episode? episode) async {
+Future<void> receiveUpdate(PlaybackState state, MediaItem? currentMediaItem, Duration position, Episode? episode) async {
   currentlyPlayingMediaItem = currentMediaItem;
   if (currentMediaItem != null) {
     var playTime = position.inSeconds;
@@ -30,8 +29,7 @@ Future<void> receiveUpdate(PlaybackState state, MediaItem? currentMediaItem,
   }
 }
 
-Future<void> positionUpdate(
-    Duration position, MediaItem? currentMediaItem) async {
+Future<void> positionUpdate(Duration position, MediaItem? currentMediaItem) async {
   currentlyPlayingMediaItem = currentMediaItem;
   if (currentMediaItem != null) {
     heartbeatCounter++;

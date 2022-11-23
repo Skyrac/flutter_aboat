@@ -41,7 +41,7 @@ class _ChatInputState extends State<ChatInput> {
 
     return userService.isConnected
         ? Positioned(
-            bottom: 50,
+            bottom: 10,
             child: Container(
               width: 350,
               height: 50,

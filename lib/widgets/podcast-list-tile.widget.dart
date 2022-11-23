@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
 class PodcastListTileWidget extends StatefulWidget {
-  const PodcastListTileWidget(this.podcast, this.escapeWithNav, {this.stateChangeCb, Key? key}) : super(key: key);
+  const PodcastListTileWidget(this.podcast, {this.stateChangeCb, required this.escapeWithNav, Key? key}) : super(key: key);
   final Podcast podcast;
   final Function escapeWithNav;
   final void Function()? stateChangeCb;

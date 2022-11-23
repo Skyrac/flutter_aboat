@@ -1,15 +1,14 @@
 import 'package:Talkaboat/services/user/user.service.dart';
+import 'package:Talkaboat/utils/common.dart';
+import 'package:Talkaboat/widgets/podcast-episode-details.widget.dart';
 import 'package:audio_service/audio_service.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../injection/injector.dart';
 import '../models/podcasts/episode.model.dart';
-import '../models/podcasts/podcast-rank.model.dart';
 import '../models/podcasts/podcast.model.dart';
 import '../models/search/search_result.model.dart';
 import '../services/audio/audio-handler.services.dart';
@@ -299,6 +298,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                                           await userService.addToFavorites(widget.episode!.podcastId!);
                                                         }
                                                         await FileDownloadService.cacheOrDelete(widget.episode!.audio!);
+                                                        setState(() {});
                                                       },
                                                       image: "assets/images/cloud_complete.png",
                                                       title: "Downloaded",
@@ -310,6 +310,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                                           await userService.addToFavorites(widget.episode!.podcastId!);
                                                         }
                                                         await FileDownloadService.cacheOrDelete(widget.episode!.audio!);
+                                                        setState(() {});
                                                       },
                                                       image: "assets/images/cloud.png",
                                                       title: "Download",
@@ -434,7 +435,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                                   margin: const EdgeInsets.fromLTRB(20, 0, 0, 10),
                                                   alignment: Alignment.topLeft,
                                                   child: Text(
-                                                    episodeItem.publisher!,
+                                                    episodeItem.publisher ?? "",
                                                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                                           color: const Color.fromRGBO(99, 163, 253, 0.5),
                                                         ),
@@ -448,24 +449,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                                     style: TextStyle(fontWeight: FontWeight.w600),
                                                   ),
                                                 ),
-                                                Align(
-                                                  alignment: Alignment.centerLeft,
-                                                  child: Container(
-                                                      margin: const EdgeInsets.only(bottom: 35),
-                                                      decoration: BoxDecoration(
-                                                          borderRadius: BorderRadius.circular(10),
-                                                          color: const Color.fromRGBO(188, 140, 75, 1)),
-                                                      width: 100,
-                                                      height: 35,
-                                                      child: Center(
-                                                          child: Text(
-                                                              textAlign: TextAlign.center,
-                                                              overflow: TextOverflow.ellipsis,
-                                                              maxLines: 2,
-                                                              episodeItem.genreIds!,
-                                                              style:
-                                                                  const TextStyle(color: Color.fromRGBO(15, 23, 41, 1))))),
-                                                ),
+                                                buildCategoryBadges(context, episodeItem.genreIds ?? ""),
                                                 Container(
                                                   alignment: Alignment.centerLeft,
                                                   margin: const EdgeInsets.only(bottom: 10),
@@ -479,7 +463,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                                                 Container(
                                                   margin: const EdgeInsets.only(bottom: 10),
                                                   child: Text(
-                                                    widget.episode!.transcript!,
+                                                    widget.episode?.description ?? "",
                                                     style: Theme.of(context)
                                                         .textTheme
                                                         .bodyLarge
@@ -520,161 +504,10 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
               ),
               SliverToBoxAdapter(
                   child: Center(
-                      child: FutureBuilder(
-                          future: podcastService.getPodcastDetails(podcastSearchResult.id!, sort, -1),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState == ConnectionState.done) {
-                              if (snapshot.hasError) {
-                                return Center(
-                                  child: Text(
-                                    '${snapshot.error} occurred',
-                                    style: const TextStyle(fontSize: 18),
-                                  ),
-                                );
-                              } else if (snapshot.hasData && snapshot.data != null) {
-                                final podcast = snapshot.data;
-                                // Extracting data from snapshot object
-                                return Container(
-                                  padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
-                                  height: 105,
-                                  width: MediaQuery.of(context).size.width,
-                                  child: RawMaterialButton(
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-                                    onPressed: () {},
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        color: Colors.transparent,
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          Container(
-                                            padding: const EdgeInsets.only(right: 5),
-                                            width: 100,
-                                            height: 100,
-                                            child: Center(
-                                              child: Stack(
-                                                children: [
-                                                  ClipRRect(
-                                                      borderRadius: BorderRadius.circular(10),
-                                                      child: SizedBox(
-                                                          child: CachedNetworkImage(
-                                                        imageUrl: podcast!.image ?? 'https://picsum.photos/200',
-                                                        cacheManager: CacheManager(Config(
-                                                            widget.episode!.image ?? 'https://picsum.photos/200',
-                                                            stalePeriod: const Duration(days: 2))),
-                                                        fit: BoxFit.fill,
-                                                        placeholder: (_, __) =>
-                                                            const Center(child: CircularProgressIndicator()),
-                                                        errorWidget: (context, url, error) => const Icon(Icons.error),
-                                                      ))),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                          const SizedBox(
-                                            width: 10,
-                                          ),
-                                          SizedBox(
-                                            height: 105,
-                                            width: 218,
-                                            child: Column(
-                                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Flexible(
-                                                  fit: FlexFit.loose,
-                                                  child: Text(
-                                                    podcast.title!,
-                                                    overflow: TextOverflow.ellipsis,
-                                                    maxLines: 1,
-                                                    style: const TextStyle(
-                                                        color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12),
-                                                  ),
-                                                ),
-                                                Flexible(
-                                                  fit: FlexFit.loose,
-                                                  child: Text(removeAllHtmlTags(podcast.publisher!),
-                                                      overflow: TextOverflow.ellipsis,
-                                                      maxLines: 2,
-                                                      style: const TextStyle(color: Colors.white, fontSize: 12)),
-                                                ),
-                                                FutureBuilder(
-                                                    future: getPodcast(widget.episode, widget.podcastId),
-                                                    builder: (context, snapshot) {
-                                                      if (snapshot.connectionState == ConnectionState.done) {
-                                                        if (snapshot.hasError) {
-                                                          return Center(
-                                                            child: Text(
-                                                              '${snapshot.error} occurred',
-                                                              style: const TextStyle(fontSize: 18),
-                                                            ),
-                                                          );
-                                                        }
-                                                        if (snapshot.data != null) {
-                                                          final podcast = snapshot.data!;
-                                                          final rank = PodcastRankfromNumber(podcast.rank);
-                                                          String? reward = PodcastMultiplerfromRank(rank);
-                                                          return reward != null
-                                                              ? Row(
-                                                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                                                  mainAxisAlignment: MainAxisAlignment.start,
-                                                                  children: [
-                                                                    Text(
-                                                                        '${podcast.totalEpisodes!.toString()} Episodes     - ',
-                                                                        style: Theme.of(context).textTheme.titleMedium),
-                                                                    const SizedBox(
-                                                                      width: 10,
-                                                                    ),
-                                                                    const Image(
-                                                                      image: AssetImage("assets/icons/icon_fire.png"),
-                                                                    ),
-                                                                    const SizedBox(
-                                                                      width: 10,
-                                                                    ),
-                                                                    Text("Reward $reward",
-                                                                        style: Theme.of(context).textTheme.titleMedium)
-                                                                  ],
-                                                                )
-                                                              : Row(
-                                                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                                                  mainAxisAlignment: MainAxisAlignment.start,
-                                                                  children: [
-                                                                    Text(
-                                                                        '${podcast.totalEpisodes!.toString()} Episodes       ',
-                                                                        style: Theme.of(context).textTheme.titleMedium),
-                                                                    const SizedBox(
-                                                                      width: 10,
-                                                                    ),
-                                                                  ],
-                                                                );
-                                                        }
-                                                      }
-                                                      return const SizedBox(
-                                                          width: 15.0, height: 15.0, child: CircularProgressIndicator());
-                                                    }),
-                                              ],
-                                            ),
-                                          ),
-                                          buildPopupButton(context, widget.episode!),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              } else {
-                                return const Center(
-                                  child: Text(
-                                    'No data found for this podcast. Please try again later!',
-                                    style: TextStyle(fontSize: 18),
-                                  ),
-                                );
-                              }
-                            }
-                            return const SizedBox();
-                          })))
+                      child: PodcastEpisodeDetails(
+                podcastId: podcastSearchResult.id!,
+                escapeWithNav: widget.escapeWithNav,
+              )))
             ],
           ),
           FutureBuilder(
@@ -813,7 +646,6 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
       );
 
   popupMenu(BuildContext context, Episode entry) => <PopupMenuEntry<String>>[
-        const PopupMenuItem<String>(value: 'add', child: Card(child: Text('Add to playlist'))),
         PopupMenuItem<String>(
             value: 'add',
             child: Container(
@@ -865,12 +697,6 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                   ],
                 ))),
       ];
-
-  String removeAllHtmlTags(String htmlText) {
-    RegExp exp = RegExp(r"<[^>]*>", multiLine: true, caseSensitive: true);
-
-    return htmlText.replaceAll(exp, '');
-  }
 
   Future<Podcast?> getPodcast(Episode? episode, int? podcastId) {
     if (episode != null) {

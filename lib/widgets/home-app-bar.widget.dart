@@ -70,7 +70,7 @@ class HomeAppBarWidget extends StatelessWidget {
                       duration: const Duration(milliseconds: 500),
                       reverseDuration: const Duration(milliseconds: 500),
                       child: SearchScreen(
-                        escapeWithNav,
+                        escapeWithNav: escapeWithNav,
                       )));
             },
           ),

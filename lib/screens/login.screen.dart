@@ -456,10 +456,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             SizedBox(height: size.height * 0.05),
                             createAppleLogin(),
                             SizedBox(height: Platform.isIOS ? 10 : 0),
-                            createAppleLogin(),
-                            const SizedBox(
-                              height: 10,
-                            ),
                             signInButton(image: "google.png", socialLogin: SocialLogin.Google, text: "Google"),
                             const SizedBox(
                               height: 10,

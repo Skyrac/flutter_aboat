@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/models/podcasts/podcast-rank.model.dart';
 import 'package:Talkaboat/models/podcasts/podcast.model.dart';
@@ -14,13 +12,14 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:page_transition/page_transition.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen(this.escapeWithNav,
+  const SearchScreen(
       {this.appBar,
       this.onlyGenre,
       this.initialValue,
       this.onlyRank,
       this.refreshOnStateChange,
       this.customSearchFunc,
+      required this.escapeWithNav,
       Key? key})
       : super(key: key);
 
@@ -54,6 +53,13 @@ class _SearchScreenState extends State<SearchScreen> {
     debouncer.values.listen((val) {
       _pagingController.refresh();
     });
+    _controller.addListener(scrollUpdate);
+  }
+
+  scrollUpdate() {
+    setState(() {
+      offset = _controller.offset;
+    });
   }
 
   Future<void> _fetchPage(int pageKey) async {
@@ -76,16 +82,18 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   final ScrollController _controller = ScrollController();
+  double offset = 0;
 
   @override
   Widget build(BuildContext context) {
     return ScaffoldWave(
+      physics: const NeverScrollableScrollPhysics(),
       appBar: widget.appBar ?? buildAppbar(),
       body: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SizedBox(
-            height: _controller.positions.isEmpty ? 0 : min(_controller.offset, 66),
+          const SizedBox(
+            height: 66,
           ),
           SearchBar(
             initialSearch: widget.initialValue,
@@ -107,7 +115,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     borderRadius: BorderRadius.circular(10),
                     child: PodcastListTileWidget(
                       item,
-                      widget.escapeWithNav,
+                      escapeWithNav: widget.escapeWithNav,
                       stateChangeCb: widget.refreshOnStateChange != null && widget.refreshOnStateChange! == true
                           ? () {
                               _pagingController.refresh();
@@ -134,12 +142,19 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void dispose() {
     _pagingController.dispose();
+    _controller.removeListener(scrollUpdate);
+    _controller.dispose();
     super.dispose();
   }
 }
 
-PageTransition buildSearchScreenTransition(Function escapeWithNav,
-    {String? intitialValue, int? genreId, PodcastRank? rank, String? title, String? imageUrl}) {
+PageTransition buildSearchScreenTransition(
+    {String? intitialValue,
+    int? genreId,
+    PodcastRank? rank,
+    String? title,
+    String? imageUrl,
+    required Function escapeWithNav}) {
   return PageTransition(
     alignment: Alignment.bottomCenter,
     curve: Curves.bounceOut,
@@ -147,7 +162,7 @@ PageTransition buildSearchScreenTransition(Function escapeWithNav,
     duration: const Duration(milliseconds: 300),
     reverseDuration: const Duration(milliseconds: 200),
     child: SearchScreen(
-      escapeWithNav,
+      escapeWithNav: escapeWithNav,
       onlyGenre: genreId,
       onlyRank: rank,
       initialValue: intitialValue,

@@ -7,8 +7,7 @@ import '../models/podcasts/episode.model.dart';
 import '../services/audio/audio-handler.services.dart';
 
 class EpisodeListWidget extends StatefulWidget {
-  EpisodeListWidget({Key? key, required this.episodes, required this.direction})
-      : super(key: key);
+  const EpisodeListWidget({Key? key, required this.episodes, required this.direction}) : super(key: key);
   final List<Episode?> episodes;
   final Axis direction;
   @override
@@ -19,14 +18,11 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget> {
   late final audioHandler = getIt<AudioPlayerHandler>();
 
   popupMenu(BuildContext context, Episode entry) => <PopupMenuEntry<String>>[
-        PopupMenuItem<String>(
-            value: 'remove', child: Card(child: Text('Remove from Playlist'))),
+        const PopupMenuItem<String>(value: 'remove', child: Card(child: Text('Remove from Playlist'))),
       ];
 
   buildPopupButton(context, Episode entry) => PopupMenuButton(
-        child: Card(
-            child: Icon(Icons.more_vert,
-                color: Theme.of(context).iconTheme.color)),
+        child: Card(child: Icon(Icons.more_vert, color: Theme.of(context).iconTheme.color)),
         onSelected: (value) async {
           switch (value) {
             case "add":
@@ -67,8 +63,7 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget> {
       padding: const EdgeInsets.all(10),
       child: InkWell(
           onTap: () async {
-            await audioHandler
-                .updateEpisodeQueue(List.generate(1, (index) => entry));
+            await audioHandler.updateEpisodeQueue(List.generate(1, (index) => entry));
           },
           child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
@@ -87,34 +82,26 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget> {
                                 CachedNetworkImage(
                                   imageUrl: entry.image!,
                                   fit: BoxFit.fill,
-                                  cacheManager: CacheManager(
-                                      Config(
-                                          entry.image ?? 'https://picsum.photos/200',
-                                          stalePeriod: const Duration(days: 2))),
-                                  placeholder: (_, __) => const Center(
-                                      child: CircularProgressIndicator()),
+                                  cacheManager: CacheManager(Config(entry.image ?? 'https://picsum.photos/200',
+                                      stalePeriod: const Duration(days: 2))),
+                                  placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
                                   // progressIndicatorBuilder: (context, url, downloadProgress) =>
                                   //     CircularProgressIndicator(value: downloadProgress.progress),
-                                  errorWidget: (context, url, error) =>
-                                      const Icon(Icons.error),
+                                  errorWidget: (context, url, error) => const Icon(Icons.error),
                                 ),
                               ],
                             ))),
                     Padding(
-                        padding:
-                            const EdgeInsets.only(left: 5, right: 5, top: 5),
+                        padding: const EdgeInsets.only(left: 5, right: 5, top: 5),
                         child: Text(entry.title!,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 2,
-                            style: Theme.of(context).textTheme.titleMedium))
+                            overflow: TextOverflow.ellipsis, maxLines: 2, style: Theme.of(context).textTheme.titleMedium))
                   ],
                 ),
               ))));
 
   Widget makeVerticalListTile(context, Episode entry) => Center(
         child: ListTile(
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
           leading: SizedBox(
             width: 60,
             height: 100,
@@ -124,8 +111,7 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget> {
                     child: CachedNetworkImage(
                   imageUrl: entry.image == null ? '' : entry.image!,
                   fit: BoxFit.fill,
-                  placeholder: (_, __) =>
-                      const Center(child: CircularProgressIndicator()),
+                  placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
                   // progressIndicatorBuilder: (context, url, downloadProgress) =>
                   //     CircularProgressIndicator(value: downloadProgress.progress),
                   errorWidget: (context, url, error) => const Icon(Icons.error),
@@ -135,8 +121,7 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget> {
             entry.title!,
             overflow: TextOverflow.ellipsis,
             maxLines: 2,
-            style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold),
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
           subtitle: Text(
             entry.description!,
@@ -146,8 +131,7 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget> {
           ),
           trailing: buildPopupButton(context, entry),
           onTap: () async {
-            await audioHandler
-                .updateEpisodeQueue(List.generate(1, (index) => entry));
+            await audioHandler.updateEpisodeQueue(List.generate(1, (index) => entry));
           },
         ),
       );

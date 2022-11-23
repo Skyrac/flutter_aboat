@@ -421,18 +421,23 @@ class UserService {
 
   //#region Favorites
   Future<List<Podcast>> getFavorites({refresh = false}) async {
-    if (refresh) {
-      var newFavorites = await PodcastRepository.getUserFavorites();
-      favorites = newFavorites;
-    }
-    for (var entry in favorites) {
-      var lastUpdateSeen = prefs.getInt(LAST_NOTIFICATION_UPDATE + entry.podcastId.toString());
-      if (lastUpdateSeen != null) {
-        var date = DateTime.fromMillisecondsSinceEpoch(lastUpdateSeen);
-        lastPodcastUpdateSeen[entry.podcastId!] = date;
+    try {
+      if (refresh) {
+        var newFavorites = await PodcastRepository.getUserFavorites();
+        favorites = newFavorites;
       }
+      for (var entry in favorites) {
+        var lastUpdateSeen = prefs.getInt(LAST_NOTIFICATION_UPDATE + entry.podcastId.toString());
+        if (lastUpdateSeen != null) {
+          var date = DateTime.fromMillisecondsSinceEpoch(lastUpdateSeen);
+          lastPodcastUpdateSeen[entry.podcastId!] = date;
+        }
+      }
+      return favorites;
+    } catch (e) {
+      print(e);
+      return List.empty();
     }
-    return favorites;
   }
 
   Future<List<Podcast>> removeFromFavorites(int id) async {

@@ -1,4 +1,5 @@
 import 'package:Talkaboat/services/downloading/file-downloader.service.dart';
+import 'package:Talkaboat/utils/common.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +36,6 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
   // }
 
   popupMenu(BuildContext context, Episode entry) => <PopupMenuEntry<String>>[
-        const PopupMenuItem<String>(value: 'add', child: Card(child: Text('Add to playlist'))),
         PopupMenuItem<String>(
             value: 'add',
             child: Container(
@@ -315,7 +315,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                                   )
                                 : remaining.inSeconds <= 0
                                     ? Row(
-                                        children: [
+                                        children: const [
                                           Icon(Icons.check, color: Color.fromRGBO(76, 175, 80, 1), size: 15),
                                           SizedBox(
                                             width: 2,
@@ -363,6 +363,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                               refresh();
                             }
                             await FileDownloadService.cacheOrDelete(entry.audio!);
+                            setState(() {});
                           }),
                           child: FileDownloadService.containsFile(entry.audio!)
                               ? Image.asset(
@@ -385,12 +386,6 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
         ),
       ),
     );
-  }
-
-  String removeAllHtmlTags(String htmlText) {
-    RegExp exp = RegExp(r"<[^>]*>", multiLine: true, caseSensitive: true);
-
-    return htmlText.replaceAll(exp, '');
   }
 
   @override

@@ -4,9 +4,9 @@ import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:flutter/material.dart';
 
 class FavoritesScreen extends StatefulWidget {
-  final Function escapeWithNav;
+  const FavoritesScreen({Key? key, required this.escapeWithNav}) : super(key: key);
 
-  const FavoritesScreen(this.escapeWithNav, {Key? key}) : super(key: key);
+  final Function escapeWithNav;
 
   @override
   State<FavoritesScreen> createState() => _FavoritesScreenState();
@@ -18,7 +18,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   @override
   Widget build(BuildContext context) {
     return SearchScreen(
-      widget.escapeWithNav,
+      escapeWithNav: widget.escapeWithNav,
       customSearchFunc: ((text, amount, offset) async {
         return Future.value((await userService.getFavorites())
             .where((element) => element.title?.contains(text) ?? false)

@@ -10,8 +10,7 @@ import '../services/user/user.service.dart';
 import '../themes/colors.dart';
 
 class PlaylistDetailScreen extends StatefulWidget {
-  const PlaylistDetailScreen({Key? key, required this.playlist})
-      : super(key: key);
+  const PlaylistDetailScreen({Key? key, required this.playlist}) : super(key: key);
   final Playlist playlist;
   @override
   State<PlaylistDetailScreen> createState() => _PlaylistDetailScreenState();
@@ -21,19 +20,15 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
   final userService = getIt<UserService>();
   final audioHandler = getIt<AudioPlayerHandler>();
   popupMenu(BuildContext context, Track entry) => <PopupMenuEntry<String>>[
-        PopupMenuItem<String>(
-            value: 'remove', child: Card(child: Text('Remove from Playlist'))),
+        const PopupMenuItem<String>(value: 'remove', child: Card(child: Text('Remove from Playlist'))),
       ];
 
   buildPopupButton(context, Track entry) => PopupMenuButton(
-        child: Card(
-            child: Icon(Icons.more_vert,
-                color: Theme.of(context).iconTheme.color)),
+        child: Card(child: Icon(Icons.more_vert, color: Theme.of(context).iconTheme.color)),
         onSelected: (value) async {
           switch (value) {
             case "remove":
-              await userService.removeFromPlaylistByTrackId(
-                  entry.playlistId!, entry.playlistTrackId!);
+              await userService.removeFromPlaylistByTrackId(entry.playlistId!, entry.playlistTrackId!);
               break;
           }
           setState(() {});
@@ -105,24 +100,22 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                     height: 60,
                     width: 60,
                     child: CachedNetworkImage(
-                        imageUrl: widget.playlist.image == null ||
-                                widget.playlist.image!.isEmpty
+                        imageUrl: widget.playlist.image == null || widget.playlist.image!.isEmpty
                             ? 'https://picsum.photos/200'
                             : widget.playlist.image!,
-                        cacheManager: CacheManager(Config(widget.playlist.image == null ||
-                            widget.playlist.image!.isEmpty
-                            ? 'https://picsum.photos/200'
-                            : widget.playlist.image!, stalePeriod: const Duration(days: 7))),
-                        placeholder: (_, __) =>
-                            const Center(child: CircularProgressIndicator()),
+                        cacheManager: CacheManager(Config(
+                            widget.playlist.image == null || widget.playlist.image!.isEmpty
+                                ? 'https://picsum.photos/200'
+                                : widget.playlist.image!,
+                            stalePeriod: const Duration(days: 7))),
+                        placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
                         // progressIndicatorBuilder: (context, url, downloadProgress) =>
                         //     CircularProgressIndicator(value: downloadProgress.progress),
-                        errorWidget: (context, url, error) =>
-                            const Icon(Icons.error),
+                        errorWidget: (context, url, error) => const Icon(Icons.error),
                         fit: BoxFit.cover),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
                 Column(
@@ -155,17 +148,14 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: IconButton(
-                    icon: Center(
+                    icon: const Center(
                       child: Icon(
                         Icons.play_arrow_rounded,
                         size: 40,
                       ),
                     ),
                     onPressed: (() async {
-                      await audioHandler.updateEpisodeQueue(
-                          widget.playlist.tracks!
-                              .map((track) => track.episode!)
-                              .toList(),
+                      await audioHandler.updateEpisodeQueue(widget.playlist.tracks!.map((track) => track.episode!).toList(),
                           index: 0);
                     }),
                   ),
@@ -186,17 +176,13 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
               final track = widget.playlist.tracks!.removeAt(oldIndex);
               widget.playlist.tracks!.insert(newIndex, track);
               setState(() {});
-              await userService.changePlaylistPosition(
-                  widget.playlist.playlistId!,
-                  track.playlistTrackId!,
-                  newIndex);
+              await userService.changePlaylistPosition(widget.playlist.playlistId!, track.playlistTrackId!, newIndex);
               setState(() {});
             },
             itemCount: widget.playlist.tracks!.length,
             scrollDirection: Axis.vertical,
             itemBuilder: (BuildContext context, int index) {
               final entry = widget.playlist.tracks![index];
-              final episode = entry.episode!;
               return createEpisodeWidgets(context, entry, index);
             }),
       );
@@ -212,12 +198,10 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: CachedNetworkImage(
-                imageUrl: track.episode!.image == null ||
-                        track.episode!.image!.isEmpty
+                imageUrl: track.episode!.image == null || track.episode!.image!.isEmpty
                     ? 'https://picsum.photos/200'
                     : track.episode!.image!,
-                placeholder: (_, __) =>
-                    const Center(child: CircularProgressIndicator()),
+                placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
                 // progressIndicatorBuilder: (context, url, downloadProgress) =>
                 //     CircularProgressIndicator(value: downloadProgress.progress),
                 errorWidget: (context, url, error) => const Icon(Icons.error),
@@ -248,10 +232,7 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                 child: Center(
                   child: InkWell(
                     onTap: (() async {
-                      await audioHandler.updateEpisodeQueue(
-                          widget.playlist.tracks!
-                              .map((track) => track.episode!)
-                              .toList(),
+                      await audioHandler.updateEpisodeQueue(widget.playlist.tracks!.map((track) => track.episode!).toList(),
                           index: index);
                     }),
                     child: ListTile(
@@ -265,16 +246,13 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(10),
                           child: CachedNetworkImage(
-                              imageUrl: track.episode!.image == null ||
-                                      track.episode!.image!.isEmpty
+                              imageUrl: track.episode!.image == null || track.episode!.image!.isEmpty
                                   ? 'https://picsum.photos/200'
                                   : track.episode!.image!,
-                              placeholder: (_, __) => const Center(
-                                  child: CircularProgressIndicator()),
+                              placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
                               // progressIndicatorBuilder: (context, url, downloadProgress) =>
                               //     CircularProgressIndicator(value: downloadProgress.progress),
-                              errorWidget: (context, url, error) =>
-                                  const Icon(Icons.error),
+                              errorWidget: (context, url, error) => const Icon(Icons.error),
                               fit: BoxFit.cover),
                         ),
                       ),

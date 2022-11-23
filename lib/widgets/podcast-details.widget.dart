@@ -1,5 +1,6 @@
 import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/services/audio/podcast.service.dart';
+import 'package:Talkaboat/utils/common.dart';
 import 'package:flutter/material.dart';
 
 class PodcastDetails extends StatefulWidget {
@@ -106,22 +107,7 @@ class _PodcastDetailsState extends State<PodcastDetails> {
                       style: TextStyle(fontWeight: FontWeight.w600),
                     ),
                   ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Container(
-                        margin: const EdgeInsets.only(bottom: 35),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10), color: const Color.fromRGBO(188, 140, 75, 1)),
-                        width: 100,
-                        height: 35,
-                        child: Center(
-                            child: Text(
-                                textAlign: TextAlign.center,
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 2,
-                                snapshot.data!.genreIds!,
-                                style: const TextStyle(color: Color.fromRGBO(15, 23, 41, 1))))),
-                  ),
+                  buildCategoryBadges(context, snapshot.data!.genreIds!),
                   Container(
                     alignment: Alignment.centerLeft,
                     margin: const EdgeInsets.only(bottom: 10),
