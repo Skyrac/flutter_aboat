@@ -314,7 +314,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                                   )
                                 : remaining.inSeconds <= 0
                                     ? Row(
-                                        children: [
+                                        children: const [
                                           Icon(Icons.check, color: Color.fromRGBO(76, 175, 80, 1), size: 15),
                                           SizedBox(
                                             width: 2,
