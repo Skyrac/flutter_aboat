@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:Talkaboat/screens/favorites.screen.dart';
+import 'package:Talkaboat/screens/playlist.screen.dart';
 import 'package:Talkaboat/screens/search.screen.dart';
 import 'package:Talkaboat/screens/social/social_entry.screen.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
@@ -19,7 +19,6 @@ import '../services/audio/audio-handler.services.dart';
 import '../themes/colors.dart';
 import '../widgets/mini-player.widget.dart';
 import 'home.screen.dart';
-import 'library.screen.dart';
 
 class AppScreen extends StatefulWidget {
   const AppScreen({Key? key, required this.title}) : super(key: key);
@@ -31,7 +30,7 @@ class AppScreen extends StatefulWidget {
 
 class _AppScreenState extends State<AppScreen> with RouteAware {
   late List<Widget> Tabs;
-  var userService = getIt<UserService>();
+  final userService = getIt<UserService>();
   String _currentPage = "Home";
   List<String> pageKeys = ["Home", "Search", "Playlist", "Library", "Social"];
   final Map<String, GlobalKey<NavigatorState>> _navigatorKeys = {
@@ -79,8 +78,22 @@ class _AppScreenState extends State<AppScreen> with RouteAware {
     Tabs = [
       HomeScreen(setEpisode, _selectTab, escapeWithNav),
       SearchScreen(escapeWithNav: escapeWithNav),
-      FavoritesScreen(escapeWithNav: escapeWithNav),
-      LibraryScreen(escapeWithNav),
+      SearchScreen(
+        escapeWithNav: escapeWithNav,
+        customSearchFunc: ((text, amount, offset) async {
+          return Future.value((await userService.getFavorites())
+              .where((element) => element.title?.contains(text) ?? false)
+              .skip(offset)
+              .take(amount)
+              .toList());
+        }),
+        refreshOnStateChange: true,
+        appBar: AppBar(
+          backgroundColor: const Color.fromRGBO(29, 40, 58, 1),
+          title: const Text("Favorites"),
+        ),
+      ),
+      PlaylistScreen(escapeWithNav),
       SocialEntryScreen(escapeWithNav)
     ];
     checkUpdates(context);
