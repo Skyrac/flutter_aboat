@@ -214,7 +214,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
             pinned: true,
           ),
           SliverToBoxAdapter(
-            child: Container(constraints: BoxConstraints(minHeight: size.height * 0.4), child: tabs[currentTab]),
+            child: Container(constraints: BoxConstraints(minHeight: size.height * 0.5), child: tabs[currentTab]),
           )
         ]),
         tabController.index == 2

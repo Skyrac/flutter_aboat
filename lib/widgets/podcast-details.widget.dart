@@ -121,7 +121,7 @@ class _PodcastDetailsState extends State<PodcastDetails> {
                   Container(
                     margin: const EdgeInsets.only(bottom: 10),
                     child: Text(
-                      snapshot.data!.description!,
+                      removeAllHtmlTags(snapshot.data!.description!),
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: const Color.fromRGBO(99, 163, 253, 1)),
                     ),
                   )
