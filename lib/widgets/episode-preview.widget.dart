@@ -125,7 +125,8 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                     isScrollControlled: true,
                     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
                     context: context,
-                    builder: (context) => PlaylistBottomSheet(episodeToAdd: entry));
+                    builder: (context) =>
+                        FractionallySizedBox(heightFactor: 0.97, child: PlaylistBottomSheet(episodeToAdd: entry)));
               }
               break;
           }

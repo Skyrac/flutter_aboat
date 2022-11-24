@@ -79,11 +79,12 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
                               type: PageTransitionType.rightToLeftWithFade,
                               duration: const Duration(milliseconds: 500),
                               reverseDuration: const Duration(milliseconds: 500),
-                              child: PodcastEpisodeScreen(widget.escapeWithNav,
-                                  podcastId: widget.episode?.podcastId,
-                                  episode: widget.episode,
-                                  position: position,
-                                  navKey: widget.navKey)))
+                              child: PodcastEpisodeScreen(
+                                widget.escapeWithNav,
+                                podcastId: widget.episode?.podcastId,
+                                episode: widget.episode,
+                                position: position,
+                              )))
                         }),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.end,

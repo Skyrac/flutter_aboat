@@ -31,16 +31,15 @@ class PodcastEpisodeScreen extends StatefulWidget {
   final AppBar? appBar;
   final Function escapeWithNav;
   final Duration position;
-  final GlobalKey<NavigatorState> navKey;
-  const PodcastEpisodeScreen(this.escapeWithNav,
-      {Key? key,
-      this.podcastSearchResult,
-      this.podcastId,
-      this.appBar,
-      this.episode,
-      required this.position,
-      required this.navKey})
-      : super(key: key);
+  const PodcastEpisodeScreen(
+    this.escapeWithNav, {
+    Key? key,
+    this.podcastSearchResult,
+    this.podcastId,
+    this.appBar,
+    this.episode,
+    required this.position,
+  }) : super(key: key);
 
   @override
   State<PodcastEpisodeScreen> createState() => _PodcastEpisodeScreenState();
@@ -196,19 +195,12 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                         reverseDuration: const Duration(milliseconds: 500),
                         child: LoginScreen(true, refreshParent: () => setState(() {}))));
                   } else {
-                    widget.navKey.currentState!.push(PageTransition(
-                        alignment: Alignment.bottomCenter,
-                        curve: Curves.bounceOut,
-                        type: PageTransitionType.rightToLeftWithFade,
-                        duration: const Duration(milliseconds: 500),
-                        reverseDuration: const Duration(milliseconds: 500),
-                        child: PlaylistBottomSheet(episodeToAdd: widget.episode!)));
-
-                    // showModalBottomSheet(
-                    //     isScrollControlled: true,
-                    //     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-                    //     context: context,
-                    //     builder: (context) => PlaylistBottomSheet(episodeToAdd: widget.episode!));
+                    showModalBottomSheet(
+                        isScrollControlled: true,
+                        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+                        context: context,
+                        builder: (context) => FractionallySizedBox(
+                            heightFactor: 0.97, child: PlaylistBottomSheet(episodeToAdd: widget.episode!)));
                   }
                 },
               ),
@@ -818,7 +810,8 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                     isScrollControlled: true,
                     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
                     context: context,
-                    builder: (context) => PlaylistBottomSheet(episodeToAdd: entry));
+                    builder: (context) =>
+                        FractionallySizedBox(heightFactor: 0.97, child: PlaylistBottomSheet(episodeToAdd: entry)));
               }
               break;
           }
