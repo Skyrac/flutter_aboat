@@ -65,9 +65,15 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> with Single
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     userService.UpdatePodcastVisitDate(widget.episode.podcastId);
     return ScaffoldWave(
         height: 33,
+        header: SliverPersistentHeader(
+          delegate:
+              PodcastEpisodeSliver(expandedHeight: size.height * 0.4, episode: widget.episode, controller: tabController),
+          pinned: true,
+        ),
         appBar: AppBar(
           centerTitle: false,
           leadingWidth: 35,
@@ -196,16 +202,9 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> with Single
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
-        CustomScrollView(shrinkWrap: true, slivers: [
-          SliverPersistentHeader(
-            delegate:
-                PodcastEpisodeSliver(expandedHeight: size.height * 0.4, episode: widget.episode, controller: tabController),
-            pinned: true,
-          ),
-          SliverToBoxAdapter(
-            child: Container(constraints: BoxConstraints(minHeight: size.height * 0.5), child: tabs[currentTab]),
-          )
-        ]),
+        Container(
+            constraints: BoxConstraints(minHeight: size.height * 0.5),
+            child: currentTab == 0 ? SingleChildScrollView(child: tabs[currentTab]) : tabs[currentTab]),
         tabController.index == 2
             ? ChatInput(
                 roomId: podcastSearchResult.roomId!,
