@@ -1,5 +1,4 @@
 import 'package:Talkaboat/screens/playlist-detail.screen.dart';
-import 'package:Talkaboat/utils/modal.widget.dart';
 import 'package:Talkaboat/utils/scaffold_wave.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +23,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
   final playlistCreationController = TextEditingController();
 
   popupMenu(context, Playlist entry) => <PopupMenuEntry<String>>[
-        PopupMenuItem<String>(
+        /*PopupMenuItem<String>(
             value: 'rename',
             child: Container(
                 width: 176,
@@ -73,7 +72,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                         style:
                             Theme.of(context).textTheme.titleMedium?.copyWith(color: const Color.fromRGBO(99, 163, 253, 1))),
                   ],
-                ))),
+                ))),*/
         PopupMenuItem<String>(
             value: 'delete',
             child: Container(
@@ -88,7 +87,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                     const SizedBox(
                       width: 10,
                     ),
-                    Icon(Icons.delete, size: 25, color: Color.fromRGBO(99, 163, 253, 1)),
+                    const Icon(Icons.delete, size: 25, color: Color.fromRGBO(99, 163, 253, 1)),
                     const SizedBox(
                       width: 10,
                     ),
@@ -117,6 +116,11 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
           switch (value) {
             case "delete":
               if (await userService.removePlaylist(entry.playlistId!)) {
+                setState(() {});
+              }
+              break;
+            case "copy":
+              if (await userService.copyPlaylist(entry)) {
                 setState(() {});
               }
               break;
@@ -194,7 +198,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
         padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(10),
-          child: Container(
+          child: SizedBox(
             height: 90,
             child: InkWell(
               borderRadius: BorderRadius.circular(10),
@@ -261,7 +265,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20.0))),
+              shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20.0))),
               backgroundColor: const Color.fromRGBO(48, 73, 123, 1),
               title: const Text("New Playlist..."),
               elevation: 8,

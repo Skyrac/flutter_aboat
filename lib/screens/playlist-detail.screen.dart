@@ -73,6 +73,82 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
         },
       );
 
+  popupMenuTop(context, Playlist entry) => <PopupMenuEntry<String>>[
+        /*PopupMenuItem<String>(
+            value: 'rename',
+            child: Container(
+                width: 176,
+                height: 30,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    color: const Color.fromRGBO(29, 40, 58, 0.97),
+                    border: Border.all(color: const Color.fromRGBO(188, 140, 75, 0.25))),
+                child: Row(
+                  children: [
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    const Icon(
+                      Icons.edit,
+                      color: Color.fromRGBO(99, 163, 253, 1),
+                      size: 25,
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Text('Rename',
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(color: const Color.fromRGBO(99, 163, 253, 1))),
+                  ],
+                ))),
+        PopupMenuItem<String>(
+            value: 'copy',
+            child: Container(
+                width: 176,
+                height: 30,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    color: const Color.fromRGBO(29, 40, 58, 0.97),
+                    border: Border.all(color: const Color.fromRGBO(188, 140, 75, 0.25))),
+                child: Row(
+                  children: [
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    const Icon(Icons.copy, color: Color.fromRGBO(99, 163, 253, 1), size: 25),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Text('Copy',
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(color: const Color.fromRGBO(99, 163, 253, 1))),
+                  ],
+                ))),*/
+        PopupMenuItem<String>(
+            value: 'delete',
+            child: Container(
+                width: 176,
+                height: 30,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    color: const Color.fromRGBO(29, 40, 58, 0.97),
+                    border: Border.all(color: const Color.fromRGBO(188, 140, 75, 0.25))),
+                child: Row(
+                  children: [
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    const Icon(Icons.delete, size: 25, color: Color.fromRGBO(99, 163, 253, 1)),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Text('Delete',
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(color: const Color.fromRGBO(99, 163, 253, 1))),
+                  ],
+                ))),
+      ];
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -113,15 +189,30 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
             ),
             backgroundColor: const Color.fromRGBO(29, 40, 58, 1),
             actions: [
-              Padding(
-                padding: const EdgeInsets.only(right: 10),
-                child: IconButton(
-                  icon: const Icon(Icons.more_vert),
-                  tooltip: '',
-                  color: Color.fromRGBO(99, 163, 253, 1),
-                  onPressed: () {},
+              PopupMenuButton(
+                shape: const RoundedRectangleBorder(
+                  side: BorderSide(color: Color.fromRGBO(188, 140, 75, 1)),
+                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
                 ),
-              )
+                color: const Color.fromRGBO(15, 23, 41, 1),
+                onSelected: (value) async {
+                  switch (value) {
+                    case "delete":
+                      if (await userService.removePlaylist(widget.playlist.playlistId!)) {
+                        setState(() {});
+                      }
+                      break;
+                    case "copy":
+                      if (await userService.copyPlaylist(widget.playlist)) {
+                        setState(() {});
+                      }
+                      break;
+                  }
+                },
+                itemBuilder: (BuildContext context) {
+                  return popupMenuTop(context, widget.playlist);
+                },
+              ),
             ],
           ),
         ),
@@ -313,7 +404,7 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Padding(
-                                    padding: EdgeInsets.only(left: 10),
+                                    padding: const EdgeInsets.only(left: 10),
                                     child: Text(
                                       track.episode!.title!,
                                       maxLines: 2,
@@ -322,7 +413,7 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsets.only(left: 10),
+                                    padding: const EdgeInsets.only(left: 10),
                                     child: Text(
                                       track.episode!.podcast!.title!,
                                       maxLines: 2,
