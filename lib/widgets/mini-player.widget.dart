@@ -80,7 +80,10 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
                               duration: const Duration(milliseconds: 500),
                               reverseDuration: const Duration(milliseconds: 500),
                               child: PodcastEpisodeScreen(widget.escapeWithNav,
-                                  podcastId: widget.episode?.podcastId, episode: widget.episode, position: position)))
+                                  podcastId: widget.episode?.podcastId,
+                                  episode: widget.episode,
+                                  position: position,
+                                  navKey: widget.navKey)))
                         }),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.end,

@@ -31,8 +31,15 @@ class PodcastEpisodeScreen extends StatefulWidget {
   final AppBar? appBar;
   final Function escapeWithNav;
   final Duration position;
+  final GlobalKey<NavigatorState> navKey;
   const PodcastEpisodeScreen(this.escapeWithNav,
-      {Key? key, this.podcastSearchResult, this.podcastId, this.appBar, this.episode, required this.position})
+      {Key? key,
+      this.podcastSearchResult,
+      this.podcastId,
+      this.appBar,
+      this.episode,
+      required this.position,
+      required this.navKey})
       : super(key: key);
 
   @override
@@ -189,11 +196,19 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                         reverseDuration: const Duration(milliseconds: 500),
                         child: LoginScreen(true, refreshParent: () => setState(() {}))));
                   } else {
-                    showModalBottomSheet(
-                        isScrollControlled: true,
-                        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-                        context: context,
-                        builder: (context) => PlaylistBottomSheet(episodeToAdd: widget.episode!));
+                    widget.navKey.currentState!.push(PageTransition(
+                        alignment: Alignment.bottomCenter,
+                        curve: Curves.bounceOut,
+                        type: PageTransitionType.rightToLeftWithFade,
+                        duration: const Duration(milliseconds: 500),
+                        reverseDuration: const Duration(milliseconds: 500),
+                        child: PlaylistBottomSheet(episodeToAdd: widget.episode!)));
+
+                    // showModalBottomSheet(
+                    //     isScrollControlled: true,
+                    //     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+                    //     context: context,
+                    //     builder: (context) => PlaylistBottomSheet(episodeToAdd: widget.episode!));
                   }
                 },
               ),

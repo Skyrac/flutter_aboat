@@ -35,7 +35,7 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: const [
                 Icon(
-                  Icons.favorite,
+                  Icons.playlist_remove,
                   size: 20,
                 ),
                 Padding(
@@ -174,7 +174,7 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "widget.playlist.name!",
+                              widget.playlist.name!,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: Theme.of(context).textTheme.titleLarge,
