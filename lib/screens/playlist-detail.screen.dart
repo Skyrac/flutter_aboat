@@ -167,19 +167,24 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.playlist.name!,
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                          Text(
-                            "Tracks: ${widget.playlist.tracks!.length}",
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                        ],
+                      Flexible(
+                        fit: FlexFit.loose,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "widget.playlist.name!",
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                            Text(
+                              "Tracks: ${widget.playlist.tracks!.length}",
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                          ],
+                        ),
                       ),
                       Text(
                         "Created: ${widget.playlist.getDateTime()}",
@@ -297,16 +302,18 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                         ),
                       ),
                       Expanded(
-                          child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 10),
-                            child: Column(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Flexible(
+                              fit: FlexFit.loose,
+                              child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Flexible(
+                                  Padding(
+                                    padding: EdgeInsets.only(left: 10),
                                     child: Text(
                                       track.episode!.title!,
                                       maxLines: 2,
@@ -314,7 +321,8 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                                       style: Theme.of(context).textTheme.labelLarge,
                                     ),
                                   ),
-                                  Flexible(
+                                  Padding(
+                                    padding: EdgeInsets.only(left: 10),
                                     child: Text(
                                       track.episode!.podcast!.title!,
                                       maxLines: 2,
@@ -322,48 +330,18 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                                       style: Theme.of(context).textTheme.titleMedium,
                                     ),
                                   ),
-                                ]),
-                          ),
-                          SizedBox(
-                            height: 90,
-                            width: 40,
-                            child: buildPopupButton(context, track),
-                          )
-                        ],
-                      ))
+                                ],
+                              ),
+                            ),
+                            SizedBox(
+                              height: 90,
+                              width: 40,
+                              child: buildPopupButton(context, track),
+                            )
+                          ],
+                        ),
+                      )
                     ]),
-                    // ListTile(
-                    //   trailing: buildPopupButton(context, track),
-                    //   leading: Container(
-                    //     height: 60,
-                    //     width: 60,
-                    //     decoration: BoxDecoration(
-                    //       borderRadius: BorderRadius.circular(10.0),
-                    //     ),
-                    //     child: ClipRRect(
-                    //       borderRadius: BorderRadius.circular(10),
-                    //       child: CachedNetworkImage(
-                    //           imageUrl: track.episode!.image == null || track.episode!.image!.isEmpty
-                    //               ? 'https://picsum.photos/200'
-                    //               : track.episode!.image!,
-                    //           placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
-                    //           // progressIndicatorBuilder: (context, url, downloadProgress) =>
-                    //           //     CircularProgressIndicator(value: downloadProgress.progress),
-                    //           errorWidget: (context, url, error) => const Icon(Icons.error),
-                    //           fit: BoxFit.cover),
-                    //     ),
-                    //   ),
-                    //   title: Text(
-                    //     track.episode!.title!,
-                    //     overflow: TextOverflow.ellipsis,
-                    //     maxLines: 2,
-                    //   ),
-                    //   subtitle: Text(
-                    //     track.episode!.podcast!.title!,
-                    //     overflow: TextOverflow.ellipsis,
-                    //     maxLines: 1,
-                    //   ),
-                    // ),
                   ),
                 )),
           ),
