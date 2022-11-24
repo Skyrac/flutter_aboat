@@ -1,4 +1,4 @@
-import 'package:Talkaboat/screens/search-and-filter.screen.dart';
+import 'package:Talkaboat/screens/search.screen.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
@@ -131,7 +131,7 @@ class _PlayerControlWidgetState extends State<PlayerControlWidget> with SingleTi
                               type: PageTransitionType.rightToLeftWithFade,
                               duration: const Duration(milliseconds: 500),
                               reverseDuration: const Duration(milliseconds: 500),
-                              child: SearchAndFilterScreen(widget.escapeWithNav)));
+                              child: SearchScreen(escapeWithNav: widget.escapeWithNav)));
                     },
                   ),
                 ],
