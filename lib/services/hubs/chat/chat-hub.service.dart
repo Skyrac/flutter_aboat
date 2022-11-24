@@ -8,6 +8,7 @@ import 'package:Talkaboat/models/chat/edit-message-dto.dart';
 import 'package:Talkaboat/models/chat/join-room-dto.dart';
 import 'package:Talkaboat/models/chat/message-history-request-dto.dart';
 import 'package:Talkaboat/services/hubs/hub-service.dart';
+import 'package:flutter/foundation.dart';
 
 class ChatHubService extends HubService {
   @override
@@ -62,7 +63,7 @@ class ChatHubService extends HubService {
     try {
       return await connection.invoke("SendMessage", args: <Object>[message]);
     } catch (e) {
-      print(e);
+      debugPrint("$e");
     }
   }
 
@@ -70,7 +71,7 @@ class ChatHubService extends HubService {
     try {
       return await connection.invoke("EditMessage", args: <Object>[message]);
     } catch (e) {
-      print(e);
+      debugPrint("$e");
     }
   }
 
@@ -78,7 +79,7 @@ class ChatHubService extends HubService {
     try {
       return await connection.invoke("DeleteMessage", args: <Object>[message]);
     } catch (e) {
-      print(e);
+      debugPrint("$e");
     }
   }
 
@@ -86,7 +87,7 @@ class ChatHubService extends HubService {
     try {
       return await connection.invoke("JoinRoom", args: <Object>[data]);
     } catch (e) {
-      print(e);
+      debugPrint("$e");
     }
   }
 
@@ -94,7 +95,7 @@ class ChatHubService extends HubService {
     try {
       return await connection.invoke("LeaveRoom", args: <Object>[data]);
     } catch (e) {
-      print(e);
+      debugPrint("$e");
     }
   }
 
@@ -108,7 +109,7 @@ class ChatHubService extends HubService {
           List<ChatMessageDto>.from(json.decode(json.encode(response)).map((data) => ChatMessageDto.fromJson(data)));
       return convertedData;
     } catch (e) {
-      print(e);
+      debugPrint("$e");
       return List.empty();
     }
   }

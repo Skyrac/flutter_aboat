@@ -76,7 +76,7 @@ class _SearchScreenState extends State<SearchScreen> {
         _pagingController.appendPage(newItems, nextPageKey);
       }
     } catch (error) {
-      print(error);
+      debugPrint("$error");
       _pagingController.error = error;
     }
   }

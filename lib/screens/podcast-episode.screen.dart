@@ -47,7 +47,8 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> with Single
     super.initState();
     tabController = TabController(length: 3, vsync: this, animationDuration: Duration.zero);
     tabController.addListener(() {
-      print("tabcontroller update ${tabController.indexIsChanging} ${tabController.index} ${tabController.previousIndex}");
+      debugPrint(
+          "tabcontroller update ${tabController.indexIsChanging} ${tabController.index} ${tabController.previousIndex}");
       setState(() {
         currentTab = tabController.index;
       });
@@ -73,7 +74,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> with Single
           titleSpacing: 3,
           backgroundColor: const Color.fromRGBO(29, 40, 58, 1),
           title: Text(
-            widget.episode!.title!,
+            widget.episode.title!,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   color: const Color.fromRGBO(99, 163, 253, 1),
                 ),
@@ -87,7 +88,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> with Single
                   onPressed: () => {
                         //TODO: Geräte Abhängigkeit prüfen
                         Share.share(
-                            "Check the Podcast ${widget.episode!.title} on Talkaboat.online mobile App! Start listening and earn while supporting new and upcoming podcasters.\n\n Download it now on \nAndroid: https://play.google.com/store/apps/details?id=com.aboat.talkaboat\n",
+                            "Check the Podcast ${widget.episode.title} on Talkaboat.online mobile App! Start listening and earn while supporting new and upcoming podcasters.\n\n Download it now on \nAndroid: https://play.google.com/store/apps/details?id=com.aboat.talkaboat\n",
                             subject: "Check this out! A Podcast on Talkaboat.online.")
                       }),
             ),

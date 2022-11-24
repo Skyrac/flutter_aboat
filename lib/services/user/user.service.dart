@@ -84,7 +84,7 @@ class UserService {
     if (lastConnectionState == null) {
       throw Exception("Google Sign-In: Not able to connect with backend");
     }
-    print("lastConnectionState: ${lastConnectionState?.toJson()}");
+    debugPrint("lastConnectionState: ${lastConnectionState?.toJson()}");
     return lastConnectionState != null && lastConnectionState!.text != null && lastConnectionState!.text! == "connected";
   }
 
@@ -139,7 +139,7 @@ class UserService {
       idToken: appleCredential.identityToken,
       rawNonce: rawNonce,
     );
-    print(oauthCredential);
+    debugPrint("$oauthCredential");
     // Sign in the user with Firebase. If the nonce we generated earlier does
     // not match the nonce in `appleCredential.identityToken`, sign in will fail.
     return await FirebaseAuth.instance.signInWithCredential(oauthCredential);
@@ -181,11 +181,11 @@ class UserService {
 
   setInitialValues() async {
     prefs = await SharedPreferences.getInstance();
-    newUser = (await prefs.getBool('newUser')) ?? true;
-    String secToken = (await prefs.getString(TOKEN_IDENTIFIER)) ?? "";
+    newUser = prefs.getBool('newUser') ?? true;
+    String secToken = prefs.getString(TOKEN_IDENTIFIER) ?? "";
     if (secToken.isNotEmpty) {
       token = secToken;
-      print(token);
+      debugPrint(token);
       baseLogin = true;
     }
 
@@ -237,18 +237,18 @@ class UserService {
   }
 
   getCoreData() async {
-    print("Get Core Data");
+    debugPrint("Get Core Data");
     if (token.isNotEmpty) {
       await getUserInfo();
       Future.microtask(() => getIt<RewardHubService>().connect());
       Future.microtask(() => getIt<ChatService>().connect());
       if (userInfo != null) {
-        print(userInfo);
+        debugPrint("$userInfo");
         _guest = false;
         await getRewards();
         await getFavorites(refresh: true);
         await getFriends();
-        var lastUpdate = await prefs.getInt(LAST_NOTIFICATION_UPDATE);
+        var lastUpdate = prefs.getInt(LAST_NOTIFICATION_UPDATE);
         if (lastUpdate != null) {
           lastNotificationSeen = DateTime.fromMillisecondsSinceEpoch(lastUpdate);
         }
@@ -270,7 +270,7 @@ class UserService {
   }
 
   Future<bool> getUserInfo() async {
-    print("Get User Info");
+    debugPrint("Get User Info");
     userInfo = await UserRepository.getUserInfo();
     if (userInfo == null || userInfo!.userName == null) {
       logout();
@@ -282,7 +282,7 @@ class UserService {
   Future<String?> emailRegister(String email, String pin, String username, bool newsletter) async {
     try {
       var response = await UserRepository.emailRegister(email, pin, username, newsletter);
-      print("response ${response.toJson()}");
+      debugPrint("response ${response.toJson()}");
       if (response.data == null || response.data!.isEmpty) {
         return response.text ?? "false";
       }
@@ -337,7 +337,7 @@ class UserService {
       }
       token = response.data ?? "";
       prefs.setString(TOKEN_IDENTIFIER, token);
-      print("token: $token");
+      debugPrint("token: $token");
 
       if (token.isNotEmpty) {
         await getCoreData();
@@ -366,7 +366,9 @@ class UserService {
         await facebookAuth.logOut();
       }
       await FirebaseAuth.instance.signOut();
-    } catch (ex) {}
+    } catch (ex) {
+      debugPrint("$ex");
+    }
     await prefs.setString(TOKEN_IDENTIFIER, "");
   }
   //#endregion
@@ -435,7 +437,7 @@ class UserService {
       }
       return favorites;
     } catch (e) {
-      print(e);
+      debugPrint("$e");
       return List.empty();
     }
   }
@@ -506,7 +508,7 @@ class UserService {
   bool unseenPodcastNotifcationUpdates(int id) {
     var podcast = favorites.firstWhereOrNull((element) => id.isEqual(element.podcastId!));
     if (isConnected && favorites.isNotEmpty && podcast != null && podcast.lastUpdate != null) {
-      print(lastPodcastUpdateSeen[id]);
+      debugPrint("${lastPodcastUpdateSeen[id]}");
       return !lastPodcastUpdateSeen.containsKey(podcast.podcastId) ||
           lastPodcastUpdateSeen[podcast.podcastId]!.millisecondsSinceEpoch < podcast.lastUpdate!.millisecondsSinceEpoch;
     }

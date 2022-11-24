@@ -42,7 +42,7 @@ class _PodcastListWidgetState extends State<PodcastListWidget> {
 
   Future<void> _fetchPage(int pageKey) async {
     try {
-      print("fetch $pageKey");
+      debugPrint("fetch $pageKey");
       final newItems = widget.searchResults.skip(pageKey).take(_pageSize).toList();
       final isLastPage = newItems.length < _pageSize;
       if (isLastPage) {
@@ -52,7 +52,7 @@ class _PodcastListWidgetState extends State<PodcastListWidget> {
         _pagingController.appendPage(newItems, nextPageKey);
       }
     } catch (error) {
-      print(error);
+      debugPrint("$error");
       _pagingController.error = error;
     }
   }

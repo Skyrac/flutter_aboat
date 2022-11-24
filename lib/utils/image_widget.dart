@@ -9,7 +9,7 @@ class ImageWidget extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => Container(
+  Widget build(BuildContext context) => SizedBox(
         height: 150,
         width: double.infinity,
         child: Card(

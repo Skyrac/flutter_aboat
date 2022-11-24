@@ -7,7 +7,7 @@ import '../../models/response.model.dart';
 import '../repositories/podcast.repository.dart';
 
 class PodcastService {
-  Podcast? podcast = null;
+  Podcast? podcast;
 
   Future<List<Episode>> getPodcastDetailEpisodes(podcastId, sort, amount) async {
     if (podcast != null && podcast!.episodes != null && podcast!.episodes!.isNotEmpty && podcast!.podcastId == podcastId) {

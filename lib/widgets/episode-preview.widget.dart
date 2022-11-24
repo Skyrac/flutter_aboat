@@ -141,7 +141,6 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
       stream: audioHandler.playbackState,
       builder: (context, snapshot) {
         final playbackState = snapshot.data;
-        final processingState = playbackState?.processingState;
         final playing = playbackState?.playing ?? false;
         return ClipRRect(
           borderRadius: BorderRadius.circular(10),
@@ -158,7 +157,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color: audioHandler.isListeningEpisode(widget.episode!.id) && playing
+          color: audioHandler.isListeningEpisode(widget.episode.id) && playing
               ? const Color.fromRGBO(188, 140, 75, 0.2)
               : Colors.transparent,
         ),
@@ -194,7 +193,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                                         ),
                                         Positioned.fill(
                                             child: Center(
-                                                child: audioHandler.isListeningEpisode(widget.episode!.id) && playing
+                                                child: audioHandler.isListeningEpisode(widget.episode.id) && playing
                                                     ? Image.asset(
                                                         "assets/images/pause.png",
                                                         width: 25,
@@ -218,7 +217,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
     final dt = DateTime.fromMillisecondsSinceEpoch(entry.pubDateMs?.toInt() ?? 0);
     var dateFormatted = DateFormat('dd.MM.yyyy').format(dt);
     final remaining = Duration(seconds: (entry.audioLengthSec! - entry.playTime!).toInt());
-    final episodeTime = Duration(seconds: widget.episode!.audioLengthSec!.toInt());
+    final episodeTime = Duration(seconds: widget.episode.audioLengthSec!.toInt());
     return Container(
       padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
       height: 105,
@@ -231,7 +230,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            color: audioHandler.isListeningEpisode(widget.episode!.id) && playing
+            color: audioHandler.isListeningEpisode(widget.episode.id) && playing
                 ? const Color.fromRGBO(188, 140, 75, 0.2)
                 : Colors.transparent,
           ),
@@ -259,7 +258,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                           ))),
                       Positioned.fill(
                           child: Center(
-                              child: audioHandler.isListeningEpisode(widget.episode!.id) && playing
+                              child: audioHandler.isListeningEpisode(widget.episode.id) && playing
                                   ? Image.asset(
                                       "assets/images/pause.png",
                                       width: 25,
@@ -303,7 +302,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            audioHandler.isListeningEpisode(widget.episode!.id) && playing
+                            audioHandler.isListeningEpisode(widget.episode.id) && playing
                                 ? Row(
                                     children: const [
                                       Icon(Icons.play_arrow, color: Color.fromRGBO(188, 140, 75, 1), size: 18),
