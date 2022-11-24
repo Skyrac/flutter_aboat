@@ -17,7 +17,7 @@ import 'bottom-sheets/playlist.bottom-sheet.dart';
 class EpisodePreviewWidget extends StatefulWidget {
   const EpisodePreviewWidget(this.episode, this.direction, this.onPlayEpisode, this.refresh, this.escapeWithNav, {Key? key})
       : super(key: key);
-  final Episode? episode;
+  final Episode episode;
   final Axis direction;
   final Function onPlayEpisode;
   final Function refresh;
@@ -390,26 +390,27 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return widget.episode == null
-        ? const SizedBox()
-        : FutureBuilder(
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Text(
-                      '${snapshot.error} occurred',
-                      style: const TextStyle(fontSize: 18),
-                    ),
-                  );
-                } else {
-                  return makeCard(context, widget.episode!, widget.refresh);
-                }
-              } else {
-                return const Center(child: CircularProgressIndicator());
-              }
-            },
-            future: FileDownloadService.getFile(widget.episode!.audio!),
-          );
+    return makeCard(context, widget.episode, widget.refresh);
+    /*return FutureBuilder(
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasError) {
+              return Center(
+                child: Text(
+                  '${snapshot.error} occurred',
+                  style: const TextStyle(fontSize: 18),
+                ),
+              );
+            } else {
+              return makeCard(context, widget.episode, widget.refresh);
+            }
+          } else {
+            return SizedBox(
+                height: widget.direction == Axis.vertical ? 105 : null,
+                width: widget.direction == Axis.horizontal ? 120 : null,
+                child: const Center(child: CircularProgressIndicator()));
+          }
+        },
+        future: FileDownloadService.getFile(widget.episode.audio!));*/
   }
 }

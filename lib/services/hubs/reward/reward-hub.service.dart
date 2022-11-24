@@ -67,10 +67,14 @@ class RewardHubService extends HubService {
   }
 
   Future<void> Heartbeat(int owner, int asset, int playTime) async {
-    if (!await checkConnection()) {
-      return;
+    try {
+      if (!await checkConnection()) {
+        return;
+      }
+      var data = createRequestData(owner, asset, playTime);
+      await connection.invoke("Heartbeat", args: <Object>[data]);
+    } catch (e) {
+      print(e);
     }
-    var data = createRequestData(owner, asset, playTime);
-    await connection.invoke("Heartbeat", args: <Object>[data]);
   }
 }

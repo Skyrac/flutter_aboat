@@ -1,3 +1,4 @@
+import 'package:Talkaboat/utils/common.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -80,10 +81,10 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 CachedNetworkImage(
-                                  imageUrl: entry.image!,
+                                  imageUrl: entry.image ?? '',
                                   fit: BoxFit.fill,
-                                  cacheManager: CacheManager(Config(entry.image ?? 'https://picsum.photos/200',
-                                      stalePeriod: const Duration(days: 2))),
+                                  cacheManager:
+                                      CacheManager(Config(entry.image ?? '', stalePeriod: const Duration(days: 2))),
                                   placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
                                   // progressIndicatorBuilder: (context, url, downloadProgress) =>
                                   //     CircularProgressIndicator(value: downloadProgress.progress),
@@ -109,8 +110,9 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget> {
                 borderRadius: BorderRadius.circular(10),
                 child: SizedBox(
                     child: CachedNetworkImage(
-                  imageUrl: entry.image == null ? '' : entry.image!,
+                  imageUrl: entry.image ?? '',
                   fit: BoxFit.fill,
+                  cacheManager: CacheManager(Config(entry.image ?? '', stalePeriod: const Duration(days: 2))),
                   placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
                   // progressIndicatorBuilder: (context, url, downloadProgress) =>
                   //     CircularProgressIndicator(value: downloadProgress.progress),
@@ -124,7 +126,7 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget> {
             style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
           subtitle: Text(
-            entry.description!,
+            removeAllHtmlTags(entry.description!),
             overflow: TextOverflow.ellipsis,
             maxLines: 2,
             style: const TextStyle(color: Colors.white),

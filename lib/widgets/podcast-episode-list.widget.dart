@@ -4,12 +4,14 @@ import 'package:Talkaboat/services/audio/audio-handler.services.dart';
 import 'package:Talkaboat/services/audio/podcast.service.dart';
 import 'package:Talkaboat/widgets/episode-preview.widget.dart';
 import 'package:flutter/material.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 class PodcastEpisodeList extends StatefulWidget {
-  const PodcastEpisodeList({super.key, required this.podcastId, required this.escapeWithNav});
+  const PodcastEpisodeList({super.key, required this.episodes, required this.escapeWithNav, this.controller});
 
-  final int podcastId;
+  final List<Episode> episodes;
   final Function escapeWithNav;
+  final ScrollController? controller;
 
   @override
   State<PodcastEpisodeList> createState() => _PodcastEpisodeListState();
@@ -18,6 +20,42 @@ class PodcastEpisodeList extends StatefulWidget {
 class _PodcastEpisodeListState extends State<PodcastEpisodeList> {
   final podcastService = getIt<PodcastService>();
   final audioPlayer = getIt<AudioPlayerHandler>();
+  final PagingController<int, Episode> _pagingController = PagingController(firstPageKey: 0);
+
+  final _pageSize = 5;
+
+  int currentItems = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pagingController.addPageRequestListener((pageKey) {
+      _fetchPage(pageKey);
+    });
+  }
+
+  @override
+  void dispose() {
+    _pagingController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _fetchPage(int pageKey) async {
+    try {
+      debugPrint("fetch2 $pageKey");
+      final newItems = widget.episodes.skip(pageKey).take(_pageSize).toList();
+      final isLastPage = newItems.length < _pageSize;
+      if (isLastPage) {
+        _pagingController.appendLastPage(newItems);
+      } else {
+        final nextPageKey = pageKey + newItems.length;
+        _pagingController.appendPage(newItems, nextPageKey);
+      }
+    } catch (error) {
+      debugPrint("$error");
+      _pagingController.error = error;
+    }
+  }
 
   selectEpisode(int index, List<Episode> data) async {
     var selectedEpisode = data[index];
@@ -27,6 +65,17 @@ class _PodcastEpisodeListState extends State<PodcastEpisodeList> {
       await audioPlayer.updateEpisodeQueue(data, index: index);
     }
   }
+
+  Widget buildPagedEpisodes(List<Episode> data) => PagedListView<int, Episode>(
+      pagingController: _pagingController,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      builderDelegate: PagedChildBuilderDelegate<Episode>(
+        itemBuilder: (context, item, index) {
+          return EpisodePreviewWidget(
+              item, Axis.vertical, () => {selectEpisode(index, data)}, () => setState(() {}), widget.escapeWithNav);
+        },
+      ));
 
   Widget buildEpisodes(List<Episode> data) => ListView.builder(
         physics: const NeverScrollableScrollPhysics(),
@@ -41,28 +90,6 @@ class _PodcastEpisodeListState extends State<PodcastEpisodeList> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          if (snapshot.hasError) {
-            return SizedBox(
-                height: 100,
-                child: Center(
-                  child: Text(
-                    '${snapshot.error} occurred',
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                ));
-          } else if (snapshot.hasData && snapshot.data != null) {
-            // Extracting data from snapshot object
-            if (snapshot.data != null && snapshot.data!.isNotEmpty) {
-              return SizedBox(height: 105.0 * snapshot.data!.length, child: buildEpisodes(snapshot.data!));
-            }
-          }
-        }
-        return const SizedBox(height: 100, child: Center(child: CircularProgressIndicator()));
-      },
-      future: podcastService.getPodcastDetailEpisodes(widget.podcastId, "asc", -1),
-    );
+    return buildPagedEpisodes(widget.episodes);
   }
 }

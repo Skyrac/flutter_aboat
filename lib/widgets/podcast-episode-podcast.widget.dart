@@ -41,7 +41,7 @@ class _PodcastEpisodePodcastState extends State<PodcastEpisodePodcast> {
                   width: MediaQuery.of(context).size.width,
                   child: PodcastListWidget(
                     widget.escapeWithNav,
-                    searchResults: [podcast],
+                    searchResults: [podcast!],
                     direction: Axis.vertical,
                   ));
             } else {
