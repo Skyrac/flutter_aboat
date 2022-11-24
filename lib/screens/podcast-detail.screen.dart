@@ -72,8 +72,15 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
   @override
   Widget build(BuildContext context) {
     userService.UpdatePodcastVisitDate(widget.podcastSearchResult.id);
+    final size = MediaQuery.of(context).size;
+
     return ScaffoldWave(
         height: 33,
+        header: SliverPersistentHeader(
+          delegate: PodcastDetailSliver(widget.escapeWithNav,
+              expandedHeight: size.height * 0.4, podcast: widget.podcastSearchResult, controller: tabController),
+          pinned: true,
+        ),
         appBar: AppBar(
           centerTitle: false,
           leadingWidth: 35,
@@ -165,9 +172,29 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
 
   List<Widget> createTabs(int podcastId, int roomId) {
     return [
-      PodcastEpisodeList(
-        podcastId: podcastId,
-        escapeWithNav: widget.escapeWithNav,
+      FutureBuilder(
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasError) {
+              return SizedBox(
+                  height: 100,
+                  child: Center(
+                    child: Text(
+                      '${snapshot.error} occurred',
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                  ));
+            } else if (snapshot.hasData && snapshot.data != null) {
+              // Extracting data from snapshot object
+              return PodcastEpisodeList(
+                episodes: snapshot.data!,
+                escapeWithNav: widget.escapeWithNav,
+              );
+            }
+          }
+          return const SizedBox(height: 105, child: Center(child: CircularProgressIndicator()));
+        },
+        future: podcastService.getPodcastDetailEpisodes(podcastId, "asc", -1),
       ),
       PodcastDetails(
         podcastId: podcastId,
@@ -207,16 +234,9 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
-        CustomScrollView(shrinkWrap: true, slivers: [
-          SliverPersistentHeader(
-            delegate: PodcastDetailSliver(widget.escapeWithNav,
-                expandedHeight: size.height * 0.4, podcast: podcastSearchResult, controller: tabController),
-            pinned: true,
-          ),
-          SliverToBoxAdapter(
-            child: Container(constraints: BoxConstraints(minHeight: size.height * 0.5), child: tabs[currentTab]),
-          )
-        ]),
+        Container(
+            constraints: BoxConstraints(minHeight: size.height * 0.5),
+            child: currentTab == 0 ? tabs[currentTab] : SingleChildScrollView(child: tabs[currentTab])),
         tabController.index == 2
             ? ChatInput(
                 roomId: podcastSearchResult.roomId!,

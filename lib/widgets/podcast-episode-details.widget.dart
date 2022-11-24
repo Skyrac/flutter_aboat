@@ -275,7 +275,7 @@ class _PodcastEpisodeDetailsState extends State<PodcastEpisodeDetails> {
                                     Container(
                                       margin: const EdgeInsets.only(bottom: 10),
                                       child: Text(
-                                        widget.episode?.description ?? "",
+                                        removeAllHtmlTags(widget.episode.description ?? ""),
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodyLarge
