@@ -127,7 +127,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                     context: context,
                     builder: (context) => Container(
                           margin: const EdgeInsets.only(top: 24),
-                          child: FractionallySizedBox(heightFactor: 1, child: PlaylistBottomSheet(episodeToAdd: entry)),
+                          child: FractionallySizedBox(heightFactor: 0.95, child: PlaylistBottomSheet(episodeToAdd: entry)),
                         ));
                 // FractionallySizedBox(heightFactor: 0.964, child: PlaylistBottomSheet(episodeToAdd: entry)));
               }
