@@ -14,7 +14,7 @@ class Reward {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['total'] = total;
     data['vested'] = vested;
     data['unvested'] = unvested;

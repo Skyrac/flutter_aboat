@@ -3,10 +3,6 @@ import 'episode.model.dart';
 
 class Podcast extends SearchResult {
   int? podcastId;
-  @override
-  int? id;
-  @override
-  String? image;
   String? genreIds;
   String? thumbnail;
   String? titleOriginal;
@@ -18,26 +14,23 @@ class Podcast extends SearchResult {
   String? type;
   String? email;
   List<Episode>? episodes;
-  @override
-  String? title;
   String? country;
   String? website;
   String? language;
   int? itunesId;
   String? publisher;
   bool? isClaimed;
-  @override
-  String? description;
   int? totalEpisodes;
   bool? explicitContent;
   int? latestPubDateMs;
   int? earliestPubDateMs;
+  int? rank;
   DateTime? lastUpdate;
 
   Podcast(
       {this.podcastId,
       super.id,
-      this.image,
+      super.image,
       this.genreIds,
       this.thumbnail,
       this.titleOriginal,
@@ -49,14 +42,14 @@ class Podcast extends SearchResult {
       this.type,
       this.email,
       this.episodes,
-      this.title,
+      super.title,
       this.country,
       this.website,
       this.language,
       this.itunesId,
       this.publisher,
       this.isClaimed,
-      this.description,
+      super.description,
       this.totalEpisodes,
       this.explicitContent,
       this.latestPubDateMs,
@@ -71,6 +64,7 @@ class Podcast extends SearchResult {
       podcastId = json['id'];
       id = json['id'];
     }
+    roomId = json['roomId'];
     image = json['image'];
     genreIds = json['genres'];
     thumbnail = json['thumbnail'];
@@ -94,6 +88,7 @@ class Podcast extends SearchResult {
         });
       }
     }
+    rank = json['rank'];
     title = json['title'];
     country = json['country'];
     website = json['website'];
@@ -110,9 +105,10 @@ class Podcast extends SearchResult {
 
   @override
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['podcastId'] = podcastId;
     data['id'] = podcastId;
+    data['roomId'] = roomId;
     data['image'] = image;
     data['genres'] = genreIds;
     data['thumbnail'] = thumbnail;
@@ -127,6 +123,7 @@ class Podcast extends SearchResult {
     if (episodes != null) {
       data['episodes'] = episodes!.map((v) => v.toJson()).toList();
     }
+    data['rank'] = rank;
     data['title'] = title;
     data['country'] = country;
     data['website'] = website;

@@ -48,11 +48,13 @@ class HomeAppBarWidget extends StatelessWidget {
                       type: PageTransitionType.rightToLeftWithFade,
                       duration: const Duration(milliseconds: 500),
                       reverseDuration: const Duration(milliseconds: 500),
-                      child: const SearchScreen()));
+                      child: SearchScreen(
+                        escapeWithNav: escapeWithNav,
+                      )));
             },
           ),
         ),
-        Padding(
+        /*Padding(
           padding: const EdgeInsets.only(right: 15),
           child: IconButton(
             icon: Image.asset(
@@ -64,7 +66,7 @@ class HomeAppBarWidget extends StatelessWidget {
             tooltip: '',
             onPressed: () {},
           ),
-        ),
+        ),*/
         Padding(
           padding: const EdgeInsets.only(right: 10),
           child: IconButton(

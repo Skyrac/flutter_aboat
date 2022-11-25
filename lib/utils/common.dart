@@ -4,6 +4,41 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
+Widget buildCategoryBadges(BuildContext context, String genres) {
+  final genreList = genres.split(",").asMap().entries;
+  return Align(
+    alignment: Alignment.centerLeft,
+    child: SizedBox(
+      height: 50,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: genreList
+            .map(
+              (entry) => Container(
+                  margin: EdgeInsets.only(bottom: 10, left: entry.key > 0 ? 5 : 0),
+                  decoration:
+                      BoxDecoration(borderRadius: BorderRadius.circular(10), color: const Color.fromRGBO(188, 140, 75, 1)),
+                  width: 100,
+                  height: 35,
+                  child: Center(
+                      child: Text(entry.value,
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
+                          style: const TextStyle(color: Color.fromRGBO(15, 23, 41, 1))))),
+            )
+            .toList(),
+      ),
+    ),
+  );
+}
+
+String removeAllHtmlTags(String htmlText) {
+  RegExp exp = RegExp(r"<[^>]*>", multiLine: true, caseSensitive: true);
+
+  return htmlText.replaceAll(exp, '');
+}
+
 final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
 class PositionData {

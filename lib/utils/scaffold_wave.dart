@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 
 class ScaffoldWave extends StatelessWidget {
-  const ScaffoldWave(
-      {required this.body, this.appBar, this.height = 66, Key? key})
+  const ScaffoldWave({required this.body, this.appBar, this.height = 66, this.physics, this.header, Key? key})
       : super(key: key);
 
   final PreferredSizeWidget? appBar;
   final Widget body;
   final double height;
+  final ScrollPhysics? physics;
+  final Widget? header;
 
   @override
   Widget build(BuildContext context) {
@@ -19,10 +20,13 @@ class ScaffoldWave extends StatelessWidget {
           body: Stack(
             children: [
               NestedScrollView(
+                physics: physics,
                 body: body,
-                headerSliverBuilder:
-                    (BuildContext context, bool innerBoxIsScrolled) {
-                  return [SliverToBoxAdapter(child: SizedBox(height: height))];
+                headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+                  return [
+                    SliverToBoxAdapter(child: SizedBox(height: height)),
+                    header ?? const SliverToBoxAdapter(child: SizedBox())
+                  ];
                 },
               ),
               Container(

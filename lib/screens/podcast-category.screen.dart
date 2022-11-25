@@ -24,7 +24,6 @@ class CategoryScreen extends StatefulWidget {
 class _CategoryScreenState extends State<CategoryScreen> {
   final podcastService = getIt<PodcastService>();
 
-  // TODO: rewrite to each component using their own future
   @override
   Widget build(BuildContext context) {
     return ScaffoldWave(
@@ -88,6 +87,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
             Navigator.push(
               context,
               buildSearchScreenTransition(
+                  escapeWithNav: widget.escapeWithNav,
                   genreId: widget.category.genreId,
                   intitialValue: text,
                   imageUrl: widget.category.imageUrl,
@@ -105,6 +105,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   Navigator.push(
                     context,
                     buildSearchScreenTransition(
+                        escapeWithNav: widget.escapeWithNav,
                         genreId: widget.category.genreId,
                         rank: PodcastRank.NewComer,
                         imageUrl: widget.category.imageUrl,
@@ -144,6 +145,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   Navigator.push(
                     context,
                     buildSearchScreenTransition(
+                        escapeWithNav: widget.escapeWithNav,
                         genreId: widget.category.genreId,
                         rank: PodcastRank.Receiver,
                         imageUrl: widget.category.imageUrl,
@@ -167,6 +169,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   Navigator.push(
                     context,
                     buildSearchScreenTransition(
+                        escapeWithNav: widget.escapeWithNav,
                         genreId: widget.category.genreId,
                         rank: PodcastRank.Hodler,
                         imageUrl: widget.category.imageUrl,

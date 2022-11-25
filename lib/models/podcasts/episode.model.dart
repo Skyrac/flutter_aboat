@@ -5,19 +5,11 @@ import '../search/search_result.model.dart';
 class Episode extends SearchResult {
   int? episodeId;
   int? podcastId;
-  @override
-  int? id;
   String? link;
   String? audio;
-  @override
-  String? image;
-  @override
-  String? title;
   Podcast? podcast;
   String? thumbnail;
   String? transcript;
-  @override
-  String? description;
   int? pubDateMs;
   num? audioLengthSec;
   bool? explicitContent;
@@ -27,15 +19,16 @@ class Episode extends SearchResult {
   Episode(
       {this.episodeId,
       this.podcastId,
-      this.id,
+      super.id,
+      super.roomId,
       this.link,
       this.audio,
-      this.image,
-      this.title,
+      super.image,
+      super.title,
       this.podcast,
       this.thumbnail,
       this.transcript,
-      this.description,
+      super.description,
       this.pubDateMs,
       this.audioLengthSec,
       this.explicitContent,
@@ -46,12 +39,12 @@ class Episode extends SearchResult {
     episodeId = json['episodeId'];
     podcastId = json['podcastId'];
     id = json['episodeId'];
+    roomId = json['roomId'];
     link = json['link'];
     audio = json['audio'];
     image = json['image'];
     title = json['title'];
-    podcast =
-        json['podcast'] != null ? Podcast.fromJson(json['podcast']) : null;
+    podcast = json['podcast'] != null ? Podcast.fromJson(json['podcast']) : null;
     thumbnail = json['thumbnail'];
     transcript = json['transcript'];
     description = json['description'];
@@ -68,6 +61,7 @@ class Episode extends SearchResult {
     data['episodeId'] = episodeId;
     data['podcastId'] = podcastId;
     data['id'] = episodeId;
+    data['roomId'] = roomId;
     data['link'] = link;
     data['audio'] = audio;
     data['image'] = image;

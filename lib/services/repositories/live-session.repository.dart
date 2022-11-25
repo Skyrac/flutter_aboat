@@ -3,6 +3,7 @@ import 'package:Talkaboat/models/live/live-session-configuration.model.dart';
 import 'package:Talkaboat/models/live/live-session.model.dart';
 import 'package:Talkaboat/models/response.model.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../configuration/dio.config.dart';
 
@@ -14,12 +15,12 @@ class LiveSessionRepository {
     try {
       final body = {"amount": amount, "offset": offset, "queue": search};
       var response = await dio.post<String>('$API/rooms/search', data: body);
-      print(response.data);
+      debugPrint(response.data);
       var list = List<LiveSession>.from(json.decode(response.data!).map((data) => LiveSession.fromJson(data)));
       return list;
     } catch (ex) {
-      print(ex);
-      print((ex as DioError).response?.data);
+      debugPrint("$ex");
+      debugPrint((ex as DioError).response?.data);
       return List.empty();
     }
   }
@@ -30,8 +31,8 @@ class LiveSessionRepository {
       var data = ResponseModel.fromJson(json.decode(response.data!));
       return data;
     } catch (e) {
-      print(e);
-      print((e as DioError).response?.data);
+      debugPrint("$e");
+      debugPrint((e as DioError).response?.data);
       return ResponseModel();
     }
   }
@@ -42,8 +43,8 @@ class LiveSessionRepository {
       var data = LiveSession.fromJson(json.decode(response.data!));
       return data;
     } catch (e) {
-      print(e);
-      print((e as DioError).response?.data);
+      debugPrint("$e");
+      debugPrint((e as DioError).response?.data);
       return null;
     }
   }

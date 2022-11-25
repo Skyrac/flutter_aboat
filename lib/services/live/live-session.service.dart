@@ -24,7 +24,7 @@ class LiveSessionService extends ChangeNotifier {
 
   Future<String> getToken(String roomId) async {
     var response = await LiveSessionRepository.getToken(roomId);
-    print(response.data);
+    debugPrint(response.data);
     return response.data!;
   }
 
@@ -38,11 +38,11 @@ class LiveSessionService extends ChangeNotifier {
       RtcEngineEventHandler(
         onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
           _isJoined = true;
-          print("joined channel ${connection.channelId} ${connection.localUid}");
+          debugPrint("joined channel ${connection.channelId} ${connection.localUid}");
           notifyListeners();
         },
         onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
-          print("onUserJoined ${connection.channelId} ${connection.localUid} $remoteUid");
+          debugPrint("onUserJoined ${connection.channelId} ${connection.localUid} $remoteUid");
           _remoteUid = remoteUid;
           notifyListeners();
         },
@@ -51,7 +51,7 @@ class LiveSessionService extends ChangeNotifier {
           notifyListeners();
         },
         onError: (err, msg) {
-          print("error $err $msg");
+          debugPrint("error $err $msg");
         },
       ),
     );

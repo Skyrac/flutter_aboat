@@ -16,17 +16,18 @@ class RewardDetail {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['amount'] = this.amount;
-    data['description'] = this.description;
-    data['earnDate'] = this.earnDate;
-    data['unlockDate'] = this.unlockDate;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['amount'] = amount;
+    data['description'] = description;
+    data['earnDate'] = earnDate;
+    data['unlockDate'] = unlockDate;
     return data;
   }
 
   getEarnDate() {
     return Jiffy(earnDate!).yMMMd; // DateTime.parse(created!).
   }
+
   getUnlockDate() {
     return Jiffy(unlockDate!).yMMMd; // DateTime.parse(created!).
   }
