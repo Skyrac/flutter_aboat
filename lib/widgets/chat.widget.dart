@@ -128,7 +128,7 @@ class _ChatState extends State<Chat> {
                   // Extracting data from snapshot object
                   return Container(
                     alignment: Alignment.topCenter,
-                    // height: 400,
+                    height: 400,
                     child: Stack(
                       alignment: Alignment.bottomCenter,
                       children: [
