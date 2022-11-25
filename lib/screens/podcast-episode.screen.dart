@@ -23,8 +23,7 @@ class PodcastEpisodeScreen extends StatefulWidget {
   final Episode episode;
   final Function escapeWithNav;
   final Duration position;
-  const PodcastEpisodeScreen(this.escapeWithNav, {Key? key, required this.episode, required this.position})
-      : super(key: key);
+  const PodcastEpisodeScreen(this.escapeWithNav, {super.key, required this.episode, required this.position});
 
   @override
   State<PodcastEpisodeScreen> createState() => _PodcastEpisodeScreenState();

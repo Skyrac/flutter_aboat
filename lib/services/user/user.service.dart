@@ -477,6 +477,17 @@ class UserService {
     return false;
   }
 
+  Future<bool> copyPlaylist(Playlist playlist) async {
+    //var newPlaylist = await PodcastRepository.createPlaylist("${playlist.name} - Copy", tracks: playlist.tracks);
+    //if (newPlaylist.name != null &&
+    //    newPlaylist.name!.isNotEmpty &&
+    //    !playlists.any((playlist) => playlist.playlistId == newPlaylist.playlistId)) {
+    //  playlists.add(newPlaylist);
+    //  return true;
+    //}
+    return false;
+  }
+
   Future<bool> removePlaylist(int playlistId) async {
     if (playlists.any((element) => element.playlistId == playlistId)) {
       var result = await PodcastRepository.removePlaylist(playlistId);
