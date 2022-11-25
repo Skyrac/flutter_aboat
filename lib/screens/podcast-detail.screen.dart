@@ -5,8 +5,8 @@ import 'package:Talkaboat/services/hubs/chat/chat.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/widgets/chat-input.widget.dart';
 import 'package:Talkaboat/widgets/chat.widget.dart';
+import 'package:Talkaboat/widgets/episode-list-with-header.widget.dart';
 import 'package:Talkaboat/widgets/podcast-details.widget.dart';
-import 'package:Talkaboat/widgets/podcast-episode-list.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -172,29 +172,9 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
 
   List<Widget> createTabs(int podcastId, int roomId) {
     return [
-      FutureBuilder(
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.hasError) {
-              return SizedBox(
-                  height: 100,
-                  child: Center(
-                    child: Text(
-                      '${snapshot.error} occurred',
-                      style: const TextStyle(fontSize: 18),
-                    ),
-                  ));
-            } else if (snapshot.hasData && snapshot.data != null) {
-              // Extracting data from snapshot object
-              return PodcastEpisodeList(
-                episodes: snapshot.data!,
-                escapeWithNav: widget.escapeWithNav,
-              );
-            }
-          }
-          return const SizedBox(height: 105, child: Center(child: CircularProgressIndicator()));
-        },
-        future: podcastService.getPodcastDetailEpisodes(podcastId, "asc", -1),
+      EpisodeHeaderList(
+        podcastId: podcastId,
+        escapeWithNav: widget.escapeWithNav,
       ),
       PodcastDetails(
         podcastId: podcastId,
