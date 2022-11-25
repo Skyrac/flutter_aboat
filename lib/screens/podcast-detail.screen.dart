@@ -4,7 +4,6 @@ import 'package:Talkaboat/models/chat/chat-dtos.dart';
 import 'package:Talkaboat/services/hubs/chat/chat.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/widgets/chat-input.widget.dart';
-import 'package:Talkaboat/utils/common.dart';
 import 'package:Talkaboat/widgets/chat.widget.dart';
 import 'package:Talkaboat/widgets/podcast-details.widget.dart';
 import 'package:Talkaboat/widgets/podcast-episode-list.widget.dart';
@@ -45,7 +44,8 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
     super.initState();
     tabController = TabController(length: 3, vsync: this, animationDuration: Duration.zero);
     tabController.addListener(() {
-      print("tabcontroller update ${tabController.indexIsChanging} ${tabController.index} ${tabController.previousIndex}");
+      debugPrint(
+          "tabcontroller update ${tabController.indexIsChanging} ${tabController.index} ${tabController.previousIndex}");
       setState(() {
         currentTab = tabController.index;
       });

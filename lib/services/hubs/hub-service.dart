@@ -1,4 +1,5 @@
 import 'package:Talkaboat/injection/injector.dart';
+import 'package:flutter/foundation.dart';
 import 'package:signalr_netcore/signalr_client.dart';
 
 import '../user/user.service.dart';
@@ -22,11 +23,11 @@ abstract class HubService {
 
   connect() async {
     try {
-      print("current state ${connection.state}");
+      debugPrint("current state ${connection.state}");
       await connection.start();
-      print("Connected to ${hubName}-hub");
+      debugPrint("Connected to $hubName-hub");
     } catch (e) {
-      print(e);
+      debugPrint("$e");
     }
   }
 

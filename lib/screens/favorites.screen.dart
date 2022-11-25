@@ -17,6 +17,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    userService.SetLastFavoritesNotifcationUpdate();
     return SearchScreen(
       escapeWithNav: widget.escapeWithNav,
       customSearchFunc: ((text, amount, offset) async {

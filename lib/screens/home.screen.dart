@@ -8,7 +8,6 @@ import 'package:Talkaboat/widgets/home-suggested.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:Talkaboat/widgets/quests/quest-list.widget.dart';
 import '../widgets/home-app-bar.widget.dart';
-import '../widgets/library-preview.widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen(this.setEpisode, this.selectTab, this.escapeWithNav, {Key? key}) : super(key: key);
@@ -68,24 +67,6 @@ class _HomeScreenState extends State<HomeScreen> {
           HomeScreenCategoriesTab(widget.escapeWithNav),
           Container(),
         ]),
-      ),
-    );
-  }
-
-  createLibraryPreview() {
-    if (!userService.isConnected || userService.favorites.isEmpty) {
-      return Container();
-    }
-    var libraryEntries = userService.getFavoritesEntries(6);
-    var height = double.parse((libraryEntries.length / 2 * 120).toString());
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: SizedBox(
-        height: height,
-        child: Wrap(
-          spacing: 10,
-          children: [for (var entry in libraryEntries) LibraryPreviewWidget(widget.escapeWithNav, podcast: entry)],
-        ),
       ),
     );
   }

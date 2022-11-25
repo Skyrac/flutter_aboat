@@ -108,13 +108,13 @@ class _PodcastEpisodeDetailsState extends State<PodcastEpisodeDetails> {
                                   const SizedBox(
                                     width: 15,
                                   ),
-                                  FileDownloadService.containsFile(widget.episode!.audio!)
+                                  FileDownloadService.containsFile(widget.episode.audio!)
                                       ? ButtonEpisode(
                                           func: () async {
-                                            if (!userService.isInFavorites(widget.episode!.podcastId!)) {
-                                              await userService.addToFavorites(widget.episode!.podcastId!);
+                                            if (!userService.isInFavorites(widget.episode.podcastId!)) {
+                                              await userService.addToFavorites(widget.episode.podcastId!);
                                             }
-                                            await FileDownloadService.cacheOrDelete(widget.episode!.audio!);
+                                            await FileDownloadService.cacheOrDelete(widget.episode.audio!);
                                             setState(() {});
                                           },
                                           image: "assets/images/cloud_complete.png",
@@ -123,10 +123,10 @@ class _PodcastEpisodeDetailsState extends State<PodcastEpisodeDetails> {
                                         )
                                       : ButtonEpisode(
                                           func: () async {
-                                            if (!userService.isInFavorites(widget.episode!.podcastId!)) {
-                                              await userService.addToFavorites(widget.episode!.podcastId!);
+                                            if (!userService.isInFavorites(widget.episode.podcastId!)) {
+                                              await userService.addToFavorites(widget.episode.podcastId!);
                                             }
-                                            await FileDownloadService.cacheOrDelete(widget.episode!.audio!);
+                                            await FileDownloadService.cacheOrDelete(widget.episode.audio!);
                                             setState(() {});
                                           },
                                           image: "assets/images/cloud.png",

@@ -24,7 +24,6 @@ class CategoryScreen extends StatefulWidget {
 class _CategoryScreenState extends State<CategoryScreen> {
   final podcastService = getIt<PodcastService>();
 
-  // TODO: rewrite to each component using their own future
   @override
   Widget build(BuildContext context) {
     return ScaffoldWave(

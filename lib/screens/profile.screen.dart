@@ -5,8 +5,6 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-        child: Text('Profile',
-            style: TextStyle(fontSize: 40, color: Colors.white)));
+    return const SafeArea(child: Text('Profile', style: TextStyle(fontSize: 40, color: Colors.white)));
   }
 }

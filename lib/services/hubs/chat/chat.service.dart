@@ -51,7 +51,7 @@ class ChatService extends ChangeNotifier {
         }
         notifyListeners();
       } else {
-        print("Tried to edit message that was not cached localy");
+        debugPrint("Tried to edit message that was not cached localy");
       }
     });
   }
@@ -64,7 +64,7 @@ class ChatService extends ChangeNotifier {
         _rooms[message.chatRoomId]!.insert(index, message);
         notifyListeners();
       } else {
-        print("Tried to edit message that was not cached localy");
+        debugPrint("Tried to edit message that was not cached localy");
       }
     });
   }
@@ -75,7 +75,7 @@ class ChatService extends ChangeNotifier {
         _rooms[roomId]!.removeWhere((value) => value.id == messageId);
         notifyListeners();
       } else {
-        print("Tried to delete message that was not cached localy");
+        debugPrint("Tried to delete message that was not cached localy");
       }
     });
   }
@@ -92,7 +92,7 @@ class ChatService extends ChangeNotifier {
     try {
       await _hub.sendMessage(message);
     } catch (e) {
-      print(e);
+      debugPrint("$e");
     }
   }
 
@@ -100,7 +100,7 @@ class ChatService extends ChangeNotifier {
     try {
       await _hub.editMessage(message);
     } catch (e) {
-      print(e);
+      debugPrint("$e");
     }
   }
 
@@ -108,7 +108,7 @@ class ChatService extends ChangeNotifier {
     try {
       await _hub.deleteMessage(message);
     } catch (e) {
-      print(e);
+      debugPrint("$e");
     }
   }
 
@@ -116,7 +116,7 @@ class ChatService extends ChangeNotifier {
     try {
       await _hub.joinRoom(data);
     } catch (e) {
-      print(e);
+      debugPrint("$e");
     }
     _mutex.run(() {
       _rooms[data.roomId] = List.empty(growable: true);
@@ -127,7 +127,7 @@ class ChatService extends ChangeNotifier {
     try {
       await _hub.leaveRoom(data);
     } catch (e) {
-      print(e);
+      debugPrint("$e");
     }
     _mutex.run(() {
       _rooms[data.roomId] = null;
@@ -143,7 +143,7 @@ class ChatService extends ChangeNotifier {
         List<ChatMessageDto> messages = await _hub.getHistory(data);
         _rooms[data.roomId]!.addAll(messages);
       } catch (e) {
-        print(e);
+        debugPrint("$e");
       }
     }
     return _rooms[data.roomId] ?? List.empty();

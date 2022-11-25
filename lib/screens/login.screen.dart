@@ -78,7 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
         isLoading = true;
       });
       final result = await userService.emailLogin(email, pin);
-      print(result);
+      debugPrint(result);
       if (result == "new_account") {
         setState(() {
           isLoading = false;
@@ -218,7 +218,7 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
     } catch (exception) {
-      print(exception);
+      debugPrint("$exception");
     }
 
     setState(() {
@@ -226,6 +226,7 @@ class _LoginScreenState extends State<LoginScreen> {
     });
     if (userService.lastConnectionState != null && userService.lastConnectionState?.text != null) {
       if (userService.lastConnectionState?.text == "not_connected") {
+        // TODO: do we ever get to this code or is this state unreachable?
         ShowSnackBar(context, "Check your E-Mail and Verify the Pin");
         final bodyMediumTheme = Theme.of(context).textTheme.bodyMedium;
         final pinResult = await showInputDialog(context, "Confirm PIN", (_) {
@@ -308,7 +309,7 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         isLoading = false;
       });
-      print("registerResult $registerResult");
+      debugPrint("registerResult $registerResult");
       if (registerResult == null) {
         // returns error
         navAway(navigator);
@@ -316,14 +317,14 @@ class _LoginScreenState extends State<LoginScreen> {
         // register error
         if (registerResult.contains("username_invalid") ||
             registerResult.contains("User or Wallet is already registered!")) {
-          print("invalid $username");
+          debugPrint("invalid $username");
           await doEmailRegister(context, theme, pinResult, navigator, username);
         } else {
           ShowSnackBar(context, "Error registering");
         }
       }
     } else {
-      print("cancel");
+      debugPrint("cancel");
       // cancel
       return;
     }
@@ -352,7 +353,7 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       }
     } else {
-      print("cancel");
+      debugPrint("cancel");
       // cancel
       return;
     }
@@ -439,7 +440,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   isLoading = true;
                                 });
                                 final loginResult = await sendLogin(context, emailController.text, pinResult);
-                                print(loginResult);
+                                debugPrint("$loginResult");
                                 setState(() {
                                   isLoading = false;
                                 });
