@@ -224,84 +224,80 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
         borderRadius: BorderRadius.circular(10),
         child: SizedBox(
           height: 100,
-          child: Container(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: SizedBox(
-                    height: 100,
-                    width: 100,
-                    child: CachedNetworkImage(
-                        imageUrl: widget.playlist.image == null || widget.playlist.image!.isEmpty
-                            ? 'https://picsum.photos/200'
-                            : widget.playlist.image!,
-                        cacheManager: CacheManager(Config(
-                            widget.playlist.image == null || widget.playlist.image!.isEmpty
-                                ? 'https://picsum.photos/200'
-                                : widget.playlist.image!,
-                            stalePeriod: const Duration(days: 7))),
-                        placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
-                        // progressIndicatorBuilder: (context, url, downloadProgress) =>
-                        //     CircularProgressIndicator(value: downloadProgress.progress),
-                        errorWidget: (context, url, error) => const Icon(Icons.error),
-                        fit: BoxFit.cover),
-                  ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: SizedBox(
+                  height: 100,
+                  width: 100,
+                  child: CachedNetworkImage(
+                      imageUrl: widget.playlist.image == null || widget.playlist.image!.isEmpty
+                          ? 'https://picsum.photos/200'
+                          : widget.playlist.image!,
+                      cacheManager: CacheManager(Config(
+                          widget.playlist.image == null || widget.playlist.image!.isEmpty
+                              ? 'https://picsum.photos/200'
+                              : widget.playlist.image!,
+                          stalePeriod: const Duration(days: 7))),
+                      placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
+                      // progressIndicatorBuilder: (context, url, downloadProgress) =>
+                      //     CircularProgressIndicator(value: downloadProgress.progress),
+                      errorWidget: (context, url, error) => const Icon(Icons.error),
+                      fit: BoxFit.cover),
                 ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Flexible(
-                        fit: FlexFit.loose,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              widget.playlist.name!,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.titleLarge,
-                            ),
-                            Text(
-                              "Tracks: ${widget.playlist.tracks!.length}",
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
-                          ],
-                        ),
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              Expanded(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Flexible(
+                      fit: FlexFit.loose,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.playlist.name!,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                          Text(
+                            "Tracks: ${widget.playlist.tracks!.length}",
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                        ],
                       ),
-                      Text(
-                        "Created: ${widget.playlist.getDateTime()}",
-                        style: Theme.of(context).textTheme.labelMedium,
+                    ),
+                    Text(
+                      "Created: ${widget.playlist.getDateTime()}",
+                      style: Theme.of(context).textTheme.labelMedium,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 10),
+                      child: IconButton(
+                        color: const Color.fromRGBO(99, 163, 253, 1),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                        icon: const Icon(Icons.play_arrow),
+                        iconSize: 50.0,
+                        onPressed: (() async {
+                          await audioHandler
+                              .updateEpisodeQueue(widget.playlist.tracks!.map((track) => track.episode!).toList(), index: 0);
+                        }),
                       ),
-                      Container(
-                          child: Padding(
-                        padding: const EdgeInsets.only(right: 10),
-                        child: IconButton(
-                          color: const Color.fromRGBO(99, 163, 253, 1),
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                          icon: const Icon(Icons.play_arrow),
-                          iconSize: 50.0,
-                          onPressed: (() async {
-                            await audioHandler.updateEpisodeQueue(
-                                widget.playlist.tracks!.map((track) => track.episode!).toList(),
-                                index: 0);
-                          }),
-                        ),
-                      ))
-                    ],
-                  ),
+                    )
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       );
@@ -365,77 +361,75 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
         padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(10),
-          child: Container(
-            child: SizedBox(
-                height: 90,
-                child: Center(
-                  child: InkWell(
-                    onTap: (() async {
-                      await audioHandler.updateEpisodeQueue(widget.playlist.tracks!.map((track) => track.episode!).toList(),
-                          index: index);
-                    }),
-                    child: Row(children: [
-                      SizedBox(
-                        height: 90,
-                        width: 90,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: SizedBox(
-                            child: CachedNetworkImage(
-                              imageUrl: track.episode!.image == null || track.episode!.image!.isEmpty
-                                  ? 'https://picsum.photos/200'
-                                  : track.episode!.image!,
-                              fit: BoxFit.fill,
-                              placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
-                              errorWidget: (context, url, error) => const Icon(Icons.error),
-                            ),
+          child: SizedBox(
+              height: 90,
+              child: Center(
+                child: InkWell(
+                  onTap: (() async {
+                    await audioHandler.updateEpisodeQueue(widget.playlist.tracks!.map((track) => track.episode!).toList(),
+                        index: index);
+                  }),
+                  child: Row(children: [
+                    SizedBox(
+                      height: 90,
+                      width: 90,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: SizedBox(
+                          child: CachedNetworkImage(
+                            imageUrl: track.episode!.image == null || track.episode!.image!.isEmpty
+                                ? 'https://picsum.photos/200'
+                                : track.episode!.image!,
+                            fit: BoxFit.fill,
+                            placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
+                            errorWidget: (context, url, error) => const Icon(Icons.error),
                           ),
                         ),
                       ),
-                      Expanded(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Flexible(
-                              fit: FlexFit.loose,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 10),
-                                    child: Text(
-                                      track.episode!.title!,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: Theme.of(context).textTheme.labelLarge,
-                                    ),
+                    ),
+                    Expanded(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Flexible(
+                            fit: FlexFit.loose,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 10),
+                                  child: Text(
+                                    track.episode!.title!,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: Theme.of(context).textTheme.labelLarge,
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 10),
-                                    child: Text(
-                                      track.episode!.podcast!.title!,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: Theme.of(context).textTheme.titleMedium,
-                                    ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 10),
+                                  child: Text(
+                                    track.episode!.podcast!.title!,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: Theme.of(context).textTheme.titleMedium,
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                            SizedBox(
-                              height: 90,
-                              width: 40,
-                              child: buildPopupButton(context, track),
-                            )
-                          ],
-                        ),
-                      )
-                    ]),
-                  ),
-                )),
-          ),
+                          ),
+                          SizedBox(
+                            height: 90,
+                            width: 40,
+                            child: buildPopupButton(context, track),
+                          )
+                        ],
+                      ),
+                    )
+                  ]),
+                ),
+              )),
         ),
       );
 }
