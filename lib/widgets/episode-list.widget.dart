@@ -6,18 +6,18 @@ import 'package:Talkaboat/widgets/episode-preview.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
-class PodcastEpisodeList extends StatefulWidget {
-  const PodcastEpisodeList({super.key, required this.episodes, required this.escapeWithNav, this.controller});
+class EpisodeList extends StatefulWidget {
+  const EpisodeList({super.key, required this.episodes, required this.escapeWithNav, this.controller});
 
   final List<Episode> episodes;
   final Function escapeWithNav;
   final ScrollController? controller;
 
   @override
-  State<PodcastEpisodeList> createState() => _PodcastEpisodeListState();
+  State<EpisodeList> createState() => _EpisodeListState();
 }
 
-class _PodcastEpisodeListState extends State<PodcastEpisodeList> {
+class _EpisodeListState extends State<EpisodeList> {
   final podcastService = getIt<PodcastService>();
   final audioPlayer = getIt<AudioPlayerHandler>();
   final PagingController<int, Episode> _pagingController = PagingController(firstPageKey: 0);
@@ -66,17 +66,6 @@ class _PodcastEpisodeListState extends State<PodcastEpisodeList> {
     }
   }
 
-  Widget buildPagedEpisodes(List<Episode> data) => PagedListView<int, Episode>(
-      pagingController: _pagingController,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      builderDelegate: PagedChildBuilderDelegate<Episode>(
-        itemBuilder: (context, item, index) {
-          return EpisodePreviewWidget(
-              item, Axis.vertical, () => {selectEpisode(index, data)}, () => setState(() {}), widget.escapeWithNav);
-        },
-      ));
-
   Widget buildEpisodes(List<Episode> data) => ListView.builder(
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (BuildContext context, int index) {
@@ -90,6 +79,15 @@ class _PodcastEpisodeListState extends State<PodcastEpisodeList> {
 
   @override
   Widget build(BuildContext context) {
-    return buildPagedEpisodes(widget.episodes);
+    return PagedListView<int, Episode>(
+        pagingController: _pagingController,
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        builderDelegate: PagedChildBuilderDelegate<Episode>(
+          itemBuilder: (context, item, index) {
+            return EpisodePreviewWidget(item, Axis.vertical, () => {selectEpisode(index, widget.episodes)},
+                () => setState(() {}), widget.escapeWithNav);
+          },
+        ));
   }
 }
