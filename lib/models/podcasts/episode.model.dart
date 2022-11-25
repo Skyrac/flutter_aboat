@@ -1,25 +1,15 @@
 import 'package:Talkaboat/models/podcasts/podcast.model.dart';
 
-import '../chat/join-room-dto.dart';
 import '../search/search_result.model.dart';
 
 class Episode extends SearchResult {
   int? episodeId;
   int? podcastId;
-  @override
-  int? id;
-  int? roomId;
   String? link;
   String? audio;
-  @override
-  String? image;
-  @override
-  String? title;
   Podcast? podcast;
   String? thumbnail;
   String? transcript;
-  @override
-  String? description;
   int? pubDateMs;
   num? audioLengthSec;
   bool? explicitContent;
@@ -29,16 +19,16 @@ class Episode extends SearchResult {
   Episode(
       {this.episodeId,
       this.podcastId,
-      this.id,
-      this.roomId,
+      super.id,
+      super.roomId,
       this.link,
       this.audio,
-      this.image,
-      this.title,
+      super.image,
+      super.title,
       this.podcast,
       this.thumbnail,
       this.transcript,
-      this.description,
+      super.description,
       this.pubDateMs,
       this.audioLengthSec,
       this.explicitContent,

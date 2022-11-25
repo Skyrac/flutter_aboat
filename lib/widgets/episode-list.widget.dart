@@ -1,145 +1,93 @@
-import 'package:Talkaboat/utils/common.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:Talkaboat/injection/injector.dart';
+import 'package:Talkaboat/models/podcasts/episode.model.dart';
+import 'package:Talkaboat/services/audio/audio-handler.services.dart';
+import 'package:Talkaboat/services/audio/podcast.service.dart';
+import 'package:Talkaboat/widgets/episode-preview.widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
-import '../injection/injector.dart';
-import '../models/podcasts/episode.model.dart';
-import '../services/audio/audio-handler.services.dart';
+class EpisodeList extends StatefulWidget {
+  const EpisodeList({super.key, required this.episodes, required this.escapeWithNav, this.controller});
 
-class EpisodeListWidget extends StatefulWidget {
-  const EpisodeListWidget({Key? key, required this.episodes, required this.direction}) : super(key: key);
-  final List<Episode?> episodes;
-  final Axis direction;
+  final List<Episode> episodes;
+  final Function escapeWithNav;
+  final ScrollController? controller;
+
   @override
-  State<EpisodeListWidget> createState() => _EpisodeListWidgetState();
+  State<EpisodeList> createState() => _EpisodeListState();
 }
 
-class _EpisodeListWidgetState extends State<EpisodeListWidget> {
-  late final audioHandler = getIt<AudioPlayerHandler>();
+class _EpisodeListState extends State<EpisodeList> {
+  final podcastService = getIt<PodcastService>();
+  final audioPlayer = getIt<AudioPlayerHandler>();
+  final PagingController<int, Episode> _pagingController = PagingController(firstPageKey: 0);
 
-  popupMenu(BuildContext context, Episode entry) => <PopupMenuEntry<String>>[
-        const PopupMenuItem<String>(value: 'remove', child: Card(child: Text('Remove from Playlist'))),
-      ];
+  final _pageSize = 5;
 
-  buildPopupButton(context, Episode entry) => PopupMenuButton(
-        child: Card(child: Icon(Icons.more_vert, color: Theme.of(context).iconTheme.color)),
-        onSelected: (value) async {
-          switch (value) {
-            case "add":
-              break;
-          }
-          setState(() {});
+  int currentItems = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pagingController.addPageRequestListener((pageKey) {
+      _fetchPage(pageKey);
+    });
+  }
+
+  @override
+  void dispose() {
+    _pagingController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _fetchPage(int pageKey) async {
+    try {
+      debugPrint("fetch2 $pageKey");
+      final newItems = widget.episodes.skip(pageKey).take(_pageSize).toList();
+      final isLastPage = newItems.length < _pageSize;
+      if (isLastPage) {
+        _pagingController.appendLastPage(newItems);
+      } else {
+        final nextPageKey = pageKey + newItems.length;
+        _pagingController.appendPage(newItems, nextPageKey);
+      }
+    } catch (error) {
+      debugPrint("$error");
+      _pagingController.error = error;
+    }
+  }
+
+  selectEpisode(int index, List<Episode> data) async {
+    var selectedEpisode = data[index];
+    if (audioPlayer.isListeningEpisode(selectedEpisode.episodeId)) {
+      audioPlayer.togglePlaybackState();
+    } else {
+      await audioPlayer.updateEpisodeQueue(data, index: index);
+    }
+  }
+
+  Widget buildEpisodes(List<Episode> data) => ListView.builder(
+        physics: const NeverScrollableScrollPhysics(),
+        itemBuilder: (BuildContext context, int index) {
+          var episode = data[index];
+          var episodeIndex = index;
+          return EpisodePreviewWidget(episode, Axis.vertical, () => {selectEpisode(episodeIndex, data)},
+              () => setState(() {}), widget.escapeWithNav);
         },
-        itemBuilder: (BuildContext context) {
-          return popupMenu(context, entry);
-        },
-      );
-
-  Widget makeListBuilder(context, List<Episode?> data) => ListView.builder(
-      itemCount: data.length,
-      scrollDirection: widget.direction,
-      itemBuilder: (BuildContext context, int index) {
-        if (data[index] == null) {
-          return const ListTile();
-        }
-        final item = data[index]!;
-        return makeCard(context, item);
-      });
-
-  Widget makeCard(context, Episode entry) => Card(
-        elevation: 8.0,
-        margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: Container(
-            child: widget.direction == Axis.horizontal
-                ? makeHorizontalListTile(context, entry)
-                : makeVerticalListTile(context, entry),
-          ),
-        ),
-      );
-
-  Widget makeHorizontalListTile(context, Episode entry) => Padding(
-      padding: const EdgeInsets.all(10),
-      child: InkWell(
-          onTap: () async {
-            await audioHandler.updateEpisodeQueue(List.generate(1, (index) => entry));
-          },
-          child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: SizedBox(
-                width: 120,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: SizedBox(
-                            height: 120,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CachedNetworkImage(
-                                  imageUrl: entry.image ?? '',
-                                  fit: BoxFit.fill,
-                                  cacheManager:
-                                      CacheManager(Config(entry.image ?? '', stalePeriod: const Duration(days: 2))),
-                                  placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
-                                  // progressIndicatorBuilder: (context, url, downloadProgress) =>
-                                  //     CircularProgressIndicator(value: downloadProgress.progress),
-                                  errorWidget: (context, url, error) => const Icon(Icons.error),
-                                ),
-                              ],
-                            ))),
-                    Padding(
-                        padding: const EdgeInsets.only(left: 5, right: 5, top: 5),
-                        child: Text(entry.title!,
-                            overflow: TextOverflow.ellipsis, maxLines: 2, style: Theme.of(context).textTheme.titleMedium))
-                  ],
-                ),
-              ))));
-
-  Widget makeVerticalListTile(context, Episode entry) => Center(
-        child: ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-          leading: SizedBox(
-            width: 60,
-            height: 100,
-            child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: SizedBox(
-                    child: CachedNetworkImage(
-                  imageUrl: entry.image ?? '',
-                  fit: BoxFit.fill,
-                  cacheManager: CacheManager(Config(entry.image ?? '', stalePeriod: const Duration(days: 2))),
-                  placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
-                  // progressIndicatorBuilder: (context, url, downloadProgress) =>
-                  //     CircularProgressIndicator(value: downloadProgress.progress),
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
-                ))),
-          ),
-          title: Text(
-            entry.title!,
-            overflow: TextOverflow.ellipsis,
-            maxLines: 2,
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-          ),
-          subtitle: Text(
-            removeAllHtmlTags(entry.description!),
-            overflow: TextOverflow.ellipsis,
-            maxLines: 2,
-            style: const TextStyle(color: Colors.white),
-          ),
-          trailing: buildPopupButton(context, entry),
-          onTap: () async {
-            await audioHandler.updateEpisodeQueue(List.generate(1, (index) => entry));
-          },
-        ),
+        itemCount: data.length, // 1000 list items
       );
 
   @override
   Widget build(BuildContext context) {
-    return makeListBuilder(context, widget.episodes);
+    return PagedListView<int, Episode>(
+        pagingController: _pagingController,
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        builderDelegate: PagedChildBuilderDelegate<Episode>(
+          itemBuilder: (context, item, index) {
+            return EpisodePreviewWidget(item, Axis.vertical, () => {selectEpisode(index, widget.episodes)},
+                () => setState(() {}), widget.escapeWithNav);
+          },
+        ));
   }
 }

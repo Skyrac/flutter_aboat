@@ -178,7 +178,9 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                           try {
                             final text = newValue.text.replaceAll(",", ".");
                             if (text.isEmpty || double.parse(text) <= userService.availableToken) return newValue;
-                          } catch (e) {}
+                          } catch (e) {
+                            debugPrint("$e");
+                          }
                           return oldValue;
                         }),
                       ],

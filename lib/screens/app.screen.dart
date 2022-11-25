@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Talkaboat/screens/favorites.screen.dart';
 import 'package:Talkaboat/screens/playlist.screen.dart';
 import 'package:Talkaboat/screens/search.screen.dart';
 import 'package:Talkaboat/screens/social/social_entry.screen.dart';
@@ -32,12 +33,12 @@ class _AppScreenState extends State<AppScreen> with RouteAware {
   late List<Widget> Tabs;
   final userService = getIt<UserService>();
   String _currentPage = "Home";
-  List<String> pageKeys = ["Home", "Search", "Playlist", "Library", "Social"];
+  List<String> pageKeys = ["Home", "Live", "Favorites", "Playlist", "Social"];
   final Map<String, GlobalKey<NavigatorState>> _navigatorKeys = {
     "Home": GlobalKey<NavigatorState>(),
-    "Search": GlobalKey<NavigatorState>(),
+    "Live": GlobalKey<NavigatorState>(),
+    "Favorites": GlobalKey<NavigatorState>(),
     "Playlist": GlobalKey<NavigatorState>(),
-    "Library": GlobalKey<NavigatorState>(),
     "Social": GlobalKey<NavigatorState>(),
   };
 
@@ -78,21 +79,7 @@ class _AppScreenState extends State<AppScreen> with RouteAware {
     Tabs = [
       HomeScreen(setEpisode, _selectTab, escapeWithNav),
       SearchScreen(escapeWithNav: escapeWithNav),
-      SearchScreen(
-        escapeWithNav: escapeWithNav,
-        customSearchFunc: ((text, amount, offset) async {
-          return Future.value((await userService.getFavorites())
-              .where((element) => element.title?.contains(text) ?? false)
-              .skip(offset)
-              .take(amount)
-              .toList());
-        }),
-        refreshOnStateChange: true,
-        appBar: AppBar(
-          backgroundColor: const Color.fromRGBO(29, 40, 58, 1),
-          title: const Text("Favorites"),
-        ),
-      ),
+      FavoritesScreen(escapeWithNav: escapeWithNav),
       PlaylistScreen(escapeWithNav),
       SocialEntryScreen(escapeWithNav)
     ];
@@ -195,9 +182,9 @@ class _AppScreenState extends State<AppScreen> with RouteAware {
       child: Scaffold(
         body: LazyLoadIndexedStack(index: currentTabIndex, children: <Widget>[
           _buildOffstageNavigator("Home"),
-          _buildOffstageNavigator("Search"),
+          _buildOffstageNavigator("Live"),
+          _buildOffstageNavigator("Favorites"),
           _buildOffstageNavigator("Playlist"),
-          _buildOffstageNavigator("Library"),
           _buildOffstageNavigator("Social"),
         ]),
         bottomNavigationBar: Container(

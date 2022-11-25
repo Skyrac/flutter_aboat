@@ -12,9 +12,9 @@ class ResponseModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['status'] = this.status;
-    data['text'] = this.text;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['status'] = status;
+    data['text'] = text;
     data['data'] = this.data;
     return data;
   }
