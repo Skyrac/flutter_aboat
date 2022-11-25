@@ -5,6 +5,7 @@ import 'package:Talkaboat/models/chat/message-history-request-dto.dart';
 import 'package:Talkaboat/services/hubs/chat/chat.service.dart';
 import 'package:Talkaboat/widgets/chat-message-tile.widget.dart';
 import 'package:flutter/material.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 import '../models/chat/delete-message-dto.dart';
 import '../services/user/user.service.dart';
@@ -38,12 +39,24 @@ class _ChatState extends State<Chat> {
   final userService = getIt<UserService>();
   int? selectedIndex;
   Future<List<ChatMessageDto>>? _getMessages;
-
+  final itemListener = ItemPositionsListener.create();
   @override
   initState() {
     super.initState();
     Future.microtask(() => chatService.joinRoom(JoinRoomDto(widget.roomId)));
     _getMessages = getMessages(widget.roomId);
+
+    // itemListener.itemPositions.addListener(() {
+    //   final idices = itemListener.itemPositions.value
+    //       .where((item) {
+    //         final isTopVisible = item.itemLeadingEdge >= 0;
+    //         final isBottomVisible = item.itemTrailingEdge <= 0.5;
+    //         return isTopVisible && isBottomVisible;
+    //       })
+    //       .map((item) => item.index)
+    //       .toList();
+    //   print(idices);
+    // });
   }
 
   @override
@@ -52,7 +65,15 @@ class _ChatState extends State<Chat> {
     super.dispose();
   }
 
-  Widget buildMessages(List<ChatMessageDto> data) => ListView.builder(
+  final itemController = ItemScrollController();
+
+  Future scrollToMessage(index) async {
+    itemController.scrollTo(index: index, duration: Duration(milliseconds: 100), alignment: 0.1);
+  }
+
+  Widget buildMessages(List<ChatMessageDto> data) => ScrollablePositionedList.builder(
+      // itemPositionsListener: itemListener,
+      itemScrollController: itemController,
       physics: const ScrollPhysics(),
       shrinkWrap: true,
       itemCount: data.length,
@@ -76,7 +97,9 @@ class _ChatState extends State<Chat> {
                 }),
             index: index,
             selectedIndex: selectedIndex,
-            userService: userService);
+            userService: userService,
+            data: data,
+            scrollToMessage: (index) => scrollToMessage(index));
       });
 
   Future<List<ChatMessageDto>> getMessages(int roomId) async {

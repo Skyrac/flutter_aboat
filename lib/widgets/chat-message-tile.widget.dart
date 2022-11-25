@@ -7,6 +7,7 @@ import 'package:swipe_to/swipe_to.dart';
 class ChatMessageTile extends StatelessWidget {
   const ChatMessageTile(
       {super.key,
+      required this.data,
       required this.message,
       required this.onSwipedMessage,
       required this.onEditMessage,
@@ -15,8 +16,10 @@ class ChatMessageTile extends StatelessWidget {
       required this.selectIndex,
       required this.index,
       required this.selectedIndex,
-      required this.userService});
+      required this.userService,
+      required this.scrollToMessage});
 
+  final List<ChatMessageDto> data;
   final ChatMessageDto message;
   final UserService userService;
   final void Function(ChatMessageDto) onSwipedMessage;
@@ -24,8 +27,10 @@ class ChatMessageTile extends StatelessWidget {
   final void Function(ChatMessageDto) onDeleteMessage;
   final void Function() cancelReplyAndEdit;
   final void Function(int?) selectIndex;
+  final void Function(int) scrollToMessage;
   final int index;
   final int? selectedIndex;
+  // List<ChatMessageDto> data2 = [];
 
   _showPopupMenu(BuildContext context, Offset offset, ChatMessageDto entry) async {
     double left = offset.dx;
@@ -114,28 +119,42 @@ class ChatMessageTile extends StatelessWidget {
                 child: Column(
                   children: [
                     message.answeredMessage != null
-                        ? Container(
-                            padding: const EdgeInsets.all(5),
-                            margin: const EdgeInsets.only(bottom: 5),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: const Color.fromRGBO(48, 73, 123, 1),
+                        ? RawMaterialButton(
+                            onPressed: () {
+                              for (var element in data) {
+                                var idMessage = element.id;
+                                var idMessageAnswer = message.answeredMessage?.id;
+
+                                if (idMessageAnswer == idMessage) {
+                                  print(data.indexOf(element));
+                                  scrollToMessage(data.indexOf(element));
+                                  print("gefunden");
+                                }
+                              }
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              margin: const EdgeInsets.only(bottom: 5),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: const Color.fromRGBO(48, 73, 123, 1),
+                              ),
+                              child: Row(children: [
+                                Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                                    child: Text(
+                                      message.answeredMessage!.senderName.toString(),
+                                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
+                                    )),
+                                Center(
+                                    child: Text(
+                                  textAlign: TextAlign.center,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                  message.answeredMessage!.content,
+                                ))
+                              ]),
                             ),
-                            child: Row(children: [
-                              Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 5),
-                                  child: Text(
-                                    message.answeredMessage!.senderName.toString(),
-                                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
-                                  )),
-                              Center(
-                                  child: Text(
-                                textAlign: TextAlign.center,
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                                message.answeredMessage!.content,
-                              ))
-                            ]),
                           )
                         : const SizedBox(),
                     Container(
