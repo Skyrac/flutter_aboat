@@ -199,8 +199,11 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                         isScrollControlled: true,
                         shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
                         context: context,
-                        builder: (context) => FractionallySizedBox(
-                            heightFactor: 0.97, child: PlaylistBottomSheet(episodeToAdd: widget.episode!)));
+                        builder: (context) => Container(
+                              margin: const EdgeInsets.only(top: 24),
+                              child: FractionallySizedBox(
+                                  heightFactor: 1, child: PlaylistBottomSheet(episodeToAdd: widget.episode!)),
+                            ));
                   }
                 },
               ),
@@ -810,8 +813,10 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> {
                     isScrollControlled: true,
                     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
                     context: context,
-                    builder: (context) =>
-                        FractionallySizedBox(heightFactor: 0.97, child: PlaylistBottomSheet(episodeToAdd: entry)));
+                    builder: (context) => Container(
+                          margin: const EdgeInsets.only(top: 24),
+                          child: FractionallySizedBox(heightFactor: 1, child: PlaylistBottomSheet(episodeToAdd: entry)),
+                        ));
               }
               break;
           }
