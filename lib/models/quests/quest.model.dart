@@ -18,19 +18,19 @@ class Quest {
 
   Quest(
       {this.userQuestId,
-        this.userId,
-        this.questId,
-        this.referenceId,
-        this.name,
-        this.description,
-        this.requirement,
-        this.questType,
-        this.rewards,
-        this.rewardType,
-        this.start,
-        this.end,
-        this.finished,
-        this.progress});
+      this.userId,
+      this.questId,
+      this.referenceId,
+      this.name,
+      this.description,
+      this.requirement,
+      this.questType,
+      this.rewards,
+      this.rewardType,
+      this.start,
+      this.end,
+      this.finished,
+      this.progress});
 
   Quest.fromJson(Map<String, dynamic> json) {
     userQuestId = json['userQuestId'];
@@ -44,7 +44,7 @@ class Quest {
     if (json['rewards'] != null) {
       rewards = <QuestReward>[];
       json['rewards'].forEach((v) {
-        rewards!.add(new QuestReward.fromJson(v));
+        rewards!.add(QuestReward.fromJson(v));
       });
     }
     rewardType = json['rewardType'];
@@ -55,23 +55,23 @@ class Quest {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['userQuestId'] = this.userQuestId;
-    data['userId'] = this.userId;
-    data['questId'] = this.questId;
-    data['referenceId'] = this.referenceId;
-    data['name'] = this.name;
-    data['description'] = this.description;
-    data['requirement'] = this.requirement;
-    data['questType'] = this.questType;
-    if (this.rewards != null) {
-      data['rewards'] = this.rewards!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['userQuestId'] = userQuestId;
+    data['userId'] = userId;
+    data['questId'] = questId;
+    data['referenceId'] = referenceId;
+    data['name'] = name;
+    data['description'] = description;
+    data['requirement'] = requirement;
+    data['questType'] = questType;
+    if (rewards != null) {
+      data['rewards'] = rewards!.map((v) => v.toJson()).toList();
     }
-    data['rewardType'] = this.rewardType;
-    data['start'] = this.start;
-    data['end'] = this.end;
-    data['finished'] = this.finished;
-    data['progress'] = this.progress;
+    data['rewardType'] = rewardType;
+    data['start'] = start;
+    data['end'] = end;
+    data['finished'] = finished;
+    data['progress'] = progress;
     return data;
   }
 }

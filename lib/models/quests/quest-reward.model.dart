@@ -14,18 +14,20 @@ class QuestReward {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['questId'] = this.questId;
-    data['rewardType'] = this.rewardType;
-    data['amount'] = this.amount;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['questId'] = questId;
+    data['rewardType'] = rewardType;
+    data['amount'] = amount;
     return data;
   }
 
   getName() {
-    switch(rewardType) {
-      case 0: return "Aboat Token";
-      default: return "Name undefined";
+    switch (rewardType) {
+      case 0:
+        return "Aboat Token";
+      default:
+        return "Name undefined";
     }
   }
 }

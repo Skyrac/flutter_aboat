@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-import 'package:Talkaboat/models/playlist/track.model.dart';
 import 'package:Talkaboat/models/podcasts/podcast-genre.model.dart';
 import 'package:Talkaboat/models/podcasts/podcast-rank.model.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../configuration/dio.config.dart';
 import '../../models/playlist/playlist.model.dart';
@@ -12,7 +12,7 @@ import '../../models/podcasts/podcast.model.dart';
 import '../../models/response.model.dart';
 
 class PodcastRepository {
-  PodcastRepository._() {}
+  PodcastRepository._();
   static const API = "/v1/podcast";
   static Future<List<Episode?>> getEpisodesMock(int podcastId) async {
     try {
@@ -21,7 +21,7 @@ class PodcastRepository {
       List<Episode> episodes = List<Episode>.from(l.map((model) => Episode.fromJson(model)));
       return episodes;
     } catch (e) {
-      print(e);
+      debugPrint("$e");
     }
     return List.generate(0, (index) => null);
   }
@@ -31,8 +31,8 @@ class PodcastRepository {
       var response = await dio.get<String>('$API/search/random/$amount');
       var list = List<Podcast>.from(json.decode(response.data!).map((data) => Podcast.fromJson(data)));
       return list;
-    } catch (ex) {
-      print(ex);
+    } catch (e) {
+      debugPrint("$e");
       return List.empty();
     }
   }
@@ -72,8 +72,8 @@ class PodcastRepository {
       var response = await dio.get<String>('$API/search/random/$amount/$genre');
       var list = List<Podcast>.from(json.decode(response.data!).map((data) => Podcast.fromJson(data)));
       return list;
-    } catch (ex) {
-      print(ex);
+    } catch (e) {
+      debugPrint("$e");
       return List.empty();
     }
   }
@@ -98,12 +98,12 @@ class PodcastRepository {
         body["rank"] = rank.id.toString();
       }
       var response = await dio.post<String>('$API/search', data: body);
-      print(response.data);
+      debugPrint(response.data);
       var list = List<Podcast>.from(json.decode(response.data!).map((data) => Podcast.fromJson(data)));
       return list;
-    } catch (ex) {
-      print(ex);
-      print((ex as DioError).response?.data);
+    } catch (e) {
+      debugPrint("$e");
+      debugPrint((e as DioError).response?.data);
       return List.empty();
     }
   }
@@ -174,8 +174,8 @@ class PodcastRepository {
     return convertedData;
   }
 
-  static Future<Playlist> createPlaylist(String name, {List<Track>? tracks, String? image}) async {
-    tracks ??= List<Track>.empty();
+  static Future<Playlist> createPlaylist(String name, {List<Episode>? tracks, String? image}) async {
+    tracks ??= List<Episode>.empty();
     image ??= "";
     var dataToSend = {"name": name, "image": image, "tracks": tracks};
     var response = await dio.post<String>('$API/playlist', data: dataToSend);

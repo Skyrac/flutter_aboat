@@ -1,4 +1,5 @@
 import 'package:Talkaboat/services/downloading/file-downloader.service.dart';
+import 'package:Talkaboat/utils/common.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,7 @@ import 'bottom-sheets/playlist.bottom-sheet.dart';
 class EpisodePreviewWidget extends StatefulWidget {
   const EpisodePreviewWidget(this.episode, this.direction, this.onPlayEpisode, this.refresh, this.escapeWithNav, {Key? key})
       : super(key: key);
-  final Episode? episode;
+  final Episode episode;
   final Axis direction;
   final Function onPlayEpisode;
   final Function refresh;
@@ -129,7 +130,6 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                           margin: const EdgeInsets.only(top: 24),
                           child: FractionallySizedBox(heightFactor: 0.95, child: PlaylistBottomSheet(episodeToAdd: entry)),
                         ));
-                // FractionallySizedBox(heightFactor: 0.964, child: PlaylistBottomSheet(episodeToAdd: entry)));
               }
               break;
           }
@@ -144,7 +144,6 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
       stream: audioHandler.playbackState,
       builder: (context, snapshot) {
         final playbackState = snapshot.data;
-        final processingState = playbackState?.processingState;
         final playing = playbackState?.playing ?? false;
         return ClipRRect(
           borderRadius: BorderRadius.circular(10),
@@ -161,7 +160,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color: audioHandler.isListeningEpisode(widget.episode!.id) && playing
+          color: audioHandler.isListeningEpisode(widget.episode.id) && playing
               ? const Color.fromRGBO(188, 140, 75, 0.2)
               : Colors.transparent,
         ),
@@ -197,7 +196,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                                         ),
                                         Positioned.fill(
                                             child: Center(
-                                                child: audioHandler.isListeningEpisode(widget.episode!.id) && playing
+                                                child: audioHandler.isListeningEpisode(widget.episode.id) && playing
                                                     ? Image.asset(
                                                         "assets/images/pause.png",
                                                         width: 25,
@@ -221,7 +220,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
     final dt = DateTime.fromMillisecondsSinceEpoch(entry.pubDateMs?.toInt() ?? 0);
     var dateFormatted = DateFormat('dd.MM.yyyy').format(dt);
     final remaining = Duration(seconds: (entry.audioLengthSec! - entry.playTime!).toInt());
-    final episodeTime = Duration(seconds: widget.episode!.audioLengthSec!.toInt());
+    final episodeTime = Duration(seconds: widget.episode.audioLengthSec!.toInt());
     return Container(
       padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
       height: 105,
@@ -234,7 +233,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            color: audioHandler.isListeningEpisode(widget.episode!.id) && playing
+            color: audioHandler.isListeningEpisode(widget.episode.id) && playing
                 ? const Color.fromRGBO(188, 140, 75, 0.2)
                 : Colors.transparent,
           ),
@@ -262,7 +261,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                           ))),
                       Positioned.fill(
                           child: Center(
-                              child: audioHandler.isListeningEpisode(widget.episode!.id) && playing
+                              child: audioHandler.isListeningEpisode(widget.episode.id) && playing
                                   ? Image.asset(
                                       "assets/images/pause.png",
                                       width: 25,
@@ -306,7 +305,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            audioHandler.isListeningEpisode(widget.episode!.id) && playing
+                            audioHandler.isListeningEpisode(widget.episode.id) && playing
                                 ? Row(
                                     children: const [
                                       Icon(Icons.play_arrow, color: Color.fromRGBO(188, 140, 75, 1), size: 18),
@@ -391,34 +390,29 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
     );
   }
 
-  String removeAllHtmlTags(String htmlText) {
-    RegExp exp = RegExp(r"<[^>]*>", multiLine: true, caseSensitive: true);
-
-    return htmlText.replaceAll(exp, '');
-  }
-
   @override
   Widget build(BuildContext context) {
-    return widget.episode == null
-        ? const SizedBox()
-        : FutureBuilder(
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Text(
-                      '${snapshot.error} occurred',
-                      style: const TextStyle(fontSize: 18),
-                    ),
-                  );
-                } else {
-                  return makeCard(context, widget.episode!, widget.refresh);
-                }
-              } else {
-                return const Center(child: CircularProgressIndicator());
-              }
-            },
-            future: FileDownloadService.getFile(widget.episode!.audio!),
-          );
+    return makeCard(context, widget.episode, widget.refresh);
+    /*return FutureBuilder(
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasError) {
+              return Center(
+                child: Text(
+                  '${snapshot.error} occurred',
+                  style: const TextStyle(fontSize: 18),
+                ),
+              );
+            } else {
+              return makeCard(context, widget.episode, widget.refresh);
+            }
+          } else {
+            return SizedBox(
+                height: widget.direction == Axis.vertical ? 105 : null,
+                width: widget.direction == Axis.horizontal ? 120 : null,
+                child: const Center(child: CircularProgressIndicator()));
+          }
+        },
+        future: FileDownloadService.getFile(widget.episode.audio!));*/
   }
 }

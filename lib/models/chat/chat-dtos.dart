@@ -13,7 +13,14 @@ class ChatRoomDto {
   List<ChatMessageDto>? messages;
   List<ChatMemberDto>? members;
 
-  ChatRoomDto({required this.id,required this.name,required this.roomType,required this.superAdmin,this.encryption,this.messages,this.members});
+  ChatRoomDto(
+      {required this.id,
+      required this.name,
+      required this.roomType,
+      required this.superAdmin,
+      this.encryption,
+      this.messages,
+      this.members});
 
   factory ChatRoomDto.fromJson(Map<String, dynamic> json) => _$ChatRoomDtoFromJson(json);
 
@@ -33,7 +40,17 @@ class ChatMessageDto {
   bool isEdited;
   ChatMemberDto? chatMember;
 
-  ChatMessageDto({required this.id,required this.chatRoomId,this.answeredMessage,required this.messageType,this.typeId,required this.content, required this.senderName,this.updated,required this.isEdited,this.chatMember});
+  ChatMessageDto(
+      {required this.id,
+      required this.chatRoomId,
+      this.answeredMessage,
+      required this.messageType,
+      this.typeId,
+      required this.content,
+      required this.senderName,
+      this.updated,
+      required this.isEdited,
+      this.chatMember});
 
   factory ChatMessageDto.fromJson(Map<String, dynamic> json) => _$ChatMessageDtoFromJson(json);
 
@@ -46,7 +63,11 @@ class ChatMemberDto {
   String username;
   bool isAdmin;
 
-  ChatMemberDto(this.userId,this.username,this.isAdmin,);
+  ChatMemberDto(
+    this.userId,
+    this.username,
+    this.isAdmin,
+  );
 
   factory ChatMemberDto.fromJson(Map<String, dynamic> json) => _$ChatMemberDtoFromJson(json);
 

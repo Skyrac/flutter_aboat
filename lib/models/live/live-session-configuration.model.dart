@@ -6,11 +6,11 @@ class LiveSessionConfiguration {
   late bool onlySuperhostCanAddHost;
 
   LiveSessionConfiguration(
-      { required this.roomName,
-        this.password,
-        required this.onlyClubhouse,
-        required this.onlySuperhostCanRemoveHost,
-        required this.onlySuperhostCanAddHost});
+      {required this.roomName,
+      this.password,
+      required this.onlyClubhouse,
+      required this.onlySuperhostCanRemoveHost,
+      required this.onlySuperhostCanAddHost});
 
   LiveSessionConfiguration.fromJson(Map<String, dynamic> json) {
     roomName = json['roomName'];
@@ -21,12 +21,12 @@ class LiveSessionConfiguration {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['roomName'] = this.roomName;
-    data['password'] = this.password;
-    data['onlyClubhouse'] = this.onlyClubhouse;
-    data['onlySuperhostCanRemoveHost'] = this.onlySuperhostCanRemoveHost;
-    data['onlySuperhostCanAddHost'] = this.onlySuperhostCanAddHost;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['roomName'] = roomName;
+    data['password'] = password;
+    data['onlyClubhouse'] = onlyClubhouse;
+    data['onlySuperhostCanRemoveHost'] = onlySuperhostCanRemoveHost;
+    data['onlySuperhostCanAddHost'] = onlySuperhostCanAddHost;
     return data;
   }
 }

@@ -1,8 +1,9 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+
 import '../../configuration/dio.config.dart';
 import '../../models/user/social-user.model.dart';
-import '../../models/user/user-info-model.dart';
 
 class SocialRepository {
   SocialRepository._();
@@ -11,8 +12,8 @@ class SocialRepository {
     try {
       var response = await dio.get<String>('/v1/social/friends/$amount/$offset');
 
-      var convertedData = List<SocialUser>.from(jsonDecode(response.data!)
-          .map((data) => SocialUser.fromJson(data)), growable: true);
+      var convertedData =
+          List<SocialUser>.from(jsonDecode(response.data!).map((data) => SocialUser.fromJson(data)), growable: true);
       return convertedData;
     } catch (exception) {
       return List.empty();
@@ -23,8 +24,8 @@ class SocialRepository {
     try {
       var response = await dio.get<String>('/v1/social/friends/requests/outgoing/$amount/$offset');
 
-      var convertedData = List<SocialUser>.from(jsonDecode(response.data!)
-          .map((data) => SocialUser.fromJson(data)), growable: true);
+      var convertedData =
+          List<SocialUser>.from(jsonDecode(response.data!).map((data) => SocialUser.fromJson(data)), growable: true);
       return convertedData;
     } catch (exception) {
       return List.empty();
@@ -35,8 +36,8 @@ class SocialRepository {
     try {
       var response = await dio.get<String>('/v1/social/friends/requests/incoming/$amount/$offset');
 
-      var convertedData = List<SocialUser>.from(jsonDecode(response.data!)
-          .map((data) => SocialUser.fromJson(data)), growable: true);
+      var convertedData =
+          List<SocialUser>.from(jsonDecode(response.data!).map((data) => SocialUser.fromJson(data)), growable: true);
       return convertedData;
     } catch (exception) {
       return List.empty();
@@ -47,8 +48,8 @@ class SocialRepository {
     try {
       var response = await dio.get<String>('/v1/social/friends/suggestions/$amount/$offset');
 
-      var convertedData = List<SocialUser>.from(jsonDecode(response.data!)
-          .map((data) => SocialUser.fromJson(data)), growable: true);
+      var convertedData =
+          List<SocialUser>.from(jsonDecode(response.data!).map((data) => SocialUser.fromJson(data)), growable: true);
       return convertedData;
     } catch (exception) {
       return List.empty();
@@ -58,8 +59,8 @@ class SocialRepository {
   static Future<List<SocialUser>> searchFriends(String identifier) async {
     try {
       var response = await dio.get<String>('/v1/social/find/$identifier');
-      var convertedData = List<SocialUser>.from(jsonDecode(response.data!)
-          .map((data) => SocialUser.fromJson(data)), growable: true);
+      var convertedData =
+          List<SocialUser>.from(jsonDecode(response.data!).map((data) => SocialUser.fromJson(data)), growable: true);
       return convertedData;
     } catch (exception) {
       return List.empty();
@@ -97,8 +98,8 @@ class SocialRepository {
     try {
       var response = await dio.post<bool>('/v1/social/accept/$userId');
       return response.data!;
-    } catch (exception) {
-      print(exception);
+    } catch (e) {
+      debugPrint("$e");
       return false;
     }
   }
@@ -107,10 +108,9 @@ class SocialRepository {
     try {
       var response = await dio.delete<bool>('/v1/social/remove/$userId');
       return response.data!;
-    } catch (exception) {
-      print(exception);
+    } catch (e) {
+      debugPrint("$e");
       return false;
     }
   }
-
 }

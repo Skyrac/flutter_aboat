@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 import '../injection/injector.dart';
 import '../models/search/search_result.model.dart';
@@ -15,7 +16,7 @@ class PodcastListWidget extends StatefulWidget {
   const PodcastListWidget(this.escapeWithNav,
       {Key? key, required this.searchResults, required this.direction, this.trailing, this.checkUpdate, this.scrollPhysics})
       : super(key: key);
-  final List<SearchResult?> searchResults;
+  final List<SearchResult> searchResults;
   final Axis direction;
   final Function? trailing;
   final bool? checkUpdate;
@@ -27,6 +28,35 @@ class PodcastListWidget extends StatefulWidget {
 
 class _PodcastListWidgetState extends State<PodcastListWidget> {
   final userService = getIt<UserService>();
+  final PagingController<int, SearchResult> _pagingController = PagingController(firstPageKey: 0);
+
+  final _pageSize = 10;
+
+  @override
+  void initState() {
+    super.initState();
+    _pagingController.addPageRequestListener((pageKey) {
+      _fetchPage(pageKey);
+    });
+  }
+
+  Future<void> _fetchPage(int pageKey) async {
+    try {
+      debugPrint("fetch $pageKey");
+      final newItems = widget.searchResults.skip(pageKey).take(_pageSize).toList();
+      final isLastPage = newItems.length < _pageSize;
+      if (isLastPage) {
+        _pagingController.appendLastPage(newItems);
+      } else {
+        final nextPageKey = pageKey + newItems.length;
+        _pagingController.appendPage(newItems, nextPageKey);
+      }
+    } catch (error) {
+      debugPrint("$error");
+      _pagingController.error = error;
+    }
+  }
+
   popupMenu(BuildContext context, SearchResult entry) => <PopupMenuEntry<String>>[
         PopupMenuItem<String>(
           value: 'toggleLibrary',
@@ -59,6 +89,14 @@ class _PodcastListWidgetState extends State<PodcastListWidget> {
           return popupMenu(context, entry);
         },
       );
+
+  Widget makePagedList(context, List<SearchResult> data) => PagedListView<int, SearchResult>(
+      pagingController: _pagingController,
+      scrollDirection: widget.direction,
+      physics: widget.scrollPhysics,
+      builderDelegate: PagedChildBuilderDelegate<SearchResult>(itemBuilder: (context, item, index) {
+        return widget.direction == Axis.horizontal ? makeHorizontalCard(context, item) : makeVerticalCard(context, item);
+      }));
 
   Widget makeListBuilder(context, List<SearchResult?> data) => ListView.builder(
       itemCount: data.length,
@@ -165,53 +203,8 @@ class _PodcastListWidgetState extends State<PodcastListWidget> {
         escapeWithNav: widget.escapeWithNav,
       );
 
-  Widget makeVerticalListTileold(context, SearchResult entry) => ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-        leading: SizedBox(
-          width: 90,
-          height: 90,
-          child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: SizedBox(
-                  child: CachedNetworkImage(
-                imageUrl: entry.image == null ? '' : entry.image!,
-                fit: BoxFit.fill,
-                placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
-                // progressIndicatorBuilder: (context, url, downloadProgress) =>
-                //     CircularProgressIndicator(value: downloadProgress.progress),
-                errorWidget: (context, url, error) => const Icon(Icons.error),
-              ))),
-        ),
-        title: Text(
-          entry.title!,
-          overflow: TextOverflow.ellipsis,
-          maxLines: 2,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-        subtitle: Text(
-          entry.description!,
-          overflow: TextOverflow.ellipsis,
-          maxLines: 2,
-          style: const TextStyle(color: Colors.white),
-        ),
-        trailing: widget.trailing == null ? const SizedBox() : widget.trailing!(context, entry),
-        onTap: () async {
-          await userService.UpdatePodcastVisitDate(entry.id);
-          setState(() {});
-          Navigator.push(
-              context,
-              PageTransition(
-                  alignment: Alignment.bottomCenter,
-                  curve: Curves.bounceOut,
-                  type: PageTransitionType.rightToLeftWithFade,
-                  duration: const Duration(milliseconds: 500),
-                  reverseDuration: const Duration(milliseconds: 500),
-                  child: PodcastDetailScreen(widget.escapeWithNav, podcastSearchResult: entry)));
-        },
-      );
-
   @override
   Widget build(BuildContext context) {
-    return makeListBuilder(context, widget.searchResults);
+    return makePagedList(context, widget.searchResults);
   }
 }

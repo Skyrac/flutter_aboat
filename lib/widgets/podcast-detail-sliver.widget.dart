@@ -12,8 +12,9 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
   final double expandedHeight;
   final SearchResult podcast;
   final Function escapeWithNav;
+  final TabController? controller;
 
-  PodcastDetailSliver(this.escapeWithNav, {required this.expandedHeight, required this.podcast});
+  PodcastDetailSliver(this.escapeWithNav, {required this.expandedHeight, required this.podcast, this.controller});
 
   final userService = getIt<UserService>();
   final tokenService = getIt<TokenService>();
@@ -47,22 +48,23 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
             bottom: PreferredSize(
               preferredSize: Size.fromHeight(expandedHeight),
               child: Container(
-                padding: const EdgeInsets.fromLTRB(18, 5, 18, 10),
+                padding: const EdgeInsets.fromLTRB(10, 5, 10, 10),
                 child: Material(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(18),
                   color: const Color.fromRGBO(29, 40, 58, 0.92),
                   child: Container(
-                    padding: const EdgeInsets.fromLTRB(18, 8, 18, 8),
+                    padding: const EdgeInsets.all(8),
                     child: DecoratedBox(
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.0),
                         border: const Border(bottom: BorderSide(color: Color.fromRGBO(164, 202, 255, 1))),
                       ),
-                      child: const TabBar(
-                        labelColor: Color.fromRGBO(188, 140, 75, 1),
-                        indicatorColor: Color.fromRGBO(188, 140, 75, 1),
-                        unselectedLabelColor: Color.fromRGBO(164, 202, 255, 1),
-                        tabs: [
+                      child: TabBar(
+                        controller: controller,
+                        labelColor: const Color.fromRGBO(188, 140, 75, 1),
+                        indicatorColor: const Color.fromRGBO(188, 140, 75, 1),
+                        unselectedLabelColor: const Color.fromRGBO(164, 202, 255, 1),
+                        tabs: const [
                           Tab(text: "Episodes"),
                           Tab(text: "Details"),
                           Tab(text: "Community"),
@@ -176,7 +178,9 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                           try {
                             final text = newValue.text.replaceAll(",", ".");
                             if (text.isEmpty || double.parse(text) <= userService.availableToken) return newValue;
-                          } catch (e) {}
+                          } catch (e) {
+                            debugPrint("$e");
+                          }
                           return oldValue;
                         }),
                       ],

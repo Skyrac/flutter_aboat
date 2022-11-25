@@ -2,15 +2,17 @@ import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/models/podcasts/podcast.model.dart';
 import 'package:Talkaboat/screens/podcast-detail.screen.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
+import 'package:Talkaboat/utils/common.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:page_transition/page_transition.dart';
 
 class PodcastListTileWidget extends StatefulWidget {
   const PodcastListTileWidget(this.podcast, {this.stateChangeCb, required this.escapeWithNav, Key? key}) : super(key: key);
   final Podcast podcast;
-  final void Function()? stateChangeCb;
   final Function escapeWithNav;
+  final void Function()? stateChangeCb;
   @override
   State<PodcastListTileWidget> createState() => _PodcastListTileWidgetState();
 }
@@ -100,8 +102,9 @@ class _PodcastListTileWidgetState extends State<PodcastListTileWidget> {
                 borderRadius: BorderRadius.circular(10),
                 child: SizedBox(
                   child: CachedNetworkImage(
-                    imageUrl: widget.podcast.image == null ? '' : widget.podcast.image!,
+                    imageUrl: widget.podcast.image ?? '',
                     fit: BoxFit.fill,
+                    cacheManager: CacheManager(Config(widget.podcast.image ?? '', stalePeriod: const Duration(days: 2))),
                     placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
                     // progressIndicatorBuilder: (context, url, downloadProgress) =>
                     //     CircularProgressIndicator(value: downloadProgress.progress),
@@ -122,7 +125,7 @@ class _PodcastListTileWidgetState extends State<PodcastListTileWidget> {
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   Text(
-                    widget.podcast.description!,
+                    removeAllHtmlTags(widget.podcast.description!),
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.titleSmall,
@@ -135,6 +138,7 @@ class _PodcastListTileWidgetState extends State<PodcastListTileWidget> {
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
+                    // TODO: use rank
                     ...(widget.podcast.totalEpisodes! < 5
                         ? [
                             Text(" - ",

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/models/podcasts/podcast-rank.model.dart';
 import 'package:Talkaboat/models/podcasts/podcast.model.dart';
@@ -78,7 +76,7 @@ class _SearchScreenState extends State<SearchScreen> {
         _pagingController.appendPage(newItems, nextPageKey);
       }
     } catch (error) {
-      print(error);
+      debugPrint("$error");
       _pagingController.error = error;
     }
   }
