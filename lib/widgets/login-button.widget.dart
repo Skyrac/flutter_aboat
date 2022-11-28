@@ -1,11 +1,11 @@
+import 'package:Talkaboat/navigator_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../screens/login.screen.dart';
 
 class LoginButton extends StatefulWidget {
-  const LoginButton(this.escapeWithNav, {super.key});
-  final Function escapeWithNav;
+  const LoginButton({super.key});
   @override
   State<LoginButton> createState() => _LoginButtonState();
 }
@@ -15,7 +15,7 @@ class _LoginButtonState extends State<LoginButton> {
   Widget build(BuildContext context) {
     return RawMaterialButton(
         onPressed: (() {
-          widget.escapeWithNav(PageTransition(
+          NavigatorKeys.navigatorKeyMain.currentState!.push(PageTransition(
               alignment: Alignment.bottomCenter,
               curve: Curves.bounceOut,
               type: PageTransitionType.fade,

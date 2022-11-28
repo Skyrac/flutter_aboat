@@ -78,6 +78,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.11"
+  back_button_interceptor:
+    dependency: "direct main"
+    description:
+      name: back_button_interceptor
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "6.0.2"
   boolean_selector:
     dependency: transitive
     description:
@@ -239,6 +246,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
+  dependency_validator:
+    dependency: "direct dev"
+    description:
+      name: dependency_validator
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.2.2"
   dio:
     dependency: "direct main"
     description:
@@ -639,13 +653,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.4.7"
-  lazy_load_indexed_stack:
-    dependency: "direct main"
-    description:
-      name: lazy_load_indexed_stack
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.4"
   lints:
     dependency: transitive
     description:
@@ -1100,7 +1107,7 @@ packages:
       name: social_login_buttons
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.6+2"
+    version: "1.0.7"
   source_gen:
     dependency: transitive
     description:

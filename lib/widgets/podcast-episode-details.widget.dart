@@ -11,10 +11,9 @@ import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
 class PodcastEpisodeDetails extends StatefulWidget {
-  const PodcastEpisodeDetails({super.key, required this.episode, required this.escapeWithNav, required this.position});
+  const PodcastEpisodeDetails({super.key, required this.episode, required this.position});
 
   final Episode episode;
-  final Function escapeWithNav;
   final Duration position;
 
   @override

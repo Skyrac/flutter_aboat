@@ -69,7 +69,6 @@ dependencies:
   crypto: ^3.0.2
   flutter_cache_manager: ^3.3.0
   intl: ^0.17.0
-  lazy_load_indexed_stack: ^0.1.4
   signalr_netcore:
     git:
       url: https://github.com/daubit/signalr_client.git
@@ -81,10 +80,12 @@ dependencies:
   audio_session: ^0.1.11
   http: ^0.13.5
   font_awesome_flutter: ^10.2.1
+  back_button_interceptor: ^6.0.2
 
 dev_dependencies:
   build_runner: ^2.0.0
   json_serializable: ^6.0.0
+  dependency_validator: ^3.0.0
   flutter_launcher_icons: ^0.9.2
   flutter_test:
     sdk: flutter

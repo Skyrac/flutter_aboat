@@ -5,10 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class EpisodeHeaderList extends StatefulWidget {
-  const EpisodeHeaderList({super.key, required this.podcastId, required this.escapeWithNav, this.controller});
+  const EpisodeHeaderList({super.key, required this.podcastId, this.controller});
 
   final int podcastId;
-  final Function escapeWithNav;
   final ScrollController? controller;
 
   @override
@@ -68,7 +67,6 @@ class _EpisodeHeaderListState extends State<EpisodeHeaderList> {
                   flex: 1,
                   child: EpisodeList(
                     episodes: snapshot.data!,
-                    escapeWithNav: widget.escapeWithNav,
                     controller: widget.controller,
                   ));
             }

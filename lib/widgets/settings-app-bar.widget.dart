@@ -1,3 +1,4 @@
+import 'package:Talkaboat/navigator_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -6,9 +7,8 @@ import '../screens/login.screen.dart';
 import '../services/user/user.service.dart';
 
 class SettingsAppBarWidget extends StatefulWidget {
-  const SettingsAppBarWidget(this.escapeWithNav, {Key? key, this.refreshParent}) : super(key: key);
+  const SettingsAppBarWidget({Key? key, this.refreshParent}) : super(key: key);
   final Function? refreshParent;
-  final Function escapeWithNav;
   @override
   State<SettingsAppBarWidget> createState() => _SettingsAppBarWidgetState();
 }
@@ -35,7 +35,7 @@ class _SettingsAppBarWidgetState extends State<SettingsAppBarWidget> {
                   tooltip: '',
                   onPressed: () async {
                     await userService.logout();
-                    widget.escapeWithNav(PageTransition(
+                    NavigatorKeys.navigatorKeyMain.currentState!.push(PageTransition(
                         alignment: Alignment.bottomCenter,
                         curve: Curves.bounceOut,
                         type: PageTransitionType.fade,
@@ -48,7 +48,7 @@ class _SettingsAppBarWidgetState extends State<SettingsAppBarWidget> {
                   icon: const Icon(Icons.login),
                   tooltip: '',
                   onPressed: () {
-                    widget.escapeWithNav(PageTransition(
+                    NavigatorKeys.navigatorKeyMain.currentState!.push(PageTransition(
                         alignment: Alignment.bottomCenter,
                         curve: Curves.bounceOut,
                         type: PageTransitionType.fade,

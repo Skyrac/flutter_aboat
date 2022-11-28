@@ -10,9 +10,7 @@ import '../services/state/state.service.dart';
 import '../services/user/user.service.dart';
 
 class PlayerControlWidget extends StatefulWidget {
-  const PlayerControlWidget(this.escapeWithNav, {Key? key}) : super(key: key);
-
-  final Function escapeWithNav;
+  const PlayerControlWidget({Key? key}) : super(key: key);
 
   @override
   State<PlayerControlWidget> createState() => _PlayerControlWidgetState();
@@ -131,7 +129,7 @@ class _PlayerControlWidgetState extends State<PlayerControlWidget> with SingleTi
                               type: PageTransitionType.rightToLeftWithFade,
                               duration: const Duration(milliseconds: 500),
                               reverseDuration: const Duration(milliseconds: 500),
-                              child: SearchScreen(escapeWithNav: widget.escapeWithNav)));
+                              child: const SearchScreen()));
                     },
                   ),
                 ],
