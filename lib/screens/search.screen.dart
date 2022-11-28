@@ -19,7 +19,6 @@ class SearchScreen extends StatefulWidget {
       this.onlyRank,
       this.refreshOnStateChange,
       this.customSearchFunc,
-      required this.escapeWithNav,
       Key? key})
       : super(key: key);
 
@@ -28,7 +27,6 @@ class SearchScreen extends StatefulWidget {
   final PodcastRank? onlyRank;
   final String? initialValue;
   final bool? refreshOnStateChange;
-  final Function escapeWithNav;
   final Future<List<Podcast>> Function(String text, int amount, int offset)? customSearchFunc;
 
   @override
@@ -115,7 +113,6 @@ class _SearchScreenState extends State<SearchScreen> {
                     borderRadius: BorderRadius.circular(10),
                     child: PodcastListTileWidget(
                       item,
-                      escapeWithNav: widget.escapeWithNav,
                       stateChangeCb: widget.refreshOnStateChange != null && widget.refreshOnStateChange! == true
                           ? () {
                               _pagingController.refresh();
@@ -149,12 +146,7 @@ class _SearchScreenState extends State<SearchScreen> {
 }
 
 PageTransition buildSearchScreenTransition(
-    {String? intitialValue,
-    int? genreId,
-    PodcastRank? rank,
-    String? title,
-    String? imageUrl,
-    required Function escapeWithNav}) {
+    {String? intitialValue, int? genreId, PodcastRank? rank, String? title, String? imageUrl}) {
   return PageTransition(
     alignment: Alignment.bottomCenter,
     curve: Curves.bounceOut,
@@ -162,7 +154,6 @@ PageTransition buildSearchScreenTransition(
     duration: const Duration(milliseconds: 300),
     reverseDuration: const Duration(milliseconds: 200),
     child: SearchScreen(
-      escapeWithNav: escapeWithNav,
       onlyGenre: genreId,
       onlyRank: rank,
       initialValue: intitialValue,

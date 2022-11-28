@@ -10,10 +10,9 @@ import 'package:Talkaboat/widgets/quests/quest-list.widget.dart';
 import '../widgets/home-app-bar.widget.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen(this.setEpisode, this.selectTab, this.escapeWithNav, {Key? key}) : super(key: key);
+  const HomeScreen({Key? key, required this.setEpisode, required this.selectTab}) : super(key: key);
   final Function setEpisode;
   final Function selectTab;
-  final Function escapeWithNav;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -60,11 +59,11 @@ class _HomeScreenState extends State<HomeScreen> {
       child: ScaffoldWave(
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(100),
-          child: HomeAppBarWidget(widget.escapeWithNav, refresh: refresh),
+          child: HomeAppBarWidget(refresh: refresh),
         ),
         body: TabBarView(children: [
-          HomeScreenSuggestedTab(widget.selectTab, widget.escapeWithNav),
-          HomeScreenCategoriesTab(widget.escapeWithNav),
+          HomeScreenSuggestedTab(widget.selectTab),
+          const HomeScreenCategoriesTab(),
           Container(),
         ]),
       ),

@@ -18,10 +18,9 @@ import '../utils/scaffold_wave.dart';
 import '../widgets/podcast-detail-sliver.widget.dart';
 
 class PodcastDetailScreen extends StatefulWidget {
-  const PodcastDetailScreen(this.escapeWithNav, {Key? key, required this.podcastSearchResult}) : super(key: key);
+  const PodcastDetailScreen({Key? key, required this.podcastSearchResult}) : super(key: key);
 
   final SearchResult podcastSearchResult;
-  final Function escapeWithNav;
 
   @override
   State<PodcastDetailScreen> createState() => _PodcastDetailScreenState();
@@ -77,7 +76,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
     return ScaffoldWave(
         height: 33,
         header: SliverPersistentHeader(
-          delegate: PodcastDetailSliver(widget.escapeWithNav,
+          delegate: PodcastDetailSliver(
               expandedHeight: size.height * 0.4, podcast: widget.podcastSearchResult, controller: tabController),
           pinned: true,
         ),
@@ -174,11 +173,9 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
     return [
       EpisodeHeaderList(
         podcastId: podcastId,
-        escapeWithNav: widget.escapeWithNav,
       ),
       PodcastDetails(
         podcastId: podcastId,
-        escapeWithNav: widget.escapeWithNav,
       ),
       Chat(
         focusNode: focusNode,
