@@ -104,15 +104,16 @@ class LiveSessionService extends ChangeNotifier {
   }
 
   Future<void> leave() async {
-    _isJoined = false;
-    _remoteUid = null;
-    _roomName = "";
-    _roomGuid = "";
     if (_isHost) {
       await agoraEngine.stopPreview();
     }
     _isHost = false;
     await agoraEngine.leaveChannel();
+    await LiveSessionRepository.closeRoom(_roomGuid);
+    _isJoined = false;
+    _remoteUid = null;
+    _roomName = "";
+    _roomGuid = "";
     notifyListeners();
   }
 

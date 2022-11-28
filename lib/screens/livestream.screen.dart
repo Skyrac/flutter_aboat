@@ -1,14 +1,15 @@
 import 'package:Talkaboat/injection/injector.dart';
+import 'package:Talkaboat/models/live/live-session.model.dart';
 import 'package:Talkaboat/services/live/live-session.service.dart';
-import 'package:Talkaboat/utils/scaffold_wave.dart';
+import 'package:Talkaboat/widgets/live-chat.widget.dart';
+import 'package:Talkaboat/widgets/livecontrolls.widget.dart';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/material.dart';
 
 class LivestreamScreen extends StatefulWidget {
-  const LivestreamScreen({Key? key, required this.roomId, required this.roomName, required this.isHost}) : super(key: key);
+  const LivestreamScreen({Key? key, required this.session, required this.isHost}) : super(key: key);
 
-  final String roomId;
-  final String roomName;
+  final LiveSession session;
   final bool isHost;
 
   @override
@@ -22,9 +23,9 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
   void initState() {
     super.initState();
     if (widget.isHost) {
-      _liveService.joinAsHost(widget.roomId, widget.roomName);
+      _liveService.joinAsHost(widget.session.guid, widget.session.configuration!.roomName);
     } else {
-      _liveService.joinAsViewer(widget.roomId, widget.roomName);
+      _liveService.joinAsViewer(widget.session.guid, widget.session.configuration!.roomName);
     }
   }
 
@@ -37,26 +38,46 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
   // Create UI with local view and remote view
   @override
   Widget build(BuildContext context) {
-    return ScaffoldWave(
-      appBar: AppBar(
-        title: const Text('Agora Video Call'),
+    return SafeArea(
+        child: Container(
+      color: const Color.fromRGBO(15, 23, 41, 1),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Agora Video Call'),
+        ),
+        bottomNavigationBar: null,
+        body: Stack(children: [
+          SizedBox(
+            //height: 100, //MediaQuery.of(context).size.height,
+            //width: 100,
+            child: AnimatedBuilder(
+              animation: _liveService,
+              builder: (context, child) {
+                return _liveService.isHost
+                    ? _liveService.isJoined
+                        ? AgoraVideoView(
+                            controller: VideoViewController(
+                              rtcEngine: _liveService.agoraEngine,
+                              canvas: const VideoCanvas(uid: 0),
+                            ),
+                          )
+                        : const CircularProgressIndicator()
+                    : _remoteVideo();
+              },
+            ),
+          ),
+          Positioned(
+              bottom: 40,
+              child: LiveChat(
+                roomId: 1,
+              )),
+          const Positioned(
+            bottom: 0,
+            child: LiveControlls(),
+          )
+        ]),
       ),
-      body: AnimatedBuilder(
-        animation: _liveService,
-        builder: (context, child) {
-          return _liveService.isHost
-              ? _liveService.isJoined
-                  ? AgoraVideoView(
-                      controller: VideoViewController(
-                        rtcEngine: _liveService.agoraEngine,
-                        canvas: const VideoCanvas(uid: 0),
-                      ),
-                    )
-                  : const CircularProgressIndicator()
-              : _remoteVideo();
-        },
-      ),
-    );
+    ));
   }
 
   // Display remote user's video
@@ -66,7 +87,7 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
         controller: VideoViewController.remote(
           rtcEngine: _liveService.agoraEngine,
           canvas: VideoCanvas(uid: _liveService.remoteUid),
-          connection: RtcConnection(channelId: widget.roomName),
+          connection: RtcConnection(channelId: widget.session.configuration!.roomName),
         ),
       );
     } else {

@@ -48,4 +48,16 @@ class LiveSessionRepository {
       return null;
     }
   }
+
+  static Future<void> closeRoom(String roomId) async {
+    try {
+      var response = await dio.put<String>('$API/room/$roomId/leave');
+      debugPrint("$response");
+      return;
+    } catch (e) {
+      debugPrint("$e");
+      debugPrint((e as DioError).response?.data);
+      return;
+    }
+  }
 }

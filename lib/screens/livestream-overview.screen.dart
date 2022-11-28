@@ -57,7 +57,7 @@ class _LivestreamOverviewScreenState extends State<LivestreamOverviewScreen> {
         _pagingController.appendPage(newItems, nextPageKey);
       }
     } catch (error) {
-      print(error);
+      debugPrint("$error");
       _pagingController.error = error;
     }
   }
@@ -249,20 +249,17 @@ class _LivestreamOverviewScreenState extends State<LivestreamOverviewScreen> {
                   if (roomName != null) {
                     var response = await liveSessionService.openRoom(roomName);
                     if (response != null) {
-                      Navigator.push(
-                          context,
-                          PageTransition(
-                            alignment: Alignment.bottomCenter,
-                            curve: Curves.bounceOut,
-                            type: PageTransitionType.fade,
-                            duration: const Duration(milliseconds: 300),
-                            reverseDuration: const Duration(milliseconds: 200),
-                            child: LivestreamScreen(
-                              roomId: response.guid,
-                              roomName: response.configuration!.roomName,
-                              isHost: true,
-                            ),
-                          ));
+                      widget.escapeWithNav(PageTransition(
+                        alignment: Alignment.bottomCenter,
+                        curve: Curves.bounceOut,
+                        type: PageTransitionType.fade,
+                        duration: const Duration(milliseconds: 300),
+                        reverseDuration: const Duration(milliseconds: 200),
+                        child: LivestreamScreen(
+                          session: response,
+                          isHost: true,
+                        ),
+                      ));
                     }
                   }
                 },

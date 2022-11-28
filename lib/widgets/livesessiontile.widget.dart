@@ -1,5 +1,6 @@
 import 'package:Talkaboat/models/live/live-session.model.dart';
 import 'package:Talkaboat/screens/livestream.screen.dart';
+import 'package:Talkaboat/services/repositories/live-session.repository.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -20,22 +21,23 @@ class LiveSessionTile extends StatelessWidget {
           child: InkWell(
             borderRadius: BorderRadius.circular(10),
             onTap: () async {
-              print("show livestream");
-              print(session);
-              Navigator.push(
-                  context,
-                  PageTransition(
-                    alignment: Alignment.bottomCenter,
-                    curve: Curves.bounceOut,
-                    type: PageTransitionType.fade,
-                    duration: const Duration(milliseconds: 300),
-                    reverseDuration: const Duration(milliseconds: 200),
-                    child: LivestreamScreen(
-                      roomId: session.guid,
-                      roomName: session.configuration!.roomName,
-                      isHost: false,
-                    ),
-                  ));
+              debugPrint("show livestream");
+              debugPrint("$session");
+              LiveSessionRepository.closeRoom(session.guid);
+              //Navigator.push(
+              //    context,
+              //    PageTransition(
+              //      alignment: Alignment.bottomCenter,
+              //      curve: Curves.bounceOut,
+              //      type: PageTransitionType.fade,
+              //      duration: const Duration(milliseconds: 300),
+              //      reverseDuration: const Duration(milliseconds: 200),
+              //      child: LivestreamScreen(
+              //        roomId: session.guid,
+              //        roomName: session.configuration!.roomName,
+              //        isHost: false,
+              //      ),
+              //    ));
             },
             child: Padding(
               padding: const EdgeInsets.only(top: 10, bottom: 10, left: 10),
