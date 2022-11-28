@@ -10,9 +10,8 @@ import '../../utils/modal.widget.dart';
 import '../../widgets/settings-app-bar.widget.dart';
 
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen(this.escapeWithNav, {Key? key, this.refresh}) : super(key: key);
+  const SettingsScreen({Key? key, this.refresh}) : super(key: key);
   final Function? refresh;
-  final Function escapeWithNav;
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
@@ -83,7 +82,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SettingsAppBarWidget(widget.escapeWithNav, refreshParent: refresh),
+            SettingsAppBarWidget(refreshParent: refresh),
             const SizedBox(height: 10),
             getUserCard(),
             const SizedBox(height: 10),

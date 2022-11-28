@@ -12,10 +12,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class CategoryScreen extends StatefulWidget {
-  const CategoryScreen(this.category, this.escapeWithNav, {Key? key}) : super(key: key);
+  const CategoryScreen(this.category, {Key? key}) : super(key: key);
 
   final PodcastGenre category;
-  final Function escapeWithNav;
 
   @override
   State<CategoryScreen> createState() => _CategoryScreenState();
@@ -87,7 +86,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
             Navigator.push(
               context,
               buildSearchScreenTransition(
-                  escapeWithNav: widget.escapeWithNav,
                   genreId: widget.category.genreId,
                   intitialValue: text,
                   imageUrl: widget.category.imageUrl,
@@ -97,7 +95,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
         ),
         newcomers.isNotEmpty
             ? PodcastListHorizontal(
-                widget.escapeWithNav,
                 data: newcomers,
                 title: "Newcomer",
                 multiplier: "x1.5",
@@ -105,7 +102,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   Navigator.push(
                     context,
                     buildSearchScreenTransition(
-                        escapeWithNav: widget.escapeWithNav,
                         genreId: widget.category.genreId,
                         rank: PodcastRank.NewComer,
                         imageUrl: widget.category.imageUrl,
@@ -126,7 +122,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
             : Container(),
         top10.isNotEmpty
             ? PodcastListFavoritesWidget(
-                widget.escapeWithNav,
                 searchResults: top10,
               )
             : Container(),
@@ -137,7 +132,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
             : Container(),
         receivers.isNotEmpty
             ? PodcastListHorizontal(
-                widget.escapeWithNav,
                 data: receivers,
                 title: "Receivers",
                 multiplier: "x1.25",
@@ -145,7 +139,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   Navigator.push(
                     context,
                     buildSearchScreenTransition(
-                        escapeWithNav: widget.escapeWithNav,
                         genreId: widget.category.genreId,
                         rank: PodcastRank.Receiver,
                         imageUrl: widget.category.imageUrl,
@@ -161,7 +154,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
             : Container(),
         hodlers.isNotEmpty
             ? PodcastListHorizontal(
-                widget.escapeWithNav,
                 data: hodlers,
                 title: "Hodlers",
                 multiplier: "x1.1",
@@ -169,7 +161,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   Navigator.push(
                     context,
                     buildSearchScreenTransition(
-                        escapeWithNav: widget.escapeWithNav,
                         genreId: widget.category.genreId,
                         rank: PodcastRank.Hodler,
                         imageUrl: widget.category.imageUrl,

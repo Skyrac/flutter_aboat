@@ -1,3 +1,4 @@
+import 'package:Talkaboat/navigator_keys.dart';
 import 'package:Talkaboat/services/downloading/file-downloader.service.dart';
 import 'package:Talkaboat/utils/common.dart';
 import 'package:audio_service/audio_service.dart';
@@ -15,13 +16,11 @@ import '../services/user/user.service.dart';
 import 'bottom-sheets/playlist.bottom-sheet.dart';
 
 class EpisodePreviewWidget extends StatefulWidget {
-  const EpisodePreviewWidget(this.episode, this.direction, this.onPlayEpisode, this.refresh, this.escapeWithNav, {Key? key})
-      : super(key: key);
+  const EpisodePreviewWidget(this.episode, this.direction, this.onPlayEpisode, this.refresh, {Key? key}) : super(key: key);
   final Episode episode;
   final Axis direction;
   final Function onPlayEpisode;
   final Function refresh;
-  final Function escapeWithNav;
 
   @override
   State<EpisodePreviewWidget> createState() => _EpisodePreviewWidgetState();
@@ -114,7 +113,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
               break;
             case "add":
               if (!userService.isConnected) {
-                widget.escapeWithNav(PageTransition(
+                NavigatorKeys.navigatorKeyMain.currentState!.push(PageTransition(
                     alignment: Alignment.bottomCenter,
                     curve: Curves.bounceOut,
                     type: PageTransitionType.rightToLeftWithFade,

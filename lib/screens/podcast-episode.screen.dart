@@ -1,4 +1,5 @@
 import 'package:Talkaboat/models/chat/chat-dtos.dart';
+import 'package:Talkaboat/navigator_keys.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/widgets/chat-input.widget.dart';
 import 'package:Talkaboat/widgets/chat.widget.dart';
@@ -21,9 +22,8 @@ import 'login.screen.dart';
 
 class PodcastEpisodeScreen extends StatefulWidget {
   final Episode episode;
-  final Function escapeWithNav;
   final Duration position;
-  const PodcastEpisodeScreen(this.escapeWithNav, {super.key, required this.episode, required this.position});
+  const PodcastEpisodeScreen({super.key, required this.episode, required this.position});
 
   @override
   State<PodcastEpisodeScreen> createState() => _PodcastEpisodeScreenState();
@@ -104,7 +104,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> with Single
                 tooltip: '',
                 onPressed: () {
                   if (!userService.isConnected) {
-                    widget.escapeWithNav(PageTransition(
+                    NavigatorKeys.navigatorKeyMain.currentState!.push(PageTransition(
                         alignment: Alignment.bottomCenter,
                         curve: Curves.bounceOut,
                         type: PageTransitionType.rightToLeftWithFade,
@@ -164,10 +164,9 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> with Single
     return [
       PodcastEpisodeDetails(
         episode: episode,
-        escapeWithNav: widget.escapeWithNav,
         position: position,
       ),
-      PodcastEpisodePodcast(podcastId: episode.podcastId!, escapeWithNav: widget.escapeWithNav),
+      PodcastEpisodePodcast(podcastId: episode.podcastId!),
       Chat(
         focusNode: focusNode,
         roomId: roomId,

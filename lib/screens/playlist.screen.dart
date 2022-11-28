@@ -10,9 +10,7 @@ import '../services/user/user.service.dart';
 import '../widgets/login-button.widget.dart';
 
 class PlaylistScreen extends StatefulWidget {
-  const PlaylistScreen(this.escapeWithNav, {Key? key}) : super(key: key);
-
-  final Function escapeWithNav;
+  const PlaylistScreen({Key? key}) : super(key: key);
 
   @override
   State<PlaylistScreen> createState() => _PlaylistScreenState();
@@ -153,7 +151,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                     : const SizedBox()
               ],
             ),
-            body: userService.isConnected ? createPlaylistView() : Center(child: LoginButton(widget.escapeWithNav))));
+            body: userService.isConnected ? createPlaylistView() : const Center(child: LoginButton())));
   }
 
   createPlaylistView() => FutureBuilder(

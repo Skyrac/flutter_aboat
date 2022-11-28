@@ -12,9 +12,7 @@ import '../../services/user/user.service.dart';
 import '../../utils/scaffold_wave.dart';
 
 class SocialEntryScreen extends StatefulWidget {
-  const SocialEntryScreen(this.escapeWithNav, {Key? key}) : super(key: key);
-
-  final Function escapeWithNav;
+  const SocialEntryScreen({Key? key}) : super(key: key);
 
   @override
   State<SocialEntryScreen> createState() => _SocialEntryScreenState();
@@ -101,7 +99,7 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
                       createFriendBody(),
                     ],
                   )
-                : Center(child: LoginButton(widget.escapeWithNav))),
+                : const Center(child: LoginButton())),
       ),
     );
     //);
