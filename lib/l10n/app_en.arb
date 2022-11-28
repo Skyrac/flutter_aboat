@@ -1,0 +1,45 @@
+{   
+    "suggested" : "Suggested",
+    "news" : "News",
+    "episodes" : "Episodes",
+    "details"  : "Details",
+    "community" : "Community",
+    "general": "General",
+    "title": "Title",
+    "podcast": "Podcast",
+    "episodes": "Episodes",
+    "authors": "Authors",
+    "categories": "Categories",
+    "description": "Description",
+    "duration": "Duration",   
+    "play" : "Play",
+    "stop" : "Stop",
+    "download": "Download",
+    "downloaded": "Download",
+    "delete" : "Delete", 
+    "remove" : "Remove",   
+    "addToPlaylist" : "Add to Playlist",
+    "removeFromPlaylist" : "Remove from Playlist",
+    "addToFavorites" : "Add to favorites",
+    "removeFromFavorites" :"Remove from favorites",
+    "addToLibrary" : "Add to Library",
+    "removeFromLibrary" : "Remove from Library",
+    "searchIn" : "Search in {category}",
+    "@searchIn" : {
+      "placeholders" : {
+        "category" : {
+          "type" : "String"
+        }
+      }
+    },
+    "search" : "Search",
+    "searchForCategory" : "Search for category...",
+    "searchPlaylist" : "Search Playlist...",
+    "searchPodcasts" : "Search podcasts...",
+    "searchFriends" : "Search friends...",
+    "tasks" : "Tasks",
+    "recentlyListened" : "Recently Listened",
+    "favorites" :  "Favorites",
+    "seeAll" : "See all",
+    "reward" : "Reward"           
+}

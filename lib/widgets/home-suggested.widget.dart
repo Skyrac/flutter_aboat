@@ -10,6 +10,7 @@ import 'package:Talkaboat/widgets/podcast-list-horizontal.widget.dart';
 import 'package:Talkaboat/widgets/podcast-list.widget.dart';
 import 'package:Talkaboat/widgets/quests/quest-list.widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomeScreenSuggestedTab extends StatefulWidget {
   const HomeScreenSuggestedTab(this.selectTab, this.escapeWithNav, {Key? key}) : super(key: key);
@@ -85,10 +86,10 @@ class _HomeScreenSuggestedTabState extends State<HomeScreenSuggestedTab> {
     }
     return <Widget>[
       const SizedBox(height: 5),
-      createTaskBar(context, 'Tasks'),
+      createTaskBar(context, AppLocalizations.of(context)!.tasks),
       const SizedBox(height: 20),
       PodcastListHorizontal(widget.escapeWithNav,
-          future: PodcastRepository.getRecentlyListened(), title: "Recently Listened"),
+          future: PodcastRepository.getRecentlyListened(), title: AppLocalizations.of(context)!.recentlyListened),
       const SizedBox(height: 20),
       createFavoritesList(context),
       const SizedBox(height: 20),
@@ -125,7 +126,7 @@ class _HomeScreenSuggestedTabState extends State<HomeScreenSuggestedTab> {
       padding: const EdgeInsets.all(10),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text("Favorites", style: Theme.of(context).textTheme.titleLarge),
+          Text(AppLocalizations.of(context)!.favorites, style: Theme.of(context).textTheme.titleLarge),
           InkWell(
               borderRadius: BorderRadius.circular(10),
               onTap: (() {
@@ -133,7 +134,7 @@ class _HomeScreenSuggestedTabState extends State<HomeScreenSuggestedTab> {
               }),
               child: Row(children: [
                 Text(
-                  "See All",
+                  AppLocalizations.of(context)!.seeAll,
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
                 const Icon(Icons.arrow_right_alt)

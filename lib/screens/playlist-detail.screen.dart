@@ -8,6 +8,7 @@ import '../models/playlist/track.model.dart';
 import '../services/audio/audio-handler.services.dart';
 import '../services/user/user.service.dart';
 import '../themes/colors.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PlaylistDetailScreen extends StatefulWidget {
   const PlaylistDetailScreen({Key? key, required this.playlist}) : super(key: key);
@@ -20,7 +21,7 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
   final userService = getIt<UserService>();
   final audioHandler = getIt<AudioPlayerHandler>();
   popupMenu(BuildContext context, Track entry) => <PopupMenuEntry<String>>[
-        const PopupMenuItem<String>(value: 'remove', child: Card(child: Text('Remove from Playlist'))),
+        PopupMenuItem<String>(value: 'remove', child: Card(child: Text(AppLocalizations.of(context)!.removeFromPlaylist))),
       ];
 
   buildPopupButton(context, Track entry) => PopupMenuButton(

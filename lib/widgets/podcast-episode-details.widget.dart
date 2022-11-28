@@ -9,6 +9,7 @@ import 'package:Talkaboat/utils/common.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PodcastEpisodeDetails extends StatefulWidget {
   const PodcastEpisodeDetails({super.key, required this.episode, required this.escapeWithNav, required this.position});
@@ -94,13 +95,13 @@ class _PodcastEpisodeDetailsState extends State<PodcastEpisodeDetails> {
                                         return ButtonEpisode(
                                             func: audioPlayer.play,
                                             image: "assets/images/play.png",
-                                            title: "Play",
+                                            title: AppLocalizations.of(context)!.play,
                                             borderAndTextColor: const Color.fromRGBO(99, 163, 253, 1));
                                       } else {
                                         return ButtonEpisode(
                                             func: audioPlayer.pause,
                                             image: "assets/images/pause.png",
-                                            title: "Stop",
+                                            title: AppLocalizations.of(context)!.stop,
                                             borderAndTextColor: const Color.fromRGBO(188, 140, 75, 1));
                                       }
                                     },
@@ -118,7 +119,7 @@ class _PodcastEpisodeDetailsState extends State<PodcastEpisodeDetails> {
                                             setState(() {});
                                           },
                                           image: "assets/images/cloud_complete.png",
-                                          title: "Downloaded",
+                                          title: AppLocalizations.of(context)!.downloaded,
                                           borderAndTextColor: const Color.fromRGBO(76, 175, 80, 1),
                                         )
                                       : ButtonEpisode(
@@ -130,7 +131,7 @@ class _PodcastEpisodeDetailsState extends State<PodcastEpisodeDetails> {
                                             setState(() {});
                                           },
                                           image: "assets/images/cloud.png",
-                                          title: "Download",
+                                          title: AppLocalizations.of(context)!.download,
                                           borderAndTextColor: const Color.fromRGBO(99, 163, 253, 1),
                                         )
                                 ],
@@ -163,7 +164,7 @@ class _PodcastEpisodeDetailsState extends State<PodcastEpisodeDetails> {
                                       height: 40,
                                       alignment: Alignment.centerLeft,
                                       child: Text(
-                                        "General",
+                                        AppLocalizations.of(context)!.general,
                                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                               color: const Color.fromRGBO(99, 163, 253, 1),
                                             ),
@@ -172,10 +173,10 @@ class _PodcastEpisodeDetailsState extends State<PodcastEpisodeDetails> {
                                     Container(
                                       margin: const EdgeInsets.only(bottom: 10),
                                       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                                        const SizedBox(
+                                        SizedBox(
                                           width: 30,
                                           child: Text(
-                                            "Titel",
+                                            AppLocalizations.of(context)!.title,
                                             style: TextStyle(fontWeight: FontWeight.w600),
                                           ),
                                         ),
@@ -196,10 +197,10 @@ class _PodcastEpisodeDetailsState extends State<PodcastEpisodeDetails> {
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
-                                          const SizedBox(
+                                          SizedBox(
                                             width: 60,
                                             child: Text(
-                                              "Podcast",
+                                              AppLocalizations.of(context)!.podcast,
                                               style: TextStyle(fontWeight: FontWeight.w600),
                                             ),
                                           ),
@@ -221,8 +222,8 @@ class _PodcastEpisodeDetailsState extends State<PodcastEpisodeDetails> {
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
-                                          const Text(
-                                            "Duration",
+                                          Text(
+                                            AppLocalizations.of(context)!.duration,
                                             style: TextStyle(fontWeight: FontWeight.w600),
                                           ),
                                           Text.rich(TextSpan(children: [
@@ -238,8 +239,8 @@ class _PodcastEpisodeDetailsState extends State<PodcastEpisodeDetails> {
                                     Container(
                                       margin: const EdgeInsets.only(bottom: 6),
                                       alignment: Alignment.centerLeft,
-                                      child: const Text(
-                                        "Authors",
+                                      child: Text(
+                                        AppLocalizations.of(context)!.authors,
                                         style: TextStyle(fontWeight: FontWeight.w600),
                                       ),
                                     ),
@@ -256,8 +257,8 @@ class _PodcastEpisodeDetailsState extends State<PodcastEpisodeDetails> {
                                     Container(
                                       alignment: Alignment.centerLeft,
                                       margin: const EdgeInsets.only(bottom: 7),
-                                      child: const Text(
-                                        "Categories",
+                                      child: Text(
+                                        AppLocalizations.of(context)!.categories,
                                         style: TextStyle(fontWeight: FontWeight.w600),
                                       ),
                                     ),
@@ -266,7 +267,7 @@ class _PodcastEpisodeDetailsState extends State<PodcastEpisodeDetails> {
                                       alignment: Alignment.centerLeft,
                                       margin: const EdgeInsets.only(bottom: 10),
                                       child: Text(
-                                        "Description",
+                                        AppLocalizations.of(context)!.description,
                                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                               color: const Color.fromRGBO(99, 163, 253, 1),
                                             ),
@@ -386,7 +387,7 @@ class ButtonEpisode extends StatelessWidget {
     return RawMaterialButton(
       onPressed: func,
       child: Container(
-        width: 130,
+        width: Localizations.localeOf(context).toString() == "de" ? 155 : 130,
         height: 40,
         decoration:
             BoxDecoration(borderRadius: BorderRadius.circular(10), border: Border.all(width: 1, color: borderAndTextColor)),

@@ -7,6 +7,7 @@ import '../services/user/user.service.dart';
 import '../utils/scaffold_wave.dart';
 import '../widgets/login-button.widget.dart';
 import '../widgets/podcast-list.widget.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LibraryScreen extends StatefulWidget {
   const LibraryScreen(this.escapeWithNav, {Key? key}) : super(key: key);
@@ -21,9 +22,9 @@ class _LibraryScreenState extends State<LibraryScreen> {
   final userService = getIt<UserService>();
 
   buildPopupMenu(BuildContext context, SearchResult entry) => <PopupMenuEntry<String>>[
-        const PopupMenuItem<String>(
+        PopupMenuItem<String>(
           value: 'remove',
-          child: Card(child: Text('Remove')),
+          child: Card(child: Text(AppLocalizations.of(context)!.remove)),
         ),
       ];
 

@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 
 import '../models/search/search_result.model.dart';
 import 'bottom-sheets/claim.bottom-sheet.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
   final double expandedHeight;
@@ -27,7 +28,7 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
       fit: StackFit.expand,
       children: [
         buildBackground(shrinkOffset, context),
-        buildAppBar(shrinkOffset),
+        buildAppBar(shrinkOffset, context),
         Container(
           padding: const EdgeInsets.only(bottom: 100),
           child: buildFloating(shrinkOffset, context),
@@ -40,7 +41,7 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
 
   double disappear(double shrinkOffset) => 1 - shrinkOffset / expandedHeight;
 
-  Widget buildAppBar(double shrinkOffset) => PreferredSize(
+  Widget buildAppBar(double shrinkOffset, context) => PreferredSize(
         preferredSize: Size.fromHeight(expandedHeight),
         child: AppBar(
             leading: const SizedBox(),
@@ -53,7 +54,9 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                   borderRadius: BorderRadius.circular(18),
                   color: const Color.fromRGBO(29, 40, 58, 0.92),
                   child: Container(
-                    padding: const EdgeInsets.all(8),
+                    padding: Localizations.localeOf(context).toString() == "de"
+                        ? const EdgeInsets.symmetric(vertical: 8, horizontal: 6)
+                        : const EdgeInsets.all(8),
                     child: DecoratedBox(
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.0),
@@ -64,10 +67,10 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                         labelColor: const Color.fromRGBO(188, 140, 75, 1),
                         indicatorColor: const Color.fromRGBO(188, 140, 75, 1),
                         unselectedLabelColor: const Color.fromRGBO(164, 202, 255, 1),
-                        tabs: const [
-                          Tab(text: "Episodes"),
-                          Tab(text: "Details"),
-                          Tab(text: "Community"),
+                        tabs: [
+                          Tab(text: AppLocalizations.of(context)!.episodes),
+                          Tab(text: AppLocalizations.of(context)!.details),
+                          Tab(text: AppLocalizations.of(context)!.community),
                         ],
                       ),
                     ),

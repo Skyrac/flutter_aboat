@@ -9,6 +9,7 @@ import '../screens/login.screen.dart';
 import '../services/repositories/search.repository.dart';
 import '../services/user/user.service.dart';
 import '../themes/colors.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PodcastSearch extends SearchDelegate<String?> {
   List<SearchResult> searchResults = List.empty();
@@ -47,8 +48,8 @@ class PodcastSearch extends SearchDelegate<String?> {
       PopupMenuItem<String>(
         value: 'toggleLibrary',
         child: userService.isInFavorites(entry.id!)
-            ? const Card(child: Text('Remove from Library'))
-            : const Card(child: Text('Add to Library')),
+            ? Card(child: Text(AppLocalizations.of(context)!.removeFromLibrary))
+            : Card(child: Text(AppLocalizations.of(context)!.addToLibrary)),
       ),
     ];
   }

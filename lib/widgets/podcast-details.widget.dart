@@ -2,6 +2,7 @@ import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/services/audio/podcast.service.dart';
 import 'package:Talkaboat/utils/common.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PodcastDetails extends StatefulWidget {
   const PodcastDetails({super.key, required this.podcastId, required this.escapeWithNav});
@@ -40,7 +41,7 @@ class _PodcastDetailsState extends State<PodcastDetails> {
                     height: 40,
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      "General",
+                      AppLocalizations.of(context)!.general,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             color: const Color.fromRGBO(99, 163, 253, 1),
                           ),
@@ -49,10 +50,10 @@ class _PodcastDetailsState extends State<PodcastDetails> {
                   Container(
                     margin: const EdgeInsets.only(bottom: 10),
                     child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                      const SizedBox(
+                      SizedBox(
                         width: 30,
                         child: Text(
-                          "Titel",
+                          AppLocalizations.of(context)!.title,
                           style: TextStyle(fontWeight: FontWeight.w600),
                         ),
                       ),
@@ -73,8 +74,8 @@ class _PodcastDetailsState extends State<PodcastDetails> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          "Episodes",
+                        Text(
+                          AppLocalizations.of(context)!.episodes,
                           style: TextStyle(fontWeight: FontWeight.w600),
                         ),
                         Text(snapshot.data!.totalEpisodes!.toString())
@@ -84,8 +85,8 @@ class _PodcastDetailsState extends State<PodcastDetails> {
                   Container(
                     margin: const EdgeInsets.only(bottom: 6),
                     alignment: Alignment.centerLeft,
-                    child: const Text(
-                      "Authors",
+                    child: Text(
+                      AppLocalizations.of(context)!.authors,
                       style: TextStyle(fontWeight: FontWeight.w600),
                     ),
                   ),
@@ -102,8 +103,8 @@ class _PodcastDetailsState extends State<PodcastDetails> {
                   Container(
                     alignment: Alignment.centerLeft,
                     margin: const EdgeInsets.only(bottom: 7),
-                    child: const Text(
-                      "Categories",
+                    child: Text(
+                      AppLocalizations.of(context)!.categories,
                       style: TextStyle(fontWeight: FontWeight.w600),
                     ),
                   ),
@@ -112,7 +113,7 @@ class _PodcastDetailsState extends State<PodcastDetails> {
                     alignment: Alignment.centerLeft,
                     margin: const EdgeInsets.only(bottom: 10),
                     child: Text(
-                      "Description",
+                      AppLocalizations.of(context)!.description,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             color: const Color.fromRGBO(99, 163, 253, 1),
                           ),

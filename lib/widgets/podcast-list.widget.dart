@@ -11,6 +11,7 @@ import '../models/search/search_result.model.dart';
 import '../screens/login.screen.dart';
 import '../screens/podcast-detail.screen.dart';
 import '../services/user/user.service.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PodcastListWidget extends StatefulWidget {
   const PodcastListWidget(this.escapeWithNav,
@@ -61,8 +62,8 @@ class _PodcastListWidgetState extends State<PodcastListWidget> {
         PopupMenuItem<String>(
           value: 'toggleLibrary',
           child: userService.isInFavorites(entry.id!)
-              ? const Card(child: Text('Remove from Library'))
-              : const Card(child: Text('Add to Library')),
+              ? Card(child: Text(AppLocalizations.of(context)!.removeFromLibrary))
+              : Card(child: Text(AppLocalizations.of(context)!.addToLibrary)),
         ),
       ];
 

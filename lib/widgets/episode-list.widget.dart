@@ -6,6 +6,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import '../injection/injector.dart';
 import '../models/podcasts/episode.model.dart';
 import '../services/audio/audio-handler.services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class EpisodeListWidget extends StatefulWidget {
   const EpisodeListWidget({Key? key, required this.episodes, required this.direction}) : super(key: key);
@@ -19,7 +20,7 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget> {
   late final audioHandler = getIt<AudioPlayerHandler>();
 
   popupMenu(BuildContext context, Episode entry) => <PopupMenuEntry<String>>[
-        const PopupMenuItem<String>(value: 'remove', child: Card(child: Text('Remove from Playlist'))),
+        PopupMenuItem<String>(value: 'remove', child: Card(child: Text(AppLocalizations.of(context)!.removeFromPlaylist))),
       ];
 
   buildPopupButton(context, Episode entry) => PopupMenuButton(
