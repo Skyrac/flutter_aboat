@@ -3,6 +3,7 @@ import 'package:Talkaboat/services/hubs/chat/chat.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:flutter/material.dart';
 import 'package:swipe_to/swipe_to.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ChatMessageTile extends StatelessWidget {
   const ChatMessageTile(
@@ -39,7 +40,7 @@ class ChatMessageTile extends StatelessWidget {
       context: context,
       position: RelativeRect.fromLTRB(left, top, 0, 0),
       items: [
-        const PopupMenuItem<String>(value: 'Answer', child: Text('Answer')),
+        PopupMenuItem<String>(value: 'Answer', child: Text(AppLocalizations.of(context)!.answer)),
       ],
       elevation: 8.0,
     );
@@ -62,9 +63,9 @@ class ChatMessageTile extends StatelessWidget {
       context: context,
       position: RelativeRect.fromLTRB(left, top, 0, 0),
       items: [
-        const PopupMenuItem<String>(value: 'Answer', child: Text('Answer')),
-        const PopupMenuItem<String>(value: 'Edit', child: Text('Edit')),
-        const PopupMenuItem<String>(value: 'Delete', child: Text('Delete')),
+        PopupMenuItem<String>(value: 'Answer', child: Text(AppLocalizations.of(context)!.answer)),
+        PopupMenuItem<String>(value: 'Edit', child: Text(AppLocalizations.of(context)!.edit)),
+        PopupMenuItem<String>(value: 'Delete', child: Text(AppLocalizations.of(context)!.delete)),
       ],
       elevation: 8.0,
     );

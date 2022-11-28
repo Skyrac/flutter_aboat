@@ -14,8 +14,11 @@
     "duration": "Duration",   
     "play" : "Play",
     "stop" : "Stop",
+    "message" : "Message",
     "download": "Download",
     "downloaded": "Download",
+    "answer" : "Answer",
+    "edit" : "Edit",
     "delete" : "Delete", 
     "remove" : "Remove",   
     "addToPlaylist" : "Add to Playlist",
@@ -41,5 +44,123 @@
     "recentlyListened" : "Recently Listened",
     "favorites" :  "Favorites",
     "seeAll" : "See all",
-    "reward" : "Reward"           
+    "reward" : "Reward", 
+    "rewardParam" : "Reward {reward}",
+    "@rewardParam" : {
+      "placeholders" : {
+        "reward" : {
+          "type" : "String?"
+        }
+      }
+    },
+    "unlockQuest": "Watch ad to unlock quest",
+    "create" : "Create",
+    "cancel" : "Cancel",
+    "createNewPlaylist" : "Create new Playlist",
+    "nameYourNewPlaylist" : "Name your new Playlist",
+    "created" : "Created {dateTime}", 
+    "@created" : {
+      "placeholders" : {
+        "dateTime" : {
+          "type" : "String"
+        }
+      }
+    },
+    "playlistName" : "Playlist-Name",
+    "noPlaylistsFound": "No playlists found. Create a new playlist!",
+    "newPlaylist" : "New Playlist...", 
+    "settings" : "Settings",
+    "earnings" : "Earnings",
+    "clearCache" : "Clear Cache",
+    "clearCacheConfirmation" : "Clear Cache Confirmation",
+    "clearing" : "Clearing the cache might impact the app performance. Are you sure you want to continue?",
+    "deleteAccount" : "Delete Account",
+    "confirmDeletion" : "Confirm Deletion",
+    "enterUsernameToConfirmDeletion" :  "Enter username to confirm deletion",
+    "username" : "Username",
+    "date" : "Date",
+    "earned" : "Earned",
+    "claimable" : "Claimable",
+    "rename" : "Rename",
+    "copy" : "Copy",
+    "thereAreNoPosts" : "There are no posts in your feed yet.",
+    "completed" : "Completed",
+    "loadingAd" : "Loading ad...",
+    "updateRequired" : "Update required",
+    "pleaseUpdateYourApp" : "Please update your app to continue",
+    "update" : "Update",
+    "later" : "Later",
+    "or" : "OR",
+    "continueAsGuest" : "Continue as guest",
+    "confirm" : "Confirm",
+    "confirmPIN" : "Confirm PIN",
+    "receivePIN"  : "You should receive a PIN on ",
+    "receivePIN2" : " to verify your login. If you have no account registered under your email, you’ll be asked to setup an username after sign in.",
+    "invalidPin" : "Invalid Pin",
+    "requestPIN" : "Request PIN",
+    "signIn" : "Sign in with {username}",
+    "@signIn" : {
+      "placeholders" : {
+        "username" : {
+          "type" : "String"
+        }
+      }
+    },
+    "checkYourEMail" : "Check your E-Mail and Verify the Pin",
+    "unresolvedResponse" : "Unresolved response. Please contact an admin.",
+    "unableToVerify" : "Unable to verify your login.",
+    "chooseAnUsername" : "Choose an username",
+    "yourUsernameWillBeShown": "Your username will be shown for in social media features as well as comments and ratings you might leave for podcasts and episodes.",
+    "usernameIsInvalid" : "The username {rejectedUsername} is invalid or already taken",
+    "@usernameIsInvalid" : {
+      "placeholders" : {
+        "rejectedUsername" : {
+          "type" : "String"
+        }
+      }
+    },
+    "errorRegistering" : "Error registering",
+    "errorGettingPIN" : "Error getting PIN",
+    "errorLoggingIn" : "Error logging in",
+    "startSearch" : "Start search...",
+    "submit" : "Submit",
+    "loginToUseThisFeature" : "Login to use this feature!",
+    "ownership" : "You need to login in order to verify podcast ownership",
+    "unableToFetchPodcast" : "Unable to fetch podcast ownership data!",
+    "podcastIsVerified" : "This podcast is already verified!",
+    "verifyByEMail" : "Verify by E-Mail",
+    "verifyYourPodcastOwnership" : "After providing the valid email which is connected to this podcast per rss feed: You'll receive a PIN to the provided email which you may enter by clicking 'Enter PIN' to verify your podcast ownership. ",
+    "requestVerification" : "Request Verification",
+    "enterPIN" : "Enter PIN",
+    "verifyByKnowYourCustomer" : "Verify by Know-Your-Customer",
+    "verify": "Verify",
+    "methodKYC" : "With this method you will have to do our KYC in order to provide the proof, that you are the author of this podcast. After KYC send the request by clicking 'Verify'. This verification method is done manually and requires 3 - 5 business days.",
+    "donationForPoscast" : "Donation for {podcast}",
+    "@donationForPoscast" : {
+      "placeholders" : {
+        "podcast" : {
+          "type" : "String?"
+        }
+      }
+    },
+    "donate" : "Donate",
+    "ownership" : "Ownership",
+    "donationAmount" : "Donation Amount",
+    "availableABOAT" : "Available ABOAT: {availableToken}",
+    "@availableABOAT" : {
+      "placeholders" : {
+        "availableToken" : {
+          "type" : "String"
+        }
+      }
+    },
+    "share" : "Check the Podcast {title} on Talkaboat.online mobile App! Start listening and earn while supporting new and upcoming podcasters.\n\n Download it now on \nAndroid: https://play.google.com/store/apps/details?id=com.aboat.talkaboat\n",
+    "@share" : {
+      "placeholders" : {
+        "title" : {
+          "type" : "String?"
+        }
+      }
+    },
+    "share2" : "Check this out! A Podcast on Talkaboat.online."
 }

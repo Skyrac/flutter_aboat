@@ -108,7 +108,7 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                 children: [
                   Expanded(
                     child: buildButton(
-                        text: 'Ownership',
+                        text: AppLocalizations.of(context)!.ownership,
                         icon: Image.asset(
                           "assets/images/person.png",
                           width: 20,
@@ -124,7 +124,7 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                   ),
                   Expanded(
                     child: buildButton(
-                        text: 'Donate',
+                        text: AppLocalizations.of(context)!.donate,
                         icon: Image.asset("assets/images/money.png", width: 28),
                         onClick: () => {showDonationModal(context)}),
                   ),
@@ -169,7 +169,7 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
         context: context,
         builder: (context) => AlertDialog(
               backgroundColor: Theme.of(context).dialogBackgroundColor,
-              title: Text('Donation for ${podcast.title}'),
+              title: Text(AppLocalizations.of(context)!.donationForPoscast(podcast.title)),
               elevation: 8,
               content: userService.isConnected
                   ? TextField(
@@ -186,8 +186,9 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                         }),
                       ],
                       decoration: InputDecoration(
-                          hintText: "Donation Amount",
-                          labelText: "Available ABOAT: ${userService.availableToken.toStringAsFixed(2)}",
+                          hintText: AppLocalizations.of(context)!.donationAmount,
+                          labelText:
+                              AppLocalizations.of(context)!.availableABOAT(userService.availableToken.toStringAsFixed(2)),
                           labelStyle: Theme.of(context).textTheme.labelLarge,
                           enabledBorder: const UnderlineInputBorder(
                             borderSide: BorderSide(color: Colors.blue),
@@ -201,7 +202,10 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                   : SizedBox(
                       height: 140,
                       child: Column(
-                        children: [const Text("Login to use this feature!"), Center(child: LoginButton(escapeWithNav))],
+                        children: [
+                          Text(AppLocalizations.of(context)!.loginToUseThisFeature),
+                          Center(child: LoginButton(escapeWithNav))
+                        ],
                       ),
                     ),
               actions: [
@@ -214,12 +218,12 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                       donationAmountController.text = "";
                       Navigator.pop(context);
                     }),
-                    child: const Text("Donate")),
+                    child: Text(AppLocalizations.of(context)!.donate)),
                 TextButton(
                     onPressed: (() {
                       Navigator.pop(context);
                     }),
-                    child: const Text("Cancel"))
+                    child: Text(AppLocalizations.of(context)!.cancel))
               ],
             ));
   }

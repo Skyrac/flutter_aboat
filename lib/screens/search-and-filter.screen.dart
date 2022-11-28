@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../themes/colors.dart';
 import '../widgets/podcast-search.widget.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SearchAndFilterScreen extends StatefulWidget {
   const SearchAndFilterScreen(this.escapeWithNav, {this.appBar, this.onlyGenre, Key? key}) : super(key: key);
@@ -65,7 +66,7 @@ class _SearchAndFilterScreenState extends State<SearchAndFilterScreen> {
                         const SizedBox(
                           width: 20,
                         ),
-                        const Text("Start search...")
+                        Text(AppLocalizations.of(context)!.startSearch)
                       ],
                     ),
                   ),

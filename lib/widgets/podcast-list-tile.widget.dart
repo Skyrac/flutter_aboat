@@ -147,7 +147,7 @@ class _PodcastListTileWidgetState extends State<PodcastListTileWidget> {
                             const Image(
                               image: AssetImage("assets/icons/icon_fire.png"),
                             ),
-                            Text(" Reward x1.5",
+                            Text(" ${AppLocalizations.of(context)!.reward} x1.5",
                                 maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleSmall),
                           ]
                         : [])

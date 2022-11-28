@@ -111,7 +111,7 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
   }
 
   Widget createFeedBody() {
-    return const Center(child: Text("There are no posts in your feed yet."));
+    return Center(child: Text(AppLocalizations.of(context)!.thereAreNoPosts));
   }
 
   Widget createFriendBody() {

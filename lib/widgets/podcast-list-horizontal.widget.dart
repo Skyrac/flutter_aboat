@@ -71,7 +71,7 @@ class PodcastListHorizontal extends StatelessWidget {
               width: 10,
             ),
             // TODO: bottom align this text
-            Text("Reward $multiplier", style: Theme.of(context).textTheme.titleMedium)
+            Text(AppLocalizations.of(context)!.rewardParam(multiplier), style: Theme.of(context).textTheme.titleMedium)
           ]
         : [Container()];
 

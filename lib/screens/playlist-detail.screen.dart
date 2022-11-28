@@ -140,7 +140,7 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                         color: Colors.deepOrange,
                       ),
                       Text(
-                        "Created: ${widget.playlist.getDateTime()}",
+                        AppLocalizations.of(context)!.created(widget.playlist.getDateTime()),
                         style: Theme.of(context).textTheme.labelMedium,
                       )
                     ]),

@@ -2,6 +2,7 @@ import 'package:Talkaboat/screens/playlist-detail.screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../injection/injector.dart';
 import '../models/playlist/playlist.model.dart';
@@ -34,9 +35,9 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                 size: 20,
                 color: Theme.of(context).iconTheme.color,
               ),
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(left: 10),
-                child: Text('Rename'),
+                child: Text(AppLocalizations.of(context)!.rename),
               )
             ],
           )),
@@ -53,9 +54,9 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                 size: 20,
                 color: Theme.of(context).iconTheme.color,
               ),
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(left: 10),
-                child: Text('Copy'),
+                child: Text(AppLocalizations.of(context)!.copy),
               )
             ],
           )),
@@ -70,9 +71,9 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
               size: 20,
               color: Theme.of(context).iconTheme.color,
             ),
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(left: 10),
-              child: Text('Delete'),
+              child: Text(AppLocalizations.of(context)!.delete),
             )
           ])),
         ),
@@ -198,13 +199,13 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
         context: context,
         builder: (context) => AlertDialog(
               backgroundColor: Theme.of(context).dialogBackgroundColor,
-              title: const Text("New Playlist..."),
+              title: Text(AppLocalizations.of(context)!.newPlaylist),
               elevation: 8,
               content: TextField(
                   controller: playlistCreationController,
                   decoration: InputDecoration(
-                      hintText: "Name your new Playlist",
-                      labelText: "Playlist-Name",
+                      hintText: AppLocalizations.of(context)!.nameYourNewPlaylist,
+                      labelText: AppLocalizations.of(context)!.playlistName,
                       labelStyle: Theme.of(context).textTheme.labelLarge,
                       enabledBorder: const UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.blue),
@@ -225,12 +226,12 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                         });
                       }
                     }),
-                    child: const Text("Create")),
+                    child: Text(AppLocalizations.of(context)!.create)),
                 TextButton(
                     onPressed: (() {
                       Navigator.pop(context);
                     }),
-                    child: const Text("Cancel"))
+                    child: Text(AppLocalizations.of(context)!.cancel))
               ],
             ));
   }

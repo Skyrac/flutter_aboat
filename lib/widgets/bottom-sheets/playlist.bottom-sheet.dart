@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../injection/injector.dart';
 import '../../models/playlist/playlist.model.dart';
@@ -8,8 +9,7 @@ import '../../services/user/user.service.dart';
 import '../../themes/colors.dart';
 
 class PlaylistBottomSheet extends StatefulWidget {
-  const PlaylistBottomSheet({Key? key, required this.episodeToAdd})
-      : super(key: key);
+  const PlaylistBottomSheet({Key? key, required this.episodeToAdd}) : super(key: key);
   final Episode episodeToAdd;
 
   @override
@@ -46,10 +46,10 @@ class _PlaylistBottomSheetState extends State<PlaylistBottomSheet> {
                       showAlert(context);
                     }),
                     child: Row(
-                      children: const [
+                      children: [
                         Icon(Icons.create),
                         SizedBox(width: 10),
-                        Text("Create new Playlist")
+                        Text(AppLocalizations.of(context)!.createNewPlaylist)
                       ],
                     )),
                 SizedBox(
@@ -62,7 +62,7 @@ class _PlaylistBottomSheetState extends State<PlaylistBottomSheet> {
                     }),
                     decoration: InputDecoration(
                         hintText: "",
-                        labelText: "Search Playlist...",
+                        labelText: AppLocalizations.of(context)!.searchPlaylist,
                         suffixIcon: IconButton(
                           onPressed: playlistSearchController.clear,
                           icon: Icon(Icons.clear),
@@ -80,9 +80,7 @@ class _PlaylistBottomSheetState extends State<PlaylistBottomSheet> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    IconButton(onPressed: (() {}), icon: Icon(Icons.sort))
-                  ],
+                  children: [IconButton(onPressed: (() {}), icon: Icon(Icons.sort))],
                 ),
                 FutureBuilder(
                   builder: (context, snapshot) {
@@ -96,19 +94,15 @@ class _PlaylistBottomSheetState extends State<PlaylistBottomSheet> {
                         );
                       } else if (snapshot.hasData) {
                         // Extracting data from snapshot object
-                        return buildPlaylistListView(
-                            context, widget.episodeToAdd);
+                        return buildPlaylistListView(context, widget.episodeToAdd);
                       }
-                      return const Center(
-                        child:
-                            Text("No playlists found. Create a new playlist!"),
+                      return Center(
+                        child: Text(AppLocalizations.of(context)!.noPlaylistsFound),
                       );
                     }
                     return userService.playlists.isNotEmpty
                         ? buildPlaylistListView(context, widget.episodeToAdd)
-                        : const Center(
-                            child: Text(
-                                "No playlists found. Create a new playlist!"));
+                        : Center(child: Text(AppLocalizations.of(context)!.noPlaylistsFound));
                   },
                   future: userService.getPlaylists(),
                 ),
@@ -120,9 +114,8 @@ class _PlaylistBottomSheetState extends State<PlaylistBottomSheet> {
 
   buildPlaylistListView(BuildContext context, Episode episodeToAdd) {
     var items = <Widget>[];
-    for (final entry in userService.playlists.where((element) =>
-        playlistSearchController.text.isEmpty ||
-        element.name!.contains(playlistSearchController.text))) {
+    for (final entry in userService.playlists.where(
+        (element) => playlistSearchController.text.isEmpty || element.name!.contains(playlistSearchController.text))) {
       items.add(buildPlaylistTile(context, entry, episodeToAdd));
     }
     return SingleChildScrollView(
@@ -138,15 +131,12 @@ class _PlaylistBottomSheetState extends State<PlaylistBottomSheet> {
           child: InkWell(
             onTap: (() async {
               entry.containsEpisode(episodeToAdd.episodeId!)
-                  ? await userService.removeFromPlaylistByEpisodeId(
-                      entry.playlistId!, episodeToAdd.episodeId!)
-                  : await userService.addToPlaylist(
-                      entry.playlistId!, episodeToAdd.episodeId!);
+                  ? await userService.removeFromPlaylistByEpisodeId(entry.playlistId!, episodeToAdd.episodeId!)
+                  : await userService.addToPlaylist(entry.playlistId!, episodeToAdd.episodeId!);
               setState(() {});
             }),
             child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 15),
+              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 15),
               child: SizedBox(
                   height: 60,
                   width: MediaQuery.of(context).size.width,
@@ -154,17 +144,13 @@ class _PlaylistBottomSheetState extends State<PlaylistBottomSheet> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        entry.containsEpisode(episodeToAdd.episodeId!)
-                            ? const Icon(Icons.remove)
-                            : const Icon(Icons.add),
+                        entry.containsEpisode(episodeToAdd.episodeId!) ? const Icon(Icons.remove) : const Icon(Icons.add),
                         VerticalDivider(
                           width: 30,
                           thickness: 2,
                           indent: 10,
                           endIndent: 10,
-                          color: entry.containsEpisode(episodeToAdd.episodeId!)
-                              ? Colors.green
-                              : Colors.deepOrange,
+                          color: entry.containsEpisode(episodeToAdd.episodeId!) ? Colors.green : Colors.deepOrange,
                         ),
                         SizedBox(
                             height: 50,
@@ -172,16 +158,13 @@ class _PlaylistBottomSheetState extends State<PlaylistBottomSheet> {
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(10),
                               child: CachedNetworkImage(
-                                  imageUrl: entry.image == null ||
-                                          entry.image!.isEmpty
+                                  imageUrl: entry.image == null || entry.image!.isEmpty
                                       ? 'https://picsum.photos/200'
                                       : entry.image!,
-                                  placeholder: (_, __) => const Center(
-                                      child: CircularProgressIndicator()),
+                                  placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
                                   // progressIndicatorBuilder: (context, url, downloadProgress) =>
                                   //     CircularProgressIndicator(value: downloadProgress.progress),
-                                  errorWidget: (context, url, error) =>
-                                      const Icon(Icons.error),
+                                  errorWidget: (context, url, error) => const Icon(Icons.error),
                                   fit: BoxFit.cover),
                             )),
                         SizedBox(width: 10),
@@ -195,16 +178,14 @@ class _PlaylistBottomSheetState extends State<PlaylistBottomSheet> {
                                   "${entry.name}",
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
-                                  style:
-                                      Theme.of(context).textTheme.titleMedium,
+                                  style: Theme.of(context).textTheme.titleMedium,
                                 ),
                                 Row(children: [
                                   Text(
                                     "Tracks: ${entry.tracks!.length}",
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 1,
-                                    style:
-                                        Theme.of(context).textTheme.labelMedium,
+                                    style: Theme.of(context).textTheme.labelMedium,
                                   ),
                                   const Divider(
                                     height: 20,
@@ -214,11 +195,10 @@ class _PlaylistBottomSheetState extends State<PlaylistBottomSheet> {
                                     color: Colors.deepOrange,
                                   ),
                                   Text(
-                                    "Created: ${entry.getDateTime()}",
+                                    AppLocalizations.of(context)!.created(entry.getDateTime()),
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 1,
-                                    style:
-                                        Theme.of(context).textTheme.labelMedium,
+                                    style: Theme.of(context).textTheme.labelMedium,
                                   )
                                 ]),
                               ],
@@ -236,13 +216,13 @@ class _PlaylistBottomSheetState extends State<PlaylistBottomSheet> {
         context: context,
         builder: (context) => AlertDialog(
               backgroundColor: Theme.of(context).dialogBackgroundColor,
-              title: const Text("New Playlist..."),
+              title: Text(AppLocalizations.of(context)!.newPlaylist),
               elevation: 8,
               content: TextField(
                   controller: playlistCreationController,
                   decoration: InputDecoration(
-                      hintText: "Name your new Playlist",
-                      labelText: "Playlist-Name",
+                      hintText: AppLocalizations.of(context)!.nameYourNewPlaylist,
+                      labelText: AppLocalizations.of(context)!.playlistName,
                       labelStyle: Theme.of(context).textTheme.labelLarge,
                       enabledBorder: const UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.blue),
@@ -256,20 +236,19 @@ class _PlaylistBottomSheetState extends State<PlaylistBottomSheet> {
               actions: [
                 TextButton(
                     onPressed: (() async {
-                      if (await userService
-                          .createPlaylist(playlistCreationController.text)) {
+                      if (await userService.createPlaylist(playlistCreationController.text)) {
                         setState(() {
                           playlistCreationController.text = "";
                           Navigator.pop(context);
                         });
                       }
                     }),
-                    child: Text("Create")),
+                    child: Text(AppLocalizations.of(context)!.create)),
                 TextButton(
                     onPressed: (() {
                       Navigator.pop(context);
                     }),
-                    child: Text("Cancel"))
+                    child: Text(AppLocalizations.of(context)!.cancel))
               ],
             ));
   }
