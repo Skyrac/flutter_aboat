@@ -182,19 +182,21 @@ class ChatMessageTile extends StatelessWidget {
                                   const SizedBox(
                                     width: 5,
                                   ),
-                                  IconButton(
-                                      padding: EdgeInsets.zero,
-                                      constraints: const BoxConstraints(),
-                                      onPressed: () {
-                                        onDeleteMessage(message);
-                                        selectIndex(null);
-                                        cancelReplyAndEdit();
-                                      },
-                                      icon: const Icon(
-                                        Icons.delete,
-                                        color: Color.fromRGBO(154, 0, 0, 1),
-                                        size: 28,
-                                      )),
+                                  userService.userInfo!.userName! == message.senderName
+                                      ? IconButton(
+                                          padding: EdgeInsets.zero,
+                                          constraints: const BoxConstraints(),
+                                          onPressed: () {
+                                            onDeleteMessage(message);
+                                            selectIndex(null);
+                                            cancelReplyAndEdit();
+                                          },
+                                          icon: const Icon(
+                                            Icons.delete,
+                                            color: Color.fromRGBO(154, 0, 0, 1),
+                                            size: 28,
+                                          ))
+                                      : SizedBox(),
                                 ],
                               )
                             : Text(
