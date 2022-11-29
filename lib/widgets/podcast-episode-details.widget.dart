@@ -340,27 +340,20 @@ class _PodcastEpisodeDetailsState extends State<PodcastEpisodeDetails> {
           ),
           Container(
             margin: const EdgeInsets.only(top: 5),
+            padding: EdgeInsets.symmetric(horizontal: 0.2),
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), border: Border.all(color: color)),
-            height: 10,
+            height: 11,
             width: 333,
-            child: SliderTheme(
-              data: SliderTheme.of(context).copyWith(
-                  trackHeight: 8.0,
-                  thumbColor: color,
-                  thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 5),
-                  // thumbShape: HiddenThumbComponentShape(),
-                  activeTrackColor: color,
-                  inactiveTrackColor: const Color.fromRGBO(15, 23, 41, 1),
-                  trackShape: CustomTrackShape()
-                  // thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 0.0)
-                  ),
-              child: Slider(
-                  value: (duration.inSeconds.toDouble() < position.inSeconds.toDouble() ? 0 : position.inSeconds.toDouble()),
-                  onChanged: (double value) {},
-                  min: 0,
-                  max: duration.inSeconds.toDouble()),
+            child: SeekBar(
+              color: color,
+              isPlay: isPlay,
+              isMiniPlayer: false,
+              duration: duration ?? Duration.zero,
+              position: position ?? Duration.zero,
+              onChangeEnd: (newPosition) {
+                audioPlayer.seek(newPosition);
+              },
             ),
-            // )
           ),
         ],
       );
