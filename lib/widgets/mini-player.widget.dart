@@ -63,6 +63,7 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
                     height: 6,
                     width: deviceSize.width * 0.9,
                     child: SeekBar(
+                      isMiniPlayer: true,
                       duration: mediaState?.mediaItem?.duration ?? Duration.zero,
                       position: mediaState?.position ?? Duration.zero,
                       onChangeEnd: (newPosition) {
