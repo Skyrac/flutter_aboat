@@ -134,7 +134,7 @@ class _PodcastListTileWidgetState extends State<PodcastListTileWidget> {
                   const Spacer(),
                   Row(children: [
                     Text(
-                      "${widget.podcast.totalEpisodes!} Episodes",
+                      AppLocalizations.of(context)!.episodesParam(widget.podcast.totalEpisodes!),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.titleSmall,

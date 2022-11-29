@@ -2,6 +2,14 @@
     "suggested" : "Suggested",
     "news" : "News",
     "episodes" : "Episodes",
+    "episodesParam" : "{total} Episodes",
+    "@episodesParam" : {
+      "placeholders" : {
+        "total" : {
+          "type" : "int"
+        }
+      }
+    },
     "details"  : "Details",
     "community" : "Community",
     "general": "General",
@@ -162,5 +170,17 @@
         }
       }
     },
-    "share2" : "Check this out! A Podcast on Talkaboat.online."
+    "share2" : "Check this out! A Podcast on Talkaboat.online.",
+    "skip" : "Skip",
+    "done" : "Done",
+    "pageInfo" : "Enjoy more than 700.000 Podcasts while earning Aboat Token and supporting your favorite podcasters for doing so",
+    "pageInfo2" : "Finish your daily tasks to earn great rewards and get an insight into blockchain while helping creators",
+    "pageInfo3" : "Add or invite your friends to share your latest news, achievements or your favorite podcast",
+    "pageInfo4" : "We help you to take the first step into cryptocurrencies in a secure and fun environment\n\nYou can take it step by step without all the heavy technical details or the need to use money",
+    "pageInfo5" : "We provide new ways for creators and the community to help each other\n\nOne of this is by buying Non-Fungible Tokens from creators to access income or content rights",
+    "dailyTasks" : "Daily Tasks",
+    "friends" : "Friends", 
+    "cryptocurrency" : "Cryptocurrency",
+    "takeAShare" : "Take a share",
+    "searchAndFilter" : "Search and Filter"
 }

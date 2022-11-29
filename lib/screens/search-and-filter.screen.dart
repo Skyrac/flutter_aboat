@@ -38,7 +38,7 @@ class _SearchAndFilterScreenState extends State<SearchAndFilterScreen> {
         child: Scaffold(
           appBar: widget.appBar ??
               AppBar(
-                title: const Text('Search and Filter'),
+                title: Text(AppLocalizations.of(context)!.searchAndFilter),
               ),
           body: Column(
             children: <Widget>[

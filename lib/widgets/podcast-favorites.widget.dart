@@ -109,7 +109,7 @@ class _PodcastListFavoritesWidgetState extends State<PodcastListFavoritesWidget>
           style: Theme.of(context).textTheme.titleMedium,
         ),
         subtitle: Text(
-          "${entry.totalEpisodes!} Episodes",
+          AppLocalizations.of(context)!.episodesParam(entry.totalEpisodes!),
           overflow: TextOverflow.ellipsis,
           maxLines: 2,
           style: Theme.of(context).textTheme.labelMedium,

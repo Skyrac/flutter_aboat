@@ -2,6 +2,7 @@
     "suggested" : "Empfohlen",
     "news" : "Neuigkeit",
     "episodes" : "Folgen",
+    "episodesParam" : "{total} Folgen",
     "details"  : "Details",
     "community" : "Gemeinschaft",
     "general": "Allgemeines",
@@ -106,5 +107,17 @@
     "donationAmount" : "Spendenbetrag",
     "availableABOAT" : "Verfügbar ABOAT: {availableToken}",
     "share" : "Überprüfen Sie den Podcast {title} auf Talkaboat.online mobile App! Fangen Sie an zu hören und verdienen Sie, während Sie neue und kommende Podcaster unterstützen.\n\n Jetzt herunterladen auf \nAndroid: https://play.google.com/store/apps/details?id=com.aboat.talkaboat\n",
-    "share2" : "Schaut euch das an! Ein Podcast auf Talkaboat.online."   
+    "share2" : "Schaut euch das an! Ein Podcast auf Talkaboat.online.",
+    "skip" : "Überspringen",
+    "done" : "Fertig",
+    "pageInfo" : "Genieße mehr als 700.000 Podcasts, verdiene Aboat Token und unterstütze dabei deine Lieblingspodcaster",
+    "pageInfo2" : "Erledigen Sie Ihre täglichen Aufgaben, um großartige Belohnungen zu verdienen und einen Einblick in die Blockchain zu erhalten, während Sie Schöpfern helfen",
+    "pageInfo3" : "Fügen Sie Ihre Freunde hinzu oder laden Sie sie ein, Ihre neuesten Nachrichten, Erfolge oder Ihren Lieblings-Podcast zu teilen",
+    "pageInfo4" : "Wir helfen Ihnen, den ersten Schritt in Kryptowährungen in einer sicheren und unterhaltsamen Umgebung zu machen. Sie können Schritt für Schritt vorgehen, ohne sich mit technischen Details oder der Notwendigkeit, Geld zu verwenden, auseinandersetzen zu müssen",
+    "pageInfo5" : "Wir bieten neue Möglichkeiten für Kreative und die Community, sich gegenseitig zu helfen. Eine davon ist der Kauf von Non-Fungible Token von Kreativen, um Zugang zu Einkommen oder Inhaltsrechten zu erhalten",
+    "dailyTasks" : "Tägliche Aufgaben",
+    "Freunde" : "Freunde", 
+    "Kryptowährung" : "Kryptowährung",
+    "takeAShare" : "Nehmen Sie einen Anteil",
+    "searchAndFilter" : "Suchen und Filtern"   
 }                                
