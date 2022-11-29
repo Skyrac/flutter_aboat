@@ -22,16 +22,16 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.isHost) {
-      _liveService.joinAsHost(widget.session.guid, widget.session.configuration!.roomName);
-    } else {
-      _liveService.joinAsViewer(widget.session.guid, widget.session.configuration!.roomName);
-    }
+    //if (widget.isHost) {
+    //  _liveService.joinAsHost(widget.session.guid, widget.session.configuration!.roomName);
+    //} else {
+    //  _liveService.joinAsViewer(widget.session.guid, widget.session.configuration!.roomName);
+    //}
   }
 
   @override
   void dispose() {
-    _liveService.leave();
+    //_liveService.leave();
     super.dispose();
   }
 
@@ -43,13 +43,11 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
       color: const Color.fromRGBO(15, 23, 41, 1),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Agora Video Call'),
+          title: Text(widget.session.configuration!.roomName),
         ),
         bottomNavigationBar: null,
         body: Stack(children: [
-          SizedBox(
-            //height: 100, //MediaQuery.of(context).size.height,
-            //width: 100,
+          /*SizedBox(
             child: AnimatedBuilder(
               animation: _liveService,
               builder: (context, child) {
@@ -65,15 +63,22 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
                     : _remoteVideo();
               },
             ),
-          ),
+          ),*/
           Positioned(
-              bottom: 40,
-              child: LiveChat(
-                roomId: 1,
-              )),
-          const Positioned(
             bottom: 0,
-            child: LiveControlls(),
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                verticalDirection: VerticalDirection.up,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  LiveControlls(roomId: widget.session.chat!.id),
+                  LiveChat(
+                    roomId: widget.session.chat!.id,
+                  )
+                ],
+              ),
+            ),
           )
         ]),
       ),
