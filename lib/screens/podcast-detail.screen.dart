@@ -242,6 +242,8 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
                 roomId: podcastSearchResult.roomId!,
                 focusNode: focusNode,
                 messageType: 1,
+                replyMessage: replyMessage,
+                editedMessage: editedMessage,
                 cancelReplyAndEdit: () {
                   setState(() {
                     replyMessage = null;
