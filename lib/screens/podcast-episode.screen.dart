@@ -116,7 +116,10 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> with Single
                         isScrollControlled: true,
                         shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
                         context: context,
-                        builder: (context) => PlaylistBottomSheet(episodeToAdd: widget.episode));
+                        builder: (context) => Container(
+                            margin: const EdgeInsets.only(top: 24),
+                            child: FractionallySizedBox(
+                                heightFactor: 1, child: PlaylistBottomSheet(episodeToAdd: widget.episode))));
                   }
                 },
               ),
