@@ -17,13 +17,15 @@ class _LiveControllsState extends State<LiveControlls> {
     debugPrint("size: ${size.width} ${size.width - (5 * 2) - (10 * 2) - 100}");
     return Row(
       children: [
-        MaterialButton(
+        SizedBox(
             height: 50,
-            onPressed: () {
-              debugPrint("le button");
-            },
-            color: const Color.fromRGBO(29, 40, 58, 0.97),
-            child: Padding(padding: const EdgeInsets.all(5), child: Image.asset("assets/icons/icon-chat-on.png"))),
+            width: 50,
+            child: MaterialButton(
+                onPressed: () {
+                  debugPrint("le button");
+                },
+                color: const Color.fromRGBO(29, 40, 58, 0.97),
+                child: Image.asset("assets/icons/icon-chat-on.png"))),
         ChatInput(
           roomId: widget.roomId,
           messageType: 0,

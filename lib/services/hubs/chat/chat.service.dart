@@ -31,6 +31,7 @@ class ChatService extends ChangeNotifier {
   static final List<String> messageType = ["", "Podcast", "Episode"];
 
   final ChatHubService _hub = ChatHubService();
+  // TODO: maybe use some kind of ring instead of list so that we only keep the last x messages + paging
   final Map<int, List<ChatMessageDto>?> _rooms = {};
   final AsyncMutex _mutex = AsyncMutex();
 
@@ -39,17 +40,10 @@ class ChatService extends ChangeNotifier {
   _reconcileNewMessage(ChatMessageDto message) {
     _mutex.run(() {
       if (_rooms[message.chatRoomId] != null) {
-        if (_rooms[message.chatRoomId]!.any((x) => x.id < 0 && x.content == message.content)) {
-          int index = _rooms[message.chatRoomId]!.indexWhere((x) => x.id < 0 && x.content == message.content);
-          if (index != -1) {
-            throw "unreachable";
-          }
-          _rooms[message.chatRoomId]!.removeAt(index);
-          _rooms[message.chatRoomId]!.insert(index, message);
-        } else {
+        if (!_rooms[message.chatRoomId]!.any((x) => x.id == message.id)) {
           _rooms[message.chatRoomId]!.add(message);
+          notifyListeners();
         }
-        notifyListeners();
       } else {
         debugPrint("Tried to edit message that was not cached localy");
       }
@@ -60,9 +54,11 @@ class ChatService extends ChangeNotifier {
     _mutex.run(() {
       if (_rooms[message.chatRoomId] != null) {
         int index = _rooms[message.chatRoomId]!.indexWhere((x) => x.id == message.id);
-        _rooms[message.chatRoomId]!.removeAt(index);
-        _rooms[message.chatRoomId]!.insert(index, message);
-        notifyListeners();
+        if (index > -1) {
+          _rooms[message.chatRoomId]!.removeAt(index);
+          _rooms[message.chatRoomId]!.insert(index, message);
+          notifyListeners();
+        }
       } else {
         debugPrint("Tried to edit message that was not cached localy");
       }
@@ -90,7 +86,8 @@ class ChatService extends ChangeNotifier {
   //#region RPC Calls
   sendMessage(CreateMessageDto message, String username) async {
     try {
-      await _hub.sendMessage(message);
+      final m = await _hub.sendMessage(message);
+      debugPrint("$m");
     } catch (e) {
       debugPrint("$e");
     }
@@ -115,12 +112,14 @@ class ChatService extends ChangeNotifier {
   joinRoom(JoinRoomDto data) async {
     try {
       await _hub.joinRoom(data);
+      _mutex.run(() {
+        if (_rooms[data.roomId] == null) {
+          _rooms[data.roomId] = List.empty(growable: true);
+        }
+      });
     } catch (e) {
       debugPrint("$e");
     }
-    _mutex.run(() {
-      _rooms[data.roomId] = List.empty(growable: true);
-    });
   }
 
   leaveRoom(JoinRoomDto data) async {
