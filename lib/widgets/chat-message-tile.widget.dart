@@ -14,7 +14,7 @@ class ChatMessageTile extends StatelessWidget {
       required this.cancelReplyAndEdit,
       required this.selectIndex,
       required this.index,
-      required this.selectedIndex,
+      this.selectedIndex,
       required this.userService});
 
   final ChatMessageDto message;
