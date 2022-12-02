@@ -21,7 +21,15 @@ class _WalletScreenState extends State<WalletScreen> {
     return SafeArea(
         child: ScaffoldWave(
             appBar: AppBar(
-              title: const Text("Wallet"),
+              centerTitle: false,
+              leadingWidth: 35,
+              titleSpacing: 3,
+              title: Text(
+                "Wallet",
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      color: const Color.fromRGBO(99, 163, 253, 1),
+                    ),
+              ),
               backgroundColor: const Color.fromRGBO(29, 40, 58, 1),
             ),
             body: userService.isConnected
