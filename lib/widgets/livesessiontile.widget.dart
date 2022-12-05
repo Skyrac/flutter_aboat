@@ -1,6 +1,8 @@
+import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/models/live/live-session.model.dart';
 import 'package:Talkaboat/screens/livestream.screen.dart';
 import 'package:Talkaboat/services/repositories/live-session.repository.dart';
+import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -11,6 +13,7 @@ class LiveSessionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final userService = getIt<UserService>();
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: Container(
@@ -23,21 +26,23 @@ class LiveSessionTile extends StatelessWidget {
             onTap: () async {
               debugPrint("show livestream");
               debugPrint("$session");
-              LiveSessionRepository.closeRoom(session.guid);
-              //Navigator.push(
-              //    context,
-              //    PageTransition(
-              //      alignment: Alignment.bottomCenter,
-              //      curve: Curves.bounceOut,
-              //      type: PageTransitionType.fade,
-              //      duration: const Duration(milliseconds: 300),
-              //      reverseDuration: const Duration(milliseconds: 200),
-              //      child: LivestreamScreen(
-              //        roomId: session.guid,
-              //        roomName: session.configuration!.roomName,
-              //        isHost: false,
-              //      ),
-              //    ));
+              if (session.configuration!.superhostName == userService.userInfo!.userName) {
+                LiveSessionRepository.closeRoom(session.guid);
+              } else {
+                Navigator.push(
+                    context,
+                    PageTransition(
+                      alignment: Alignment.bottomCenter,
+                      curve: Curves.bounceOut,
+                      type: PageTransitionType.fade,
+                      duration: const Duration(milliseconds: 300),
+                      reverseDuration: const Duration(milliseconds: 200),
+                      child: LivestreamScreen(
+                        isHost: false,
+                        session: session,
+                      ),
+                    ));
+              }
             },
             child: Padding(
               padding: const EdgeInsets.only(top: 10, bottom: 10, left: 10),

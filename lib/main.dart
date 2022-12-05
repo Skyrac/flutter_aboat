@@ -19,6 +19,8 @@ import 'firebase_options.dart';
 import 'injection/injector.dart';
 
 void main() async {
+  //runApp(const MaterialApp(home: Agora()));
+  //return;
   WidgetsFlutterBinding.ensureInitialized();
   LicenseRegistry.addLicense(() async* {
     final license = await rootBundle.loadString('assets/google_fonts/OFL.txt');

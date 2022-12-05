@@ -48,13 +48,11 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
               bottomNavigationBar: null,
               body: Center(
                 child: Stack(children: [
-                  SizedBox(
-                    child: AnimatedBuilder(
-                        animation: _liveService,
-                        builder: (context, child) {
-                          return _liveService.isJoined ? _viewRows() : const Center(child: CircularProgressIndicator());
-                        }),
-                  ),
+                  AnimatedBuilder(
+                      animation: _liveService,
+                      builder: (context, child) {
+                        return _liveService.isJoined ? _viewRows() : const Center(child: CircularProgressIndicator());
+                      }),
                   Positioned(
                     bottom: 0,
                     child: Padding(
@@ -87,13 +85,15 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
       ));
     }
     for (var uid in _liveService.users) {
-      list.add(AgoraVideoView(
-        controller: VideoViewController.remote(
-          rtcEngine: _liveService.agoraEngine,
-          canvas: VideoCanvas(uid: uid),
-          connection: RtcConnection(channelId: widget.session.configuration!.roomName),
-        ),
-      ));
+      if (_liveService.userVideoOn[uid] ?? false) {
+        list.add(AgoraVideoView(
+          controller: VideoViewController.remote(
+            rtcEngine: _liveService.agoraEngine,
+            canvas: VideoCanvas(uid: uid),
+            connection: RtcConnection(channelId: widget.session.guid),
+          ),
+        ));
+      }
     }
     return list;
   }
