@@ -9,9 +9,10 @@ import 'package:Talkaboat/widgets/chat-message-tile.widget.dart';
 import 'package:flutter/material.dart';
 
 class LiveChat extends StatefulWidget {
-  const LiveChat({super.key, required this.roomId});
+  const LiveChat({super.key, required this.roomId, this.visible = true});
 
   final int roomId;
+  final bool visible;
 
   @override
   State<LiveChat> createState() => _LiveChatState();
@@ -114,6 +115,9 @@ class _LiveChatState extends State<LiveChat> {
 
   @override
   Widget build(BuildContext context) {
+    if (!widget.visible) {
+      return const SizedBox();
+    }
     final size = MediaQuery.of(context).size;
     return SizedBox(height: size.height / 2, width: size.width - (10 * 2), child: buildMessages(_messages));
   }

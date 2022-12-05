@@ -23,71 +23,80 @@ class _LiveControllsState extends State<LiveControlls> {
       animation: liveSessionService,
       builder: (context, child) => Column(
         children: [
-          Row(
-            children: [
-              SizedBox(
-                  height: 50,
-                  width: 50,
-                  child: MaterialButton(
-                    onPressed: () {
-                      liveSessionService.switchChat();
-                    },
-                    color: const Color.fromRGBO(29, 40, 58, 0.97),
-                    child: liveSessionService.chatVisible
-                        ? Image.asset("assets/icons/icon-chat-on.png")
-                        : Image.asset("assets/icons/icon-chat-off.png"),
-                  )),
-              liveSessionService.chatVisible
-                  ? ChatInput(
-                      roomId: widget.roomId,
-                      messageType: 0,
-                      width: size.width - (5 * 2) - (10 * 2) - 100,
-                      positionSelf: false,
-                    )
-                  : const SizedBox()
-            ],
+          SizedBox(
+            width: size.width,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                children: [
+                  SizedBox(
+                      height: 50,
+                      width: 50,
+                      child: MaterialButton(
+                        onPressed: () {
+                          liveSessionService.switchChat();
+                        },
+                        color: const Color.fromRGBO(29, 40, 58, 0.97),
+                        child: liveSessionService.chatVisible
+                            ? Image.asset("assets/icons/icon-chat-on.png")
+                            : Image.asset("assets/icons/icon-chat-off.png"),
+                      )),
+                  liveSessionService.chatVisible
+                      ? ChatInput(
+                          roomId: widget.roomId,
+                          messageType: 0,
+                          width: size.width - (5 * 2) - (10 * 2) - 100,
+                          positionSelf: false,
+                        )
+                      : const SizedBox(),
+                ],
+              ),
+            ),
           ),
           const SizedBox(
             height: 10,
           ),
           SizedBox(
             width: size.width,
-            child: Row(
-              children: liveSessionService.isHost
-                  ? [
-                      const Spacer(),
-                      _changeCameraButton(),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      _changeVideoButton(),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      _callEndButton(),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      _changeAudioStreamButton(),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      _peopleButton(),
-                      const Spacer(),
-                    ]
-                  : [
-                      const Spacer(),
-                      _changeAudioMuteButton(),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      _callEndButton(),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      _peopleButton(),
-                      const Spacer(),
-                    ],
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                children: liveSessionService.isHost
+                    ? [
+                        const Spacer(),
+                        _changeCameraButton(),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        _changeVideoButton(),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        _callEndButton(),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        _changeAudioStreamButton(),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        _peopleButton(),
+                        const Spacer(),
+                      ]
+                    : [
+                        const Spacer(),
+                        _changeAudioMuteButton(),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        _callEndButton(),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        _peopleButton(),
+                        const Spacer(),
+                      ],
+              ),
             ),
           )
         ],

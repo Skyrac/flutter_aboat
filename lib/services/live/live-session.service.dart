@@ -23,6 +23,7 @@ class LiveSessionService extends ChangeNotifier {
   bool _videoOn = true;
   bool _localAudio = true;
   bool _audioMuted = false;
+  bool _initialized = false;
 
   bool get isJoined => _isJoined;
   bool get isHost => _isHost;
@@ -44,6 +45,11 @@ class LiveSessionService extends ChangeNotifier {
   }
 
   Future<void> setupVideoSdkEngine() async {
+    if (_initialized) {
+      debugPrint("already initalized");
+      return;
+    }
+    _initialized = true;
     await [Permission.microphone, Permission.camera].request();
     _agoraEngine = createAgoraRtcEngine();
     await _agoraEngine.initialize(const RtcEngineContext(appId: appId));
@@ -100,6 +106,7 @@ class LiveSessionService extends ChangeNotifier {
       channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
     );
     await agoraEngine.setClientRole(role: ClientRoleType.clientRoleAudience);
+    await agoraEngine.enableAudio();
     await agoraEngine.enableVideo();
     final token = await getToken(roomId);
 
@@ -115,6 +122,7 @@ class LiveSessionService extends ChangeNotifier {
       channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
     );
     await agoraEngine.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
+    await agoraEngine.enableAudio();
     await agoraEngine.enableVideo();
     await agoraEngine.startPreview();
     final token = await getToken(roomId);
@@ -140,6 +148,8 @@ class LiveSessionService extends ChangeNotifier {
     }
     _isHost = false;
     await agoraEngine.leaveChannel();
+    await agoraEngine.disableVideo();
+    await agoraEngine.disableAudio();
     await LiveSessionRepository.closeRoom(_roomGuid);
     _isJoined = false;
     _users.clear();

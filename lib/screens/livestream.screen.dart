@@ -47,28 +47,29 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
               ),
               bottomNavigationBar: null,
               body: Center(
-                child: Stack(children: [
-                  AnimatedBuilder(
-                      animation: _liveService,
-                      builder: (context, child) {
-                        return _liveService.isJoined ? _viewRows() : const Center(child: CircularProgressIndicator());
-                      }),
-                  Positioned(
-                    bottom: 0,
-                    child: Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Column(
-                        verticalDirection: VerticalDirection.up,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          LiveControlls(roomId: 139), //widget.session.chat!.id),
-                          LiveChat(roomId: 139 //widget.session.chat!.id,
-                              )
-                        ],
+                child: AnimatedBuilder(
+                  animation: _liveService,
+                  builder: (context, child) => Stack(children: [
+                    _liveService.isJoined ? _viewRows() : const Center(child: CircularProgressIndicator()),
+                    Positioned(
+                      bottom: 0,
+                      child: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Column(
+                          verticalDirection: VerticalDirection.up,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            LiveControlls(roomId: 139), //widget.session.chat!.id),
+                            LiveChat(
+                              roomId: 139,
+                              visible: _liveService.chatVisible,
+                            )
+                          ],
+                        ),
                       ),
-                    ),
-                  )
-                ]),
+                    )
+                  ]),
+                ),
               ),
             )));
   }
