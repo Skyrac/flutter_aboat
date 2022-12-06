@@ -49,6 +49,8 @@ class UserService {
   get guest => _guest;
 
   get availableToken => rewards.vested;
+  get lockedToken => rewards.unvested;
+
   Stream<Reward> rewardStream() async* {
     while (true) {
       await Future.delayed(const Duration(milliseconds: 500));
@@ -549,5 +551,33 @@ class UserService {
     }
   }
 
+  deleteWallet(String address) async {
+    final success = await UserRepository.deleteWallet(address);
+    if (success) {
+      print("${address} deleted");
+    }
+  }
+
+  Future<String?> claimABOAT(String chainId, String address, double amout) async {
+    try {
+      var response = await UserRepository.claimABOAT(chainId, address, amout);
+      if (response.data == null || response.data!.isEmpty) {
+        return response.text ?? "true";
+      }
+    } catch (ex) {
+      return "true";
+    }
+  }
+
+  Future<String?> claimABOATNative(String chainId, String address, double amout) async {
+    try {
+      var response = await UserRepository.claimABOATNative(chainId, address, amout);
+      if (response.data == null || response.data!.isEmpty) {
+        return response.text ?? "true";
+      }
+    } catch (ex) {
+      return "true";
+    }
+  }
   //#endregion
 }

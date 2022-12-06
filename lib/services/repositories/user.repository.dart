@@ -164,4 +164,49 @@ class UserRepository {
 
     return response.data == null ? false : response.data!.isNotEmpty;
   }
+
+  static Future<bool> deleteWallet(String address) async {
+    var response = await dio.delete<String>('/v1/user/$address/delete');
+
+    return response.data == null ? false : response.data!.isNotEmpty;
+  }
+
+  static Future<ResponseModel> addWallet(String chainId, String address, double amout) async {
+    try {
+      var response = await dio.post<String>(
+        '/v1/user/$address/add',
+      );
+      var convertedData = ResponseModel.fromJson(json.decode(response.data!));
+      debugPrint(response.data);
+      return convertedData;
+    } catch (exception) {
+      return ResponseModel();
+    }
+  }
+
+  static Future<ResponseModel> claimABOAT(String chainId, String address, double amout) async {
+    try {
+      var response = await dio.post<String>(
+        '/v1/user/$chainId/claim/$address/$amout',
+      );
+      var convertedData = ResponseModel.fromJson(json.decode(response.data!));
+      debugPrint(response.data);
+      return convertedData;
+    } catch (exception) {
+      return ResponseModel();
+    }
+  }
+
+  static Future<ResponseModel> claimABOATNative(String chainId, String address, double amout) async {
+    try {
+      var response = await dio.post<String>(
+        '/v1/user/$chainId/claim/$address/$amout/native',
+      );
+      var convertedData = ResponseModel.fromJson(json.decode(response.data!));
+      debugPrint(response.data);
+      return convertedData;
+    } catch (exception) {
+      return ResponseModel();
+    }
+  }
 }
