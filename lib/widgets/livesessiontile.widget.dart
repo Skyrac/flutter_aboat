@@ -48,20 +48,24 @@ class LiveSessionTile extends StatelessWidget {
               padding: const EdgeInsets.only(top: 10, bottom: 10, left: 10),
               child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
                 Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      session.configuration!.roomName,
+                      session.configuration!.superhostName ?? "",
                       overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
+                      maxLines: 1,
                       style: Theme.of(context).textTheme.labelMedium,
                       textAlign: TextAlign.left,
                     ),
-                    Text(
-                      session.configuration!.roomName,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
-                      style: Theme.of(context).textTheme.titleMedium,
-                      textAlign: TextAlign.left,
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        session.configuration!.roomName,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: Theme.of(context).textTheme.titleMedium,
+                        textAlign: TextAlign.left,
+                      ),
                     ),
                   ],
                 ),

@@ -16,6 +16,14 @@ class LivestreamScreen extends StatefulWidget {
   State<LivestreamScreen> createState() => _LivestreamScreenState();
 }
 
+class ViewContainer {
+  final Widget view;
+  final int userId;
+  final bool wrap;
+
+  const ViewContainer({required this.view, required this.userId, required this.wrap});
+}
+
 class _LivestreamScreenState extends State<LivestreamScreen> {
   final LiveSessionService _liveService = getIt<LiveSessionService>();
 
@@ -59,9 +67,9 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
                           verticalDirection: VerticalDirection.up,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            LiveControlls(roomId: 139), //widget.session.chat!.id),
+                            LiveControlls(roomId: widget.session.chat!.id),
                             LiveChat(
-                              roomId: 139,
+                              roomId: widget.session.chat!.id,
                               visible: _liveService.chatVisible,
                             )
                           ],
@@ -75,37 +83,82 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
   }
 
   /// Helper function to get list of native views
-  List<Widget> _getRenderViews() {
-    final List<StatefulWidget> list = [];
+  List<ViewContainer> _getRenderViews() {
+    final List<ViewContainer> list = [];
     if (_liveService.isHost) {
-      list.add(AgoraVideoView(
-        controller: VideoViewController(
-          rtcEngine: _liveService.agoraEngine,
-          canvas: const VideoCanvas(uid: 0),
+      list.add(
+        ViewContainer(
+          wrap: true,
+          userId: 0,
+          view: AgoraVideoView(
+            controller: VideoViewController(
+              rtcEngine: _liveService.agoraEngine,
+              canvas: const VideoCanvas(uid: 0),
+            ),
+          ),
         ),
-      ));
+      );
     }
     for (var uid in _liveService.users) {
       if (_liveService.userVideoOn[uid] ?? false) {
-        list.add(AgoraVideoView(
-          controller: VideoViewController.remote(
-            rtcEngine: _liveService.agoraEngine,
-            canvas: VideoCanvas(uid: uid),
-            connection: RtcConnection(channelId: widget.session.guid),
+        list.add(
+          ViewContainer(
+            wrap: true,
+            userId: uid,
+            view: AgoraVideoView(
+              controller: VideoViewController.remote(
+                rtcEngine: _liveService.agoraEngine,
+                canvas: VideoCanvas(uid: uid),
+                connection: RtcConnection(channelId: widget.session.guid),
+              ),
+            ),
           ),
-        ));
+        );
       }
     }
     return list;
   }
 
   /// Video view wrapper
-  Widget _videoView(view) {
-    return Expanded(child: Container(child: view));
+  Widget _videoView(ViewContainer view) {
+    if (view.wrap) {
+      return Expanded(
+        child: Stack(
+          children: [
+            view.view,
+            Positioned(
+              top: 20,
+              left: 20,
+              child: Container(
+                decoration:
+                    BoxDecoration(borderRadius: BorderRadius.circular(10), color: const Color.fromRGBO(29, 40, 58, 0.2)),
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Center(
+                    child: Text(
+                      view.userId.toString(),
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    } else {
+      return Expanded(
+        child: Container(
+          child: view.view,
+        ),
+      );
+    }
   }
 
   /// Video view row wrapper
-  Widget _expandedVideoRow(List<Widget> views) {
+  Widget _expandedVideoRow(List<ViewContainer> views) {
     final wrappedViews = views.map<Widget>(_videoView).toList();
     return Expanded(
       child: Row(
