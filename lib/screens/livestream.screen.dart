@@ -67,7 +67,9 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
                           verticalDirection: VerticalDirection.up,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            LiveControlls(roomId: widget.session.chat!.id),
+                            LiveControlls(
+                              liveSession: widget.session,
+                            ),
                             LiveChat(
                               roomId: widget.session.chat!.id,
                               visible: _liveService.chatVisible,

@@ -1,12 +1,14 @@
 import 'package:Talkaboat/injection/injector.dart';
+import 'package:Talkaboat/models/live/live-session.model.dart';
 import 'package:Talkaboat/services/live/live-session.service.dart';
 import 'package:Talkaboat/widgets/chat-input.widget.dart';
+import 'package:Talkaboat/widgets/live-users.bottom-sheet.dart';
 import 'package:flutter/material.dart';
 
 class LiveControlls extends StatefulWidget {
-  const LiveControlls({super.key, required this.roomId});
+  const LiveControlls({super.key, required this.liveSession});
 
-  final int roomId;
+  final LiveSession liveSession;
 
   @override
   State<LiveControlls> createState() => _LiveControllsState();
@@ -43,7 +45,7 @@ class _LiveControllsState extends State<LiveControlls> {
                       )),
                   liveSessionService.chatVisible
                       ? ChatInput(
-                          roomId: widget.roomId,
+                          roomId: widget.liveSession.chat!.id,
                           messageType: 0,
                           width: size.width - (5 * 2) - (10 * 2) - 100,
                           positionSelf: false,
@@ -153,7 +155,21 @@ class _LiveControllsState extends State<LiveControlls> {
       child: MaterialButton(
           shape: const CircleBorder(),
           onPressed: () {
-            liveSessionService.switchLocalAudio();
+            showModalBottomSheet(
+              isScrollControlled: true,
+              shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+              context: context,
+              builder: (context) => Container(
+                color: const Color.fromRGBO(15, 23, 41, 1),
+                child: FractionallySizedBox(
+                  heightFactor: 0.9,
+                  child: LiveUsersBottomSheet(
+                    liveSession: widget.liveSession,
+                    myUid: 1,
+                  ),
+                ),
+              ),
+            );
           },
           color: const Color.fromRGBO(48, 73, 123, 0.6),
           child: Image.asset("assets/icons/icon-people.png")));

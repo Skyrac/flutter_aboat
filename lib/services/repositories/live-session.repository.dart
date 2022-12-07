@@ -60,4 +60,28 @@ class LiveSessionRepository {
       return;
     }
   }
+
+  static Future<void> addHost(String roomId, int userId) async {
+    try {
+      var response = await dio.put<String>('$API/room/$roomId/host/$userId/add');
+      debugPrint("$response");
+      return;
+    } catch (e) {
+      debugPrint("$e");
+      debugPrint((e as DioError).response?.data);
+      return;
+    }
+  }
+
+  static Future<void> removeHost(String roomId, int userId) async {
+    try {
+      var response = await dio.put<String>('$API/room/$roomId/host/$userId/remove');
+      debugPrint("$response");
+      return;
+    } catch (e) {
+      debugPrint("$e");
+      debugPrint((e as DioError).response?.data);
+      return;
+    }
+  }
 }

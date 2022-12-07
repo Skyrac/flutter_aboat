@@ -201,4 +201,12 @@ class LiveSessionService extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  removeHost(int userId) async {
+    return await LiveSessionRepository.removeHost(_roomGuid, userId);
+  }
+
+  addHost(int userId) async {
+    return await LiveSessionRepository.addHost(_roomGuid, userId);
+  }
 }
