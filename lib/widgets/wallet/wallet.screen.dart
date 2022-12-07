@@ -19,9 +19,16 @@ class WalletScreen extends StatefulWidget {
 class _WalletScreenState extends State<WalletScreen> {
   final userService = getIt<UserService>();
   final textController = TextEditingController();
-  List<String> chainList = ["etherium", "mumbai", "polygon"];
+  List<String> chainList = ["Elastos Testnet"];
   String? selectedChain;
   String? selectedAddress;
+
+  getChainId(String network) {
+    switch (network) {
+      case "Elastos Testnet":
+        return 21;
+    }
+  }
 
   final connector = WalletConnect(
     bridge: 'https://bridge.walletconnect.org',
@@ -34,18 +41,16 @@ class _WalletScreenState extends State<WalletScreen> {
   );
 
   var _session, uri, session;
-  connectMetaMask(BuildContext context) async {
+  connectWallet(BuildContext context) async {
     if (!connector.connected) {
       try {
         session = await connector.createSession(onDisplayUri: (_uri) async {
           uri = _uri;
           await launchUrlString(uri, mode: LaunchMode.externalApplication);
         });
-        setState(() {
-          _session = session;
-        });
+        setState(() {});
 
-        print(session);
+        print("session: $session");
       } catch (e) {
         print(e);
       }
@@ -54,9 +59,6 @@ class _WalletScreenState extends State<WalletScreen> {
 
   @override
   Widget build(BuildContext context) {
-    connector.on('connect', (session) => print(session));
-    connector.on('session_update', (payload) => print(payload));
-    connector.on('disconnect', (session) => print(session));
     final addresses = userService.userInfo!.addresses;
     return SafeArea(
         child: ScaffoldWave(
@@ -142,8 +144,10 @@ class _WalletScreenState extends State<WalletScreen> {
                           print("Claim");
                         }, Colors.white, "assets/images/wallet_button.png"),
                         walletButton("Connect new wallet", () async {
-                          await connectMetaMask(context);
+                          await connectWallet(context);
                           print("Connect new wallet ${session.accounts[0]}");
+                          await userService.addWallet(session.accounts[0]);
+                          connector.killSession();
                         }, Colors.white, "assets/images/wallet_button.png"),
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
@@ -167,7 +171,7 @@ class _WalletScreenState extends State<WalletScreen> {
                                             ? Expanded(
                                                 child: ListView.builder(
                                                     shrinkWrap: true,
-                                                    itemCount: addresses!.length,
+                                                    itemCount: addresses.length,
                                                     scrollDirection: Axis.vertical,
                                                     itemBuilder: (BuildContext context, int index) {
                                                       final item = addresses[index];
@@ -177,18 +181,20 @@ class _WalletScreenState extends State<WalletScreen> {
                                                         children: [
                                                           Text(
                                                               "${item.substring(0, 7)}...${item.substring(item.length - 4, item.length)}"),
-                                                          IconButton(
-                                                              padding: EdgeInsets.zero,
-                                                              constraints: const BoxConstraints(),
-                                                              onPressed: () {
-                                                                print("delete");
-                                                                showAlert(context, item);
-                                                              },
-                                                              icon: const Icon(
-                                                                Icons.delete,
-                                                                color: Color.fromRGBO(154, 0, 0, 1),
-                                                                size: 28,
-                                                              )),
+                                                          addresses.length > 1
+                                                              ? IconButton(
+                                                                  padding: EdgeInsets.zero,
+                                                                  constraints: const BoxConstraints(),
+                                                                  onPressed: () {
+                                                                    print("delete");
+                                                                    showAlert(context, item);
+                                                                  },
+                                                                  icon: const Icon(
+                                                                    Icons.delete,
+                                                                    color: Color.fromRGBO(154, 0, 0, 1),
+                                                                    size: 28,
+                                                                  ))
+                                                              : SizedBox(),
                                                         ],
                                                       );
                                                     }),
@@ -368,7 +374,8 @@ class _WalletScreenState extends State<WalletScreen> {
                     return;
                   }
                   if (double.parse(textController.text) >= 5000) {
-                    userService.claimABOAT(selectedChain!, selectedAddress!, double.parse(textController.text));
+                    userService.claimABOAT(
+                        getChainId(selectedChain!).toString(), selectedAddress!, double.parse(textController.text));
                     textController.text = "";
                     Navigator.pop(context);
                   } else {
@@ -406,7 +413,8 @@ class _WalletScreenState extends State<WalletScreen> {
                   if (textController.text.isEmpty) {
                     return;
                   }
-                  userService.claimABOATNative(selectedChain!, selectedAddress!, double.parse(textController.text));
+                  userService.claimABOATNative(
+                      getChainId(selectedChain!).toString(), selectedAddress!, double.parse(textController.text));
                   textController.text = "";
                   Navigator.pop(context);
                 }, const Color.fromRGBO(188, 140, 75, 1))

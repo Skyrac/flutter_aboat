@@ -166,47 +166,44 @@ class UserRepository {
   }
 
   static Future<bool> deleteWallet(String address) async {
-    var response = await dio.delete<String>('/v1/user/$address/delete');
+    var response = await dio.delete<String>('/v1/user/login/$address/delete');
 
     return response.data == null ? false : response.data!.isNotEmpty;
   }
 
-  static Future<ResponseModel> addWallet(String chainId, String address, double amout) async {
+  static Future<bool> addWallet(String address) async {
     try {
       var response = await dio.post<String>(
-        '/v1/user/$address/add',
+        '/v1/user/login/$address/add',
       );
-      var convertedData = ResponseModel.fromJson(json.decode(response.data!));
-      debugPrint(response.data);
-      return convertedData;
+      return true;
     } catch (exception) {
-      return ResponseModel();
+      print(exception);
+      return false;
     }
   }
 
-  static Future<ResponseModel> claimABOAT(String chainId, String address, double amout) async {
+  static Future<bool> claimABOAT(String chainId, String address, double amout) async {
     try {
       var response = await dio.post<String>(
         '/v1/user/$chainId/claim/$address/$amout',
       );
-      var convertedData = ResponseModel.fromJson(json.decode(response.data!));
-      debugPrint(response.data);
-      return convertedData;
+      return true;
     } catch (exception) {
-      return ResponseModel();
+      print(exception);
+      return false;
     }
   }
 
-  static Future<ResponseModel> claimABOATNative(String chainId, String address, double amout) async {
+  static Future<bool> claimABOATNative(String chainId, String address, double amout) async {
     try {
       var response = await dio.post<String>(
         '/v1/user/$chainId/claim/$address/$amout/native',
       );
-      var convertedData = ResponseModel.fromJson(json.decode(response.data!));
-      debugPrint(response.data);
-      return convertedData;
+      return true;
     } catch (exception) {
-      return ResponseModel();
+      print(exception);
+      return false;
     }
   }
 }

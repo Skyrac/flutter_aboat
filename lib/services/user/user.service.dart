@@ -558,25 +558,26 @@ class UserService {
     }
   }
 
-  Future<String?> claimABOAT(String chainId, String address, double amout) async {
-    try {
-      var response = await UserRepository.claimABOAT(chainId, address, amout);
-      if (response.data == null || response.data!.isEmpty) {
-        return response.text ?? "true";
-      }
-    } catch (ex) {
-      return "true";
+  addWallet(String address) async {
+    final success = await UserRepository.addWallet(address);
+    if (success) {
+      print("${address} added");
     }
   }
 
-  Future<String?> claimABOATNative(String chainId, String address, double amout) async {
+  claimABOAT(String chainId, String address, double amout) async {
     try {
-      var response = await UserRepository.claimABOATNative(chainId, address, amout);
-      if (response.data == null || response.data!.isEmpty) {
-        return response.text ?? "true";
-      }
+      final success = await UserRepository.claimABOAT(chainId, address, amout);
     } catch (ex) {
-      return "true";
+      print(ex);
+    }
+  }
+
+  claimABOATNative(String chainId, String address, double amout) async {
+    try {
+      final success = await UserRepository.claimABOATNative(chainId, address, amout);
+    } catch (ex) {
+      print(ex);
     }
   }
   //#endregion
