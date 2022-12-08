@@ -5,10 +5,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../screens/settings/settings.screen.dart';
+import '../services/user/user.service.dart';
+import '../injection/injector.dart';
 
 class HomeAppBarWidget extends StatelessWidget {
-  const HomeAppBarWidget({Key? key, this.refresh}) : super(key: key);
+  HomeAppBarWidget({Key? key, this.refresh}) : super(key: key);
   final Function? refresh;
+  final userService = getIt<UserService>();
+
   @override
   Widget build(BuildContext context) {
     return AppBar(
@@ -73,29 +77,31 @@ class HomeAppBarWidget extends StatelessWidget {
             },
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.only(right: 15),
-          child: IconButton(
-            icon: Image.asset(
-              "assets/images/wallet.png",
-              width: 35,
-              height: 30,
-              fit: BoxFit.cover,
-            ),
-            tooltip: '',
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  PageTransition(
-                      alignment: Alignment.bottomCenter,
-                      curve: Curves.bounceOut,
-                      type: PageTransitionType.rightToLeftWithFade,
-                      duration: const Duration(milliseconds: 500),
-                      reverseDuration: const Duration(milliseconds: 500),
-                      child: WalletScreen()));
-            },
-          ),
-        ),
+        userService.isConnected
+            ? Padding(
+                padding: const EdgeInsets.only(right: 15),
+                child: IconButton(
+                  icon: Image.asset(
+                    "assets/images/wallet.png",
+                    width: 35,
+                    height: 30,
+                    fit: BoxFit.cover,
+                  ),
+                  tooltip: '',
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        PageTransition(
+                            alignment: Alignment.bottomCenter,
+                            curve: Curves.bounceOut,
+                            type: PageTransitionType.rightToLeftWithFade,
+                            duration: const Duration(milliseconds: 500),
+                            reverseDuration: const Duration(milliseconds: 500),
+                            child: const WalletScreen()));
+                  },
+                ),
+              )
+            : SizedBox(),
         Padding(
           padding: const EdgeInsets.only(right: 10),
           child: IconButton(

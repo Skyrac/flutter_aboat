@@ -565,19 +565,19 @@ class UserService {
     }
   }
 
-  claimABOAT(String chainId, String address, double amout) async {
+  claimABOAT(int chainId, String address, double amout) async {
     try {
       final success = await UserRepository.claimABOAT(chainId, address, amout);
-    } catch (ex) {
-      print(ex);
+    } catch (exception) {
+      debugPrint(exception.toString());
     }
   }
 
-  claimABOATNative(String chainId, String address, double amout) async {
+  claimABOATNative(int chainId, String address, double amout) async {
     try {
       final success = await UserRepository.claimABOATNative(chainId, address, amout);
-    } catch (ex) {
-      print(ex);
+    } catch (exception) {
+      debugPrint(exception.toString());
     }
   }
   //#endregion

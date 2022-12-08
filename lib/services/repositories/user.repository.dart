@@ -178,31 +178,31 @@ class UserRepository {
       );
       return true;
     } catch (exception) {
-      print(exception);
+      debugPrint(exception.toString());
       return false;
     }
   }
 
-  static Future<bool> claimABOAT(String chainId, String address, double amout) async {
+  static Future<bool> claimABOAT(int chainId, String address, double amout) async {
     try {
       var response = await dio.post<String>(
         '/v1/user/$chainId/claim/$address/$amout',
       );
       return true;
     } catch (exception) {
-      print(exception);
+      debugPrint(exception.toString());
       return false;
     }
   }
 
-  static Future<bool> claimABOATNative(String chainId, String address, double amout) async {
+  static Future<bool> claimABOATNative(int chainId, String address, double amout) async {
     try {
       var response = await dio.post<String>(
         '/v1/user/$chainId/claim/$address/$amout/native',
       );
       return true;
     } catch (exception) {
-      print(exception);
+      debugPrint(exception.toString());
       return false;
     }
   }
