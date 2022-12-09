@@ -27,7 +27,7 @@ class ChatMessageTile extends StatelessWidget {
   final void Function(ChatMessageDto) onDeleteMessage;
   final void Function() cancelReplyAndEdit;
   final void Function(int?) selectIndex;
-  final void Function(int) scrollToMessage;
+  final void Function(GlobalKey) scrollToMessage;
   final int index;
   final int? selectedIndex;
   // List<ChatMessageDto> data2 = [];
@@ -90,6 +90,7 @@ class ChatMessageTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(key);
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 7.5, 20, 7.5),
       child: SwipeTo(
@@ -122,12 +123,13 @@ class ChatMessageTile extends StatelessWidget {
                         ? RawMaterialButton(
                             onPressed: () {
                               for (var element in data) {
+                                print(element.globalKey);
                                 var idMessage = element.id;
                                 var idMessageAnswer = message.answeredMessage?.id;
-
                                 if (idMessageAnswer == idMessage) {
                                   print(data.indexOf(element));
-                                  scrollToMessage(data.indexOf(element));
+                                  print(element.globalKey);
+                                  scrollToMessage(element.globalKey);
                                   print("gefunden");
                                 }
                               }

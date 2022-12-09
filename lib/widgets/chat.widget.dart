@@ -71,9 +71,15 @@ class _ChatState extends State<Chat> {
     itemController.scrollTo(index: index, duration: Duration(milliseconds: 100), alignment: 0.1);
   }
 
-  Widget buildMessages(List<ChatMessageDto> data) => ScrollablePositionedList.builder(
-      // itemPositionsListener: itemListener,
-      itemScrollController: itemController,
+  Future scrollToKey(key) async {
+    await Scrollable.ensureVisible(
+      key.currentContext,
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  Widget buildMessages(List<ChatMessageDto> data) => ListView.builder(
       physics: const ScrollPhysics(),
       shrinkWrap: true,
       itemCount: data.length,
@@ -81,6 +87,7 @@ class _ChatState extends State<Chat> {
       itemBuilder: (BuildContext context, int index) {
         var item = data[index];
         return ChatMessageTile(
+            key: item.globalKey,
             message: item,
             onSwipedMessage: (message) {
               widget.replyToMessage(message);
@@ -99,7 +106,7 @@ class _ChatState extends State<Chat> {
             selectedIndex: selectedIndex,
             userService: userService,
             data: data,
-            scrollToMessage: (index) => scrollToMessage(index));
+            scrollToMessage: (index) => scrollToKey(index));
       });
 
   Future<List<ChatMessageDto>> getMessages(int roomId) async {
@@ -128,7 +135,7 @@ class _ChatState extends State<Chat> {
                   // Extracting data from snapshot object
                   return Container(
                     alignment: Alignment.topCenter,
-                    height: 400,
+                    // height: 300,
                     child: Stack(
                       alignment: Alignment.bottomCenter,
                       children: [
