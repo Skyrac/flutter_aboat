@@ -77,11 +77,6 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
 
     return ScaffoldWave(
         height: 33,
-        header: SliverPersistentHeader(
-          delegate: PodcastDetailSliver(widget.escapeWithNav,
-              expandedHeight: size.height * 0.4, podcast: widget.podcastSearchResult, controller: tabController),
-          pinned: true,
-        ),
         appBar: AppBar(
           centerTitle: false,
           leadingWidth: 35,
@@ -237,32 +232,29 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
       alignment: Alignment.bottomCenter,
       children: [
         CustomScrollView(shrinkWrap: true, controller: controller, slivers: [
-          // SliverPersistentHeader(
-          //   delegate:
-          //       PodcastEpisodeSliver(expandedHeight: size.height * 0.4, episode: widget.episode, controller: tabController),
-          //   pinned: true,
-          // ),
+          SliverPersistentHeader(
+            delegate: PodcastDetailSliver(widget.escapeWithNav,
+                expandedHeight: size.height * 0.4, podcast: widget.podcastSearchResult, controller: tabController),
+            pinned: true,
+          ),
           SliverToBoxAdapter(
             child: Container(constraints: BoxConstraints(minHeight: size.height * 0.5), child: tabs[currentTab]),
           )
         ]),
-        // Container(
-        //     constraints: BoxConstraints(minHeight: size.height * 0.5),
-        //     child: currentTab == 0 ? tabs[currentTab] : SingleChildScrollView(child: tabs[currentTab])),
-        // tabController.index == 2
-        //     ? ChatInput(
-        //         roomId: podcastSearchResult.roomId!,
-        //         focusNode: focusNode,
-        //         messageType: 1,
-        //         replyMessage: replyMessage,
-        //         editedMessage: editedMessage,
-        //         cancelReplyAndEdit: () {
-        //           setState(() {
-        //             replyMessage = null;
-        //             editedMessage = null;
-        //           });
-        //         })
-        //     : const SizedBox()
+        tabController.index == 2
+            ? ChatInput(
+                roomId: podcastSearchResult.roomId!,
+                focusNode: focusNode,
+                messageType: 2,
+                replyMessage: replyMessage,
+                editedMessage: editedMessage,
+                cancelReplyAndEdit: () {
+                  setState(() {
+                    replyMessage = null;
+                    editedMessage = null;
+                  });
+                })
+            : const SizedBox()
       ],
     );
   }
