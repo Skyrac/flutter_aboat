@@ -17,6 +17,7 @@ class Chat extends StatefulWidget {
   final FocusNode focusNode;
   final Function replyToMessage;
   final Function editMessage;
+  final ScrollController controller;
   final void Function() cancelReplyAndEdit;
 
   const Chat(
@@ -27,7 +28,8 @@ class Chat extends StatefulWidget {
       required this.cancelReplyAndEdit,
       required this.editMessage,
       required this.replyToMessage,
-      this.header})
+      this.header,
+      required this.controller})
       : super(key: key);
 
   @override
@@ -67,23 +69,33 @@ class _ChatState extends State<Chat> {
 
   final itemController = ItemScrollController();
 
-  Future scrollToMessage(index) async {
-    itemController.scrollTo(index: index, duration: Duration(milliseconds: 100), alignment: 0.1);
-  }
+  // Future scrollToMessage(index) async {
+  //   itemController.scrollTo(index: index, duration: Duration(milliseconds: 100), alignment: 0.1);
+  // }
 
   Future scrollToKey(key) async {
-    await Scrollable.ensureVisible(
-      key.currentContext,
-      duration: const Duration(milliseconds: 400),
-      curve: Curves.easeInOut,
-    );
+    final targetContext = key.currentContext;
+    if (targetContext != null) {
+      Scrollable.ensureVisible(
+        targetContext,
+        alignment: 0.5,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+      );
+    }
+    // await Scrollable.ensureVisible(
+    //   key.currentContext,
+    //   duration: const Duration(milliseconds: 400),
+    //   curve: Curves.easeInOut,
+    // );
   }
 
   Widget buildMessages(List<ChatMessageDto> data) => ListView.builder(
-      physics: const ScrollPhysics(),
+      controller: widget.controller,
+      physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemCount: data.length,
-      scrollDirection: Axis.vertical,
+      // scrollDirection: Axis.vertical,
       itemBuilder: (BuildContext context, int index) {
         var item = data[index];
         return ChatMessageTile(

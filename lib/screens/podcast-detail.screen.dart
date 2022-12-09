@@ -33,6 +33,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
   final ChatService chatService = getIt<ChatService>();
   final userService = getIt<UserService>();
   late TabController tabController;
+  final ScrollController controller = ScrollController();
   final focusNode = FocusNode();
   int currentTab = 0;
   Future<SearchResult?>? _getPodcast;
@@ -170,7 +171,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
             )));
   }
 
-  List<Widget> createTabs(int podcastId, int roomId) {
+  List<Widget> createTabs(int podcastId, int roomId, ScrollController controller) {
     return [
       FutureBuilder(
         builder: (context, snapshot) {
@@ -201,6 +202,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
         escapeWithNav: widget.escapeWithNav,
       ),
       Chat(
+        controller: controller,
         focusNode: focusNode,
         roomId: roomId,
         messageType: 1,
@@ -229,28 +231,38 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
   Widget createCustomScrollView(SearchResult podcastSearchResult) {
     final size = MediaQuery.of(context).size;
 
-    final tabs = createTabs(podcastSearchResult.id!, podcastSearchResult.roomId!);
+    final tabs = createTabs(podcastSearchResult.id!, podcastSearchResult.roomId!, controller);
 
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
-        Container(
-            constraints: BoxConstraints(minHeight: size.height * 0.5),
-            child: currentTab == 0 ? tabs[currentTab] : SingleChildScrollView(child: tabs[currentTab])),
-        tabController.index == 2
-            ? ChatInput(
-                roomId: podcastSearchResult.roomId!,
-                focusNode: focusNode,
-                messageType: 1,
-                replyMessage: replyMessage,
-                editedMessage: editedMessage,
-                cancelReplyAndEdit: () {
-                  setState(() {
-                    replyMessage = null;
-                    editedMessage = null;
-                  });
-                })
-            : const SizedBox()
+        CustomScrollView(shrinkWrap: true, controller: controller, slivers: [
+          // SliverPersistentHeader(
+          //   delegate:
+          //       PodcastEpisodeSliver(expandedHeight: size.height * 0.4, episode: widget.episode, controller: tabController),
+          //   pinned: true,
+          // ),
+          SliverToBoxAdapter(
+            child: Container(constraints: BoxConstraints(minHeight: size.height * 0.5), child: tabs[currentTab]),
+          )
+        ]),
+        // Container(
+        //     constraints: BoxConstraints(minHeight: size.height * 0.5),
+        //     child: currentTab == 0 ? tabs[currentTab] : SingleChildScrollView(child: tabs[currentTab])),
+        // tabController.index == 2
+        //     ? ChatInput(
+        //         roomId: podcastSearchResult.roomId!,
+        //         focusNode: focusNode,
+        //         messageType: 1,
+        //         replyMessage: replyMessage,
+        //         editedMessage: editedMessage,
+        //         cancelReplyAndEdit: () {
+        //           setState(() {
+        //             replyMessage = null;
+        //             editedMessage = null;
+        //           });
+        //         })
+        //     : const SizedBox()
       ],
     );
   }

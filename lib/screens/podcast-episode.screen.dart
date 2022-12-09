@@ -41,7 +41,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> with Single
 
   ChatMessageDto? replyMessage;
   ChatMessageDto? editedMessage;
-
+  final ScrollController controller = ScrollController();
   @override
   initState() {
     super.initState();
@@ -154,7 +154,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> with Single
             )));
   }
 
-  List<Widget> createTabs(Episode episode, int roomId, Duration position) {
+  List<Widget> createTabs(Episode episode, int roomId, Duration position, ScrollController controller) {
     return [
       PodcastEpisodeDetails(
         episode: episode,
@@ -163,6 +163,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> with Single
       ),
       PodcastEpisodePodcast(podcastId: episode.podcastId!, escapeWithNav: widget.escapeWithNav),
       Chat(
+        controller: controller,
         focusNode: focusNode,
         roomId: roomId,
         messageType: 2,
@@ -190,12 +191,12 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> with Single
 
   Widget createCustomScrollView(SearchResult podcastSearchResult) {
     final size = MediaQuery.of(context).size;
-    final tabs = createTabs(widget.episode, podcastSearchResult.roomId!, widget.position);
+    final tabs = createTabs(widget.episode, podcastSearchResult.roomId!, widget.position, controller);
 
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
-        CustomScrollView(shrinkWrap: true, slivers: [
+        CustomScrollView(shrinkWrap: true, controller: controller, slivers: [
           SliverPersistentHeader(
             delegate:
                 PodcastEpisodeSliver(expandedHeight: size.height * 0.4, episode: widget.episode, controller: tabController),
