@@ -1,6 +1,7 @@
 import 'package:Talkaboat/widgets/wallet/wallet-buttons.dart';
 import 'package:Talkaboat/widgets/wallet/wallet-modals.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import '../../injection/injector.dart';
@@ -38,16 +39,24 @@ class _WalletScreenState extends State<WalletScreen> {
       try {
         session = await connector.createSession(onDisplayUri: (_uri) async {
           uri = _uri;
-          await launchUrlString(uri, mode: LaunchMode.externalApplication);
+          try {
+            await launchUrlString(uri, mode: LaunchMode.externalApplication);
+          } catch (e) {
+            print(e);
+            showToast();
+          }
         });
         setState(() {});
-
         print("session: $session");
       } catch (e) {
         print(e);
       }
     }
   }
+
+  void showToast() => Fluttertoast.showToast(
+        msg: "you need to install the wallet app!",
+      );
 
   @override
   Widget build(BuildContext context) {
