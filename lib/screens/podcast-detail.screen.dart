@@ -210,7 +210,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
       children: [
         CustomScrollView(shrinkWrap: true, controller: controller, slivers: [
           SliverPersistentHeader(
-            delegate: PodcastDetailSliver(widget.escapeWithNav,
+            delegate: PodcastDetailSliver(
                 expandedHeight: size.height * 0.4, podcast: widget.podcastSearchResult, controller: tabController),
             pinned: true,
           ),
