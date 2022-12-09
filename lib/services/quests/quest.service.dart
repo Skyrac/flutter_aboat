@@ -1,4 +1,5 @@
 import 'package:Talkaboat/injection/injector.dart';
+import 'package:Talkaboat/models/quests/quest-response.model.dart';
 import 'package:Talkaboat/models/quests/quest.model.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 
@@ -9,12 +10,12 @@ class QuestService {
   List<Quest> quests = List<Quest>.empty(growable: true);
   var remainingQuests = 0;
   var isWaitingForResponse = false;
-  var response;
+  QuestResponse? response;
 
   hasQuests() => quests.isNotEmpty;
 
   Future<List<Quest>> getOpenQuests() async {
-    if(isWaitingForResponse) {
+    if (isWaitingForResponse) {
       return finishRequest();
     }
     isWaitingForResponse = true;
@@ -31,11 +32,10 @@ class QuestService {
 
   Future<bool> finishQuest(Quest quest) async {
     var rewards = await QuestRepository.finishQuest(quest);
-    if(rewards == null) {
+    if (rewards == null) {
       return false;
     }
     userService.updateRewards(rewards);
     return true;
   }
-
 }

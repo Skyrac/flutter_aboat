@@ -1,4 +1,5 @@
 import 'package:Talkaboat/models/chat/chat-dtos.dart';
+import 'package:Talkaboat/navigator_keys.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/widgets/chat-input.widget.dart';
 import 'package:Talkaboat/widgets/chat.widget.dart';
@@ -21,10 +22,8 @@ import 'login.screen.dart';
 
 class PodcastEpisodeScreen extends StatefulWidget {
   final Episode episode;
-  final Function escapeWithNav;
   final Duration position;
-  const PodcastEpisodeScreen(this.escapeWithNav, {Key? key, required this.episode, required this.position})
-      : super(key: key);
+  const PodcastEpisodeScreen({super.key, required this.episode, required this.position});
 
   @override
   State<PodcastEpisodeScreen> createState() => _PodcastEpisodeScreenState();
@@ -47,7 +46,8 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> with Single
     super.initState();
     tabController = TabController(length: 3, vsync: this, animationDuration: Duration.zero);
     tabController.addListener(() {
-      print("tabcontroller update ${tabController.indexIsChanging} ${tabController.index} ${tabController.previousIndex}");
+      debugPrint(
+          "tabcontroller update ${tabController.indexIsChanging} ${tabController.index} ${tabController.previousIndex}");
       setState(() {
         currentTab = tabController.index;
       });
@@ -64,16 +64,22 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> with Single
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     userService.UpdatePodcastVisitDate(widget.episode.podcastId);
     return ScaffoldWave(
         height: 33,
+        header: SliverPersistentHeader(
+          delegate:
+              PodcastEpisodeSliver(expandedHeight: size.height * 0.4, episode: widget.episode, controller: tabController),
+          pinned: true,
+        ),
         appBar: AppBar(
           centerTitle: false,
           leadingWidth: 35,
           titleSpacing: 3,
           backgroundColor: const Color.fromRGBO(29, 40, 58, 1),
           title: Text(
-            widget.episode!.title!,
+            widget.episode.title!,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   color: const Color.fromRGBO(99, 163, 253, 1),
                 ),
@@ -87,7 +93,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> with Single
                   onPressed: () => {
                         //TODO: Geräte Abhängigkeit prüfen
                         Share.share(
-                            "Check the Podcast ${widget.episode!.title} on Talkaboat.online mobile App! Start listening and earn while supporting new and upcoming podcasters.\n\n Download it now on \nAndroid: https://play.google.com/store/apps/details?id=com.aboat.talkaboat\n",
+                            "Check the Podcast ${widget.episode.title} on Talkaboat.online mobile App! Start listening and earn while supporting new and upcoming podcasters.\n\n Download it now on \nAndroid: https://play.google.com/store/apps/details?id=com.aboat.talkaboat\n",
                             subject: "Check this out! A Podcast on Talkaboat.online.")
                       }),
             ),
@@ -98,7 +104,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> with Single
                 tooltip: '',
                 onPressed: () {
                   if (!userService.isConnected) {
-                    widget.escapeWithNav(PageTransition(
+                    NavigatorKeys.navigatorKeyMain.currentState!.push(PageTransition(
                         alignment: Alignment.bottomCenter,
                         curve: Curves.bounceOut,
                         type: PageTransitionType.rightToLeftWithFade,
@@ -158,10 +164,9 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> with Single
     return [
       PodcastEpisodeDetails(
         episode: episode,
-        escapeWithNav: widget.escapeWithNav,
         position: position,
       ),
-      PodcastEpisodePodcast(podcastId: episode.podcastId!, escapeWithNav: widget.escapeWithNav),
+      PodcastEpisodePodcast(podcastId: episode.podcastId!),
       Chat(
         controller: controller,
         focusNode: focusNode,

@@ -11,10 +11,9 @@ import 'bottom-sheets/claim.bottom-sheet.dart';
 class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
   final double expandedHeight;
   final SearchResult podcast;
-  final Function escapeWithNav;
   final TabController? controller;
 
-  PodcastDetailSliver(this.escapeWithNav, {required this.expandedHeight, required this.podcast, this.controller});
+  PodcastDetailSliver({required this.expandedHeight, required this.podcast, this.controller});
 
   final userService = getIt<UserService>();
   final tokenService = getIt<TokenService>();
@@ -178,7 +177,9 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                           try {
                             final text = newValue.text.replaceAll(",", ".");
                             if (text.isEmpty || double.parse(text) <= userService.availableToken) return newValue;
-                          } catch (e) {}
+                          } catch (e) {
+                            debugPrint("$e");
+                          }
                           return oldValue;
                         }),
                       ],
@@ -198,7 +199,7 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                   : SizedBox(
                       height: 140,
                       child: Column(
-                        children: [const Text("Login to use this feature!"), Center(child: LoginButton(escapeWithNav))],
+                        children: const [Text("Login to use this feature!"), Center(child: LoginButton())],
                       ),
                     ),
               actions: [

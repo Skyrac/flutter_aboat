@@ -9,9 +9,8 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:page_transition/page_transition.dart';
 
 class PodcastListTileWidget extends StatefulWidget {
-  const PodcastListTileWidget(this.podcast, {this.stateChangeCb, required this.escapeWithNav, Key? key}) : super(key: key);
+  const PodcastListTileWidget(this.podcast, {this.stateChangeCb, Key? key}) : super(key: key);
   final Podcast podcast;
-  final Function escapeWithNav;
   final void Function()? stateChangeCb;
   @override
   State<PodcastListTileWidget> createState() => _PodcastListTileWidgetState();
@@ -92,7 +91,7 @@ class _PodcastListTileWidgetState extends State<PodcastListTileWidget> {
                 type: PageTransitionType.rightToLeftWithFade,
                 duration: const Duration(milliseconds: 500),
                 reverseDuration: const Duration(milliseconds: 500),
-                child: PodcastDetailScreen(widget.escapeWithNav, podcastSearchResult: widget.podcast)));
+                child: PodcastDetailScreen(podcastSearchResult: widget.podcast)));
           },
           child: Row(children: [
             SizedBox(

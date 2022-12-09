@@ -1,3 +1,4 @@
+import 'package:Talkaboat/navigator_keys.dart';
 import 'package:Talkaboat/services/downloading/file-downloader.service.dart';
 import 'package:Talkaboat/utils/common.dart';
 import 'package:audio_service/audio_service.dart';
@@ -15,13 +16,11 @@ import '../services/user/user.service.dart';
 import 'bottom-sheets/playlist.bottom-sheet.dart';
 
 class EpisodePreviewWidget extends StatefulWidget {
-  const EpisodePreviewWidget(this.episode, this.direction, this.onPlayEpisode, this.refresh, this.escapeWithNav, {Key? key})
-      : super(key: key);
+  const EpisodePreviewWidget(this.episode, this.direction, this.onPlayEpisode, this.refresh, {Key? key}) : super(key: key);
   final Episode episode;
   final Axis direction;
   final Function onPlayEpisode;
   final Function refresh;
-  final Function escapeWithNav;
 
   @override
   State<EpisodePreviewWidget> createState() => _EpisodePreviewWidgetState();
@@ -114,7 +113,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
               break;
             case "add":
               if (!userService.isConnected) {
-                widget.escapeWithNav(PageTransition(
+                NavigatorKeys.navigatorKeyMain.currentState!.push(PageTransition(
                     alignment: Alignment.bottomCenter,
                     curve: Curves.bounceOut,
                     type: PageTransitionType.rightToLeftWithFade,
@@ -126,7 +125,10 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                     isScrollControlled: true,
                     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
                     context: context,
-                    builder: (context) => PlaylistBottomSheet(episodeToAdd: entry));
+                    builder: (context) => Container(
+                          margin: const EdgeInsets.only(top: 24),
+                          child: FractionallySizedBox(heightFactor: 0.95, child: PlaylistBottomSheet(episodeToAdd: entry)),
+                        ));
               }
               break;
           }
@@ -141,7 +143,6 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
       stream: audioHandler.playbackState,
       builder: (context, snapshot) {
         final playbackState = snapshot.data;
-        final processingState = playbackState?.processingState;
         final playing = playbackState?.playing ?? false;
         return ClipRRect(
           borderRadius: BorderRadius.circular(10),
@@ -158,7 +159,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color: audioHandler.isListeningEpisode(widget.episode!.id) && playing
+          color: audioHandler.isListeningEpisode(widget.episode.id) && playing
               ? const Color.fromRGBO(188, 140, 75, 0.2)
               : Colors.transparent,
         ),
@@ -194,7 +195,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                                         ),
                                         Positioned.fill(
                                             child: Center(
-                                                child: audioHandler.isListeningEpisode(widget.episode!.id) && playing
+                                                child: audioHandler.isListeningEpisode(widget.episode.id) && playing
                                                     ? Image.asset(
                                                         "assets/images/pause.png",
                                                         width: 25,
@@ -218,7 +219,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
     final dt = DateTime.fromMillisecondsSinceEpoch(entry.pubDateMs?.toInt() ?? 0);
     var dateFormatted = DateFormat('dd.MM.yyyy').format(dt);
     final remaining = Duration(seconds: (entry.audioLengthSec! - entry.playTime!).toInt());
-    final episodeTime = Duration(seconds: widget.episode!.audioLengthSec!.toInt());
+    final episodeTime = Duration(seconds: widget.episode.audioLengthSec!.toInt());
     return Container(
       padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
       height: 105,
@@ -231,7 +232,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            color: audioHandler.isListeningEpisode(widget.episode!.id) && playing
+            color: audioHandler.isListeningEpisode(widget.episode.id) && playing
                 ? const Color.fromRGBO(188, 140, 75, 0.2)
                 : Colors.transparent,
           ),
@@ -259,7 +260,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                           ))),
                       Positioned.fill(
                           child: Center(
-                              child: audioHandler.isListeningEpisode(widget.episode!.id) && playing
+                              child: audioHandler.isListeningEpisode(widget.episode.id) && playing
                                   ? Image.asset(
                                       "assets/images/pause.png",
                                       width: 25,
@@ -303,7 +304,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            audioHandler.isListeningEpisode(widget.episode!.id) && playing
+                            audioHandler.isListeningEpisode(widget.episode.id) && playing
                                 ? Row(
                                     children: const [
                                       Icon(Icons.play_arrow, color: Color.fromRGBO(188, 140, 75, 1), size: 18),

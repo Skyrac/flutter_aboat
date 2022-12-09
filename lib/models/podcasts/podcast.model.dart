@@ -3,10 +3,6 @@ import 'episode.model.dart';
 
 class Podcast extends SearchResult {
   int? podcastId;
-  @override
-  int? id;
-  @override
-  String? image;
   String? genreIds;
   String? thumbnail;
   String? titleOriginal;
@@ -18,16 +14,12 @@ class Podcast extends SearchResult {
   String? type;
   String? email;
   List<Episode>? episodes;
-  @override
-  String? title;
   String? country;
   String? website;
   String? language;
   int? itunesId;
   String? publisher;
   bool? isClaimed;
-  @override
-  String? description;
   int? totalEpisodes;
   bool? explicitContent;
   int? latestPubDateMs;
@@ -38,7 +30,7 @@ class Podcast extends SearchResult {
   Podcast(
       {this.podcastId,
       super.id,
-      this.image,
+      super.image,
       this.genreIds,
       this.thumbnail,
       this.titleOriginal,
@@ -50,14 +42,14 @@ class Podcast extends SearchResult {
       this.type,
       this.email,
       this.episodes,
-      this.title,
+      super.title,
       this.country,
       this.website,
       this.language,
       this.itunesId,
       this.publisher,
       this.isClaimed,
-      this.description,
+      super.description,
       this.totalEpisodes,
       this.explicitContent,
       this.latestPubDateMs,
@@ -113,7 +105,7 @@ class Podcast extends SearchResult {
 
   @override
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['podcastId'] = podcastId;
     data['id'] = podcastId;
     data['roomId'] = roomId;

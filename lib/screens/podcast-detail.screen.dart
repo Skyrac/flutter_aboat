@@ -4,10 +4,9 @@ import 'package:Talkaboat/models/chat/chat-dtos.dart';
 import 'package:Talkaboat/services/hubs/chat/chat.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/widgets/chat-input.widget.dart';
-import 'package:Talkaboat/utils/common.dart';
 import 'package:Talkaboat/widgets/chat.widget.dart';
+import 'package:Talkaboat/widgets/episode-list-with-header.widget.dart';
 import 'package:Talkaboat/widgets/podcast-details.widget.dart';
-import 'package:Talkaboat/widgets/podcast-episode-list.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -19,10 +18,9 @@ import '../utils/scaffold_wave.dart';
 import '../widgets/podcast-detail-sliver.widget.dart';
 
 class PodcastDetailScreen extends StatefulWidget {
-  const PodcastDetailScreen(this.escapeWithNav, {Key? key, required this.podcastSearchResult}) : super(key: key);
+  const PodcastDetailScreen({Key? key, required this.podcastSearchResult}) : super(key: key);
 
   final SearchResult podcastSearchResult;
-  final Function escapeWithNav;
 
   @override
   State<PodcastDetailScreen> createState() => _PodcastDetailScreenState();
@@ -46,7 +44,8 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
     super.initState();
     tabController = TabController(length: 3, vsync: this, animationDuration: Duration.zero);
     tabController.addListener(() {
-      print("tabcontroller update ${tabController.indexIsChanging} ${tabController.index} ${tabController.previousIndex}");
+      debugPrint(
+          "tabcontroller update ${tabController.indexIsChanging} ${tabController.index} ${tabController.previousIndex}");
       setState(() {
         currentTab = tabController.index;
       });
@@ -168,33 +167,11 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
 
   List<Widget> createTabs(int podcastId, int roomId, ScrollController controller) {
     return [
-      FutureBuilder(
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.hasError) {
-              return SizedBox(
-                  height: 100,
-                  child: Center(
-                    child: Text(
-                      '${snapshot.error} occurred',
-                      style: const TextStyle(fontSize: 18),
-                    ),
-                  ));
-            } else if (snapshot.hasData && snapshot.data != null) {
-              // Extracting data from snapshot object
-              return PodcastEpisodeList(
-                episodes: snapshot.data!,
-                escapeWithNav: widget.escapeWithNav,
-              );
-            }
-          }
-          return const SizedBox(height: 105, child: Center(child: CircularProgressIndicator()));
-        },
-        future: podcastService.getPodcastDetailEpisodes(podcastId, "asc", -1),
+      EpisodeHeaderList(
+        podcastId: podcastId,
       ),
       PodcastDetails(
         podcastId: podcastId,
-        escapeWithNav: widget.escapeWithNav,
       ),
       Chat(
         controller: controller,
