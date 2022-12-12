@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:Talkaboat/screens/app.screen.dart';
@@ -5,6 +6,7 @@ import 'package:Talkaboat/themes/colors.dart';
 import 'package:Talkaboat/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../injection/injector.dart';
@@ -77,7 +79,15 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         isLoading = true;
       });
-      final result = await userService.emailLogin(email, pin);
+      final result = await userService.emailLogin(email, pin).timeout(
+        const Duration(seconds: 10),
+        onTimeout: () {
+          setState(() {
+            isLoading = false;
+          });
+          throw Fluttertoast.showToast(msg: "Timeout error!");
+        },
+      );
       debugPrint(result);
       if (result == "new_account") {
         setState(() {
@@ -87,7 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
       } else if (result == "true") {
         navAway(navigator);
       } else {
-        ShowSnackBar(context, "Error logging in");
+        Fluttertoast.showToast(msg: "Error logging in");
       }
       setState(() {
         isLoading = false;
