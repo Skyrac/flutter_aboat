@@ -302,9 +302,7 @@ class _LivestreamOverviewScreenState extends State<LivestreamOverviewScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 5),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
-                        child: LiveSessionTile(
-                          session: item,
-                        ),
+                        child: LiveSessionTile(session: item, escapeWithNav: widget.escapeWithNav),
                       ),
                     ),
                   ),

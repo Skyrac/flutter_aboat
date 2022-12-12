@@ -7,9 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
 class LiveSessionTile extends StatelessWidget {
-  const LiveSessionTile({super.key, required this.session});
+  const LiveSessionTile({super.key, required this.session, required this.escapeWithNav});
 
   final LiveSession session;
+  final Function escapeWithNav;
 
   @override
   Widget build(BuildContext context) {
@@ -29,8 +30,7 @@ class LiveSessionTile extends StatelessWidget {
               if (session.configuration!.superhostName == userService.userInfo!.userName) {
                 LiveSessionRepository.closeRoom(session.guid);
               } else {
-                Navigator.push(
-                    context,
+                /*escapeWithNav(
                     PageTransition(
                       alignment: Alignment.bottomCenter,
                       curve: Curves.bounceOut,
@@ -41,7 +41,18 @@ class LiveSessionTile extends StatelessWidget {
                         isHost: false,
                         session: session,
                       ),
-                    ));
+                    ));*/
+                escapeWithNav(PageTransition(
+                  alignment: Alignment.bottomCenter,
+                  curve: Curves.bounceOut,
+                  type: PageTransitionType.fade,
+                  duration: const Duration(milliseconds: 300),
+                  reverseDuration: const Duration(milliseconds: 200),
+                  child: LivestreamScreen(
+                    isHost: true,
+                    session: session,
+                  ),
+                ));
               }
             },
             child: Padding(
