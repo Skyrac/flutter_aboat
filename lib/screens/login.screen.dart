@@ -27,6 +27,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   var isLoading = false;
+  var isUsernameValid = false;
 
   final userService = getIt<UserService>();
 
@@ -80,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
         isLoading = true;
       });
       final result = await userService.emailLogin(email, pin).timeout(
-        const Duration(seconds: 10),
+        const Duration(seconds: 15),
         onTimeout: () {
           setState(() {
             isLoading = false;
@@ -310,33 +311,37 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> doEmailRegister(
       BuildContext context, TextStyle theme, String pinResult, NavigatorState navigator, String? rejectedUsername) async {
-    final username = await showUsernameDialog(context, theme, rejectedUsername);
-    if (username != null) {
-      setState(() {
-        isLoading = true;
-      });
-      final registerResult = await userService.emailRegister(emailController.text, pinResult, username, false);
-      setState(() {
-        isLoading = false;
-      });
-      debugPrint("registerResult $registerResult");
-      if (registerResult == null) {
-        // returns error
-        navAway(navigator);
-      } else {
-        // register error
-        if (registerResult.contains("username_invalid") ||
-            registerResult.contains("User or Wallet is already registered!")) {
-          debugPrint("invalid $username");
-          await doEmailRegister(context, theme, pinResult, navigator, username);
+    while (!isUsernameValid) {
+      final username = await showUsernameDialog(context, theme, rejectedUsername);
+      if (username != null) {
+        setState(() {
+          isLoading = true;
+        });
+        final registerResult = await userService.emailRegister(emailController.text, pinResult, username, false);
+        setState(() {
+          isLoading = false;
+        });
+        isUsernameValid = true;
+        debugPrint("registerResult $registerResult");
+        if (registerResult == null) {
+          // returns error
+          navAway(navigator);
         } else {
-          ShowSnackBar(context, "Error registering");
+          // register error
+          if (registerResult.contains("username_invalid") ||
+              registerResult.contains("User or Wallet is already registered!")) {
+            debugPrint("invalid $username");
+            isUsernameValid = false;
+            Fluttertoast.showToast(msg: "invalid username $username");
+          } else {
+            ShowSnackBar(context, "Error registering");
+          }
         }
+      } else {
+        debugPrint("cancel");
+        // cancel
+        return;
       }
-    } else {
-      debugPrint("cancel");
-      // cancel
-      return;
     }
   }
 
