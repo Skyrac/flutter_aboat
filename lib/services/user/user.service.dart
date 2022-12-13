@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:jwt_decode/jwt_decode.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
@@ -272,6 +273,7 @@ class UserService {
   Future<bool> getUserInfo() async {
     debugPrint("Get User Info");
     userInfo = await UserRepository.getUserInfo();
+    userInfo!.userId = int.parse(Jwt.parseJwt(token)["primarysid"]);
     if (userInfo == null || userInfo!.userName == null) {
       logout();
       return false;
