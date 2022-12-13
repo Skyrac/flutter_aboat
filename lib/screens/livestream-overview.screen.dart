@@ -259,7 +259,7 @@ class _LivestreamOverviewScreenState extends State<LivestreamOverviewScreen> {
                                     ]),
                                   ));
                           if (roomName != null) {
-                            var response = await liveSessionService.openRoom(roomName);
+                            final response = await liveSessionService.openRoom(roomName);
                             if (response != null) {
                               widget.escapeWithNav(PageTransition(
                                 alignment: Alignment.bottomCenter,

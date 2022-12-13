@@ -49,7 +49,7 @@ class LiveSessionTile extends StatelessWidget {
                   duration: const Duration(milliseconds: 300),
                   reverseDuration: const Duration(milliseconds: 200),
                   child: LivestreamScreen(
-                    isHost: true,
+                    isHost: false,
                     session: session,
                   ),
                 ));

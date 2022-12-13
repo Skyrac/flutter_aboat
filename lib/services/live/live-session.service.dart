@@ -1,8 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 
+import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/models/live/live-session-configuration.model.dart';
 import 'package:Talkaboat/models/live/live-session.model.dart';
+import 'package:Talkaboat/services/live/live-session-users.service.dart';
 import 'package:Talkaboat/services/repositories/live-session.repository.dart';
+import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
@@ -37,6 +41,9 @@ class LiveSessionService extends ChangeNotifier {
   bool get videoOn => _videoOn;
   bool get localAudio => _localAudio;
   bool get audioMuted => _audioMuted;
+
+  final userService = getIt<UserService>();
+  final liveUserService = LiveSessionUserService();
 
   Future<String> getToken(String roomId) async {
     var response = await LiveSessionRepository.getToken(roomId);
@@ -88,6 +95,11 @@ class LiveSessionService extends ChangeNotifier {
           _userVideoOn[remoteUid] = enabled;
           notifyListeners();
         },
+        onStreamMessage: (connection, remoteUid, streamId, data, length, sentTs) {
+          debugPrint("onStreamMessage $remoteUid $streamId $data $length");
+
+          liveUserService.onUserJoinRequest(remoteUid, data, length);
+        },
       ),
     );
   }
@@ -110,7 +122,7 @@ class LiveSessionService extends ChangeNotifier {
     await agoraEngine.enableVideo();
     final token = await getToken(roomId);
 
-    await join(roomId, roomName, options, token, 0);
+    await join(roomId, roomName, options, token);
   }
 
   Future<void> joinAsHost(String roomId, String roomName) async {
@@ -127,17 +139,20 @@ class LiveSessionService extends ChangeNotifier {
     await agoraEngine.startPreview();
     final token = await getToken(roomId);
 
-    await join(roomId, roomName, options, token, 0);
+    await join(roomId, roomName, options, token);
+    final streamId = await agoraEngine.createDataStream(const DataStreamConfig(syncWithAudio: false, ordered: false));
+
+    print("$streamId");
   }
 
-  Future<void> join(String roomGuid, String roomName, ChannelMediaOptions options, String token, int uid) async {
+  Future<void> join(String roomGuid, String roomName, ChannelMediaOptions options, String token) async {
     _roomGuid = roomGuid;
     _roomName = roomName;
     await agoraEngine.joinChannel(
       token: token,
       channelId: roomGuid,
       options: options,
-      uid: uid,
+      uid: userService.userInfo?.userId ?? 0,
     );
     notifyListeners();
   }
@@ -208,5 +223,10 @@ class LiveSessionService extends ChangeNotifier {
 
   addHost(int userId) async {
     return await LiveSessionRepository.addHost(_roomGuid, userId);
+  }
+
+  requestToJoin() async {
+    final encoded = const Utf8Encoder().convert(userService.userInfo!.userName!);
+    agoraEngine.sendStreamMessage(streamId: 1, data: encoded, length: encoded.length);
   }
 }

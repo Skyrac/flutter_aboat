@@ -24,12 +24,12 @@ class _LiveUsersBottomSheetState extends State<LiveUsersBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final canAddUsers =
-        (widget.liveSession.configuration!.onlySuperhostCanAddHost && widget.liveSession.superHost == widget.myUid) ||
-            (!widget.liveSession.configuration!.onlySuperhostCanAddHost && widget.liveSession.hosts.contains(widget.myUid));
-    final canRemoveUsers = (widget.liveSession.configuration!.onlySuperhostCanRemoveHost &&
-            widget.liveSession.superHost == widget.myUid) ||
-        (!widget.liveSession.configuration!.onlySuperhostCanRemoveHost && widget.liveSession.hosts.contains(widget.myUid));
+    //final canAddUsers =
+    //    (widget.liveSession.configuration!.onlySuperhostCanAddHost && widget.liveSession.superHost == widget.myUid) ||
+    //        (!widget.liveSession.configuration!.onlySuperhostCanAddHost && widget.liveSession.hosts.contains(widget.myUid));
+    //final canRemoveUsers = (widget.liveSession.configuration!.onlySuperhostCanRemoveHost &&
+    //        widget.liveSession.superHost == widget.myUid) ||
+    //    (!widget.liveSession.configuration!.onlySuperhostCanRemoveHost && widget.liveSession.hosts.contains(widget.myUid));
     return ScaffoldWave(
       physics: const NeverScrollableScrollPhysics(),
       appBar: AppBar(
@@ -56,26 +56,11 @@ class _LiveUsersBottomSheetState extends State<LiveUsersBottomSheet> {
               child: MaterialButton(
                   color: const Color.fromRGBO(99, 163, 253, 1),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                  onPressed: () async {
-                    Future.microtask(() async {
-                      final nav = Navigator.of(context);
-                      nav.pop(); // this Bottom Sheet
-                      nav.pop(); // LivestreamScreen
-                      nav.push(PageTransition(
-                        alignment: Alignment.bottomCenter,
-                        curve: Curves.bounceOut,
-                        type: PageTransitionType.fade,
-                        duration: const Duration(milliseconds: 300),
-                        reverseDuration: const Duration(milliseconds: 200),
-                        child: LivestreamScreen(
-                          isHost: true,
-                          session: widget.liveSession,
-                        ),
-                      ));
-                    });
+                  onPressed: () {
+                    liveService.requestToJoin();
                   },
                   child: Text(
-                    "Join Session",
+                    "Request Session",
                     style: Theme.of(context).textTheme.titleLarge!.copyWith(color: const Color.fromRGBO(0, 0, 0, 1)),
                   )),
             ),
@@ -83,7 +68,7 @@ class _LiveUsersBottomSheetState extends State<LiveUsersBottomSheet> {
               "Hosts",
               style: Theme.of(context).textTheme.titleLarge,
             ),
-            Column(
+            /*Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: widget.liveSession.hosts
                   .map(
@@ -104,12 +89,12 @@ class _LiveUsersBottomSheetState extends State<LiveUsersBottomSheet> {
                     ),
                   )
                   .toList(),
-            ),
+            ),*/
             Text(
               "User",
               style: Theme.of(context).textTheme.titleLarge,
             ),
-            Column(
+            /*Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: widget.liveSession.users
                   .map(
@@ -130,7 +115,7 @@ class _LiveUsersBottomSheetState extends State<LiveUsersBottomSheet> {
                     ),
                   )
                   .toList(),
-            )
+            )*/
           ],
         ),
       ),
