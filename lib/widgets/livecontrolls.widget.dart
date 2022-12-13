@@ -63,44 +63,23 @@ class _LiveControllsState extends State<LiveControlls> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: liveSessionService.isHost
                     ? [
-                        const Spacer(),
                         _changeCameraButton(),
-                        const SizedBox(
-                          width: 20,
-                        ),
                         _changeVideoButton(),
-                        const SizedBox(
-                          width: 20,
-                        ),
                         _callEndButton(),
-                        const SizedBox(
-                          width: 20,
-                        ),
                         _changeAudioStreamButton(),
-                        const SizedBox(
-                          width: 20,
-                        ),
                         _peopleButton(),
-                        const Spacer(),
                       ]
                     : [
-                        const Spacer(),
                         _changeAudioMuteButton(),
-                        const SizedBox(
-                          width: 20,
-                        ),
                         _callEndButton(),
-                        const SizedBox(
-                          width: 20,
-                        ),
                         _peopleButton(),
-                        const Spacer(),
                       ],
               ),
             ),
-          )
+          ),
         ],
       ),
     );

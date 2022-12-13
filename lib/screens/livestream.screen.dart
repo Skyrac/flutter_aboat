@@ -47,41 +47,41 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-        child: Container(
-            color: const Color.fromRGBO(15, 23, 41, 1),
-            child: Scaffold(
-              appBar: AppBar(
-                title: Text(widget.session.configuration!.roomName),
-              ),
-              bottomNavigationBar: null,
-              body: Center(
-                child: AnimatedBuilder(
-                  animation: _liveService,
-                  builder: (context, child) => Stack(children: [
-                    _liveService.isJoined ? _viewRows() : const Center(child: CircularProgressIndicator()),
-                    Positioned(
-                      bottom: 0,
-                      child: Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Column(
-                          verticalDirection: VerticalDirection.up,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            LiveControlls(
-                              liveSession: widget.session,
-                            ),
-                            LiveChat(
-                              roomId: widget.session.chat!.id,
-                              visible: _liveService.chatVisible,
-                            )
-                          ],
-                        ),
+      child: Container(
+        color: const Color.fromRGBO(15, 23, 41, 1),
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(widget.session.configuration!.roomName),
+          ),
+          bottomNavigationBar: null,
+          body: AnimatedBuilder(
+            animation: _liveService,
+            builder: (context, child) => Stack(children: [
+              _liveService.isJoined ? _viewRows() : const Center(child: CircularProgressIndicator()),
+              Positioned(
+                bottom: 0,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  child: Column(
+                    verticalDirection: VerticalDirection.up,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      LiveControlls(
+                        liveSession: widget.session,
                       ),
-                    )
-                  ]),
+                      LiveChat(
+                        roomId: widget.session.chat!.id,
+                        visible: _liveService.chatVisible,
+                      )
+                    ],
+                  ),
                 ),
-              ),
-            )));
+              )
+            ]),
+          ),
+        ),
+      ),
+    );
   }
 
   /// Helper function to get list of native views
