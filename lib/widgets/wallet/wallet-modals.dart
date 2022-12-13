@@ -2,14 +2,16 @@ import 'package:Talkaboat/widgets/wallet/wallet-buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../injection/injector.dart';
+import '../../models/smart/chain.model.dart';
+import '../../services/repositories/smart-contract.repository.dart';
 import '../../services/user/user.service.dart';
 
 class CustomDialogBox extends StatefulWidget {
-  CustomDialogBox(context, this.selectedAddress, this.selectedChain, {Key? key}) : super(key: key);
+  CustomDialogBox(context, {Key? key}) : super(key: key);
 
-  int? selectedChain;
+  int? selectedChainId;
+  String? selectedChain;
   String? selectedAddress;
-  static const Map<int, String> network = {21: "Elastos Testnet"};
 
   @override
   State<CustomDialogBox> createState() => _CustomDialogBoxState();
@@ -18,6 +20,18 @@ class CustomDialogBox extends StatefulWidget {
 class _CustomDialogBoxState extends State<CustomDialogBox> {
   final userService = getIt<UserService>();
   final textController = TextEditingController();
+
+  Future<List<Chain>> getChain() async {
+    return SmartContract.getChain();
+  }
+
+  Future<List<Chain>>? _getChain;
+
+  @override
+  initState() {
+    super.initState();
+    _getChain = getChain();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,12 +60,12 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                   const SizedBox(
                     height: 15,
                   ),
-                  inputSelect(context, "Select chain...", CustomDialogBox.network, addresses!, true, widget.selectedChain,
+                  inputSelect(context, "Select chain...", addresses!, true, widget.selectedChainId, widget.selectedChain,
                       widget.selectedAddress),
                   const SizedBox(
                     height: 10,
                   ),
-                  inputSelect(context, "Select wallet...", CustomDialogBox.network, addresses, false, widget.selectedChain,
+                  inputSelect(context, "Select wallet...", addresses, false, widget.selectedChainId, widget.selectedChain,
                       widget.selectedAddress),
                   Container(
                       margin: const EdgeInsets.symmetric(vertical: 10),
@@ -129,14 +143,15 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                     print("Claim ABOAT");
                     print(widget.selectedAddress);
                     print(widget.selectedChain);
+                    print(widget.selectedChainId);
                     if (textController.text.isEmpty) {
                       return;
                     }
                     if (double.parse(textController.text) >= 5000 &&
-                        widget.selectedChain != null &&
+                        widget.selectedChainId != null &&
                         widget.selectedAddress != null) {
                       userService.claimABOAT(
-                          widget.selectedChain!, widget.selectedAddress!, double.parse(textController.text));
+                          widget.selectedChainId!, widget.selectedAddress!, double.parse(textController.text));
                       textController.text = "";
                       Navigator.pop(context);
                     } else {
@@ -169,13 +184,15 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                       )),
                     ]),
                   ),
-                  ClaimButton(context, "Convert to {{chain-native}}", () {
+                  ClaimButton(context,
+                      widget.selectedChain == null ? "Convert to {{chain-native}}" : "Convert to ${widget.selectedChain}",
+                      () {
                     print("Convert to {{chain-native}}");
                     if (textController.text.isEmpty) {
                       return;
                     }
                     userService.claimABOATNative(
-                        widget.selectedChain!, widget.selectedAddress!, double.parse(textController.text));
+                        widget.selectedChainId!, widget.selectedAddress!, double.parse(textController.text));
                     textController.text = "";
                     Navigator.pop(context);
                   }, const Color.fromRGBO(188, 140, 75, 1))
@@ -188,68 +205,89 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
     );
   }
 
-  Widget inputSelect(BuildContext context, String hintText, Map network, List addresses, bool chain, int? selectedChain,
-      String? selectedAddress) {
-    return Container(
-      width: 260,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: const Color.fromRGBO(29, 40, 58, 1),
-        boxShadow: const [
-          BoxShadow(
-            color: Color.fromRGBO(188, 140, 75, 1),
-            spreadRadius: 0,
-            blurRadius: 0,
-            offset: Offset(0, 1), // changes position of shadow
-          ),
-        ],
-      ),
-      child: DropdownButtonFormField<String>(
-          isExpanded: true,
-          icon: const Icon(
-            Icons.keyboard_arrow_down,
-            color: Color.fromRGBO(99, 163, 253, 1),
-            size: 30,
-          ),
-          hint: Text(hintText,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyMedium
-                  ?.copyWith(color: const Color.fromRGBO(135, 135, 135, 1), fontStyle: FontStyle.italic)),
-          dropdownColor: const Color.fromRGBO(29, 40, 58, 0.97),
-          decoration: const InputDecoration(
-            contentPadding: EdgeInsets.only(left: 10),
-            border: InputBorder.none,
-            alignLabelWithHint: true,
-          ),
-          value: chain ? widget.selectedChain?.toString() : widget.selectedAddress,
-          items: chain
-              ? network.entries
-                  .map((e) => DropdownMenuItem<String>(
-                      value: e.key.toString(),
-                      child: Text(
-                        e.value.toString(),
-                        overflow: TextOverflow.ellipsis,
-                      )))
-                  .toList()
-              : addresses
-                  .map((item) => DropdownMenuItem<String>(
-                      value: item.toString(),
-                      child: Text(
-                        item.toString(),
-                        overflow: TextOverflow.ellipsis,
-                      )))
-                  .toList(),
-          onChanged: chain
-              ? (e) {
-                  setState(() => widget.selectedChain = int.parse(e!));
-                  print(e);
-                }
-              : (e) {
-                  setState(() => widget.selectedAddress = e);
-                  print(e);
-                }),
-    );
+  Widget inputSelect(BuildContext context, String hintText, List addresses, bool chain, int? selectedChainId,
+      String? selectedChain, String? selectedAddress) {
+    return FutureBuilder(
+        future: _getChain,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasError) {
+              return Center(
+                child: Text(
+                  '${snapshot.error} occurred',
+                  style: const TextStyle(fontSize: 18),
+                ),
+              );
+            }
+
+            final chains = snapshot.data;
+            return Container(
+              width: 260,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: const Color.fromRGBO(29, 40, 58, 1),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color.fromRGBO(188, 140, 75, 1),
+                    spreadRadius: 0,
+                    blurRadius: 0,
+                    offset: Offset(0, 1), // changes position of shadow
+                  ),
+                ],
+              ),
+              child: DropdownButtonFormField<String>(
+                  isExpanded: true,
+                  icon: const Icon(
+                    Icons.keyboard_arrow_down,
+                    color: Color.fromRGBO(99, 163, 253, 1),
+                    size: 30,
+                  ),
+                  hint: Text(hintText,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(color: const Color.fromRGBO(135, 135, 135, 1), fontStyle: FontStyle.italic)),
+                  dropdownColor: const Color.fromRGBO(29, 40, 58, 0.97),
+                  decoration: const InputDecoration(
+                    contentPadding: EdgeInsets.only(left: 10),
+                    border: InputBorder.none,
+                    alignLabelWithHint: true,
+                  ),
+                  value: chain ? widget.selectedChainId?.toString() : widget.selectedAddress,
+                  items: chain
+                      ? chains!
+                          .map((e) => DropdownMenuItem<String>(
+                              value: e.chainId.toString(),
+                              child: Text(
+                                e.chainName.toString(),
+                                overflow: TextOverflow.ellipsis,
+                              )))
+                          .toList()
+                      : addresses
+                          .map((item) => DropdownMenuItem<String>(
+                              value: item.toString(),
+                              child: Text(
+                                item.toString(),
+                                overflow: TextOverflow.ellipsis,
+                              )))
+                          .toList(),
+                  onChanged: chain
+                      ? (e) {
+                          var chain = chains!.where((element) => e.toString() == element.chainId.toString());
+                          setState(() {
+                            widget.selectedChainId = int.parse(e!);
+                            widget.selectedChain = chain.first.coin.toString();
+                          });
+                          print(e);
+                        }
+                      : (e) {
+                          setState(() => widget.selectedAddress = e);
+                          print(e);
+                        }),
+            );
+          }
+          return const SizedBox(height: 48, width: 48, child: CircularProgressIndicator());
+        });
   }
 }
 

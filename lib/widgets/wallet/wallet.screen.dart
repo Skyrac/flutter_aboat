@@ -20,8 +20,7 @@ class WalletScreen extends StatefulWidget {
 
 class _WalletScreenState extends State<WalletScreen> {
   final userService = getIt<UserService>();
-  int? selectedChain;
-  String? selectedAddress;
+  int? selectedChainId;
 
   final connector = WalletConnect(
     bridge: 'https://bridge.walletconnect.org',
@@ -138,7 +137,7 @@ class _WalletScreenState extends State<WalletScreen> {
                       showDialog(
                           context: context,
                           builder: (BuildContext context) {
-                            return CustomDialogBox(context, selectedAddress, selectedChain);
+                            return CustomDialogBox(context);
                           });
                       print("Claim");
                     }, Colors.white, "assets/images/arrow_right.png"),
