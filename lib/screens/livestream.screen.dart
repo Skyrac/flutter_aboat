@@ -123,7 +123,11 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
 
   /// Video view wrapper
   Widget _videoView(ViewContainer view) {
-    if (view.wrap) {
+    if (view.userId == 0) {
+      return Expanded(
+        child: Container(child: view.view),
+      );
+    } else if (view.wrap) {
       return Expanded(
         child: Stack(
           children: [
@@ -138,7 +142,7 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
                   padding: const EdgeInsets.all(10),
                   child: Center(
                     child: Text(
-                      view.userId.toString(),
+                      widget.session.hosts.firstWhere((x) => x.userId == view.userId).userName,
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,

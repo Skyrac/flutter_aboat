@@ -72,7 +72,7 @@ class LiveSessionService extends ChangeNotifier {
         onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
           debugPrint("onUserJoined ${connection.channelId} ${connection.localUid} $remoteUid");
           _users.add(remoteUid);
-          _userVideoOn[remoteUid] = false;
+          _userVideoOn[remoteUid] = true;
           notifyListeners();
         },
         onUserOffline: (RtcConnection connection, int remoteUid, UserOfflineReasonType reason) {
