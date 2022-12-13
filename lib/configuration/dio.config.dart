@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
+import 'package:rate_limiter/rate_limiter.dart';
 
 import '../injection/injector.dart';
 import '../services/user/user.service.dart';
@@ -40,7 +41,21 @@ var cacheOptions = CacheOptions(
 
 Dio dio = Dio(options);
 
+int noop() {
+  return 0;
+}
+
+final throttledNoop = noop.throttled(const Duration(milliseconds: 125));
+
 void configDio() {
+  dio.interceptors.add(QueuedInterceptorsWrapper(onRequest: (options, handler) {
+    throttledNoop();
+    return handler.next(options);
+  }, onResponse: (response, handler) {
+    return handler.next(response); // continue
+  }, onError: (DioError e, handler) {
+    return handler.next(e);
+  }));
   dio.interceptors.add(InterceptorsWrapper(onRequest: (options, handler) {
     final token = getIt<UserService>().token;
     options.headers['Authorization'] = "Bearer $token";

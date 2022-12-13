@@ -39,10 +39,14 @@ abstract class HubService {
     if (!userService.isConnected) {
       return false;
     }
+    debugPrint("checking connection to $hubName-hub");
     var state = connection.state;
     if (state != HubConnectionState.Connected) {
+      debugPrint("$hubName-hub connection state: $state");
       if (state != HubConnectionState.Connecting && state != HubConnectionState.Reconnecting) {
         await connect();
+
+        return true;
       }
       return false;
     }

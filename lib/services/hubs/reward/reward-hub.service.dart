@@ -9,13 +9,14 @@ class RewardHubService extends HubService {
   @override
   String get hubName => "reward";
 
-  RewardHubService() : super();
+  RewardHubService() : super() {
+    connection.on("RewardUpdate", updateAndValidateReward);
+  }
 
   final RewardService rewardService = getIt<RewardService>();
 
   @override
   connect() async {
-    connection.on("RewardUpdate", updateAndValidateReward);
     await super.connect();
   }
 
