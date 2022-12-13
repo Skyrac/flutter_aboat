@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/models/rewards/reward.model.dart';
 import 'package:Talkaboat/services/hubs/hub-service.dart';
+import 'package:Talkaboat/services/user/reward.service.dart';
 import 'package:flutter/foundation.dart';
 
 class RewardHubService extends HubService {
@@ -8,6 +10,8 @@ class RewardHubService extends HubService {
   String get hubName => "reward";
 
   RewardHubService() : super();
+
+  final RewardService rewardService = getIt<RewardService>();
 
   @override
   connect() async {
@@ -19,7 +23,7 @@ class RewardHubService extends HubService {
     if (arguments != null && arguments[0] != null) {
       var value = arguments[0];
       var reward = Reward.fromJson(jsonDecode(jsonEncode(value)));
-      userService.updateRewards(reward);
+      rewardService.Update(reward);
     }
   }
 

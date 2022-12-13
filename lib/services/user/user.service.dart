@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:Talkaboat/models/rewards/reward.model.dart';
 import 'package:Talkaboat/services/hubs/chat/chat.service.dart';
+import 'package:Talkaboat/services/user/reward.service.dart';
 import 'package:Talkaboat/services/user/social.service.dart';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -16,8 +18,6 @@ import '../../injection/injector.dart';
 import '../../models/playlist/playlist.model.dart';
 import '../../models/podcasts/podcast.model.dart';
 import '../../models/response.model.dart';
-import '../../models/rewards/reward-detail.model.dart';
-import '../../models/rewards/reward.model.dart';
 import '../../models/user/user-info-model.dart';
 import '../hubs/reward/reward-hub.service.dart';
 import '../repositories/podcast.repository.dart';
@@ -33,7 +33,6 @@ class UserService {
   UserInfoData? userInfo;
   List<Podcast> favorites = List.empty();
   List<Playlist> playlists = List.empty();
-  Reward rewards = Reward();
   Map<int, List<Podcast>> podcastProposalsHomeScreen = {};
   ResponseModel? lastConnectionState;
   DateTime? lastNotificationSeen;
@@ -48,13 +47,9 @@ class UserService {
   get isConnected => token.isNotEmpty && userInfo != null;
   get guest => _guest;
 
-  get availableToken => rewards.vested;
-  Stream<Reward> rewardStream() async* {
-    while (true) {
-      await Future.delayed(const Duration(milliseconds: 500));
-      yield rewards;
-    }
-  }
+  final rewardService = getIt<RewardService>();
+  get availableToken => rewardService.value.vested;
+  get lockedToken => rewardService.value.unvested;
 
   Future<bool> socialLogin(SocialLogin socialType, BuildContext context) async {
     UserCredential? credential;
@@ -226,10 +221,6 @@ class UserService {
     }
   }
 
-  updateRewards(Reward newRewards) {
-    rewards = newRewards;
-  }
-
   static Future<UserService> init() async {
     var userService = UserService();
     await userService.setInitialValues();
@@ -245,7 +236,7 @@ class UserService {
       if (userInfo != null) {
         debugPrint("$userInfo");
         _guest = false;
-        await getRewards();
+        await rewardService.getRewards();
         await getFavorites(refresh: true);
         await getFriends();
         var lastUpdate = prefs.getInt(LAST_NOTIFICATION_UPDATE);
@@ -259,10 +250,6 @@ class UserService {
     podcastProposalsHomeScreen[0] = podcasts.take(10).toList();
     podcastProposalsHomeScreen[1] = podcasts.skip(10).take(10).toList();
     podcastProposalsHomeScreen[2] = podcasts.skip(20).take(10).toList();
-  }
-
-  getRewards() async {
-    rewards = await UserRepository.getUserRewards();
   }
 
   getFriends() async {
@@ -354,7 +341,7 @@ class UserService {
     baseLogin = false;
     token = "";
     userInfo = null;
-    rewards = Reward();
+    rewardService.Update(Reward());
     favorites = List.empty();
     GoogleSignIn googleSignIn = GoogleSignIn();
     FacebookAuth facebookAuth = FacebookAuth.instance;
@@ -536,10 +523,6 @@ class UserService {
 
   getProposals(int genre) {
     return podcastProposalsHomeScreen[genre];
-  }
-
-  Future<List<RewardDetail>> getUserRewardDetails() async {
-    return await UserRepository.getDetailedUserRewards();
   }
 
   deleteAccount() async {
