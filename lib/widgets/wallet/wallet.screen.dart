@@ -32,27 +32,7 @@ class _WalletScreenState extends State<WalletScreen> {
     ),
   );
 
-  signMessage(BuildContext context, String message) async {
-    if (connector.connected) {
-      try {
-        print("Message received");
-        print(message);
-
-        EthereumWalletConnectProvider provider = EthereumWalletConnectProvider(connector);
-        launchUrlString(uri, mode: LaunchMode.externalApplication);
-        var signature = await provider.personalSign(message: message, address: session.accounts[0], password: "");
-        print(signature);
-        setState(() {
-          _signature = signature;
-        });
-      } catch (exp) {
-        print("Error while signing transaction");
-        print(exp);
-      }
-    }
-  }
-
-  var _session, session, _uri, uri, _signature;
+  var session, _uri, uri, _signature;
   connectWallet(BuildContext context) async {
     if (!connector.connected) {
       try {
@@ -61,14 +41,14 @@ class _WalletScreenState extends State<WalletScreen> {
           try {
             await launchUrlString(uri, mode: LaunchMode.externalApplication);
           } catch (e) {
-            print(e);
+            debugPrint(e.toString());
             showToast();
           }
         });
         setState(() {});
-        print("session: $session");
+        debugPrint("session: $session");
       } catch (e) {
-        print(e);
+        debugPrint(e.toString());
       }
     }
   }
@@ -151,7 +131,7 @@ class _WalletScreenState extends State<WalletScreen> {
                               duration: const Duration(milliseconds: 300),
                               reverseDuration: const Duration(milliseconds: 200),
                               child: const EarningsScreen()));
-                      print("Earning History");
+                      debugPrint("Earning History");
                     }, Colors.white, "assets/images/arrow_right.png"),
                     WalletButton("Claim", () {
                       showDialog(
@@ -159,17 +139,32 @@ class _WalletScreenState extends State<WalletScreen> {
                           builder: (BuildContext context) {
                             return CustomDialogBox(context);
                           });
-                      print("Claim");
+                      debugPrint("Claim");
                     }, Colors.white, "assets/images/arrow_right.png"),
                     WalletButton("Connect new wallet", () async {
                       await connectWallet(context);
-                      print("Connect new wallet ${session.accounts[0]}");
+                      debugPrint("Connect new wallet ${session.accounts[0]}");
                       var message = await userService.addWallet(session.accounts[0]);
                       if (message.toString() != null) {
-                        print(message.toString());
-                        await signMessage(context, message.toString());
+                        if (connector.connected) {
+                          try {
+                            debugPrint("Message received");
+                            debugPrint(message.toString());
+                            EthereumWalletConnectProvider provider = EthereumWalletConnectProvider(connector);
+                            launchUrlString(uri, mode: LaunchMode.externalApplication);
+                            var signature = await provider.personalSign(
+                                message: message.toString(), address: session.accounts[0], password: "");
+                            debugPrint(signature);
+                            setState(() {
+                              _signature = signature;
+                            });
+                          } catch (exp) {
+                            debugPrint("Error while signing transaction");
+                            debugPrint(exp.toString());
+                          }
+                        }
                         if (_signature != null) {
-                          userService.addWalletConfirm(session.accounts[0], _signature);
+                          userService.addWalletConfirm(session.accounts[0], _signature, false);
                         }
                       }
                       connector.killSession();
