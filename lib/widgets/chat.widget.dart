@@ -91,8 +91,15 @@ class _ChatState extends State<Chat> {
             index: index,
             selectedIndex: selectedIndex,
             userService: userService,
-            data: data,
-            scrollToMessage: (index) => scrollToKey(index));
+            scrollToMessage: () {
+              for (var element in data) {
+                var idMessage = element.id;
+                var idMessageAnswer = item.answeredMessage?.id;
+                if (idMessageAnswer == idMessage) {
+                  scrollToKey(element.globalKey);
+                }
+              }
+            });
       });
 
   Future<List<ChatMessageDto>> getMessages(int roomId) async {

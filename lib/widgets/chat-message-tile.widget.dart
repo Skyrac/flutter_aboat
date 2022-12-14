@@ -7,7 +7,6 @@ import 'package:swipe_to/swipe_to.dart';
 class ChatMessageTile extends StatelessWidget {
   const ChatMessageTile(
       {super.key,
-      required this.data,
       required this.message,
       required this.onSwipedMessage,
       required this.onEditMessage,
@@ -19,7 +18,6 @@ class ChatMessageTile extends StatelessWidget {
       required this.userService,
       required this.scrollToMessage});
 
-  final List<ChatMessageDto> data;
   final ChatMessageDto message;
   final UserService userService;
   final void Function(ChatMessageDto) onSwipedMessage;
@@ -27,10 +25,9 @@ class ChatMessageTile extends StatelessWidget {
   final void Function(ChatMessageDto) onDeleteMessage;
   final void Function() cancelReplyAndEdit;
   final void Function(int?) selectIndex;
-  final void Function(GlobalKey) scrollToMessage;
+  final void Function() scrollToMessage;
   final int index;
   final int? selectedIndex;
-  // List<ChatMessageDto> data2 = [];
 
   _showPopupMenu(BuildContext context, Offset offset, ChatMessageDto entry) async {
     double left = offset.dx;
@@ -90,7 +87,6 @@ class ChatMessageTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(key);
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 7.5, 20, 7.5),
       child: SwipeTo(
@@ -122,17 +118,7 @@ class ChatMessageTile extends StatelessWidget {
                     message.answeredMessage != null
                         ? RawMaterialButton(
                             onPressed: () {
-                              for (var element in data) {
-                                print(element.globalKey);
-                                var idMessage = element.id;
-                                var idMessageAnswer = message.answeredMessage?.id;
-                                if (idMessageAnswer == idMessage) {
-                                  print(data.indexOf(element));
-                                  print(element.globalKey);
-                                  scrollToMessage(element.globalKey);
-                                  print("gefunden");
-                                }
-                              }
+                              scrollToMessage();
                             },
                             child: Container(
                               padding: const EdgeInsets.all(5),

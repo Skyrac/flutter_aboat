@@ -58,7 +58,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> with Single
   @override
   dispose() {
     tabController.dispose();
-
+    controller.dispose();
     super.dispose();
   }
 

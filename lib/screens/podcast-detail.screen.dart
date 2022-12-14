@@ -56,6 +56,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
   @override
   dispose() {
     tabController.dispose();
+    controller.dispose();
     super.dispose();
   }
 

@@ -43,7 +43,6 @@ ChatMessageDto _$ChatMessageDtoFromJson(Map<String, dynamic> json) => ChatMessag
     );
 
 Map<String, dynamic> _$ChatMessageDtoToJson(ChatMessageDto instance) => <String, dynamic>{
-      'globalKey': GlobalKey(),
       'id': instance.id,
       'chatRoomId': instance.chatRoomId,
       'answeredMessage': instance.answeredMessage,
