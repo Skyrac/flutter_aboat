@@ -27,7 +27,6 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   var isLoading = false;
-  var isUsernameValid = false;
 
   final userService = getIt<UserService>();
 
@@ -80,15 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         isLoading = true;
       });
-      final result = await userService.emailLogin(email, pin).timeout(
-        const Duration(seconds: 15),
-        onTimeout: () {
-          setState(() {
-            isLoading = false;
-          });
-          throw Fluttertoast.showToast(msg: "Timeout error!");
-        },
-      );
+      final result = await userService.emailLogin(email, pin);
       debugPrint(result);
       if (result == "new_account") {
         setState(() {
@@ -311,6 +302,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> doEmailRegister(
       BuildContext context, TextStyle theme, String pinResult, NavigatorState navigator, String? rejectedUsername) async {
+    var isUsernameValid = false;
     while (!isUsernameValid) {
       final username = await showUsernameDialog(context, theme, rejectedUsername);
       if (username != null) {
