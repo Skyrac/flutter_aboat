@@ -1,4 +1,5 @@
 import 'package:Talkaboat/injection/injector.dart';
+import 'package:Talkaboat/models/chat/chat-dtos.dart';
 import 'package:Talkaboat/models/live/live-session.model.dart';
 import 'package:Talkaboat/services/live/live-session.service.dart';
 import 'package:Talkaboat/widgets/live-chat.widget.dart';
@@ -26,6 +27,10 @@ class ViewContainer {
 
 class _LivestreamScreenState extends State<LivestreamScreen> {
   final LiveSessionService _liveService = getIt<LiveSessionService>();
+
+  final focusNode = FocusNode();
+  ChatMessageDto? replyMessage;
+  ChatMessageDto? editedMessage;
 
   @override
   void initState() {
@@ -68,10 +73,38 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
                     children: [
                       LiveControlls(
                         liveSession: widget.session,
+                        focusNode: focusNode,
+                        replyMessage: replyMessage,
+                        editedMessage: editedMessage,
+                        cancelReplyAndEdit: () {
+                          setState(() {
+                            replyMessage = null;
+                            editedMessage = null;
+                          });
+                        },
                       ),
                       LiveChat(
                         roomId: widget.session.chat!.id,
                         visible: _liveService.chatVisible,
+                        focusNode: focusNode,
+                        replyToMessage: (message) {
+                          setState(() {
+                            editedMessage = null;
+                            replyMessage = message;
+                          });
+                        },
+                        editMessage: (message) {
+                          setState(() {
+                            replyMessage = null;
+                            editedMessage = message;
+                          });
+                        },
+                        cancelReplyAndEdit: () {
+                          setState(() {
+                            replyMessage = null;
+                            editedMessage = null;
+                          });
+                        },
                       )
                     ],
                   ),

@@ -1,4 +1,5 @@
 import 'package:Talkaboat/injection/injector.dart';
+import 'package:Talkaboat/models/chat/chat-dtos.dart';
 import 'package:Talkaboat/models/live/live-session.model.dart';
 import 'package:Talkaboat/services/live/live-session.service.dart';
 import 'package:Talkaboat/widgets/chat-input.widget.dart';
@@ -6,9 +7,19 @@ import 'package:Talkaboat/widgets/live-users.bottom-sheet.dart';
 import 'package:flutter/material.dart';
 
 class LiveControlls extends StatefulWidget {
-  const LiveControlls({super.key, required this.liveSession});
+  const LiveControlls(
+      {super.key,
+      required this.liveSession,
+      required this.focusNode,
+      this.replyMessage,
+      this.editedMessage,
+      required this.cancelReplyAndEdit});
 
   final LiveSession liveSession;
+  final FocusNode focusNode;
+  final ChatMessageDto? replyMessage;
+  final ChatMessageDto? editedMessage;
+  final void Function() cancelReplyAndEdit;
 
   @override
   State<LiveControlls> createState() => _LiveControllsState();
@@ -49,6 +60,10 @@ class _LiveControllsState extends State<LiveControlls> {
                           messageType: 0,
                           width: size.width - (5 * 2) - (10 * 2) - 100,
                           positionSelf: false,
+                          focusNode: widget.focusNode,
+                          cancelReplyAndEdit: widget.cancelReplyAndEdit,
+                          replyMessage: widget.replyMessage,
+                          editedMessage: widget.editedMessage,
                         )
                       : const SizedBox(),
                 ],

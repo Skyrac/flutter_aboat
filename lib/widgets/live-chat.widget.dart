@@ -9,10 +9,22 @@ import 'package:Talkaboat/widgets/chat-message-tile.widget.dart';
 import 'package:flutter/material.dart';
 
 class LiveChat extends StatefulWidget {
-  const LiveChat({super.key, required this.roomId, this.visible = true});
+  const LiveChat({
+    super.key,
+    required this.roomId,
+    this.visible = true,
+    required this.focusNode,
+    required this.cancelReplyAndEdit,
+    required this.editMessage,
+    required this.replyToMessage,
+  });
 
   final int roomId;
   final bool visible;
+  final FocusNode focusNode;
+  final Function replyToMessage;
+  final Function editMessage;
+  final void Function() cancelReplyAndEdit;
 
   @override
   State<LiveChat> createState() => _LiveChatState();
@@ -23,6 +35,7 @@ class _LiveChatState extends State<LiveChat> {
   final userService = getIt<UserService>();
   final GlobalKey<AnimatedListState> _listKey = GlobalKey();
   List<ChatMessageDto> _messages = List.empty(growable: true);
+  int? selectedIndex;
 
   @override
   initState() {
@@ -69,18 +82,20 @@ class _LiveChatState extends State<LiveChat> {
             child: ChatMessageTile(
                 message: removedItem,
                 onSwipedMessage: (message) {
-                  //widget.replyToMessage(message);
-                  //widget.focusNode.requestFocus();
+                  widget.replyToMessage(message);
+                  widget.focusNode.requestFocus();
                 },
                 onEditMessage: (message) {
-                  //widget.editMessage(message);
-                  //widget.focusNode.requestFocus();
+                  widget.editMessage(message);
+                  widget.focusNode.requestFocus();
                 },
                 onDeleteMessage: (message) => chatService.deleteMessage(DeleteMessageDto(message.id, message.chatRoomId)),
-                cancelReplyAndEdit: () {},
-                selectIndex: (index) => setState(() {}),
+                cancelReplyAndEdit: widget.cancelReplyAndEdit,
+                selectIndex: (index) => setState(() {
+                      selectedIndex = index;
+                    }),
                 index: index,
-                selectedIndex: 0,
+                selectedIndex: selectedIndex,
                 userService: userService));
       }
 
@@ -165,18 +180,20 @@ class _LiveChatState extends State<LiveChat> {
           return ChatMessageTile(
               message: item,
               onSwipedMessage: (message) {
-                //widget.replyToMessage(message);
-                //widget.focusNode.requestFocus();
+                widget.replyToMessage(message);
+                widget.focusNode.requestFocus();
               },
               onEditMessage: (message) {
-                //widget.editMessage(message);
-                //widget.focusNode.requestFocus();
+                widget.editMessage(message);
+                widget.focusNode.requestFocus();
               },
               onDeleteMessage: (message) => chatService.deleteMessage(DeleteMessageDto(message.id, message.chatRoomId)),
-              cancelReplyAndEdit: () {},
-              selectIndex: (index) => setState(() {}),
+              cancelReplyAndEdit: widget.cancelReplyAndEdit,
+              selectIndex: (index) => setState(() {
+                    selectedIndex = index;
+                  }),
               index: index,
-              selectedIndex: 0,
+              selectedIndex: selectedIndex,
               userService: userService);
         });
   }
