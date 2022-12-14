@@ -32,7 +32,27 @@ class _WalletScreenState extends State<WalletScreen> {
     ),
   );
 
-  var _session, uri, session;
+  signMessage(BuildContext context, String message) async {
+    if (connector.connected) {
+      try {
+        print("Message received");
+        print(message);
+
+        EthereumWalletConnectProvider provider = EthereumWalletConnectProvider(connector);
+        launchUrlString(uri, mode: LaunchMode.externalApplication);
+        var signature = await provider.personalSign(message: message, address: session.accounts[0], password: "");
+        print(signature);
+        setState(() {
+          _signature = signature;
+        });
+      } catch (exp) {
+        print("Error while signing transaction");
+        print(exp);
+      }
+    }
+  }
+
+  var _session, session, _uri, uri, _signature;
   connectWallet(BuildContext context) async {
     if (!connector.connected) {
       try {
@@ -144,7 +164,14 @@ class _WalletScreenState extends State<WalletScreen> {
                     WalletButton("Connect new wallet", () async {
                       await connectWallet(context);
                       print("Connect new wallet ${session.accounts[0]}");
-                      await userService.addWallet(session.accounts[0]);
+                      var message = await userService.addWallet(session.accounts[0]);
+                      if (message.toString() != null) {
+                        print(message.toString());
+                        await signMessage(context, message.toString());
+                        if (_signature != null) {
+                          userService.addWalletConfirm(session.accounts[0], _signature);
+                        }
+                      }
                       connector.killSession();
                     }, Colors.white, "assets/images/arrow_right.png"),
                     Container(

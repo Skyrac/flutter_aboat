@@ -171,15 +171,32 @@ class UserRepository {
     return response.data == null ? false : response.data!.isNotEmpty;
   }
 
-  static Future<bool> addWallet(String address) async {
+  static Future<Object?> addWallet(String address) async {
     try {
       var response = await dio.post<String>(
         '/v1/user/login/$address/add',
       );
-      return true;
+      var data = json.decode(response.data!)["text"];
+      return data;
+      // if (data["message"] != null) {
+      //   return ResponseModel(status: data["statusCode"], text: data["message"]);
+      // }
     } catch (exception) {
       debugPrint(exception.toString());
-      return false;
+      // return false;
+    }
+  }
+
+  static Future<ResponseModel?> addWalletConfirm(String address, String signature) async {
+    try {
+      var response =
+          await dio.post<String>('/v1/user/login/$address/add/confirm', data: {"address": address, "signature": signature});
+      debugPrint(response.data);
+      return ResponseModel.fromJson(json.decode(response.data!));
+    } catch (exception) {
+      debugPrint("exception");
+      debugPrint("${(exception as DioError).response}");
+      return ResponseModel();
     }
   }
 

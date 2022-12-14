@@ -559,10 +559,11 @@ class UserService {
   }
 
   addWallet(String address) async {
-    final success = await UserRepository.addWallet(address);
-    if (success) {
-      print("${address} added");
-    }
+    return await UserRepository.addWallet(address);
+  }
+
+  addWalletConfirm(String address, String signature) async {
+    return await UserRepository.addWalletConfirm(address, signature);
   }
 
   claimABOAT(int chainId, String address, double amout) async {
