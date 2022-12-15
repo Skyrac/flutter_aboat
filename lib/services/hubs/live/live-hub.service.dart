@@ -11,6 +11,12 @@ class LiveHubService extends HubService {
     connection.on("AddedAsHost", receivedAddedAsHost);
     connection.on("HostRequest", receivedHostRequest);
     connection.on("LiveSessionEnded", receivedLiveSessionEnded);
+    connection.on("UserJoined", (event) {
+      debugPrint("$event");
+    });
+    connection.on("UserLeft", (event) {
+      debugPrint("$event");
+    });
   }
 
   final StreamController<String> onRemovedAsHostController = StreamController.broadcast();
@@ -52,9 +58,8 @@ class LiveHubService extends HubService {
       return;
     }
     try {
-      await connection.invoke("RequestHostAccess", args: <Object>[
-        {"roomGuid": roomId}
-      ]);
+      final result = await connection.invoke("RequestHostAccess", args: <Object>[roomId]);
+      debugPrint("$result");
     } catch (e) {
       debugPrint("$e");
     }
@@ -65,9 +70,8 @@ class LiveHubService extends HubService {
       return;
     }
     try {
-      await connection.invoke("AddHost", args: <Object>[
-        {"roomGuid": roomId, "username": username}
-      ]);
+      final result = await connection.invoke("AddHost", args: <Object>[roomId, username]);
+      debugPrint("$result");
     } catch (e) {
       debugPrint("$e");
     }
@@ -78,9 +82,8 @@ class LiveHubService extends HubService {
       return;
     }
     try {
-      await connection.invoke("RemoveHostAccess", args: <Object>[
-        {"roomGuid": roomId, "username": username}
-      ]);
+      final result = await connection.invoke("RemoveHostAccess", args: <Object>[roomId, username]);
+      debugPrint("$result");
     } catch (e) {
       debugPrint("$e");
     }
@@ -91,9 +94,7 @@ class LiveHubService extends HubService {
       return;
     }
     try {
-      final result = await connection.invoke("Join", args: <Object>[
-        {"roomGuid": roomId}
-      ]);
+      final result = await connection.invoke("Join", args: <Object>[roomId]);
       debugPrint("$result");
     } catch (e) {
       debugPrint("$e");
@@ -105,9 +106,8 @@ class LiveHubService extends HubService {
       return;
     }
     try {
-      await connection.invoke("Leave", args: <Object>[
-        {"roomGuid": roomId}
-      ]);
+      final result = await connection.invoke("Leave", args: <Object>[roomId]);
+      debugPrint("$result");
     } catch (e) {
       debugPrint("$e");
     }

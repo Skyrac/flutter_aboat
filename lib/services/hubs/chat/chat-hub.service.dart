@@ -55,6 +55,9 @@ class ChatHubService extends HubService {
 
   //#region RPC Calls
   sendMessage(CreateMessageDto message) async {
+    if (!await checkConnection()) {
+      return;
+    }
     try {
       return await connection.invoke("SendMessage", args: <Object>[message]);
     } catch (e) {
@@ -63,6 +66,9 @@ class ChatHubService extends HubService {
   }
 
   editMessage(EditMessageDto message) async {
+    if (!await checkConnection()) {
+      return;
+    }
     try {
       return await connection.invoke("EditMessage", args: <Object>[message]);
     } catch (e) {
@@ -71,6 +77,9 @@ class ChatHubService extends HubService {
   }
 
   deleteMessage(DeleteMessageDto message) async {
+    if (!await checkConnection()) {
+      return;
+    }
     try {
       return await connection.invoke("DeleteMessage", args: <Object>[message]);
     } catch (e) {
@@ -79,6 +88,9 @@ class ChatHubService extends HubService {
   }
 
   joinRoom(JoinRoomDto data) async {
+    if (!await checkConnection()) {
+      return;
+    }
     try {
       return await connection.invoke("JoinRoom", args: <Object>[data]);
     } catch (e) {
@@ -87,6 +99,9 @@ class ChatHubService extends HubService {
   }
 
   leaveRoom(JoinRoomDto data) async {
+    if (!await checkConnection()) {
+      return;
+    }
     try {
       return await connection.invoke("LeaveRoom", args: <Object>[data]);
     } catch (e) {
@@ -95,6 +110,9 @@ class ChatHubService extends HubService {
   }
 
   Future<List<ChatMessageDto>> getHistory(MessageHistoryRequestDto data) async {
+    if (!await checkConnection()) {
+      return List.empty();
+    }
     try {
       var response = await connection.invoke("GetHistory", args: <Object>[data]);
       if (response == null) {

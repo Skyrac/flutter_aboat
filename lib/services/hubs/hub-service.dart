@@ -1,6 +1,7 @@
 import 'package:Talkaboat/injection/injector.dart';
 import 'package:flutter/foundation.dart';
 import 'package:signalr_netcore/signalr_client.dart';
+import 'package:logging/logging.dart';
 
 import '../user/user.service.dart';
 
@@ -15,10 +16,26 @@ abstract class HubService {
   final hubName = "";
 
   HubService() {
-    options = HttpConnectionOptions(accessTokenFactory: () async => Future.value(userService.token));
+    Logger.root.level = Level.ALL;
+    Logger.root.onRecord.listen((LogRecord rec) {
+      debugPrint('${rec.level.name}: ${rec.time}: ${rec.message}');
+    });
+
+    final hubProtLogger = Logger("SignalR - hub");
+    // If you want to also to log out transport messages:
+    final transportProtLogger = Logger("SignalR - transport");
+
+    options = HttpConnectionOptions(
+        accessTokenFactory: () async => Future.value(userService.token),
+        requestTimeout: 15000,
+        logger: transportProtLogger,
+        logMessageContent: true,
+        transport: HttpTransportType.ServerSentEvents);
     connection = HubConnectionBuilder()
         .withUrl((useTestServer && !isProduction ? testServerUrl : serverUrl) + hubName, options: options)
-        .withAutomaticReconnect(retryDelays: [2000, 5000, 10000, 20000]).build();
+        .withAutomaticReconnect(retryDelays: [2000, 5000, 10000, 20000])
+        .configureLogging(hubProtLogger)
+        .build();
   }
 
   connect() async {

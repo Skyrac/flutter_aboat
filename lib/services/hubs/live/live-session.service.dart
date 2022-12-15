@@ -39,7 +39,9 @@ class LiveSessionService extends ChangeNotifier {
   updateHosts() async {
     if (_currentSess != null) {
       final sess = await LiveSessionRepository.getRoom(_currentSess!.guid);
-      _currentSess!.hosts = sess!.hosts;
+      if (sess != null) {
+        _currentSess!.hosts = sess!.hosts;
+      }
     }
   }
 
@@ -182,15 +184,15 @@ class LiveSessionService extends ChangeNotifier {
 
   Future<void> joinAsHost(String roomId, String roomName) async {
     notifyListeners();
-    //await setupVideoSdkEngine();
+    await setupVideoSdkEngine();
     ChannelMediaOptions options = const ChannelMediaOptions(
       clientRoleType: ClientRoleType.clientRoleBroadcaster,
       channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
     );
-    //await agoraEngine.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
-    //await agoraEngine.enableAudio();
-    //await agoraEngine.enableVideo();
-    //await agoraEngine.startPreview();
+    await agoraEngine.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
+    await agoraEngine.enableAudio();
+    await agoraEngine.enableVideo();
+    await agoraEngine.startPreview();
     final token = await getToken(roomId);
 
     await join(roomId, roomName, options, token, true);
@@ -200,18 +202,18 @@ class LiveSessionService extends ChangeNotifier {
     _roomGuid = roomGuid;
     _roomName = roomName;
     await setupHub(roomGuid, asHost);
-    //await agoraEngine.joinChannel(
-    //  token: token,
-    //  channelId: roomGuid,
-    //  options: options,
-    //  uid: userService.userInfo?.userId ?? 0,
-    //);
+    await agoraEngine.joinChannel(
+      token: token,
+      channelId: roomGuid,
+      options: options,
+      uid: userService.userInfo?.userId ?? 0,
+    );
     notifyListeners();
   }
 
   promoteToHost() async {
     await agoraEngine.leaveChannel();
-    //await setupVideoSdkEngine();
+    await setupVideoSdkEngine();
     ChannelMediaOptions options = const ChannelMediaOptions(
       clientRoleType: ClientRoleType.clientRoleBroadcaster,
       channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
@@ -310,7 +312,7 @@ class LiveSessionService extends ChangeNotifier {
     _audioMuted = !_audioMuted;
 
     for (var user in _users) {
-      await agoraEngine.muteRemoteAudioStream(uid: user, mute: _audioMuted);
+      agoraEngine.muteRemoteAudioStream(uid: user, mute: _audioMuted);
     }
     notifyListeners();
   }

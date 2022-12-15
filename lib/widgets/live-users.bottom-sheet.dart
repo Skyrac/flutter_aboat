@@ -40,7 +40,7 @@ class _LiveUsersBottomSheetState extends State<LiveUsersBottomSheet> {
                 );
               }
               final session = snapshot.data!;
-              liveService.setSession(session);
+              Future.microtask(() => liveService.setSession(session));
 
               final hostUsernames = session.hosts.map((x) => x.userName);
               final canAddUsers = session.configuration!.onlySuperhostCanAddHost
