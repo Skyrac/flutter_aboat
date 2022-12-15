@@ -109,7 +109,9 @@ class _ChatState extends State<Chat> {
                     child: Stack(
                       alignment: Alignment.bottomCenter,
                       children: [
-                        Container(margin: const EdgeInsets.only(bottom: 60), child: buildMessages(snapshot.data!)),
+                        userService.isConnected
+                            ? Container(margin: const EdgeInsets.only(bottom: 60), child: buildMessages(snapshot.data!))
+                            : buildMessages(snapshot.data!),
                       ],
                     ),
                   );
