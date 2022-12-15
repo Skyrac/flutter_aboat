@@ -147,5 +147,13 @@ class ChatService extends ChangeNotifier {
     }
     return _rooms[data.roomId] ?? List.empty();
   }
+
+  // assumed to be called after getHistory
+  List<String> getUsersInChat(int roomId) {
+    if (_rooms[roomId] == null) {
+      return List.empty();
+    }
+    return _rooms[roomId]!.map((x) => x.senderName).toSet().toList();
+  }
   //#endregion
 }

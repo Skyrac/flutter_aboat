@@ -1,7 +1,7 @@
 import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/models/chat/chat-dtos.dart';
 import 'package:Talkaboat/models/live/live-session.model.dart';
-import 'package:Talkaboat/services/live/live-session.service.dart';
+import 'package:Talkaboat/services/hubs/live/live-session.service.dart';
 import 'package:Talkaboat/widgets/chat-input.widget.dart';
 import 'package:Talkaboat/widgets/live-users.bottom-sheet.dart';
 import 'package:flutter/material.dart';
@@ -155,12 +155,9 @@ class _LiveControllsState extends State<LiveControlls> {
               context: context,
               builder: (context) => Container(
                 color: const Color.fromRGBO(15, 23, 41, 1),
-                child: FractionallySizedBox(
+                child: const FractionallySizedBox(
                   heightFactor: 0.9,
-                  child: LiveUsersBottomSheet(
-                    liveSession: widget.liveSession,
-                    myUid: 1,
-                  ),
+                  child: LiveUsersBottomSheet(),
                 ),
               ),
             );

@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/models/live/live-session.model.dart';
 import 'package:Talkaboat/screens/livestream.screen.dart';
-import 'package:Talkaboat/services/live/live-session.service.dart';
+import 'package:Talkaboat/services/hubs/live/live-session.service.dart';
 import 'package:Talkaboat/services/repositories/live-session.repository.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/utils/scaffold_wave.dart';
@@ -261,16 +261,14 @@ class _LivestreamOverviewScreenState extends State<LivestreamOverviewScreen> {
                           if (roomName != null) {
                             final response = await liveSessionService.openRoom(roomName);
                             if (response != null) {
+                              liveSessionService.setSession(response);
                               widget.escapeWithNav(PageTransition(
                                 alignment: Alignment.bottomCenter,
                                 curve: Curves.bounceOut,
                                 type: PageTransitionType.fade,
                                 duration: const Duration(milliseconds: 300),
                                 reverseDuration: const Duration(milliseconds: 200),
-                                child: LivestreamScreen(
-                                  session: response,
-                                  isHost: true,
-                                ),
+                                child: const LivestreamScreen(),
                               ));
                             }
                           }

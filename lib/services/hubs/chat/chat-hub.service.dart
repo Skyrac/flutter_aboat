@@ -20,11 +20,6 @@ class ChatHubService extends HubService {
     connection.on("DeleteMessage", receiveDeletedMessage);
   }
 
-  @override
-  connect() async {
-    await super.connect();
-  }
-
   //#region Events
   final StreamController<ChatMessageDto> onReceiveMessageController = StreamController.broadcast();
   final StreamController<ChatMessageDto> onEditMessageController = StreamController.broadcast();

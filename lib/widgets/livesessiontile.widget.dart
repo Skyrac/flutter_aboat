@@ -1,16 +1,18 @@
 import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/models/live/live-session.model.dart';
 import 'package:Talkaboat/screens/livestream.screen.dart';
+import 'package:Talkaboat/services/hubs/live/live-session.service.dart';
 import 'package:Talkaboat/services/repositories/live-session.repository.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
 class LiveSessionTile extends StatelessWidget {
-  const LiveSessionTile({super.key, required this.session, required this.escapeWithNav});
+  LiveSessionTile({super.key, required this.session, required this.escapeWithNav});
 
   final LiveSession session;
   final Function escapeWithNav;
+  final liveService = getIt<LiveSessionService>();
 
   @override
   Widget build(BuildContext context) {
@@ -30,28 +32,14 @@ class LiveSessionTile extends StatelessWidget {
               if (session.configuration!.superhostName == userService.userInfo!.userName) {
                 LiveSessionRepository.closeRoom(session.guid);
               } else {
-                /*escapeWithNav(
-                    PageTransition(
-                      alignment: Alignment.bottomCenter,
-                      curve: Curves.bounceOut,
-                      type: PageTransitionType.fade,
-                      duration: const Duration(milliseconds: 300),
-                      reverseDuration: const Duration(milliseconds: 200),
-                      child: LivestreamScreen(
-                        isHost: false,
-                        session: session,
-                      ),
-                    ));*/
+                liveService.setSession(session);
                 escapeWithNav(PageTransition(
                   alignment: Alignment.bottomCenter,
                   curve: Curves.bounceOut,
                   type: PageTransitionType.fade,
                   duration: const Duration(milliseconds: 300),
                   reverseDuration: const Duration(milliseconds: 200),
-                  child: LivestreamScreen(
-                    isHost: false,
-                    session: session,
-                  ),
+                  child: const LivestreamScreen(),
                 ));
               }
             },

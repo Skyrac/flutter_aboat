@@ -1,17 +1,15 @@
+import 'dart:async';
+
 import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/models/chat/chat-dtos.dart';
-import 'package:Talkaboat/models/live/live-session.model.dart';
-import 'package:Talkaboat/services/live/live-session.service.dart';
+import 'package:Talkaboat/services/hubs/live/live-session.service.dart';
 import 'package:Talkaboat/widgets/live-chat.widget.dart';
 import 'package:Talkaboat/widgets/livecontrolls.widget.dart';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/material.dart';
 
 class LivestreamScreen extends StatefulWidget {
-  const LivestreamScreen({Key? key, required this.session, required this.isHost}) : super(key: key);
-
-  final LiveSession session;
-  final bool isHost;
+  const LivestreamScreen({Key? key}) : super(key: key);
 
   @override
   State<LivestreamScreen> createState() => _LivestreamScreenState();
@@ -32,13 +30,17 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
   ChatMessageDto? replyMessage;
   ChatMessageDto? editedMessage;
 
+  late StreamSubscription<String> onAddedHostSub;
+
   @override
   void initState() {
     super.initState();
-    if (widget.isHost) {
-      _liveService.joinAsHost(widget.session.guid, widget.session.configuration!.roomName);
-    } else {
-      _liveService.joinAsViewer(widget.session.guid, widget.session.configuration!.roomName);
+    if (_liveService.currentSession != null) {
+      if (_liveService.isHost) {
+        _liveService.joinAsHost(_liveService.currentSession!.guid, _liveService.currentSession!.configuration!.roomName);
+      } else {
+        _liveService.joinAsViewer(_liveService.currentSession!.guid, _liveService.currentSession!.configuration!.roomName);
+      }
     }
   }
 
@@ -48,15 +50,18 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
     super.dispose();
   }
 
+  BuildContext? _context;
+
   // Create UI with local view and remote view
   @override
   Widget build(BuildContext context) {
+    _context = context;
     return SafeArea(
       child: Container(
         color: const Color.fromRGBO(15, 23, 41, 1),
         child: Scaffold(
           appBar: AppBar(
-            title: Text(widget.session.configuration!.roomName),
+            title: Text(_liveService.currentSession!.configuration!.roomName),
           ),
           bottomNavigationBar: null,
           body: AnimatedBuilder(
@@ -72,7 +77,7 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       LiveControlls(
-                        liveSession: widget.session,
+                        liveSession: _liveService.currentSession!,
                         focusNode: focusNode,
                         replyMessage: replyMessage,
                         editedMessage: editedMessage,
@@ -84,7 +89,7 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
                         },
                       ),
                       LiveChat(
-                        roomId: widget.session.chat!.id,
+                        roomId: _liveService.currentSession!.chat!.id,
                         visible: _liveService.chatVisible,
                         focusNode: focusNode,
                         replyToMessage: (message) {
@@ -144,7 +149,7 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
               controller: VideoViewController.remote(
                 rtcEngine: _liveService.agoraEngine,
                 canvas: VideoCanvas(uid: uid),
-                connection: RtcConnection(channelId: widget.session.guid),
+                connection: RtcConnection(channelId: _liveService.currentSession!.guid),
               ),
             ),
           ),
@@ -161,6 +166,7 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
         child: Container(child: view.view),
       );
     } else if (view.wrap) {
+      final user = _liveService.currentSession!.hosts.where((x) => x.userId == view.userId);
       return Expanded(
         child: Stack(
           children: [
@@ -175,7 +181,7 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
                   padding: const EdgeInsets.all(10),
                   child: Center(
                     child: Text(
-                      widget.session.hosts.firstWhere((x) => x.userId == view.userId).userName,
+                      user.isNotEmpty ? user.first.userName : "",
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,

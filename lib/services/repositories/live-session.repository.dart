@@ -49,6 +49,19 @@ class LiveSessionRepository {
     }
   }
 
+  static Future<LiveSession?> getRoom(String roomId) async {
+    try {
+      debugPrint('$API/room?roomGuid=$roomId');
+      var response = await dio.get<String>('$API/room?roomGuid=$roomId');
+      var data = LiveSession.fromJson(json.decode(response.data!));
+      return data;
+    } catch (e) {
+      debugPrint("$e");
+      debugPrint((e as DioError).response?.data);
+      return null;
+    }
+  }
+
   static Future<void> closeRoom(String roomId) async {
     try {
       var response = await dio.put<String>('$API/room/$roomId/leave');
