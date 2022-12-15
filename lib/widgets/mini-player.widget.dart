@@ -3,6 +3,7 @@ import 'package:Talkaboat/widgets/player-control.widget.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../injection/injector.dart';
@@ -71,13 +72,17 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
                   child: InkWell(
-                    onTap: (() async {
-                      widget.navKey.currentState!.pushAndRemoveUntil(
-                          MaterialPageRoute<void>(
-                              builder: (BuildContext context) =>
-                                  PodcastEpisodeScreen(episode: widget.episode!, position: position)),
-                          (route) => route.isFirst);
-                    }),
+                    onTap: (() async => {
+                          widget.navKey.currentState!.pushAndRemoveUntil(
+                              PageTransition(
+                                  alignment: Alignment.bottomCenter,
+                                  curve: Curves.bounceOut,
+                                  type: PageTransitionType.rightToLeftWithFade,
+                                  duration: const Duration(milliseconds: 1),
+                                  reverseDuration: const Duration(milliseconds: 1),
+                                  child: PodcastEpisodeScreen(episode: widget.episode!, position: position)),
+                              (route) => route.isFirst)
+                        }),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
