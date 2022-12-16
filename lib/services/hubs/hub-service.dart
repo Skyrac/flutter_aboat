@@ -16,7 +16,7 @@ abstract class HubService {
   final hubName = "";
 
   HubService() {
-    Logger.root.level = Level.ALL;
+    Logger.root.level = Level.INFO;
     Logger.root.onRecord.listen((LogRecord rec) {
       debugPrint('${rec.level.name}: ${rec.time}: ${rec.message}');
     });
@@ -33,7 +33,7 @@ abstract class HubService {
         transport: HttpTransportType.ServerSentEvents);
     connection = HubConnectionBuilder()
         .withUrl((useTestServer && !isProduction ? testServerUrl : serverUrl) + hubName, options: options)
-        .withAutomaticReconnect(retryDelays: [2000, 5000, 10000, 20000])
+        .withAutomaticReconnect(retryDelays: [0, 1000, 2000, 4000, 8000, 16000, 32000])
         .configureLogging(hubProtLogger)
         .build();
   }

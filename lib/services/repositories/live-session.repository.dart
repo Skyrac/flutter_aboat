@@ -51,8 +51,8 @@ class LiveSessionRepository {
 
   static Future<LiveSession?> getRoom(String roomId) async {
     try {
-      debugPrint('$API/room?roomGuid=$roomId');
-      var response = await dio.get<String>('$API/room?roomGuid=$roomId');
+      debugPrint('$API/room/$roomId');
+      var response = await dio.get<String>('$API/room/$roomId');
       var data = LiveSession.fromJson(json.decode(response.data!));
       return data;
     } catch (e) {
@@ -74,9 +74,9 @@ class LiveSessionRepository {
     }
   }
 
-  static Future<void> addHost(String roomId, int userId) async {
+  static Future<void> addHost(String roomId, String username) async {
     try {
-      var response = await dio.put<String>('$API/room/$roomId/host/$userId/add');
+      var response = await dio.put<String>('$API/room/$roomId/host/$username/add');
       debugPrint("$response");
       return;
     } catch (e) {
@@ -86,9 +86,9 @@ class LiveSessionRepository {
     }
   }
 
-  static Future<void> removeHost(String roomId, int userId) async {
+  static Future<void> removeHost(String roomId, String username) async {
     try {
-      var response = await dio.put<String>('$API/room/$roomId/host/$userId/remove');
+      var response = await dio.put<String>('$API/room/$roomId/host/$username/remove');
       debugPrint("$response");
       return;
     } catch (e) {

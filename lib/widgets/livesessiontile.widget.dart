@@ -29,7 +29,7 @@ class LiveSessionTile extends StatelessWidget {
             onTap: () async {
               debugPrint("show livestream");
               debugPrint("$session");
-              if (session.configuration!.superhostName == userService.userInfo!.userName) {
+              if (session.configuration!.superhostName == userService.userInfo?.userName) {
                 LiveSessionRepository.closeRoom(session.guid);
               } else {
                 liveService.setSession(session);
@@ -39,7 +39,7 @@ class LiveSessionTile extends StatelessWidget {
                   type: PageTransitionType.fade,
                   duration: const Duration(milliseconds: 300),
                   reverseDuration: const Duration(milliseconds: 200),
-                  child: const LivestreamScreen(),
+                  child: LivestreamScreen(escapeWithNav: escapeWithNav),
                 ));
               }
             },

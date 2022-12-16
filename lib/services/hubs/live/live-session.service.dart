@@ -15,8 +15,8 @@ enum Camera { front, back }
 class LiveSessionService extends ChangeNotifier {
   LiveSessionService() : super() {
     _hub.onAddedAsHost.listen((event) async {
-      updateHosts();
       if (event == userService.userInfo!.userName) {
+        updateHosts(userService.userInfo!.userName, false);
         await promoteToHost();
       }
       notifyListeners();
@@ -36,21 +36,72 @@ class LiveSessionService extends ChangeNotifier {
     });
   }
 
-  updateHosts() async {
+  Stream<String> get onAddedAsHost => _hub.onAddedAsHost;
+  Stream<String> get onRemovedAsHost => _hub.onRemovedAsHost;
+  Stream<String> get onLiveSessionEnded => _hub.onLiveSessionEnded;
+
+  Future<void> updateAllUsers() async {
+    final sess = await LiveSessionRepository.getRoom(_currentSess!.guid);
+    if (sess != null) {
+      _currentSess!.hosts = sess.hosts;
+      _currentSess!.users = sess.users;
+    }
+  }
+
+  Future<void> updateHosts(String? username, bool? demoted) async {
+    assert((username == null && demoted == null) || (username != null && demoted != null));
     if (_currentSess != null) {
-      final sess = await LiveSessionRepository.getRoom(_currentSess!.guid);
-      if (sess != null) {
-        _currentSess!.hosts = sess!.hosts;
+      if (username == null) {
+        await updateAllUsers();
+      } else {
+        if (demoted!) {
+          final host = _currentSess!.hosts.where((x) => x.userName == username).toList();
+          if (host.isNotEmpty) {
+            _currentSess!.hosts.remove(host.first);
+          } else {
+            debugPrint("did not find $username in hosts");
+            await updateAllUsers();
+          }
+        } else {
+          final user = _currentSess!.users.where((x) => x.userName == username).toList();
+          if (user.isNotEmpty) {
+            _currentSess!.hosts.add(user.first);
+            debugPrint("made ${user.first} a host");
+          } else {
+            debugPrint("did not find $username in users");
+            await updateAllUsers();
+          }
+        }
       }
     }
   }
 
-  final StreamController<String> onAddedAsHostController = StreamController.broadcast();
-  final StreamController<String> onRemovedAsHostController = StreamController.broadcast();
-
-  Stream<String> get onLiveSessionEnded => _hub.onLiveSessionEnded;
-  Stream<String> get onAddedAsHost => onAddedAsHostController.stream;
-  Stream<String> get onRemovedAsHost => onAddedAsHostController.stream;
+  Future<void> updateHostsById(int? userid, bool? demoted) async {
+    assert((userid == null && demoted == null) || (userid != null && demoted != null));
+    if (_currentSess != null) {
+      if (userid == null) {
+        await updateAllUsers();
+      } else {
+        if (demoted!) {
+          final host = _currentSess!.hosts.where((x) => x.userId == userid).toList();
+          if (host.isNotEmpty) {
+            _currentSess!.hosts.remove(host.first);
+          } else {
+            debugPrint("did not find $userid in hosts");
+            await updateAllUsers();
+          }
+        } else {
+          final user = _currentSess!.users.where((x) => x.userId == userid).toList();
+          if (user.isNotEmpty) {
+            _currentSess!.hosts.add(user.first);
+          } else {
+            debugPrint("did not find $userid in users");
+            await updateAllUsers();
+          }
+        }
+      }
+    }
+  }
 
   final LiveHubService _hub = LiveHubService();
   final List<String> hostRequest = List.empty(growable: true);
@@ -63,12 +114,12 @@ class LiveSessionService extends ChangeNotifier {
 
   rejectHostRequest(String username) async {
     hostRequest.removeWhere((x) => x == username);
-    await _hub.RemoveHostAccess(_roomGuid, username);
+    //await _hub.RemoveHostAccess(_roomGuid, username);
     notifyListeners();
   }
 
   static const String appId = "c0ad2b8f2be149788fabb9d916f0fbef";
-  final _users = <int>[];
+  final _remoteUsers = <int>[];
   final Map<int, bool> _userVideoOn = {};
   bool _isJoined = false;
   String _roomGuid = "";
@@ -79,12 +130,11 @@ class LiveSessionService extends ChangeNotifier {
   bool _videoOn = true;
   bool _localAudio = true;
   bool _audioMuted = false;
-  bool _initialized = false;
 
   bool get isJoined => _isJoined;
   String get roomGuid => _roomGuid;
   String get roomName => _roomName;
-  List<int> get users => _users;
+  List<int> get users => _remoteUsers;
   Map<int, bool> get userVideoOn => _userVideoOn;
   RtcEngine get agoraEngine => _agoraEngine;
   Camera get camera => _camera;
@@ -95,7 +145,9 @@ class LiveSessionService extends ChangeNotifier {
 
   LiveSession? _currentSess;
   LiveSession? get currentSession => _currentSess;
-  bool get isHost => currentSession?.hosts.map((x) => x.userName).contains(userService.userInfo?.userName) ?? false;
+  bool get isHost =>
+      _remoteUsers.contains(userService.userInfo?.userId) ||
+      (currentSession?.hosts.map((x) => x.userName).contains(userService.userInfo?.userName) ?? false);
 
   final userService = getIt<UserService>();
 
@@ -106,11 +158,6 @@ class LiveSessionService extends ChangeNotifier {
   }
 
   Future<void> setupVideoSdkEngine() async {
-    if (_initialized) {
-      debugPrint("already initalized");
-      return;
-    }
-    _initialized = true;
     await [Permission.microphone, Permission.camera].request();
     _agoraEngine = createAgoraRtcEngine();
     await _agoraEngine.initialize(const RtcEngineContext(appId: appId));
@@ -125,18 +172,18 @@ class LiveSessionService extends ChangeNotifier {
         },
         onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) async {
           debugPrint("onUserJoined ${connection.channelId} ${connection.localUid} $remoteUid");
-          _users.add(remoteUid);
+          _remoteUsers.add(remoteUid);
           _userVideoOn[remoteUid] = true;
-          await updateHosts();
+          await updateHostsById(remoteUid, false);
 
           notifyListeners();
         },
         onUserOffline: (RtcConnection connection, int remoteUid, UserOfflineReasonType reason) async {
-          _users.remove(remoteUid);
+          debugPrint("error $remoteUid $reason");
+          _remoteUsers.remove(remoteUid);
           _userVideoOn[remoteUid] = false;
           if (_currentSess != null) {
             _currentSess!.hosts.removeWhere((x) => x.userId == remoteUid);
-            notifyListeners();
           }
           notifyListeners();
         },
@@ -144,7 +191,8 @@ class LiveSessionService extends ChangeNotifier {
           debugPrint("error $err $msg");
         },
         onLeaveChannel: (con, stats) {
-          _users.clear();
+          debugPrint("onLeaveChannel");
+          _remoteUsers.clear();
           _userVideoOn.clear();
           notifyListeners();
         },
@@ -153,10 +201,8 @@ class LiveSessionService extends ChangeNotifier {
         },
         onUserEnableVideo: (connection, remoteUid, enabled) {
           debugPrint("onUserEnableVideo $remoteUid $enabled");
-          if (_userVideoOn[remoteUid] != enabled) {
-            _userVideoOn[remoteUid] = enabled;
-            notifyListeners();
-          }
+          _userVideoOn[remoteUid] = enabled;
+          notifyListeners();
         },
       ),
     );
@@ -212,50 +258,75 @@ class LiveSessionService extends ChangeNotifier {
   }
 
   promoteToHost() async {
-    await agoraEngine.leaveChannel();
-    await setupVideoSdkEngine();
-    ChannelMediaOptions options = const ChannelMediaOptions(
-      clientRoleType: ClientRoleType.clientRoleBroadcaster,
-      channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
-    );
-    await agoraEngine.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
-    await agoraEngine.enableAudio();
-    await agoraEngine.enableVideo();
-    await agoraEngine.startPreview();
-    final token = await getToken(_roomGuid);
+    try {
+      _isJoined = false;
+      notifyListeners();
+      await agoraEngine.leaveChannel();
+      ChannelMediaOptions options = const ChannelMediaOptions(
+        clientRoleType: ClientRoleType.clientRoleBroadcaster,
+        channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
+      );
+      await agoraEngine.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
+      await agoraEngine.startPreview();
+      final token = await getToken(_roomGuid);
 
-    await join(_roomGuid, roomName, options, token, true);
+      await agoraEngine.joinChannel(
+        token: token,
+        channelId: roomGuid,
+        options: options,
+        uid: userService.userInfo?.userId ?? 0,
+      );
+      debugPrint("joined as host as ${options.clientRoleType}");
+      _isJoined = true;
+      notifyListeners();
+    } catch (e) {
+      debugPrint("$e");
+    }
   }
 
   demoteToViewer() async {
-    await agoraEngine.leaveChannel();
-    await agoraEngine.stopPreview();
-    await setupVideoSdkEngine();
-    ChannelMediaOptions options = const ChannelMediaOptions(
-      clientRoleType: ClientRoleType.clientRoleAudience,
-      channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
-    );
-    await agoraEngine.setClientRole(role: ClientRoleType.clientRoleAudience);
-    await agoraEngine.enableAudio();
-    await agoraEngine.enableVideo();
-    final token = await getToken(_roomGuid);
+    try {
+      _isJoined = false;
+      notifyListeners();
 
-    await join(_roomGuid, roomName, options, token, false);
+      await agoraEngine.leaveChannel();
+      await agoraEngine.stopPreview();
+      ChannelMediaOptions options = const ChannelMediaOptions(
+        clientRoleType: ClientRoleType.clientRoleAudience,
+        channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
+      );
+      await agoraEngine.setClientRole(role: ClientRoleType.clientRoleAudience);
+      final token = await getToken(_roomGuid);
+
+      await agoraEngine.joinChannel(
+        token: token,
+        channelId: roomGuid,
+        options: options,
+        uid: userService.userInfo?.userId ?? 0,
+      );
+      _isJoined = true;
+      notifyListeners();
+    } catch (e) {
+      debugPrint("$e");
+    }
   }
 
-  Future<void> leave() async {
+  // TODO: isChangingState sollte obsolet sein da immer false
+  Future<void> leave(bool isChangingState) async {
     await cleanupHub();
     await agoraEngine.stopPreview();
     await agoraEngine.leaveChannel();
     await agoraEngine.disableVideo();
     await agoraEngine.disableAudio();
-    await LiveSessionRepository.closeRoom(_roomGuid);
+    await agoraEngine.release();
     _isJoined = false;
-    _users.clear();
-    _userVideoOn.clear();
-    _roomName = "";
-    _roomGuid = "";
-    _currentSess = null;
+
+    if (!isChangingState) {
+      await LiveSessionRepository.closeRoom(_roomGuid);
+      _roomName = "";
+      _currentSess = null;
+      _roomGuid = "";
+    }
     notifyListeners();
   }
 
@@ -276,7 +347,7 @@ class LiveSessionService extends ChangeNotifier {
 
   @override
   Future<void> dispose() async {
-    await leave();
+    await leave(false);
     super.dispose();
   }
 
@@ -311,17 +382,19 @@ class LiveSessionService extends ChangeNotifier {
   switchAudio() async {
     _audioMuted = !_audioMuted;
 
-    for (var user in _users) {
+    for (var user in _remoteUsers) {
       agoraEngine.muteRemoteAudioStream(uid: user, mute: _audioMuted);
     }
     notifyListeners();
   }
 
   removeHost(String username, String roomId) async {
+    await LiveSessionRepository.removeHost(roomId, username);
     return await _hub.RemoveHostAccess(roomId, username);
   }
 
   addHost(String username, String roomId) async {
+    await LiveSessionRepository.addHost(roomId, username);
     return await _hub.AddHost(roomId, username);
   }
 

@@ -3,13 +3,16 @@ import 'dart:async';
 import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/models/chat/chat-dtos.dart';
 import 'package:Talkaboat/services/hubs/live/live-session.service.dart';
+import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/widgets/live-chat.widget.dart';
 import 'package:Talkaboat/widgets/livecontrolls.widget.dart';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/material.dart';
 
 class LivestreamScreen extends StatefulWidget {
-  const LivestreamScreen({Key? key}) : super(key: key);
+  const LivestreamScreen({Key? key, required this.escapeWithNav}) : super(key: key);
+
+  final Function escapeWithNav;
 
   @override
   State<LivestreamScreen> createState() => _LivestreamScreenState();
@@ -25,43 +28,64 @@ class ViewContainer {
 
 class _LivestreamScreenState extends State<LivestreamScreen> {
   final LiveSessionService _liveService = getIt<LiveSessionService>();
+  final UserService userService = getIt<UserService>();
 
   final focusNode = FocusNode();
   ChatMessageDto? replyMessage;
   ChatMessageDto? editedMessage;
 
   late StreamSubscription<String> onAddedHostSub;
+  bool isChangingState = false;
 
   @override
   void initState() {
     super.initState();
-    if (_liveService.currentSession != null) {
-      if (_liveService.isHost) {
-        _liveService.joinAsHost(_liveService.currentSession!.guid, _liveService.currentSession!.configuration!.roomName);
-      } else {
-        _liveService.joinAsViewer(_liveService.currentSession!.guid, _liveService.currentSession!.configuration!.roomName);
+    Future.microtask(() {
+      if (_liveService.currentSession != null) {
+        if (_liveService.isHost) {
+          _liveService.joinAsHost(_liveService.currentSession!.guid, _liveService.currentSession!.configuration!.roomName);
+        } else {
+          _liveService.joinAsViewer(_liveService.currentSession!.guid, _liveService.currentSession!.configuration!.roomName);
+        }
       }
-    }
+    });
+
+    _liveService.onAddedAsHost.listen((event) async {
+      /*if (event == userService.userInfo!.userName) {
+        await _liveService.updateHosts(userService.userInfo!.userName, false);
+        isChangingState = true;
+        Navigator.of(context).pop();
+        widget.escapeWithNav(PageTransition(
+          alignment: Alignment.bottomCenter,
+          curve: Curves.bounceOut,
+          type: PageTransitionType.fade,
+          duration: const Duration(milliseconds: 300),
+          reverseDuration: const Duration(milliseconds: 200),
+          child: LivestreamScreen(
+            escapeWithNav: widget.escapeWithNav,
+          ),
+        ));
+      } else {
+        await _liveService.updateHosts(null, null);
+      }*/
+    });
   }
 
   @override
   void dispose() {
-    _liveService.leave();
+    Future.microtask(() => _liveService.leave(isChangingState));
     super.dispose();
   }
-
-  BuildContext? _context;
 
   // Create UI with local view and remote view
   @override
   Widget build(BuildContext context) {
-    _context = context;
     return SafeArea(
       child: Container(
         color: const Color.fromRGBO(15, 23, 41, 1),
         child: Scaffold(
           appBar: AppBar(
-            title: Text(_liveService.currentSession!.configuration!.roomName),
+            title: Text(_liveService.currentSession?.configuration!.roomName ?? ""),
           ),
           bottomNavigationBar: null,
           body: AnimatedBuilder(
@@ -125,6 +149,7 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
   /// Helper function to get list of native views
   List<ViewContainer> _getRenderViews() {
     final List<ViewContainer> list = [];
+    debugPrint("isHost ${_liveService.isHost}");
     if (_liveService.isHost) {
       list.add(
         ViewContainer(
@@ -139,8 +164,10 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
         ),
       );
     }
+    debugPrint("${_liveService.isHost} ${_liveService.users}");
     for (var uid in _liveService.users) {
       if (_liveService.userVideoOn[uid] ?? false) {
+        debugPrint("view for $uid ${_liveService.currentSession!.guid}");
         list.add(
           ViewContainer(
             wrap: true,
