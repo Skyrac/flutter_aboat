@@ -549,13 +549,15 @@ class UserService {
     if (success) {
       logout();
     }
+    return success;
   }
 
   deleteWallet(String address) async {
     final success = await UserRepository.deleteWallet(address);
     if (success) {
-      print("${address} deleted");
+      debugPrint("$address deleted");
     }
+    return success;
   }
 
   addWallet(String address) async {
@@ -568,7 +570,7 @@ class UserService {
 
   claimABOAT(int chainId, String address, double amout) async {
     try {
-      final success = await UserRepository.claimABOAT(chainId, address, amout);
+      return await UserRepository.claimABOAT(chainId, address, amout);
     } catch (exception) {
       debugPrint(exception.toString());
     }
@@ -576,7 +578,7 @@ class UserService {
 
   claimABOATNative(int chainId, String address, double amout) async {
     try {
-      final success = await UserRepository.claimABOATNative(chainId, address, amout);
+      return await UserRepository.claimABOATNative(chainId, address, amout);
     } catch (exception) {
       debugPrint(exception.toString());
     }

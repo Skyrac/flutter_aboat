@@ -174,8 +174,9 @@ class UserRepository {
   static Future<Object?> addWallet(String address) async {
     try {
       var response = await dio.post<String>(
-        '/v1/user/login/$address/add',
+        '/v1/wallet/$address/add',
       );
+      debugPrint("addWallet response ${response.data!}");
       var data = json.decode(response.data!)["text"];
       return data;
       // if (data["message"] != null) {
@@ -189,9 +190,10 @@ class UserRepository {
 
   static Future<ResponseModel?> addWalletConfirm(String address, String signature, bool newsletter) async {
     try {
-      var response = await dio.post<String>('/v1/user/login/$address/add/confirm',
+      debugPrint("${{"address": address, "signature": signature, "newsletter": newsletter}}");
+      var response = await dio.post<String>('/v1/wallet/$address/add/confirm',
           data: {"address": address, "signature": signature, "newsletter": newsletter});
-      debugPrint(response.data);
+      debugPrint("addWalletConfirm ${response.data}");
       return ResponseModel.fromJson(json.decode(response.data!));
     } catch (exception) {
       debugPrint("exception");

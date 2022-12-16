@@ -24,7 +24,7 @@ class _WalletScreenState extends State<WalletScreen> {
 
   final connector = WalletConnect(
     bridge: 'https://bridge.walletconnect.org',
-    clientMeta: PeerMeta(
+    clientMeta: const PeerMeta(
       name: 'WalletConnect',
       description: 'WalletConnect Talkaboat App',
       url: 'https://talkaboat.online',
@@ -32,25 +32,27 @@ class _WalletScreenState extends State<WalletScreen> {
     ),
   );
 
-  var session, _uri, uri, _signature;
-  connectWallet(BuildContext context) async {
+  // TODO: type this
+  Future<List<dynamic>?> connectWallet(BuildContext context) async {
     if (!connector.connected) {
       try {
-        session = await connector.createSession(onDisplayUri: (_uri) async {
-          uri = _uri;
+        String? uri;
+        final session = await connector.createSession(onDisplayUri: (sessionUri) async {
           try {
-            await launchUrlString(uri, mode: LaunchMode.externalApplication);
+            uri = sessionUri;
+            await launchUrlString(uri!, mode: LaunchMode.externalApplication);
           } catch (e) {
             debugPrint(e.toString());
             showToast();
           }
         });
-        setState(() {});
         debugPrint("session: $session");
+        return [session, uri];
       } catch (e) {
         debugPrint(e.toString());
       }
     }
+    return null;
   }
 
   void showToast() => Fluttertoast.showToast(
@@ -142,31 +144,29 @@ class _WalletScreenState extends State<WalletScreen> {
                       debugPrint("Claim");
                     }, Colors.white, "assets/images/arrow_right.png"),
                     WalletButton("Connect new wallet", () async {
-                      await connectWallet(context);
-                      debugPrint("Connect new wallet ${session.accounts[0]}");
-                      var message = await userService.addWallet(session.accounts[0]);
-                      if (message.toString() != null) {
-                        if (connector.connected) {
-                          try {
-                            debugPrint("Message received");
-                            debugPrint(message.toString());
-                            EthereumWalletConnectProvider provider = EthereumWalletConnectProvider(connector);
-                            launchUrlString(uri, mode: LaunchMode.externalApplication);
-                            var signature = await provider.personalSign(
-                                message: message.toString(), address: session.accounts[0], password: "");
-                            debugPrint(signature);
-                            setState(() {
-                              _signature = signature;
-                            });
-                          } catch (exp) {
-                            debugPrint("Error while signing transaction");
-                            debugPrint(exp.toString());
-                          }
-                        }
-                        if (_signature != null) {
-                          userService.addWalletConfirm(session.accounts[0], _signature, false);
+                      final r = await connectWallet(context);
+                      if (r == null) {
+                        return;
+                      }
+                      final session = r[0];
+                      final uri = r[1];
+                      debugPrint("Connect new wallet ${session.accounts[0]} from $uri");
+                      final message = await userService.addWallet(session.accounts[0]);
+                      if (connector.connected) {
+                        try {
+                          debugPrint("Message received $message");
+                          EthereumWalletConnectProvider provider = EthereumWalletConnectProvider(connector);
+                          launchUrlString(uri, mode: LaunchMode.externalApplication);
+                          final signature =
+                              await provider.personalSign(message: message, address: session.accounts[0], password: "");
+                          debugPrint(signature);
+                          await userService.addWalletConfirm(session.accounts[0], signature, false);
+                        } catch (exp) {
+                          debugPrint("Error while signing transaction");
+                          debugPrint(exp.toString());
                         }
                       }
+
                       connector.killSession();
                     }, Colors.white, "assets/images/arrow_right.png"),
                     Container(
@@ -204,7 +204,7 @@ class _WalletScreenState extends State<WalletScreen> {
                                                               padding: EdgeInsets.zero,
                                                               constraints: const BoxConstraints(),
                                                               onPressed: () {
-                                                                print("delete");
+                                                                debugPrint("delete");
                                                                 showAlert(context, item);
                                                               },
                                                               icon: const Icon(
@@ -212,7 +212,7 @@ class _WalletScreenState extends State<WalletScreen> {
                                                                 color: Color.fromRGBO(154, 0, 0, 1),
                                                                 size: 28,
                                                               ))
-                                                          : SizedBox(),
+                                                          : const SizedBox(),
                                                     ],
                                                   );
                                                 }),
@@ -227,7 +227,7 @@ class _WalletScreenState extends State<WalletScreen> {
                       ),
                     ),
                     WalletButton("Manage Custodial Wallet", () {
-                      print("Manage Custodial Wallet");
+                      debugPrint("Manage Custodial Wallet");
                     }, const Color.fromRGBO(70, 70, 70, 1), "assets/images/arrow_right_inactive.png"),
                   ]),
                 ),

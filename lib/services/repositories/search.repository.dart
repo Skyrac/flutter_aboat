@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:dio/dio.dart';
+import 'package:Talkaboat/configuration/dio.config.dart';
 import 'package:flutter/foundation.dart';
 
 import '../../models/podcasts/episode.model.dart';
