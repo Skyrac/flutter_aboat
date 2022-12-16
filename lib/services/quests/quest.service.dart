@@ -1,12 +1,12 @@
 import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/models/quests/quest-response.model.dart';
 import 'package:Talkaboat/models/quests/quest.model.dart';
-import 'package:Talkaboat/services/user/user.service.dart';
+import 'package:Talkaboat/services/user/reward.service.dart';
 
 import '../repositories/quest.repository.dart';
 
 class QuestService {
-  final userService = getIt<UserService>();
+  final rewardService = getIt<RewardService>();
   List<Quest> quests = List<Quest>.empty(growable: true);
   var remainingQuests = 0;
   var isWaitingForResponse = false;
@@ -35,7 +35,7 @@ class QuestService {
     if (rewards == null) {
       return false;
     }
-    userService.updateRewards(rewards);
+    rewardService.Update(rewards);
     return true;
   }
 }

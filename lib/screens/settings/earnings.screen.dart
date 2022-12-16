@@ -1,5 +1,5 @@
 import 'package:Talkaboat/injection/injector.dart';
-import 'package:Talkaboat/services/user/user.service.dart';
+import 'package:Talkaboat/services/user/reward.service.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/rewards/reward-detail.model.dart';
@@ -13,7 +13,7 @@ class EarningsScreen extends StatefulWidget {
 }
 
 class _EarningsScreenState extends State<EarningsScreen> {
-  final userService = getIt<UserService>();
+  final rewardService = getIt<RewardService>();
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -64,7 +64,7 @@ class _EarningsScreenState extends State<EarningsScreen> {
                 return const Center(child: CircularProgressIndicator());
               }
             },
-            future: userService.getUserRewardDetails(),
+            future: rewardService.getUserRewardDetails(),
           ),
         ])),
       ),
