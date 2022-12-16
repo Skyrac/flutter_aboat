@@ -16,6 +16,7 @@ class Chat extends StatefulWidget {
   final FocusNode focusNode;
   final Function replyToMessage;
   final Function editMessage;
+  final ScrollController controller;
   final void Function() cancelReplyAndEdit;
 
   const Chat(
@@ -26,7 +27,8 @@ class Chat extends StatefulWidget {
       required this.cancelReplyAndEdit,
       required this.editMessage,
       required this.replyToMessage,
-      this.header})
+      this.header,
+      required this.controller})
       : super(key: key);
 
   @override
@@ -38,7 +40,6 @@ class _ChatState extends State<Chat> {
   final userService = getIt<UserService>();
   int? selectedIndex;
   Future<List<ChatMessageDto>>? _getMessages;
-
   @override
   initState() {
     super.initState();
@@ -52,14 +53,27 @@ class _ChatState extends State<Chat> {
     super.dispose();
   }
 
+  Future scrollToKey(key) async {
+    final targetContext = key.currentContext;
+    if (targetContext != null) {
+      Scrollable.ensureVisible(
+        targetContext,
+        alignment: 0.5,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
   Widget buildMessages(List<ChatMessageDto> data) => ListView.builder(
-      physics: const ScrollPhysics(),
+      controller: widget.controller,
+      physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemCount: data.length,
-      scrollDirection: Axis.vertical,
       itemBuilder: (BuildContext context, int index) {
         var item = data[index];
         return ChatMessageTile(
+            key: item.globalKey,
             message: item,
             onSwipedMessage: (message) {
               widget.replyToMessage(message);
@@ -76,7 +90,16 @@ class _ChatState extends State<Chat> {
                 }),
             index: index,
             selectedIndex: selectedIndex,
-            userService: userService);
+            userService: userService,
+            scrollToMessage: () {
+              for (var element in data) {
+                var idMessage = element.id;
+                var idMessageAnswer = item.answeredMessage?.id;
+                if (idMessageAnswer == idMessage) {
+                  scrollToKey(element.globalKey);
+                }
+              }
+            });
       });
 
   Future<List<ChatMessageDto>> getMessages(int roomId) async {
@@ -105,7 +128,7 @@ class _ChatState extends State<Chat> {
                   // Extracting data from snapshot object
                   return Container(
                     alignment: Alignment.topCenter,
-                    // height: 400,
+                    // height: 300,
                     child: Stack(
                       alignment: Alignment.bottomCenter,
                       children: [
