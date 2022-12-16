@@ -1,5 +1,4 @@
 import 'package:Talkaboat/injection/injector.dart';
-import 'package:Talkaboat/models/rewards/reward.model.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -65,12 +64,6 @@ class _EarningsScreenState extends State<EarningsScreen> {
               } else {
                 return const Center(child: CircularProgressIndicator());
               }
-              return Center(
-                  child: Text(
-                "You don't have any bookmarked podcasts.\n\nYou can bookmark podcasts when searching by clicking the vertical aligned ... at the right side of each podcast.",
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyLarge,
-              ));
             },
             future: userService.getUserRewardDetails(),
           ),

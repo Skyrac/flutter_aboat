@@ -1,12 +1,13 @@
 import 'dart:convert';
 import 'package:Talkaboat/models/rewards/reward.model.dart';
 import 'package:Talkaboat/services/hubs/hub-service.dart';
+import 'package:flutter/foundation.dart';
 
 class RewardHubService extends HubService {
   @override
   String get hubName => "reward";
 
-  RewardHubService() : super() {}
+  RewardHubService() : super();
 
   @override
   connect() async {
@@ -74,7 +75,7 @@ class RewardHubService extends HubService {
       var data = createRequestData(owner, asset, playTime);
       await connection.invoke("Heartbeat", args: <Object>[data]);
     } catch (e) {
-      print(e);
+      debugPrint("$e");
     }
   }
 }

@@ -11,13 +11,10 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../injection/injector.dart';
 import '../../services/user/user.service.dart';
-import '../../themes/colors.dart';
 import '../../utils/scaffold_wave.dart';
 
 class SocialEntryScreen extends StatefulWidget {
-  const SocialEntryScreen(this.escapeWithNav, {Key? key}) : super(key: key);
-
-  final Function escapeWithNav;
+  const SocialEntryScreen({Key? key}) : super(key: key);
 
   @override
   State<SocialEntryScreen> createState() => _SocialEntryScreenState();
@@ -95,7 +92,7 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
                       ),
                     ),
                   ),
-                  title: Container(margin: EdgeInsets.fromLTRB(7, 5, 0, 0), child: Text("Social")),
+                  title: Container(margin: const EdgeInsets.fromLTRB(7, 5, 0, 0), child: const Text("Social")),
                 )),
             body: userService.isConnected
                 ? TabBarView(
@@ -104,7 +101,7 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
                       createFriendBody(),
                     ],
                   )
-                : Center(child: LoginButton(widget.escapeWithNav))),
+                : const Center(child: LoginButton())),
       ),
     );
     //);
@@ -117,16 +114,14 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
   Widget createFriendBody() {
     var size = MediaQuery.of(context).size;
     return SafeArea(
-      child: Container(
-        child: Column(mainAxisSize: MainAxisSize.max, children: [
-          buildSearchField(context),
-          Expanded(
-            child: SizedBox(
-                width: size.width > 640 ? 640 : size.width,
-                child: friendController.text.isEmpty ? showFriends() : showFriendsAndPossibleFriends()),
-          )
-        ]),
-      ),
+      child: Column(mainAxisSize: MainAxisSize.max, children: [
+        buildSearchField(context),
+        Expanded(
+          child: SizedBox(
+              width: size.width > 640 ? 640 : size.width,
+              child: friendController.text.isEmpty ? showFriends() : showFriendsAndPossibleFriends()),
+        )
+      ]),
     );
   }
 
@@ -203,10 +198,10 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
     var size = MediaQuery.of(context).size;
     double width = size.width > 640 ? 640 : size.width;
     List<Widget> widgets = [];
-    data.forEach((element) {
+    for (var element in data) {
       widgets.add(Padding(
           padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-          child: Container(
+          child: SizedBox(
               width: width,
               child: Row(
                 children: [
@@ -299,7 +294,7 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
                   ])
                 ],
               ))));
-    });
+    }
     return widgets;
   }
 }

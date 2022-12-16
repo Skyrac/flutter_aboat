@@ -7,10 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PodcastEpisodePodcast extends StatefulWidget {
-  const PodcastEpisodePodcast({super.key, required this.podcastId, required this.escapeWithNav});
+  const PodcastEpisodePodcast({super.key, required this.podcastId});
 
   final int podcastId;
-  final Function escapeWithNav;
 
   @override
   State<PodcastEpisodePodcast> createState() => _PodcastEpisodePodcastState();
@@ -41,7 +40,6 @@ class _PodcastEpisodePodcastState extends State<PodcastEpisodePodcast> {
                   height: 105,
                   width: MediaQuery.of(context).size.width,
                   child: PodcastListWidget(
-                    widget.escapeWithNav,
                     searchResults: [podcast!],
                     direction: Axis.vertical,
                   ));

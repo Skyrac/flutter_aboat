@@ -11,17 +11,16 @@ class QuestResponse {
     if (json['currentQuests'] != null) {
       currentQuests = <Quest>[];
       json['currentQuests'].forEach((v) {
-        currentQuests!.add(new Quest.fromJson(v));
+        currentQuests!.add(Quest.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['remainingQuests'] = this.remainingQuests;
-    if (this.currentQuests != null) {
-      data['currentQuests'] =
-          this.currentQuests!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['remainingQuests'] = remainingQuests;
+    if (currentQuests != null) {
+      data['currentQuests'] = currentQuests!.map((v) => v.toJson()).toList();
     }
     return data;
   }

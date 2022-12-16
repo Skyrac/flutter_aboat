@@ -14,9 +14,8 @@ import '../services/state/state.service.dart';
 import '../utils/common.dart';
 
 class MiniPlayerWidget extends StatefulWidget {
-  const MiniPlayerWidget(this.escapeWithNav, {Key? key, required this.episode, required this.navKey}) : super(key: key);
+  const MiniPlayerWidget({Key? key, required this.episode, required this.navKey}) : super(key: key);
   final Episode? episode;
-  final Function escapeWithNav;
   final GlobalKey<NavigatorState> navKey;
 
   @override
@@ -63,6 +62,7 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
                     height: 6,
                     width: deviceSize.width * 0.9,
                     child: SeekBar(
+                      isMiniPlayer: true,
                       duration: mediaState?.mediaItem?.duration ?? Duration.zero,
                       position: mediaState?.position ?? Duration.zero,
                       onChangeEnd: (newPosition) {
@@ -79,8 +79,7 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
                               type: PageTransitionType.rightToLeftWithFade,
                               duration: const Duration(milliseconds: 500),
                               reverseDuration: const Duration(milliseconds: 500),
-                              child:
-                                  PodcastEpisodeScreen(widget.escapeWithNav, episode: widget.episode!, position: position)))
+                              child: PodcastEpisodeScreen(episode: widget.episode!, position: position)))
                         }),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
@@ -140,7 +139,7 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
                             duration: const Duration(milliseconds: 500),
                             width: 60,
                             height: 50,
-                            child: PlayerControlWidget(widget.escapeWithNav)),
+                            child: const PlayerControlWidget()),
                       ],
                     ),
                   ),

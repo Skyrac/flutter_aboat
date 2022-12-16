@@ -1,17 +1,18 @@
 import 'dart:async';
 import 'package:Talkaboat/services/repositories/live-session.repository.dart';
+import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+
 class LiveSessionService {
   static const String appId = "c0ad2b8f2be149788fabb9d916f0fbef";
-  int _uid = 0;
+  final int _uid = 0;
   int? _remoteUid;
   bool _isJoined = false;
-  bool _isHost = false;
+  final bool _isHost = false;
   String _connectedRoom = "";
   String _roomGuid = "";
   late RtcEngine _agoraEngine;
-
 
   bool get isJoined => _isJoined;
   bool get isHost => _isHost;
@@ -23,46 +24,42 @@ class LiveSessionService {
 
   Future<String> getToken() async {
     var response = await LiveSessionRepository.getToken(_roomGuid);
-    print(response.data);
+    debugPrint(response.data);
     return response.data!;
   }
 
   Future<void> setupVideoSdkEngine() async {
     await [Permission.microphone, Permission.camera].request();
     _agoraEngine = createAgoraRtcEngine();
-    await agoraEngine.initialize(const RtcEngineContext(
-        appId: appId
-    ));
+    await agoraEngine.initialize(const RtcEngineContext(appId: appId));
 
     await agoraEngine.enableVideo();
     agoraEngine.registerEventHandler(
       RtcEngineEventHandler(
         onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
-            _isJoined = true;
+          _isJoined = true;
         },
         onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
-
-            _remoteUid = remoteUid;
+          _remoteUid = remoteUid;
         },
-        onUserOffline: (RtcConnection connection, int remoteUid,
-            UserOfflineReasonType reason) {
-            _remoteUid = null;
+        onUserOffline: (RtcConnection connection, int remoteUid, UserOfflineReasonType reason) {
+          _remoteUid = null;
         },
       ),
     );
   }
 
   Future<void> openRoom(String roomName) async {
-    var data = { "RoomName": roomName };
+    var data = {"RoomName": roomName};
     var response = await LiveSessionRepository.openRoom(data);
-    await joinAsHost(response.configuration.roomName, response.guid);
+    await joinAsHost(response.configuration!.roomName, response.guid);
   }
 
   Future<void> joinAsViewer(String roomName, String roomId) async {
     ChannelMediaOptions options = const ChannelMediaOptions(
-        clientRoleType: ClientRoleType.clientRoleAudience,
-        channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
-      );
+      clientRoleType: ClientRoleType.clientRoleAudience,
+      channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
+    );
     await join(roomName, roomId, options);
   }
 

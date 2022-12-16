@@ -12,10 +12,9 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
   final double expandedHeight;
   final SearchResult podcast;
-  final Function escapeWithNav;
   final TabController? controller;
 
-  PodcastDetailSliver(this.escapeWithNav, {required this.expandedHeight, required this.podcast, this.controller});
+  PodcastDetailSliver({required this.expandedHeight, required this.podcast, this.controller});
 
   final userService = getIt<UserService>();
   final tokenService = getIt<TokenService>();
@@ -181,7 +180,9 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                           try {
                             final text = newValue.text.replaceAll(",", ".");
                             if (text.isEmpty || double.parse(text) <= userService.availableToken) return newValue;
-                          } catch (e) {}
+                          } catch (e) {
+                            debugPrint("$e");
+                          }
                           return oldValue;
                         }),
                       ],
@@ -202,9 +203,9 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                   : SizedBox(
                       height: 140,
                       child: Column(
-                        children: [
+                        children: const [
                           Text(AppLocalizations.of(context)!.loginToUseThisFeature),
-                          Center(child: LoginButton(escapeWithNav))
+                          Center(child: LoginButton())
                         ],
                       ),
                     ),

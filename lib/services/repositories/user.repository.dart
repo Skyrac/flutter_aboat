@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../configuration/dio.config.dart';
 import '../../models/response.model.dart';
@@ -13,29 +14,29 @@ class UserRepository {
 
   static Future<String?> requestEmailLogin(String email) async {
     try {
-      var response = await Dio().post<String>('https://api.talkaboat.online/v1/user/login/email/$email');
+      var response = await dio.post<String>('https://api.talkaboat.online/v1/user/login/email/$email');
       var convertedData = response.data;
-      print(convertedData);
+      debugPrint(convertedData);
       return convertedData;
     } catch (e) {
-      print(e);
+      debugPrint("$e");
     }
     return null;
   }
 
   static Future<String> emailLogin(String email, String pin) async {
     try {
-      var response = await Dio()
+      var response = await dio
           .post<String>('https://api.talkaboat.online/v1/user/login/email', data: {"address": email, "signature": pin});
-      print('data: ${response.data}');
+      debugPrint('data: ${response.data}');
       if (response.data == "Value cannot be null. (Parameter 'User not found! Please register before sign in.')") {
         return "new_account";
       }
       var convertedData = json.decode(response.data!)["token"];
       return convertedData;
-    } catch (exception) {
-      print(exception);
-      final ex = exception as DioError;
+    } catch (e) {
+      debugPrint("$e");
+      final ex = e as DioError;
       final error = (ex.response?.data ?? "") as String;
       if (error.contains("Value cannot be null. (Parameter 'User not found! Please register before sign in.')")) {
         return "new_account";
@@ -47,11 +48,11 @@ class UserRepository {
   static Future<UserInfoData> getUserInfo() async {
     try {
       var response = await dio.get<String>('/v1/user/profile');
-     print(response.data);
+      debugPrint(response.data);
       var convertedData = UserInfoData.fromJson(json.decode(response.data!));
       return convertedData;
-    } catch (exception) {
-      print(exception);
+    } catch (e) {
+      debugPrint("$e");
       //print((exception as DioError).response?.data);
       return UserInfoData();
     }
@@ -71,8 +72,8 @@ class UserRepository {
     try {
       var response = await dio.get<String>('/v1/user/reward/detail');
       return List<RewardDetail>.from(json.decode(response.data!).map((model) => RewardDetail.fromJson(model)));
-    } catch (exception) {
-      print(exception);
+    } catch (e) {
+      debugPrint("$e");
       return List.empty();
     }
   }
@@ -101,7 +102,7 @@ class UserRepository {
     var data = ResponseModel(status: 0, text: userIdToken);
     var response = await dio.post<String>('/v1/user/login/firebase', data: data);
     var convertedData = ResponseModel.fromJson(json.decode(response.data!));
-    print("firebaseLogin: ${convertedData.toJson()}");
+    debugPrint("firebaseLogin: ${convertedData.toJson()}");
     return convertedData;
   }
 
@@ -110,7 +111,7 @@ class UserRepository {
       var data = ResponseModel(status: 0, text: userIdToken);
       var response = await dio.post<String>('/v1/user/login/firebase/$pin', data: data);
       var convertedData = ResponseModel.fromJson(json.decode(response.data!));
-      print(response.data);
+      debugPrint(response.data);
       return convertedData;
     } catch (exception) {
       return ResponseModel();
@@ -119,15 +120,16 @@ class UserRepository {
 
   static Future<ResponseModel> firebaseRegister(String userIdToken, String username, bool newsletter) async {
     try {
-      print({"address": "Social: $username", "signature": userIdToken, "userName": username, "newsletter": newsletter});
+      debugPrint(
+          "${{"address": "Social: $username", "signature": userIdToken, "userName": username, "newsletter": newsletter}}");
       var response = await dio.post<String>('/v1/user/register/firebase',
           data: {"address": "Social: $username", "signature": userIdToken, "userName": username, "newsletter": newsletter});
       var convertedData = ResponseModel.fromJson(json.decode(response.data!));
-      print(response.data);
+      debugPrint(response.data);
       return convertedData;
     } catch (exception) {
-      print(exception);
-      print((exception as DioError).response!.data);
+      debugPrint("$exception");
+      debugPrint((exception as DioError).response!.data);
       if ((exception as DioError).response != null) {
         var data = json.decode((exception as DioError).response!.data);
         if (data["message"] != null) {
@@ -142,11 +144,11 @@ class UserRepository {
     try {
       var response = await dio.post<String>('/v1/user/register/email',
           data: {"address": email, "guid": pin, "userName": username, "newsletter": newsletter});
-      print(response.data);
+      debugPrint(response.data);
       return ResponseModel.fromJson(json.decode(response.data!));
     } catch (exception) {
-      print(exception);
-      print((exception as DioError).response);
+      debugPrint("eexception");
+      debugPrint("${(exception as DioError).response}");
       if ((exception as DioError).response != null) {
         var data = json.decode((exception as DioError).response!.data);
         if (data["message"] != null) {

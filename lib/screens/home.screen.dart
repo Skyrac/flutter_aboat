@@ -8,13 +8,11 @@ import 'package:Talkaboat/widgets/home-suggested.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:Talkaboat/widgets/quests/quest-list.widget.dart';
 import '../widgets/home-app-bar.widget.dart';
-import '../widgets/library-preview.widget.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen(this.setEpisode, this.selectTab, this.escapeWithNav, {Key? key}) : super(key: key);
+  const HomeScreen({Key? key, required this.setEpisode, required this.selectTab}) : super(key: key);
   final Function setEpisode;
   final Function selectTab;
-  final Function escapeWithNav;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -61,31 +59,13 @@ class _HomeScreenState extends State<HomeScreen> {
       child: ScaffoldWave(
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(100),
-          child: HomeAppBarWidget(widget.escapeWithNav, refresh: refresh),
+          child: HomeAppBarWidget(refresh: refresh),
         ),
         body: TabBarView(children: [
-          HomeScreenSuggestedTab(widget.selectTab, widget.escapeWithNav),
-          HomeScreenCategoriesTab(widget.escapeWithNav),
+          HomeScreenSuggestedTab(widget.selectTab),
+          const HomeScreenCategoriesTab(),
           Container(),
         ]),
-      ),
-    );
-  }
-
-  createLibraryPreview() {
-    if (!userService.isConnected || userService.favorites.isEmpty) {
-      return Container();
-    }
-    var libraryEntries = userService.getFavoritesEntries(6);
-    var height = double.parse((libraryEntries.length / 2 * 120).toString());
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: SizedBox(
-        height: height,
-        child: Wrap(
-          spacing: 10,
-          children: [for (var entry in libraryEntries) LibraryPreviewWidget(widget.escapeWithNav, podcast: entry)],
-        ),
       ),
     );
   }

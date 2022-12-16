@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:Talkaboat/l10n/l10n.dart';
+import 'package:Talkaboat/navigator_keys.dart';
 import 'package:Talkaboat/screens/root.screen.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/themes/colors.dart';
@@ -53,6 +54,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+        navigatorKey: NavigatorKeys.navigatorKeyMain,
         title: 'Talkaboat',
         localizationsDelegates: [
           AppLocalizations.delegate,

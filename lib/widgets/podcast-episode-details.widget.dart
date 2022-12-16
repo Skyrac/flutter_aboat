@@ -12,10 +12,9 @@ import 'package:rxdart/rxdart.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PodcastEpisodeDetails extends StatefulWidget {
-  const PodcastEpisodeDetails({super.key, required this.episode, required this.escapeWithNav, required this.position});
+  const PodcastEpisodeDetails({super.key, required this.episode, required this.position});
 
   final Episode episode;
-  final Function escapeWithNav;
   final Duration position;
 
   @override
@@ -109,13 +108,13 @@ class _PodcastEpisodeDetailsState extends State<PodcastEpisodeDetails> {
                                   const SizedBox(
                                     width: 15,
                                   ),
-                                  FileDownloadService.containsFile(widget.episode!.audio!)
+                                  FileDownloadService.containsFile(widget.episode.audio!)
                                       ? ButtonEpisode(
                                           func: () async {
-                                            if (!userService.isInFavorites(widget.episode!.podcastId!)) {
-                                              await userService.addToFavorites(widget.episode!.podcastId!);
+                                            if (!userService.isInFavorites(widget.episode.podcastId!)) {
+                                              await userService.addToFavorites(widget.episode.podcastId!);
                                             }
-                                            await FileDownloadService.cacheOrDelete(widget.episode!.audio!);
+                                            await FileDownloadService.cacheOrDelete(widget.episode.audio!);
                                             setState(() {});
                                           },
                                           image: "assets/images/cloud_complete.png",
@@ -124,10 +123,10 @@ class _PodcastEpisodeDetailsState extends State<PodcastEpisodeDetails> {
                                         )
                                       : ButtonEpisode(
                                           func: () async {
-                                            if (!userService.isInFavorites(widget.episode!.podcastId!)) {
-                                              await userService.addToFavorites(widget.episode!.podcastId!);
+                                            if (!userService.isInFavorites(widget.episode.podcastId!)) {
+                                              await userService.addToFavorites(widget.episode.podcastId!);
                                             }
-                                            await FileDownloadService.cacheOrDelete(widget.episode!.audio!);
+                                            await FileDownloadService.cacheOrDelete(widget.episode.audio!);
                                             setState(() {});
                                           },
                                           image: "assets/images/cloud.png",
@@ -342,27 +341,20 @@ class _PodcastEpisodeDetailsState extends State<PodcastEpisodeDetails> {
           ),
           Container(
             margin: const EdgeInsets.only(top: 5),
+            padding: EdgeInsets.symmetric(horizontal: 0.2),
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), border: Border.all(color: color)),
-            height: 10,
+            height: 11,
             width: 333,
-            child: SliderTheme(
-              data: SliderTheme.of(context).copyWith(
-                  trackHeight: 8.0,
-                  thumbColor: color,
-                  thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 5),
-                  // thumbShape: HiddenThumbComponentShape(),
-                  activeTrackColor: color,
-                  inactiveTrackColor: const Color.fromRGBO(15, 23, 41, 1),
-                  trackShape: CustomTrackShape()
-                  // thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 0.0)
-                  ),
-              child: Slider(
-                  value: (duration.inSeconds.toDouble() < position.inSeconds.toDouble() ? 0 : position.inSeconds.toDouble()),
-                  onChanged: (double value) {},
-                  min: 0,
-                  max: duration.inSeconds.toDouble()),
+            child: SeekBar(
+              color: color,
+              isPlay: isPlay,
+              isMiniPlayer: false,
+              duration: duration ?? Duration.zero,
+              position: position ?? Duration.zero,
+              onChangeEnd: (newPosition) {
+                audioPlayer.seek(newPosition);
+              },
             ),
-            // )
           ),
         ],
       );

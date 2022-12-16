@@ -6,15 +6,13 @@ import '../../configuration/dio.config.dart';
 import '../../models/podcasts/podcast.model.dart';
 
 class LiveSessionRepository {
-  LiveSessionRepository._() {}
+  LiveSessionRepository._();
   static const API = "/v1/live";
 
-  static Future<List<Podcast>> getRandomPodcastByGenre(
-      int amount, int genre) async {
+  static Future<List<Podcast>> getRandomPodcastByGenre(int amount, int genre) async {
     try {
       var response = await dio.get<String>('$API/search/random/$amount/$genre');
-      var list = List<Podcast>.from(
-          json.decode(response.data!).map((data) => Podcast.fromJson(data)));
+      var list = List<Podcast>.from(json.decode(response.data!).map((data) => Podcast.fromJson(data)));
       return list;
     } catch (ex) {
       return List.empty();

@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PodcastListHorizontal extends StatelessWidget {
-  const PodcastListHorizontal(this.escapeWithNav,
-      {this.data, this.future, this.title, this.multiplier, this.seeAllCb, Key? key})
+  const PodcastListHorizontal({this.data, this.future, this.title, this.multiplier, this.seeAllCb, Key? key})
       : super(key: key);
 
   final Future<List<Podcast>>? future;
@@ -13,7 +12,6 @@ class PodcastListHorizontal extends StatelessWidget {
   final String? title;
   final String? multiplier;
   final void Function()? seeAllCb;
-  final Function escapeWithNav;
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +102,7 @@ class PodcastListHorizontal extends StatelessWidget {
           : Container(),
       SizedBox(
         height: 150,
-        child: PodcastListWidget(escapeWithNav, direction: Axis.horizontal, searchResults: data),
+        child: PodcastListWidget(direction: Axis.horizontal, searchResults: data),
       )
     ]);
   }

@@ -2,7 +2,6 @@ import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/services/audio/podcast.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../themes/colors.dart';
@@ -36,7 +35,7 @@ class _ClaimBottomSheetState extends State<ClaimBottomSheet> {
                       DefaultColors.secondaryColor.shade900,
                       DefaultColors.secondaryColor.shade900
                     ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 child: ListView(
                   controller: controller,
                   children: [
@@ -46,7 +45,7 @@ class _ClaimBottomSheetState extends State<ClaimBottomSheet> {
                                 builder: (context, snapshot) {
                                   if (snapshot.connectionState == ConnectionState.done) {
                                     if (snapshot.hasError) {
-                                      return SizedBox();
+                                      return const SizedBox();
                                     } else if (snapshot.hasData && snapshot.data != null) {
                                       var validMethods = snapshot.data!;
                                       return progressWithMethod(validMethods);
@@ -57,8 +56,8 @@ class _ClaimBottomSheetState extends State<ClaimBottomSheet> {
                                 future: getPodcastOwnershipMethods(),
                               )
                             : progressWithMethod(ownershipMethods)
-                        : Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 30),
+                        : const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 0, vertical: 30),
                             child: Center(child: Text(AppLocalizations.of(context)!.ownership)),
                           ),
                   ],
@@ -83,7 +82,7 @@ class _ClaimBottomSheetState extends State<ClaimBottomSheet> {
       case PodcastOwnershipMethods.ERROR:
         return ShowError();
       case PodcastOwnershipMethods.UNDEFINED:
-        return SizedBox();
+        return const SizedBox();
     }
   }
 
@@ -125,7 +124,7 @@ class _ClaimBottomSheetState extends State<ClaimBottomSheet> {
                   border: const UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.red),
                   ))),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Center(
@@ -215,11 +214,11 @@ class _ClaimBottomSheetState extends State<ClaimBottomSheet> {
       mainAxisSize: MainAxisSize.max,
       children: [
         Text(AppLocalizations.of(context)!.verifyByKnowYourCustomer, style: Theme.of(context).textTheme.titleLarge),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         Text(AppLocalizations.of(context)!.methodKYC, style: Theme.of(context).textTheme.bodyMedium),
-        SizedBox(
+        const SizedBox(
           height: 20,
         ),
         Center(
@@ -241,18 +240,18 @@ class _ClaimBottomSheetState extends State<ClaimBottomSheet> {
                               'https://verify-with.blockpass.org/?clientId=aboat_entertainment_ps_kyc&serviceName=Aboat+Entertainment+Private+Sale+KYC&env=prod&refId=${userService.userInfo!.userName!}',
                               mode: LaunchMode.externalApplication);
                         } else {
-                          print("No Username given!");
+                          debugPrint("No Username given!");
                         }
                       }),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
                         child: Row(
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.email,
                               color: Colors.black,
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 10,
                             ),
                             Text(
@@ -282,11 +281,11 @@ class _ClaimBottomSheetState extends State<ClaimBottomSheet> {
                         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
                         child: Row(
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.verified,
                               color: Colors.black,
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 10,
                             ),
                             Text(

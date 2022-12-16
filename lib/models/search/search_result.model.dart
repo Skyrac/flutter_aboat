@@ -1,5 +1,3 @@
-import '../chat/join-room-dto.dart';
-
 class SearchResult {
   int? id;
   int? roomId;

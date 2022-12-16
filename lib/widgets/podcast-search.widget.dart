@@ -1,3 +1,4 @@
+import 'package:Talkaboat/navigator_keys.dart';
 import 'package:Talkaboat/widgets/podcast-list.widget.dart';
 import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
@@ -17,8 +18,7 @@ class PodcastSearch extends SearchDelegate<String?> {
   String previousSearch = "";
   final List<String> selectedLanguages;
   final List<int> genreIds;
-  final Function escapeWithNav;
-  PodcastSearch(this.escapeWithNav, {required this.selectedLanguages, required this.genreIds});
+  PodcastSearch({required this.selectedLanguages, required this.genreIds});
 
   Future<List<SearchResult>?> queryChanged(String query) async {
     debouncer.value = query;
@@ -60,7 +60,7 @@ class PodcastSearch extends SearchDelegate<String?> {
           switch (value) {
             case "toggleLibrary":
               if (!userService.isConnected) {
-                escapeWithNav(PageTransition(
+                NavigatorKeys.navigatorKeyMain.currentState!.push(PageTransition(
                     alignment: Alignment.bottomCenter,
                     curve: Curves.bounceOut,
                     type: PageTransitionType.rightToLeftWithFade,
@@ -140,7 +140,7 @@ class PodcastSearch extends SearchDelegate<String?> {
                           );
                         } else if (snapshot.hasData && snapshot.data != null && snapshot.data!.isNotEmpty) {
                           if (snapshot.data != null && snapshot.data!.isNotEmpty) {
-                            return PodcastListWidget(escapeWithNav,
+                            return PodcastListWidget(
                                 direction: Axis.vertical, searchResults: snapshot.data!, trailing: buildPopupButton);
                           }
                         } else {
@@ -159,8 +159,7 @@ class PodcastSearch extends SearchDelegate<String?> {
                     },
                     future: queryChanged(query),
                   )
-                : PodcastListWidget(escapeWithNav,
-                    direction: Axis.vertical, searchResults: searchResults, trailing: buildPopupButton));
+                : PodcastListWidget(direction: Axis.vertical, searchResults: searchResults, trailing: buildPopupButton));
   }
 
   @override
@@ -173,8 +172,7 @@ class PodcastSearch extends SearchDelegate<String?> {
           DefaultColors.secondaryColor.shade900
         ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
         child: searchResults.isNotEmpty
-            ? PodcastListWidget(escapeWithNav,
-                direction: Axis.vertical, searchResults: searchResults, trailing: buildPopupButton)
+            ? PodcastListWidget(direction: Axis.vertical, searchResults: searchResults, trailing: buildPopupButton)
             : FutureBuilder<List<SearchResult>?>(
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
@@ -187,7 +185,7 @@ class PodcastSearch extends SearchDelegate<String?> {
                       );
                     } else if (snapshot.hasData && snapshot.data != null && snapshot.data!.isNotEmpty) {
                       if (snapshot.data != null && snapshot.data!.isNotEmpty) {
-                        return PodcastListWidget(escapeWithNav,
+                        return PodcastListWidget(
                             direction: Axis.vertical, searchResults: snapshot.data!, trailing: buildPopupButton);
                       }
                     } else {

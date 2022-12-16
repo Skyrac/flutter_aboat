@@ -5,10 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PodcastDetails extends StatefulWidget {
-  const PodcastDetails({super.key, required this.podcastId, required this.escapeWithNav});
+  const PodcastDetails({super.key, required this.podcastId});
 
   final int podcastId;
-  final Function escapeWithNav;
 
   @override
   State<PodcastDetails> createState() => _PodcastDetailsState();

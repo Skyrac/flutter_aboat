@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:Talkaboat/screens/app.screen.dart';
@@ -5,6 +6,7 @@ import 'package:Talkaboat/themes/colors.dart';
 import 'package:Talkaboat/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -79,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
         isLoading = true;
       });
       final result = await userService.emailLogin(email, pin);
-      print(result);
+      debugPrint(result);
       if (result == "new_account") {
         setState(() {
           isLoading = false;
@@ -88,7 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
       } else if (result == "true") {
         navAway(navigator);
       } else {
-        ShowSnackBar(context, AppLocalizations.of(context)!.errorLoggingIn);
+        Fluttertoast.showToast(msg: AppLocalizations.of(context)!.errorLoggingIn);
       }
       setState(() {
         isLoading = false;
@@ -219,7 +221,7 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
     } catch (exception) {
-      print(exception);
+      debugPrint("$exception");
     }
 
     setState(() {
@@ -298,33 +300,38 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> doEmailRegister(
       BuildContext context, TextStyle theme, String pinResult, NavigatorState navigator, String? rejectedUsername) async {
-    final username = await showUsernameDialog(context, theme, rejectedUsername);
-    if (username != null) {
-      setState(() {
-        isLoading = true;
-      });
-      final registerResult = await userService.emailRegister(emailController.text, pinResult, username, false);
-      setState(() {
-        isLoading = false;
-      });
-      print("registerResult $registerResult");
-      if (registerResult == null) {
-        // returns error
-        navAway(navigator);
-      } else {
-        // register error
-        if (registerResult.contains("username_invalid") ||
-            registerResult.contains("User or Wallet is already registered!")) {
-          print("invalid $username");
-          await doEmailRegister(context, theme, pinResult, navigator, username);
+    var isUsernameValid = false;
+    while (!isUsernameValid) {
+      final username = await showUsernameDialog(context, theme, rejectedUsername);
+      if (username != null) {
+        setState(() {
+          isLoading = true;
+        });
+        final registerResult = await userService.emailRegister(emailController.text, pinResult, username, false);
+        setState(() {
+          isLoading = false;
+        });
+        isUsernameValid = true;
+        debugPrint("registerResult $registerResult");
+        if (registerResult == null) {
+          // returns error
+          navAway(navigator);
         } else {
-          ShowSnackBar(context, AppLocalizations.of(context)!.errorRegistering);
+          // register error
+          if (registerResult.contains("username_invalid") ||
+              registerResult.contains("User or Wallet is already registered!")) {
+            debugPrint("invalid $username");
+            isUsernameValid = false;
+            Fluttertoast.showToast(msg: "invalid username $username");
+          } else {
+            ShowSnackBar(context, AppLocalizations.of(context)!.errorRegistering);
+          }
         }
+      } else {
+        debugPrint("cancel");
+        // cancel
+        return;
       }
-    } else {
-      print("cancel");
-      // cancel
-      return;
     }
   }
 
@@ -351,7 +358,7 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       }
     } else {
-      print("cancel");
+      debugPrint("cancel");
       // cancel
       return;
     }
@@ -439,7 +446,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   isLoading = true;
                                 });
                                 final loginResult = await sendLogin(context, emailController.text, pinResult);
-                                print(loginResult);
+                                debugPrint("$loginResult");
                                 setState(() {
                                   isLoading = false;
                                 });
