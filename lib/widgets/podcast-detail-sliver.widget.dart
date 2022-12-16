@@ -1,4 +1,5 @@
 import 'package:Talkaboat/injection/injector.dart';
+import 'package:Talkaboat/services/user/reward.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/services/web3/token.service.dart';
 import 'package:Talkaboat/widgets/login-button.widget.dart';
