@@ -70,7 +70,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
                             final data = snapshot.data as List<Podcast>;
                             if (data.isNotEmpty) {
                               return PodcastListWidget(
-                                widget.escapeWithNav,
                                 searchResults: data,
                                 direction: Axis.vertical,
                                 trailing: buildPopupButton,
@@ -91,6 +90,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
                       future: userService.getFavorites(),
                     ),
                   )
-                : Center(child: LoginButton(widget.escapeWithNav))));
+                : Center(child: LoginButton())));
   }
 }

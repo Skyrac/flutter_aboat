@@ -336,12 +336,13 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                     height: 40,
                     width: 150,
                     child: Center(
-                      child: Text(AppLocalizations.of(context)!.create),
+                        child: Text(
+                      AppLocalizations.of(context)!.create,
                       style: Theme.of(context)
                           .textTheme
                           .labelLarge
                           ?.copyWith(color: const Color.fromRGBO(15, 23, 41, 1), fontWeight: FontWeight.w600),
-                    ),
+                    )),
                   ),
                 ),
                 RawMaterialButton(
@@ -365,12 +366,13 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                     height: 40,
                     width: 80,
                     child: Center(
-                      child: Text(AppLocalizations.of(context)!.cancel),
+                        child: Text(
+                      AppLocalizations.of(context)!.cancel,
                       style: Theme.of(context)
                           .textTheme
                           .labelLarge
                           ?.copyWith(color: const Color.fromRGBO(164, 202, 255, 1), fontWeight: FontWeight.w600),
-                    ),
+                    )),
                   ),
                 ),
               ],

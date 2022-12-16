@@ -46,7 +46,7 @@ class _SearchAndFilterScreenState extends State<SearchAndFilterScreen> {
                 padding: const EdgeInsets.all(20),
                 child: InkWell(
                   onTap: (() {
-                    search = PodcastSearch(widget.escapeWithNav, selectedLanguages: selectedLanguages, genreIds: []);
+                    search = PodcastSearch(selectedLanguages: selectedLanguages, genreIds: []);
                     // placeholder for our places search later
                     showSearch(
                       context: context,

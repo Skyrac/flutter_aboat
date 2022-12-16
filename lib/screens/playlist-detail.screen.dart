@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../injection/injector.dart';
 
 import '../models/playlist/playlist.model.dart';
@@ -8,7 +9,6 @@ import '../models/playlist/track.model.dart';
 import '../services/audio/audio-handler.services.dart';
 import '../services/user/user.service.dart';
 import '../themes/colors.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../utils/scaffold_wave.dart';
 
 class PlaylistDetailScreen extends StatefulWidget {
@@ -34,7 +34,7 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
-              children: const [
+              children: [
                 Icon(
                   Icons.playlist_remove,
                   size: 20,

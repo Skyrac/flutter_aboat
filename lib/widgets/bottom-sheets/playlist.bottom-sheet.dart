@@ -66,7 +66,7 @@ class _PlaylistBottomSheetState extends State<PlaylistBottomSheet> {
                           search = text.toLowerCase();
                         });
                       }),
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                           border: InputBorder.none,
                           hintText: AppLocalizations.of(context)!.searchPlaylist,
                           suffixIcon: Icon(Icons.search)),
@@ -96,13 +96,13 @@ class _PlaylistBottomSheetState extends State<PlaylistBottomSheet> {
                   // Extracting data from snapshot object
                   return buildPlaylistListView(context, widget.episodeToAdd);
                 }
-                return const Center(
+                return Center(
                   child: Text(AppLocalizations.of(context)!.noPlaylistsFound),
                 );
               }
               return userService.playlists.isNotEmpty
                   ? buildPlaylistListView(context, widget.episodeToAdd)
-                  : const Center(child: Text(AppLocalizations.of(context)!.noPlaylistsFound));
+                  : Center(child: Text(AppLocalizations.of(context)!.noPlaylistsFound));
             },
             future: userService.getPlaylists(),
           ),

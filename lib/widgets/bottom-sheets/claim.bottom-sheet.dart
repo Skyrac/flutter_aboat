@@ -56,7 +56,7 @@ class _ClaimBottomSheetState extends State<ClaimBottomSheet> {
                                 future: getPodcastOwnershipMethods(),
                               )
                             : progressWithMethod(ownershipMethods)
-                        : const Padding(
+                        : Padding(
                             padding: EdgeInsets.symmetric(horizontal: 0, vertical: 30),
                             child: Center(child: Text(AppLocalizations.of(context)!.ownership)),
                           ),

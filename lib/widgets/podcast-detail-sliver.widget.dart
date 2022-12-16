@@ -203,10 +203,7 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                   : SizedBox(
                       height: 140,
                       child: Column(
-                        children: const [
-                          Text(AppLocalizations.of(context)!.loginToUseThisFeature),
-                          Center(child: LoginButton())
-                        ],
+                        children: [Text(AppLocalizations.of(context)!.loginToUseThisFeature), Center(child: LoginButton())],
                       ),
                     ),
               actions: [
