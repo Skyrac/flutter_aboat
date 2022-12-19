@@ -24,6 +24,7 @@ class MiniPlayerWidget extends StatefulWidget {
 
 class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
   Episode? currentEpisode;
+  bool isPodcastEpisodeActiv = false;
   late final audioHandler = getIt<AudioPlayerHandler>();
   final stateHandler = getIt<StateService>();
 
@@ -40,9 +41,12 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
 
   @override
   Widget build(BuildContext context) {
+    // print("key.currentContext! ${ModalRoute.of(context)!.isCurrent}");
+    print("context.currentContext! ${context.widget.toStringShort()}");
     if (widget.episode == null) {
       return const SizedBox();
     }
+
     Size deviceSize = MediaQuery.of(context).size;
     return Container(
       margin: const EdgeInsets.only(bottom: 18),
@@ -72,17 +76,45 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
                   child: InkWell(
-                    onTap: (() async => {
-                          widget.navKey.currentState!.pushAndRemoveUntil(
-                              PageTransition(
-                                  alignment: Alignment.bottomCenter,
-                                  curve: Curves.bounceOut,
-                                  type: PageTransitionType.rightToLeftWithFade,
-                                  duration: const Duration(milliseconds: 1),
-                                  reverseDuration: const Duration(milliseconds: 1),
-                                  child: PodcastEpisodeScreen(episode: widget.episode!, position: position)),
-                              (route) => route.isFirst)
-                        }),
+                    onTap: isPodcastEpisodeActiv!
+                        ? (() async => {
+                              widget.navKey.currentState!.push(
+                                PageTransition(
+                                    alignment: Alignment.bottomCenter,
+                                    curve: Curves.bounceOut,
+                                    type: PageTransitionType.rightToLeftWithFade,
+                                    duration: const Duration(milliseconds: 1),
+                                    reverseDuration: const Duration(milliseconds: 1),
+                                    child: PodcastEpisodeScreen(
+                                      episode: widget.episode!,
+                                      position: position,
+                                      isActiv: (screen) {
+                                        setState(() {
+                                          isPodcastEpisodeActiv = screen;
+                                        });
+                                      },
+                                    )),
+                              )
+                            })
+                        : (() async => {
+                              widget.navKey.currentState!.push(
+                                PageTransition(
+                                    alignment: Alignment.bottomCenter,
+                                    curve: Curves.bounceOut,
+                                    type: PageTransitionType.rightToLeftWithFade,
+                                    duration: const Duration(milliseconds: 1),
+                                    reverseDuration: const Duration(milliseconds: 1),
+                                    child: PodcastEpisodeScreen(
+                                      episode: widget.episode!,
+                                      position: position,
+                                      isActiv: (screen) {
+                                        setState(() {
+                                          isPodcastEpisodeActiv = screen;
+                                        });
+                                      },
+                                    )),
+                              )
+                            }),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [

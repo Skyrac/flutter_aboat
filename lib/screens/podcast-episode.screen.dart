@@ -23,7 +23,9 @@ import 'login.screen.dart';
 class PodcastEpisodeScreen extends StatefulWidget {
   final Episode episode;
   final Duration position;
-  const PodcastEpisodeScreen({super.key, required this.episode, required this.position});
+  final Function isActiv;
+
+  const PodcastEpisodeScreen({super.key, required this.episode, required this.position, required this.isActiv});
 
   @override
   State<PodcastEpisodeScreen> createState() => _PodcastEpisodeScreenState();
@@ -64,6 +66,12 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> with Single
 
   @override
   Widget build(BuildContext context) {
+    Future.delayed(Duration.zero, () {
+      widget.isActiv(ModalRoute.of(context)!.isCurrent);
+    });
+
+    print("key.currentContext! ${ModalRoute.of(context)!.isCurrent}");
+    print("context.currentContext! ${context.widget.toStringShort()}");
     final size = MediaQuery.of(context).size;
     userService.UpdatePodcastVisitDate(widget.episode.podcastId);
     return ScaffoldWave(
