@@ -41,12 +41,12 @@ class PodcastEpisodeSliver extends SliverPersistentHeaderDelegate {
             bottom: PreferredSize(
               preferredSize: Size.fromHeight(expandedHeight),
               child: Container(
-                padding: const EdgeInsets.fromLTRB(18, 5, 18, 10),
+                padding: const EdgeInsets.fromLTRB(10, 5, 10, 10),
                 child: Material(
                   borderRadius: BorderRadius.circular(20),
                   color: const Color.fromRGBO(29, 40, 58, 0.92),
                   child: Container(
-                    padding: const EdgeInsets.fromLTRB(18, 8, 18, 8),
+                    padding: const EdgeInsets.all(8),
                     child: DecoratedBox(
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.0),

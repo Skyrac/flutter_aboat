@@ -49,7 +49,7 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
               child: Container(
                 padding: const EdgeInsets.fromLTRB(10, 5, 10, 10),
                 child: Material(
-                  borderRadius: BorderRadius.circular(18),
+                  borderRadius: BorderRadius.circular(20),
                   color: const Color.fromRGBO(29, 40, 58, 0.92),
                   child: Container(
                     padding: const EdgeInsets.all(8),
