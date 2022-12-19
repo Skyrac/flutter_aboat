@@ -31,6 +31,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
   final ChatService chatService = getIt<ChatService>();
   final userService = getIt<UserService>();
   late TabController tabController;
+  final ScrollController controller = ScrollController();
   final focusNode = FocusNode();
   int currentTab = 0;
   Future<SearchResult?>? _getPodcast;
@@ -55,6 +56,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
   @override
   dispose() {
     tabController.dispose();
+    controller.dispose();
     super.dispose();
   }
 
@@ -75,11 +77,6 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
 
     return ScaffoldWave(
         height: 33,
-        header: SliverPersistentHeader(
-          delegate: PodcastDetailSliver(
-              expandedHeight: size.height * 0.4, podcast: widget.podcastSearchResult, controller: tabController),
-          pinned: true,
-        ),
         appBar: AppBar(
           centerTitle: false,
           leadingWidth: 35,
@@ -169,7 +166,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
             )));
   }
 
-  List<Widget> createTabs(int podcastId, int roomId) {
+  List<Widget> createTabs(int podcastId, int roomId, ScrollController controller) {
     return [
       EpisodeHeaderList(
         podcastId: podcastId,
@@ -178,6 +175,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
         podcastId: podcastId,
       ),
       Chat(
+        controller: controller,
         focusNode: focusNode,
         roomId: roomId,
         messageType: 1,
@@ -206,19 +204,28 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
   Widget createCustomScrollView(SearchResult podcastSearchResult) {
     final size = MediaQuery.of(context).size;
 
-    final tabs = createTabs(podcastSearchResult.id!, podcastSearchResult.roomId!);
+    final tabs = createTabs(podcastSearchResult.id!, podcastSearchResult.roomId!, controller);
 
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
-        Container(
-            constraints: BoxConstraints(minHeight: size.height * 0.5),
-            child: currentTab == 0 ? tabs[currentTab] : SingleChildScrollView(child: tabs[currentTab])),
+        CustomScrollView(shrinkWrap: true, controller: controller, slivers: [
+          SliverPersistentHeader(
+            delegate: PodcastDetailSliver(
+                expandedHeight: size.height * 0.4, podcast: widget.podcastSearchResult, controller: tabController),
+            pinned: true,
+          ),
+          SliverToBoxAdapter(
+            child: Container(constraints: BoxConstraints(minHeight: size.height * 0.5), child: tabs[currentTab]),
+          )
+        ]),
         tabController.index == 2
             ? ChatInput(
                 roomId: podcastSearchResult.roomId!,
                 focusNode: focusNode,
-                messageType: 1,
+                messageType: 2,
+                replyMessage: replyMessage,
+                editedMessage: editedMessage,
                 cancelReplyAndEdit: () {
                   setState(() {
                     replyMessage = null;
