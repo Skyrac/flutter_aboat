@@ -3,6 +3,7 @@ import 'package:Talkaboat/services/audio/podcast.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../themes/colors.dart';
 
 class ClaimBottomSheet extends StatefulWidget {
@@ -55,9 +56,9 @@ class _ClaimBottomSheetState extends State<ClaimBottomSheet> {
                                 future: getPodcastOwnershipMethods(),
                               )
                             : progressWithMethod(ownershipMethods)
-                        : const Padding(
+                        : Padding(
                             padding: EdgeInsets.symmetric(horizontal: 0, vertical: 30),
-                            child: Center(child: Text("You need to login in order to verify podcast ownership")),
+                            child: Center(child: Text(AppLocalizations.of(context)!.ownership)),
                           ),
                   ],
                 ))));
@@ -86,11 +87,11 @@ class _ClaimBottomSheetState extends State<ClaimBottomSheet> {
   }
 
   Widget ShowError() {
-    return const Text("Unable to fetch podcast ownership data!");
+    return Text(AppLocalizations.of(context)!.unableToFetchPodcast);
   }
 
   Widget Owned() {
-    return const Text("This podcast is already verified!");
+    return Text(AppLocalizations.of(context)!.podcastIsVerified);
   }
 
   final emailInputController = TextEditingController();
@@ -103,13 +104,11 @@ class _ClaimBottomSheetState extends State<ClaimBottomSheet> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.max,
         children: [
-          Text("Verify by E-Mail", style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(
+          Text(AppLocalizations.of(context)!.verifyByEMail, style: Theme.of(context).textTheme.titleLarge),
+          SizedBox(
             height: 10,
           ),
-          Text(
-              "After providing the valid email which is connected to this podcast per rss feed: You'll receive a PIN to the provided email which you may enter by clicking 'Enter PIN' to verify your podcast ownership. ",
-              style: Theme.of(context).textTheme.bodyMedium),
+          Text(AppLocalizations.of(context)!.verifyYourPodcastOwnership, style: Theme.of(context).textTheme.bodyMedium),
           TextField(
               controller: emailInputController,
               decoration: InputDecoration(
@@ -148,15 +147,15 @@ class _ClaimBottomSheetState extends State<ClaimBottomSheet> {
                           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
                           child: Row(
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.email,
                                 color: Colors.black,
                               ),
-                              const SizedBox(
+                              SizedBox(
                                 width: 10,
                               ),
                               Text(
-                                "Request Verification",
+                                AppLocalizations.of(context)!.requestVerification,
                                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.black),
                               )
                             ],
@@ -178,15 +177,15 @@ class _ClaimBottomSheetState extends State<ClaimBottomSheet> {
                           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
                           child: Row(
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.pin,
                                 color: Colors.black,
                               ),
-                              const SizedBox(
+                              SizedBox(
                                 width: 10,
                               ),
                               Text(
-                                "Enter PIN",
+                                AppLocalizations.of(context)!.enterPIN,
                                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.black),
                               )
                             ],
@@ -199,7 +198,7 @@ class _ClaimBottomSheetState extends State<ClaimBottomSheet> {
               ],
             ),
           ),
-          const SizedBox(
+          SizedBox(
             height: 50,
           ),
           OnlyKYC()
@@ -214,13 +213,11 @@ class _ClaimBottomSheetState extends State<ClaimBottomSheet> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.max,
       children: [
-        Text("Verify by Know-Your-Customer", style: Theme.of(context).textTheme.titleLarge),
+        Text(AppLocalizations.of(context)!.verifyByKnowYourCustomer, style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(
           height: 10,
         ),
-        Text(
-            "With this method you will have to do our KYC in order to provide the proof, that you are the author of this podcast. After KYC send the request by clicking 'Verify'. This verification method is done manually and requires 3 - 5 business days.",
-            style: Theme.of(context).textTheme.bodyMedium),
+        Text(AppLocalizations.of(context)!.methodKYC, style: Theme.of(context).textTheme.bodyMedium),
         const SizedBox(
           height: 20,
         ),
@@ -258,7 +255,7 @@ class _ClaimBottomSheetState extends State<ClaimBottomSheet> {
                               width: 10,
                             ),
                             Text(
-                              "Request Verification",
+                              AppLocalizations.of(context)!.requestVerification,
                               style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.black),
                             )
                           ],
@@ -292,7 +289,7 @@ class _ClaimBottomSheetState extends State<ClaimBottomSheet> {
                               width: 10,
                             ),
                             Text(
-                              "Verify",
+                              AppLocalizations.of(context)!.verify,
                               style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.black),
                             )
                           ],

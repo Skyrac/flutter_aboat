@@ -12,6 +12,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:open_store/open_store.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../injection/injector.dart';
 import '../models/podcasts/episode.model.dart';
@@ -135,8 +136,8 @@ class _AppScreenState extends State<AppScreen> with RouteAware {
       showDialog(
           context: context,
           builder: (_) => AlertDialog(
-                title: const Text("Update required"),
-                content: const Text("Please update your app to continue"),
+                title: Text(AppLocalizations.of(context)!.updateRequired),
+                content: Text(AppLocalizations.of(context)!.pleaseUpdateYourApp),
                 elevation: 8,
                 actions: [
                   TextButton(
@@ -146,12 +147,12 @@ class _AppScreenState extends State<AppScreen> with RouteAware {
                           androidAppBundleId: 'com.aboat.talkaboat', // Android app bundle package name
                         );
                       },
-                      child: const Text("Update")),
+                      child: Text(AppLocalizations.of(context)!.update)),
                   TextButton(
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: const Text("Later"))
+                      child: Text(AppLocalizations.of(context)!.later))
                 ],
               ),
           barrierDismissible: true);

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Talkaboat/l10n/l10n.dart';
 import 'package:Talkaboat/navigator_keys.dart';
 import 'package:Talkaboat/screens/root.screen.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
@@ -12,6 +13,8 @@ import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -53,6 +56,13 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
         navigatorKey: NavigatorKeys.navigatorKeyMain,
         title: 'Talkaboat',
+        localizationsDelegates: [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: l10n.all,
         theme: NewDefaultTheme.defaultTheme,
         debugShowCheckedModeBanner: false,
         navigatorObservers: [routeObserver],

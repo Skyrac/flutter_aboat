@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../injection/injector.dart';
 import '../../models/playlist/playlist.model.dart';
@@ -65,8 +66,10 @@ class _PlaylistBottomSheetState extends State<PlaylistBottomSheet> {
                           search = text.toLowerCase();
                         });
                       }),
-                      decoration: const InputDecoration(
-                          border: InputBorder.none, hintText: "Search Playlist...", suffixIcon: Icon(Icons.search)),
+                      decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: AppLocalizations.of(context)!.searchPlaylist,
+                          suffixIcon: Icon(Icons.search)),
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                   ),
@@ -93,13 +96,13 @@ class _PlaylistBottomSheetState extends State<PlaylistBottomSheet> {
                   // Extracting data from snapshot object
                   return buildPlaylistListView(context, widget.episodeToAdd);
                 }
-                return const Center(
-                  child: Text("No playlists found. Create a new playlist!"),
+                return Center(
+                  child: Text(AppLocalizations.of(context)!.noPlaylistsFound),
                 );
               }
               return userService.playlists.isNotEmpty
                   ? buildPlaylistListView(context, widget.episodeToAdd)
-                  : const Center(child: Text("No playlists found. Create a new playlist!"));
+                  : Center(child: Text(AppLocalizations.of(context)!.noPlaylistsFound));
             },
             future: userService.getPlaylists(),
           ),
@@ -195,7 +198,7 @@ class _PlaylistBottomSheetState extends State<PlaylistBottomSheet> {
                                   height: 10,
                                 ),
                                 Text(
-                                  "Created: ${entry.getDateTime()}",
+                                  AppLocalizations.of(context)!.created(entry.getDateTime()),
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
                                   style: Theme.of(context).textTheme.labelMedium,
@@ -287,7 +290,7 @@ class _PlaylistBottomSheetState extends State<PlaylistBottomSheet> {
                     width: 150,
                     child: Center(
                       child: Text(
-                        "Create",
+                        AppLocalizations.of(context)!.create,
                         style: Theme.of(context)
                             .textTheme
                             .labelLarge
@@ -318,7 +321,7 @@ class _PlaylistBottomSheetState extends State<PlaylistBottomSheet> {
                     width: 80,
                     child: Center(
                       child: Text(
-                        "Cancel",
+                        AppLocalizations.of(context)!.cancel,
                         style: Theme.of(context)
                             .textTheme
                             .labelLarge

@@ -1,6 +1,7 @@
 import 'package:Talkaboat/models/podcasts/podcast.model.dart';
 import 'package:Talkaboat/widgets/podcast-list.widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PodcastListHorizontal extends StatelessWidget {
   const PodcastListHorizontal({this.data, this.future, this.title, this.multiplier, this.seeAllCb, Key? key})
@@ -68,7 +69,7 @@ class PodcastListHorizontal extends StatelessWidget {
               width: 10,
             ),
             // TODO: bottom align this text
-            Text("Reward $multiplier", style: Theme.of(context).textTheme.titleMedium)
+            Text(AppLocalizations.of(context)!.rewardParam(multiplier), style: Theme.of(context).textTheme.titleMedium)
           ]
         : [Container()];
 
@@ -89,7 +90,7 @@ class PodcastListHorizontal extends StatelessWidget {
                         child: Row(
                           children: [
                             Text(
-                              "See All",
+                              AppLocalizations.of(context)!.seeAll,
                               style: Theme.of(context).textTheme.titleSmall,
                             ),
                             const Icon(Icons.arrow_right_alt)

@@ -9,6 +9,7 @@ import '../models/search/search_result.model.dart';
 import '../screens/login.screen.dart';
 import '../screens/podcast-detail.screen.dart';
 import '../services/user/user.service.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PodcastListFavoritesWidget extends StatefulWidget {
   const PodcastListFavoritesWidget({Key? key, required this.searchResults, this.trailing, this.checkUpdate})
@@ -26,8 +27,8 @@ class _PodcastListFavoritesWidgetState extends State<PodcastListFavoritesWidget>
         PopupMenuItem<String>(
           value: 'toggleLibrary',
           child: userService.isInFavorites(entry.id!)
-              ? const Card(child: Text('Remove from Library'))
-              : const Card(child: Text('Add to Library')),
+              ? Card(child: Text(AppLocalizations.of(context)!.removeFromLibrary))
+              : Card(child: Text(AppLocalizations.of(context)!.addToLibrary)),
         ),
       ];
 
@@ -107,7 +108,7 @@ class _PodcastListFavoritesWidgetState extends State<PodcastListFavoritesWidget>
           style: Theme.of(context).textTheme.titleMedium,
         ),
         subtitle: Text(
-          "${entry.totalEpisodes!} Episodes",
+          AppLocalizations.of(context)!.episodesParam(entry.totalEpisodes!),
           overflow: TextOverflow.ellipsis,
           maxLines: 2,
           style: Theme.of(context).textTheme.labelMedium,

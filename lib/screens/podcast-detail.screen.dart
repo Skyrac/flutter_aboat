@@ -9,6 +9,7 @@ import 'package:Talkaboat/widgets/episode-list-with-header.widget.dart';
 import 'package:Talkaboat/widgets/podcast-details.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../injection/injector.dart';
 import '../models/search/search_result.model.dart';
@@ -96,9 +97,8 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
                   tooltip: '',
                   onPressed: () => {
                         //TODO: Geräte Abhängigkeit prüfen
-                        Share.share(
-                            "Check the Podcast ${widget.podcastSearchResult.title} on Talkaboat.online mobile App! Start listening and earn while supporting new and upcoming podcasters.\n\n Download it now on \nAndroid: https://play.google.com/store/apps/details?id=com.aboat.talkaboat\n",
-                            subject: "Check this out! A Podcast on Talkaboat.online.")
+                        Share.share(AppLocalizations.of(context)!.share(widget.podcastSearchResult.title),
+                            subject: AppLocalizations.of(context)!.share2)
                       }),
             ),
             !userService.isConnected
