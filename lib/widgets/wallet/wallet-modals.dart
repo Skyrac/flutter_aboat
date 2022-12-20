@@ -1,6 +1,7 @@
 import 'package:Talkaboat/widgets/wallet/wallet-buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import '../../injection/injector.dart';
 import '../../models/smart/chain.model.dart';
 import '../../services/repositories/smart-contract.repository.dart';
@@ -291,7 +292,7 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
   }
 }
 
-void showAlert(BuildContext context, String address) {
+void showAlert(BuildContext context, String address, VoidCallback remove) {
   final userService = getIt<UserService>();
   showDialog(
       context: context,
@@ -309,8 +310,16 @@ void showAlert(BuildContext context, String address) {
               Padding(
                 padding: const EdgeInsets.only(bottom: 10),
                 child: RawMaterialButton(
-                  onPressed: (() {
-                    userService.deleteWallet(address);
+                  onPressed: (() async {
+                    var result = await userService.deleteWallet(address);
+                    if (result) {
+                      Fluttertoast.showToast(msg: "Wallet has been deleted");
+                      Navigator.pop(context);
+                      remove();
+                    } else {
+                      Fluttertoast.showToast(msg: "Error");
+                      Navigator.pop(context);
+                    }
                   }),
                   child: Container(
                     decoration: BoxDecoration(

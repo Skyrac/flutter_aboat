@@ -205,12 +205,20 @@ class _WalletScreenState extends State<WalletScreen> {
                                                               constraints: const BoxConstraints(),
                                                               onPressed: () {
                                                                 debugPrint("delete");
-                                                                showAlert(context, item);
+                                                                showAlert(
+                                                                    context,
+                                                                    item,
+                                                                    () => setState(() {
+                                                                          addresses!.remove(item);
+                                                                        }));
+                                                                setState(() {
+                                                                  addresses!.length;
+                                                                });
                                                               },
                                                               icon: const Icon(
                                                                 Icons.delete,
                                                                 color: Color.fromRGBO(154, 0, 0, 1),
-                                                                size: 28,
+                                                                size: 22,
                                                               ))
                                                           : const SizedBox(),
                                                     ],

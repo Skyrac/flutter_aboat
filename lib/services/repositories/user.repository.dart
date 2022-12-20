@@ -168,7 +168,7 @@ class UserRepository {
   static Future<bool> deleteWallet(String address) async {
     var response = await dio.delete<String>('/v1/user/login/$address/delete');
 
-    return response.data == null ? false : response.data!.isNotEmpty;
+    return response.data == null ? false : true;
   }
 
   static Future<Object?> addWallet(String address) async {
