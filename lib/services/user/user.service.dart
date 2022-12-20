@@ -545,8 +545,8 @@ class UserService {
     return await UserRepository.addWallet(address);
   }
 
-  addWalletConfirm(String address, String signature, bool newsletter) async {
-    return await UserRepository.addWalletConfirm(address, signature, newsletter);
+  addWalletConfirm(String address, String signature, bool newsletter, String guid) async {
+    return await UserRepository.addWalletConfirm(address, signature, newsletter, guid);
   }
 
   claimABOAT(int chainId, String address, double amout) async {

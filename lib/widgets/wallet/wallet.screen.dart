@@ -160,7 +160,7 @@ class _WalletScreenState extends State<WalletScreen> {
                           final signature =
                               await provider.personalSign(message: message, address: session.accounts[0], password: "");
                           debugPrint(signature);
-                          await userService.addWalletConfirm(session.accounts[0], signature, false);
+                          await userService.addWalletConfirm(session.accounts[0], signature, false, message);
                         } catch (exp) {
                           debugPrint("Error while signing transaction");
                           debugPrint(exp.toString());

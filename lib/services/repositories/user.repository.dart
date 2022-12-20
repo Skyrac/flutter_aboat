@@ -188,11 +188,11 @@ class UserRepository {
     }
   }
 
-  static Future<ResponseModel?> addWalletConfirm(String address, String signature, bool newsletter) async {
+  static Future<ResponseModel?> addWalletConfirm(String address, String signature, bool newsletter, String guid) async {
     try {
-      debugPrint("${{"address": address, "signature": signature, "newsletter": newsletter}}");
+      debugPrint("${{"address": address, "signature": signature, "newsletter": newsletter, "guid": guid}}");
       var response = await dio.post<String>('/v1/wallet/$address/add/confirm',
-          data: {"address": address, "signature": signature, "newsletter": newsletter});
+          data: {"address": address, "signature": signature, "newsletter": newsletter, "guid": guid});
       debugPrint("addWalletConfirm ${response.data}");
       return ResponseModel.fromJson(json.decode(response.data!));
     } catch (exception) {
