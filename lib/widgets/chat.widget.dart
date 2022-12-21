@@ -39,7 +39,7 @@ class _ChatState extends State<Chat> {
   final chatService = getIt<ChatService>();
   final userService = getIt<UserService>();
   int? selectedIndex;
-  Future<List<ChatMessageDto>>? _getMessages;
+  Stream<List<ChatMessageDto>>? _getMessages;
   @override
   initState() {
     super.initState();
@@ -75,6 +75,7 @@ class _ChatState extends State<Chat> {
         return ChatMessageTile(
             key: item.globalKey,
             message: item,
+            focusNode: widget.focusNode,
             onSwipedMessage: (message) {
               widget.replyToMessage(message);
               widget.focusNode.requestFocus();
@@ -107,11 +108,11 @@ class _ChatState extends State<Chat> {
             });
       });
 
-  Future<List<ChatMessageDto>> getMessages(int roomId) async {
+  Stream<List<ChatMessageDto>> getMessages(int roomId) async* {
     if (!chatService.isConnected) {
       await chatService.connect();
     }
-    return await chatService.getHistory(MessageHistoryRequestDto(roomId: roomId, direction: 0));
+    yield await chatService.getHistory(MessageHistoryRequestDto(roomId: roomId, direction: 0));
   }
 
   @override
@@ -119,7 +120,7 @@ class _ChatState extends State<Chat> {
     return AnimatedBuilder(
       animation: chatService,
       builder: (BuildContext context, Widget? child) {
-        return FutureBuilder(
+        return StreamBuilder(
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.hasError) {
@@ -150,7 +151,7 @@ class _ChatState extends State<Chat> {
                 child: CircularProgressIndicator(),
               );
             },
-            future: _getMessages);
+            stream: _getMessages);
       },
     );
   }

@@ -16,7 +16,8 @@ class ChatMessageTile extends StatelessWidget {
       required this.index,
       required this.selectedIndex,
       required this.userService,
-      required this.scrollToMessage});
+      required this.scrollToMessage,
+      required this.focusNode});
 
   final ChatMessageDto message;
   final UserService userService;
@@ -28,6 +29,7 @@ class ChatMessageTile extends StatelessWidget {
   final void Function() scrollToMessage;
   final int index;
   final int? selectedIndex;
+  final FocusNode focusNode;
 
   _showPopupMenu(BuildContext context, Offset offset, ChatMessageDto entry) async {
     double left = offset.dx;
@@ -161,6 +163,7 @@ class ChatMessageTile extends StatelessWidget {
                                       onPressed: () {
                                         selectIndex(null);
                                         cancelReplyAndEdit();
+                                        focusNode.unfocus();
                                       },
                                       icon: const Icon(
                                         Icons.cancel,
@@ -178,6 +181,7 @@ class ChatMessageTile extends StatelessWidget {
                                             onDeleteMessage(message);
                                             selectIndex(null);
                                             cancelReplyAndEdit();
+                                            focusNode.unfocus();
                                           },
                                           icon: const Icon(
                                             Icons.delete,
