@@ -75,6 +75,7 @@ class _ChatInputState extends State<ChatInput> {
                           userService.userInfo!.userName!);
                       textEditController.clear();
                     }
+                    FocusScope.of(context).unfocus();
                     widget.cancelReplyAndEdit();
                   },
                   onChanged: (text) {
@@ -116,6 +117,7 @@ class _ChatInputState extends State<ChatInput> {
                               userService.userInfo!.userName!);
                           textEditController.clear();
                         }
+                        FocusScope.of(context).unfocus();
                         widget.cancelReplyAndEdit();
                       },
                       icon: const Icon(Icons.send, color: Color.fromRGBO(99, 163, 253, 1)),

@@ -83,7 +83,12 @@ class _ChatState extends State<Chat> {
               widget.editMessage(message);
               widget.focusNode.requestFocus();
             },
-            onDeleteMessage: (message) => chatService.deleteMessage(DeleteMessageDto(message.id, message.chatRoomId)),
+            onDeleteMessage: (message) {
+              chatService.deleteMessage(DeleteMessageDto(message.id, message.chatRoomId));
+              setState(() {
+                data.removeAt(index);
+              });
+            },
             cancelReplyAndEdit: widget.cancelReplyAndEdit,
             selectIndex: (index) => setState(() {
                   selectedIndex = index;
