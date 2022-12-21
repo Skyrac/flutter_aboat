@@ -2,7 +2,10 @@ import 'package:Talkaboat/models/chat/chat-dtos.dart';
 import 'package:Talkaboat/services/hubs/chat/chat.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:swipe_to/swipe_to.dart';
+
+import '../screens/podcast-episode.screen.dart';
 
 class ChatMessageTile extends StatelessWidget {
   const ChatMessageTile(
@@ -89,12 +92,15 @@ class ChatMessageTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var selectedMessage = Provider.of<SelectMessage>(context, listen: false);
+    var isSelectedMessage = Provider.of<SelectMessage>(context).isSelectedMessage;
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 7.5, 20, 7.5),
       child: SwipeTo(
         onLeftSwipe: () {
           onSwipedMessage(message);
           selectIndex(index);
+          selectedMessage.changeTrue();
         },
         child: GestureDetector(
           onLongPressStart: (LongPressStartDetails details) {
@@ -105,13 +111,15 @@ class ChatMessageTile extends StatelessWidget {
               } else {
                 _showPopupMenu(context, details.globalPosition, message);
               }
+              selectedMessage.changeTrue();
             }
           },
           child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                color:
-                    selectedIndex == index ? const Color.fromRGBO(99, 163, 253, 1) : const Color.fromRGBO(29, 40, 58, 0.5),
+                color: selectedIndex == index && isSelectedMessage
+                    ? const Color.fromRGBO(99, 163, 253, 1)
+                    : const Color.fromRGBO(29, 40, 58, 0.5),
               ),
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
@@ -154,7 +162,7 @@ class ChatMessageTile extends StatelessWidget {
                           message.senderName.toString(),
                           style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
                         ),
-                        selectedIndex == index
+                        selectedIndex == index && isSelectedMessage
                             ? Row(
                                 children: [
                                   IconButton(

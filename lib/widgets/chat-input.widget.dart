@@ -2,9 +2,11 @@ import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/models/chat/chat-dtos.dart';
 import 'package:Talkaboat/models/chat/create-message-dto.dart';
 import 'package:Talkaboat/models/chat/edit-message-dto.dart';
+import 'package:Talkaboat/screens/podcast-episode.screen.dart';
 import 'package:Talkaboat/services/hubs/chat/chat.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ChatInput extends StatefulWidget {
   const ChatInput({
@@ -76,6 +78,7 @@ class _ChatInputState extends State<ChatInput> {
                       textEditController.clear();
                     }
                     FocusScope.of(context).unfocus();
+                    Provider.of<SelectMessage>(context, listen: false).changeFalse();
                     widget.cancelReplyAndEdit();
                   },
                   onChanged: (text) {
@@ -118,6 +121,7 @@ class _ChatInputState extends State<ChatInput> {
                           textEditController.clear();
                         }
                         FocusScope.of(context).unfocus();
+                        Provider.of<SelectMessage>(context, listen: false).changeFalse();
                         widget.cancelReplyAndEdit();
                       },
                       icon: const Icon(Icons.send, color: Color.fromRGBO(99, 163, 253, 1)),
