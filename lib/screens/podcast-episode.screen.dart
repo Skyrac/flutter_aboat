@@ -81,11 +81,6 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> with Single
       },
       child: ScaffoldWave(
           height: 33,
-          header: SliverPersistentHeader(
-            delegate:
-                PodcastEpisodeSliver(expandedHeight: size.height * 0.4, episode: widget.episode, controller: tabController),
-            pinned: true,
-          ),
           appBar: AppBar(
             centerTitle: false,
             leadingWidth: 35,
