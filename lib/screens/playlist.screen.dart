@@ -3,10 +3,12 @@ import 'package:Talkaboat/utils/scaffold_wave.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
 
 import '../injection/injector.dart';
 import '../models/playlist/playlist.model.dart';
 import '../services/user/user.service.dart';
+import '../utils/common.dart';
 import '../widgets/login-button.widget.dart';
 
 class PlaylistScreen extends StatefulWidget {
@@ -131,6 +133,9 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Future.delayed(Duration.zero, () {
+      Provider.of<SelectEpisodePage>(context, listen: false).changeFalse();
+    });
     return SafeArea(
         child: ScaffoldWave(
             appBar: AppBar(

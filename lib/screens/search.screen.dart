@@ -10,6 +10,9 @@ import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
+
+import '../utils/common.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen(
@@ -84,6 +87,9 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Future.delayed(Duration.zero, () {
+      Provider.of<SelectEpisodePage>(context, listen: false).changeFalse();
+    });
     return ScaffoldWave(
       physics: const NeverScrollableScrollPhysics(),
       appBar: widget.appBar ?? buildAppbar(),

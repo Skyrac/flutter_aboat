@@ -4,6 +4,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../injection/injector.dart';
@@ -41,8 +42,6 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // print("key.currentContext! ${ModalRoute.of(context)!.isCurrent}");
-    print("context.currentContext! ${context.widget.toStringShort()}");
     if (widget.episode == null) {
       return const SizedBox();
     }
@@ -76,26 +75,8 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
                   child: InkWell(
-                    onTap: isPodcastEpisodeActiv!
-                        ? (() async => {
-                              widget.navKey.currentState!.push(
-                                PageTransition(
-                                    alignment: Alignment.bottomCenter,
-                                    curve: Curves.bounceOut,
-                                    type: PageTransitionType.rightToLeftWithFade,
-                                    duration: const Duration(milliseconds: 1),
-                                    reverseDuration: const Duration(milliseconds: 1),
-                                    child: PodcastEpisodeScreen(
-                                      episode: widget.episode!,
-                                      position: position,
-                                      isActiv: (screen) {
-                                        setState(() {
-                                          isPodcastEpisodeActiv = screen;
-                                        });
-                                      },
-                                    )),
-                              )
-                            })
+                    onTap: Provider.of<SelectEpisodePage>(context).isSelectedPage
+                        ? () {}
                         : (() async => {
                               widget.navKey.currentState!.push(
                                 PageTransition(

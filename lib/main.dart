@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
 
 import 'configuration/dio.config.dart';
 import 'firebase_options.dart';
@@ -50,18 +51,25 @@ class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        navigatorKey: NavigatorKeys.navigatorKeyMain,
-        title: 'Talkaboat',
-        theme: NewDefaultTheme.defaultTheme,
-        debugShowCheckedModeBanner: false,
-        navigatorObservers: [routeObserver],
-        home: AnimatedSplashScreen(
-            duration: 2000,
-            splash: const Image(width: 250, image: AssetImage('assets/images/talkaboat.png')),
-            nextScreen: const RootScreen(),
-            splashTransition: SplashTransition.fadeTransition,
-            pageTransitionType: PageTransitionType.fade,
-            backgroundColor: DefaultColors.secondaryColor.shade900));
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => SelectEpisodePage(),
+        )
+      ],
+      child: MaterialApp(
+          navigatorKey: NavigatorKeys.navigatorKeyMain,
+          title: 'Talkaboat',
+          theme: NewDefaultTheme.defaultTheme,
+          debugShowCheckedModeBanner: false,
+          navigatorObservers: [routeObserver],
+          home: AnimatedSplashScreen(
+              duration: 2000,
+              splash: const Image(width: 250, image: AssetImage('assets/images/talkaboat.png')),
+              nextScreen: const RootScreen(),
+              splashTransition: SplashTransition.fadeTransition,
+              pageTransitionType: PageTransitionType.fade,
+              backgroundColor: DefaultColors.secondaryColor.shade900)),
+    );
   }
 }

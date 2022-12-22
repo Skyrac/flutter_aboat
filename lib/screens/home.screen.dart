@@ -7,6 +7,8 @@ import 'package:Talkaboat/widgets/home-categories.dart';
 import 'package:Talkaboat/widgets/home-suggested.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:Talkaboat/widgets/quests/quest-list.widget.dart';
+import 'package:provider/provider.dart';
+import '../utils/common.dart';
 import '../widgets/home-app-bar.widget.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -54,6 +56,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Future.delayed(Duration.zero, () {
+      Provider.of<SelectEpisodePage>(context, listen: false).changeFalse();
+    });
     return DefaultTabController(
       length: 3,
       child: ScaffoldWave(
