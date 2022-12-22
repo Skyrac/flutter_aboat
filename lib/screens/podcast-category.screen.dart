@@ -10,6 +10,7 @@ import 'package:Talkaboat/widgets/podcast-list-horizontal.widget.dart';
 import 'package:Talkaboat/widgets/searchbar.widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CategoryScreen extends StatefulWidget {
   const CategoryScreen(this.category, {Key? key}) : super(key: key);
@@ -81,7 +82,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
     return Column(
       children: [
         SearchBar(
-          placeholder: "Search in ${widget.category.name}",
+          placeholder: AppLocalizations.of(context)!.searchIn(widget.category.name),
           onSubmitted: (text) {
             Navigator.push(
               context,

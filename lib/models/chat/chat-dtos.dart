@@ -1,4 +1,5 @@
 // -- chat_room_dto.dart --
+import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'chat-dtos.g.dart';
@@ -29,6 +30,7 @@ class ChatRoomDto {
 
 @JsonSerializable()
 class ChatMessageDto {
+  final GlobalKey globalKey;
   int id;
   int chatRoomId;
   ChatMessageDto? answeredMessage;
@@ -50,7 +52,8 @@ class ChatMessageDto {
       required this.senderName,
       this.updated,
       required this.isEdited,
-      this.chatMember});
+      this.chatMember,
+      required this.globalKey});
 
   factory ChatMessageDto.fromJson(Map<String, dynamic> json) => _$ChatMessageDtoFromJson(json);
 

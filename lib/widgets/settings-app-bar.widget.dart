@@ -1,6 +1,7 @@
 import 'package:Talkaboat/navigator_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../injection/injector.dart';
 import '../screens/login.screen.dart';
@@ -25,7 +26,7 @@ class _SettingsAppBarWidgetState extends State<SettingsAppBarWidget> {
   Widget build(BuildContext context) {
     final UserService userService = getIt<UserService>();
     return AppBar(
-      title: const Text('Settings'),
+      title: Text(AppLocalizations.of(context)!.settings),
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 10),

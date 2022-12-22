@@ -2,7 +2,7 @@ import 'package:Talkaboat/screens/search.screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../screens/settings/settings.screen.dart';
 
 class HomeAppBarWidget extends StatelessWidget {
@@ -30,14 +30,14 @@ class HomeAppBarWidget extends StatelessWidget {
               color: Colors.white.withOpacity(0.0),
               border: const Border(bottom: BorderSide(color: Color.fromRGBO(164, 202, 255, 1))),
             ),
-            child: const TabBar(
+            child: TabBar(
               labelColor: Color.fromRGBO(188, 140, 75, 1),
               indicatorColor: Color.fromRGBO(188, 140, 75, 1),
               unselectedLabelColor: Color.fromRGBO(164, 202, 255, 1),
               tabs: [
-                Tab(text: "Suggested"),
-                Tab(text: "Categories"),
-                Tab(text: "News"),
+                Tab(text: AppLocalizations.of(context)!.suggested),
+                Tab(text: AppLocalizations.of(context)!.categories),
+                Tab(text: AppLocalizations.of(context)!.news),
               ],
             ),
           ),
