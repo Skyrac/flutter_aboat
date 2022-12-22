@@ -14,7 +14,7 @@ class UserRepository {
 
   static Future<String?> requestEmailLogin(String email) async {
     try {
-      var response = await Dio().post<String>('https://api.talkaboat.online/v1/user/login/email/$email');
+      var response = await dio.post<String>('https://api.talkaboat.online/v1/user/login/email/$email');
       var convertedData = response.data;
       debugPrint(convertedData);
       return convertedData;
@@ -26,7 +26,7 @@ class UserRepository {
 
   static Future<String> emailLogin(String email, String pin) async {
     try {
-      var response = await Dio()
+      var response = await dio
           .post<String>('https://api.talkaboat.online/v1/user/login/email', data: {"address": email, "signature": pin});
       debugPrint('data: ${response.data}');
       if (response.data == "Value cannot be null. (Parameter 'User not found! Please register before sign in.')") {

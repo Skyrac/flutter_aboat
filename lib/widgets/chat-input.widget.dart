@@ -7,6 +7,7 @@ import 'package:Talkaboat/services/hubs/chat/chat.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ChatInput extends StatefulWidget {
   const ChatInput({
@@ -92,11 +93,11 @@ class _ChatInputState extends State<ChatInput> {
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     alignLabelWithHint: true,
-                    hintText: "Message",
+                    hintText: AppLocalizations.of(context)!.message,
                     prefixText: isReplying
-                        ? "Answer: "
+                        ? "${AppLocalizations.of(context)!.answer}: "
                         : isEdit
-                            ? "Edit: "
+                            ? "${AppLocalizations.of(context)!.edit}: "
                             : "",
                     prefixStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: const Color.fromRGBO(99, 163, 253, 1),

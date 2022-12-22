@@ -1,6 +1,7 @@
 import 'package:Talkaboat/screens/settings/earnings.screen.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../injection/injector.dart';
 import '../../services/downloading/file-downloader.service.dart';
@@ -86,7 +87,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const SizedBox(height: 10),
             getUserCard(),
             const SizedBox(height: 10),
-            createMenuPoint(const Text("Earnings"), () {
+            createMenuPoint(Text(AppLocalizations.of(context)!.earnings), () {
               Navigator.push(
                   context,
                   PageTransition(
@@ -98,17 +99,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       child: const EarningsScreen()));
             }, true),
             const SizedBox(height: 10),
-            createMenuPoint(Text("Clear Cache", style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.grey)),
-                () {
+            createMenuPoint(
+                Text(AppLocalizations.of(context)!.clearCache,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.grey)), () {
               createClearCacheAlert(context);
             }, false, showTrailing: false),
             createMenuPoint(
                 Text(
-                  "Delete Account",
+                  AppLocalizations.of(context)!.deleteAccount,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.red),
                 ), () {
-              showAlert(context, deletionTextController, "Confirm Deletion", "Enter username to confirm deletion",
-                  "Username", completeDeletion);
+              showAlert(
+                  context,
+                  deletionTextController,
+                  AppLocalizations.of(context)!.confirmDeletion,
+                  AppLocalizations.of(context)!.enterUsernameToConfirmDeletion,
+                  AppLocalizations.of(context)!.username,
+                  completeDeletion);
             }, true, showTrailing: false)
           ],
         ),
@@ -130,13 +137,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
   createClearCacheAlert(BuildContext context) {
     // set up the buttons
     Widget cancelButton = TextButton(
-      child: const Text("Cancel"),
+      child: Text(AppLocalizations.of(context)!.cancel),
       onPressed: () {
         Navigator.of(context, rootNavigator: true).pop();
       },
     );
     Widget continueButton = TextButton(
-      child: Text("Clear Cache", style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.red)),
+      child: Text(AppLocalizations.of(context)!.clearCache,
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.red)),
       onPressed: () async {
         await FileDownloadService.clearCache();
         setState(() {
@@ -147,8 +155,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
-      title: const Text("Clear Cache Confirmation"),
-      content: const Text("Clearing the cache might impact the app performance. Are you sure you want to continue?"),
+      title: Text(AppLocalizations.of(context)!.clearCacheConfirmation),
+      content: Text(AppLocalizations.of(context)!.clearing),
       actions: [
         continueButton,
         cancelButton,

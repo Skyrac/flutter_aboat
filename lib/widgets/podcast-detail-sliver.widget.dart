@@ -1,4 +1,5 @@
 import 'package:Talkaboat/injection/injector.dart';
+import 'package:Talkaboat/services/user/reward.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/services/web3/token.service.dart';
 import 'package:Talkaboat/widgets/login-button.widget.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/services.dart';
 
 import '../models/search/search_result.model.dart';
 import 'bottom-sheets/claim.bottom-sheet.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
   final double expandedHeight;
@@ -26,7 +28,7 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
       fit: StackFit.expand,
       children: [
         buildBackground(shrinkOffset, context),
-        buildAppBar(shrinkOffset),
+        buildAppBar(shrinkOffset, context),
         Container(
           padding: const EdgeInsets.only(bottom: 100),
           child: buildFloating(shrinkOffset, context),
@@ -39,7 +41,7 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
 
   double disappear(double shrinkOffset) => 1 - shrinkOffset / expandedHeight;
 
-  Widget buildAppBar(double shrinkOffset) => PreferredSize(
+  Widget buildAppBar(double shrinkOffset, context) => PreferredSize(
         preferredSize: Size.fromHeight(expandedHeight),
         child: AppBar(
             leading: const SizedBox(),
@@ -52,7 +54,9 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                   borderRadius: BorderRadius.circular(20),
                   color: const Color.fromRGBO(29, 40, 58, 0.92),
                   child: Container(
-                    padding: const EdgeInsets.all(8),
+                    padding: Localizations.localeOf(context).toString() == "de"
+                        ? const EdgeInsets.symmetric(vertical: 8, horizontal: 6)
+                        : const EdgeInsets.all(8),
                     child: DecoratedBox(
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.0),
@@ -63,10 +67,10 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                         labelColor: const Color.fromRGBO(188, 140, 75, 1),
                         indicatorColor: const Color.fromRGBO(188, 140, 75, 1),
                         unselectedLabelColor: const Color.fromRGBO(164, 202, 255, 1),
-                        tabs: const [
-                          Tab(text: "Episodes"),
-                          Tab(text: "Details"),
-                          Tab(text: "Community"),
+                        tabs: [
+                          Tab(text: AppLocalizations.of(context)!.episodes),
+                          Tab(text: AppLocalizations.of(context)!.details),
+                          Tab(text: AppLocalizations.of(context)!.community),
                         ],
                       ),
                     ),
@@ -104,7 +108,7 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                 children: [
                   Expanded(
                     child: buildButton(
-                        text: 'Ownership',
+                        text: AppLocalizations.of(context)!.ownership,
                         icon: Image.asset(
                           "assets/images/person.png",
                           width: 20,
@@ -120,7 +124,7 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                   ),
                   Expanded(
                     child: buildButton(
-                        text: 'Donate',
+                        text: AppLocalizations.of(context)!.donate,
                         icon: Image.asset("assets/images/money.png", width: 28),
                         onClick: () => {showDonationModal(context)}),
                   ),
@@ -165,7 +169,7 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
         context: context,
         builder: (context) => AlertDialog(
               backgroundColor: Theme.of(context).dialogBackgroundColor,
-              title: Text('Donation for ${podcast.title}'),
+              title: Text(AppLocalizations.of(context)!.donationForPoscast(podcast.title)),
               elevation: 8,
               content: userService.isConnected
                   ? TextField(
@@ -184,8 +188,9 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                         }),
                       ],
                       decoration: InputDecoration(
-                          hintText: "Donation Amount",
-                          labelText: "Available ABOAT: ${userService.availableToken.toStringAsFixed(2)}",
+                          hintText: AppLocalizations.of(context)!.donationAmount,
+                          labelText:
+                              AppLocalizations.of(context)!.availableABOAT(userService.availableToken.toStringAsFixed(2)),
                           labelStyle: Theme.of(context).textTheme.labelLarge,
                           enabledBorder: const UnderlineInputBorder(
                             borderSide: BorderSide(color: Colors.blue),
@@ -199,7 +204,7 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                   : SizedBox(
                       height: 140,
                       child: Column(
-                        children: const [Text("Login to use this feature!"), Center(child: LoginButton())],
+                        children: [Text(AppLocalizations.of(context)!.loginToUseThisFeature), Center(child: LoginButton())],
                       ),
                     ),
               actions: [
@@ -212,12 +217,12 @@ class PodcastDetailSliver extends SliverPersistentHeaderDelegate {
                       donationAmountController.text = "";
                       Navigator.pop(context);
                     }),
-                    child: const Text("Donate")),
+                    child: Text(AppLocalizations.of(context)!.donate)),
                 TextButton(
                     onPressed: (() {
                       Navigator.pop(context);
                     }),
-                    child: const Text("Cancel"))
+                    child: Text(AppLocalizations.of(context)!.cancel))
               ],
             ));
   }

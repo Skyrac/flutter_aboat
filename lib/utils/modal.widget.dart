@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void showAlert(BuildContext context, TextEditingController controller, String title, String? label, String? hint,
     Function submitFunction) {
@@ -28,12 +29,12 @@ void showAlert(BuildContext context, TextEditingController controller, String ti
                   onPressed: (() async {
                     submitFunction();
                   }),
-                  child: const Text("Submit")),
+                  child: Text(AppLocalizations.of(context)!.submit)),
               TextButton(
                   onPressed: (() {
                     Navigator.pop(context);
                   }),
-                  child: const Text("Cancel"))
+                  child: Text(AppLocalizations.of(context)!.cancel))
             ],
           ));
 }
