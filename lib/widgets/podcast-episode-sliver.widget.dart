@@ -44,14 +44,14 @@ class PodcastEpisodeSliver extends SliverPersistentHeaderDelegate {
               child: Container(
                 padding: Localizations.localeOf(context).toString() == "de"
                     ? const EdgeInsets.fromLTRB(10, 5, 10, 10)
-                    : const EdgeInsets.fromLTRB(18, 5, 18, 10),
+                    : const EdgeInsets.fromLTRB(10, 5, 10, 10),
                 child: Material(
                   borderRadius: BorderRadius.circular(20),
                   color: const Color.fromRGBO(29, 40, 58, 0.92),
                   child: Container(
                     padding: Localizations.localeOf(context).toString() == "de"
                         ? const EdgeInsets.symmetric(vertical: 8, horizontal: 6)
-                        : const EdgeInsets.symmetric(vertical: 8, horizontal: 18),
+                        : const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                     child: DecoratedBox(
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.0),
