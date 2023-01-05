@@ -549,17 +549,17 @@ class UserService {
     return await UserRepository.addWalletConfirm(address, signature, newsletter, guid);
   }
 
-  claimABOAT(int chainId, String address, double amout) async {
+  claimABOAT(int chainId, String address, double amount) async {
     try {
-      return await UserRepository.claimABOAT(chainId, address, amout);
+      return await UserRepository.claimABOAT(chainId, address, amount);
     } catch (exception) {
       debugPrint(exception.toString());
     }
   }
 
-  claimABOATNative(int chainId, String address, double amout) async {
+  claimABOATNative(int chainId, String address, double amount) async {
     try {
-      return await UserRepository.claimABOATNative(chainId, address, amout);
+      return await UserRepository.claimABOATNative(chainId, address, amount);
     } catch (exception) {
       debugPrint(exception.toString());
     }

@@ -141,10 +141,10 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                     height: 10,
                   ),
                   ClaimButton(context, "Claim ABOAT", () {
-                    print("Claim ABOAT");
-                    print(widget.selectedAddress);
-                    print(widget.selectedChain);
-                    print(widget.selectedChainId);
+                    debugPrint("Claim ABOAT");
+                    debugPrint(widget.selectedAddress);
+                    debugPrint(widget.selectedChain);
+                    debugPrint(widget.selectedChainId.toString());
                     if (textController.text.isEmpty) {
                       return;
                     }
@@ -156,7 +156,8 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                       textController.text = "";
                       Navigator.pop(context);
                     } else {
-                      print("<5000");
+                      Fluttertoast.showToast(msg: "Amount <= 5000 ABOAT");
+                      debugPrint("<5000");
                     }
                   }, const Color.fromRGBO(99, 163, 253, 1)),
                   Padding(
@@ -188,7 +189,7 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                   ClaimButton(context,
                       widget.selectedChain == null ? "Convert to {{chain-native}}" : "Convert to ${widget.selectedChain}",
                       () {
-                    print("Convert to {{chain-native}}");
+                    debugPrint("Convert to {{chain-native}}");
                     if (textController.text.isEmpty) {
                       return;
                     }
@@ -279,11 +280,11 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                             widget.selectedChainId = int.parse(e!);
                             widget.selectedChain = chain.first.coin.toString();
                           });
-                          print(e);
+                          debugPrint(e);
                         }
                       : (e) {
                           setState(() => widget.selectedAddress = e);
-                          print(e);
+                          debugPrint(e);
                         }),
             );
           }

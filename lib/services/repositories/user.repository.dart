@@ -202,10 +202,10 @@ class UserRepository {
     }
   }
 
-  static Future<bool> claimABOAT(int chainId, String address, double amout) async {
+  static Future<bool> claimABOAT(int chainId, String address, double amount) async {
     try {
       var response = await dio.post<String>(
-        '/v1/user/$chainId/claim/$address/$amout',
+        '/v1/user/$chainId/claim/$address/$amount',
       );
       return true;
     } catch (exception) {
@@ -214,10 +214,10 @@ class UserRepository {
     }
   }
 
-  static Future<bool> claimABOATNative(int chainId, String address, double amout) async {
+  static Future<bool> claimABOATNative(int chainId, String address, double amount) async {
     try {
       var response = await dio.post<String>(
-        '/v1/user/$chainId/claim/$address/$amout/native',
+        '/v1/user/$chainId/claim/$address/$amount/native',
       );
       return true;
     } catch (exception) {
