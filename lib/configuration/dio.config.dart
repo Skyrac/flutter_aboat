@@ -44,29 +44,29 @@ var cacheOptions = CacheOptions(
 Dio dio = Dio(options);
 
 void configDio() {
-  CancelToken cancelToken = CancelToken();
   int _activeRequestCount = 0;
   int _requestLimit = 10;
-
   void showToast() => Fluttertoast.showToast(
         msg: "Rate limiting",
       );
-
   Timer.periodic(const Duration(seconds: 1), (timer) {
     _activeRequestCount = 0;
     print("RESET 0");
   });
+
   dio.interceptors.add(QueuedInterceptorsWrapper(onRequest: (options, handler) async {
     final token = getIt<UserService>().token;
     options.headers['Authorization'] = "Bearer $token";
-
     _activeRequestCount++;
-    await Future.doWhile(() => _activeRequestCount >= _requestLimit);
-    // THIS LINE BLOCKS APP COMPLETELY
-
-    print("request $_activeRequestCount");
-
-    return handler.next(options); //continue
+    if (_activeRequestCount >= _requestLimit) {
+      print("request $_activeRequestCount");
+      showToast();
+      Future.delayed(Duration(seconds: 1), () {
+        return handler.next(options);
+      });
+    } else {
+      return handler.next(options);
+    }
     // If you want to resolve the request with some custom data，
     // you can resolve a `Response` object eg: `handler.resolve(response)`.
     // If you want to reject the request with a error message,
