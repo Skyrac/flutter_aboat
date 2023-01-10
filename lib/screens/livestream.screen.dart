@@ -40,6 +40,54 @@ class ViewContainer {
 }
 
 const String appId = "c0ad2b8f2be149788fabb9d916f0fbef";
+//const appId = "e3054f4262824f6d95aceacc878f8f64";
+
+const int tokenRoleHost = 1; // use 1 for Host/Broadcaster, 2 for Subscriber/Audience
+const int tokenRoleViewer = 2; // use 1 for Host/Broadcaster, 2 for Subscriber/Audience
+const String serverUrl =
+    "https://touted-slave-production.up.railway.app"; // The base URL to your token server, for example "https://agora-token-service-production-92ff.up.railway.app"
+
+Future<String> getHostToken(int id, String channelName) async {
+  String url =
+      '$serverUrl/rtc/$channelName/${tokenRoleHost.toString()}/uid/${id.toString()}?expiry=${tokenExpireTime.toString()}';
+
+  // Send the request
+  final response = await http.get(Uri.parse(url));
+
+  if (response.statusCode == 200) {
+    // If the server returns an OK response, then parse the JSON.
+    Map<String, dynamic> json = jsonDecode(response.body);
+    String newToken = json['rtcToken'];
+    debugPrint('Token Received: $newToken');
+    // Use the token to join a channel or renew an expiring token
+    return newToken;
+  } else {
+    // If the server did not return an OK response,
+    // then throw an exception.
+    throw Exception('Failed to fetch a token. Make sure that your server URL is valid');
+  }
+}
+
+Future<String> getViewerToken(int id, String channelName) async {
+  String url =
+      '$serverUrl/rtc/$channelName/${tokenRoleViewer.toString()}/uid/${id.toString()}?expiry=${tokenExpireTime.toString()}';
+
+  // Send the request
+  final response = await http.get(Uri.parse(url));
+
+  if (response.statusCode == 200) {
+    // If the server returns an OK response, then parse the JSON.
+    Map<String, dynamic> json = jsonDecode(response.body);
+    String newToken = json['rtcToken'];
+    debugPrint('Token Received: $newToken');
+    // Use the token to join a channel or renew an expiring token
+    return newToken;
+  } else {
+    // If the server did not return an OK response,
+    // then throw an exception.
+    throw Exception('Failed to fetch a token. Make sure that your server URL is valid');
+  }
+}
 
 class _LivestreamScreenState extends State<LivestreamScreen> {
   final LiveSessionService _liveService = getIt<LiveSessionService>();
@@ -127,7 +175,8 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
       await _engine.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
       await _engine.enableVideo();
       await _engine.startPreview();
-      final token = await getToken(widget.session.guid);
+      final token =
+          await getToken(widget.session.guid); //getHostToken(userService.userInfo?.userId ?? 0, widget.session.guid);
 
       await _engine.joinChannel(
         token: token,
@@ -141,7 +190,8 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
     } else {
       await _engine.setClientRole(role: ClientRoleType.clientRoleAudience);
       await _engine.enableVideo();
-      final token = await getToken(widget.session.guid);
+      final token =
+          await getToken(widget.session.guid); //getViewerToken(userService.userInfo?.userId ?? 0, widget.session.guid);
 
       await _engine.joinChannel(
         token: token,
@@ -158,6 +208,8 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
   late bool _isHost;
 
   void promote() async {
+    final token = await getToken(widget.session.guid);
+    await _engine.renewToken(token);
     await _engine.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
     await _engine.startPreview();
     setState(() {
@@ -220,7 +272,17 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
                 Future.microtask(() => promote());
               },
               child: Text("promote"),
-            )
+            ),
+            Positioned(
+                top: 100,
+                child: MaterialButton(
+                  onPressed: () {
+                    //LiveSessionRepository.addHost(widget.session.guid, "Alexander");
+                    getIt<LiveSessionService>().addHost("Alexander", widget.session.guid);
+                  },
+                  child: Text("ready promote"),
+                ))
+
             /*Positioned(
               bottom: 0,
               child: Padding(
@@ -304,22 +366,33 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
     }
     debugPrint("${_isHost} ${_remoteUsers}");
     for (var uid in _remoteUsers) {
-      //if (_liveService.userVideoOn[uid] ?? false) {
-      debugPrint("view for $uid ${widget.session.guid}");
-      list.add(
-        ViewContainer(
-          wrap: true,
-          userId: uid,
-          view: AgoraVideoView(
-            controller: VideoViewController.remote(
-              rtcEngine: _engine,
-              canvas: VideoCanvas(uid: uid),
-              connection: RtcConnection(channelId: widget.session.guid),
+      if (_liveService.userVideoOn[uid] ?? false) {
+        debugPrint("view for $uid ${widget.session.guid}");
+        list.add(
+          ViewContainer(
+            wrap: true,
+            userId: uid,
+            view: AgoraVideoView(
+              controller: VideoViewController.remote(
+                rtcEngine: _engine,
+                canvas: VideoCanvas(uid: uid),
+                connection: RtcConnection(channelId: widget.session.guid),
+              ),
             ),
           ),
-        ),
-      );
-      //}
+        );
+      } else {
+        list.add(ViewContainer(
+          wrap: true,
+          userId: uid,
+          view: Container(
+            color: const Color.fromRGBO(29, 40, 58, 0.97),
+            child: Center(
+              child: SizedBox(height: 60, width: 60, child: Image.asset("assets/icons/icon-audio-only.png")),
+            ),
+          ),
+        ));
+      }
     }
     return list;
   }

@@ -31,8 +31,10 @@ class LiveSessionService extends ChangeNotifier {
       }
     });
     _hub.onHostRequest.listen((event) {
-      hostRequest.add(event);
-      notifyListeners();
+      if (!hostRequest.contains(event)) {
+        hostRequest.add(event);
+        notifyListeners();
+      }
     });
   }
 
@@ -114,7 +116,6 @@ class LiveSessionService extends ChangeNotifier {
 
   rejectHostRequest(String username) async {
     hostRequest.removeWhere((x) => x == username);
-    //await _hub.RemoveHostAccess(_roomGuid, username);
     notifyListeners();
   }
 
@@ -213,7 +214,7 @@ class LiveSessionService extends ChangeNotifier {
     agoraEngine.setAudioProfile(
         profile: AudioProfileType.audioProfileMusicHighQualityStereo, scenario: AudioScenarioType.audioScenarioMeeting);
 
-    // Set the video configuration
+    /*// Set the video configuration
     VideoEncoderConfiguration videoConfig = const VideoEncoderConfiguration(
         mirrorMode: VideoMirrorModeType.videoMirrorModeAuto,
         frameRate: 7,
@@ -223,7 +224,7 @@ class LiveSessionService extends ChangeNotifier {
         degradationPreference: DegradationPreference.maintainBalanced);
 
 // Apply the configuration
-    agoraEngine.setVideoEncoderConfiguration(videoConfig);
+    agoraEngine.setVideoEncoderConfiguration(videoConfig);*/
   }
 
   Future<LiveSession?> openRoom(String roomName) async {
@@ -275,26 +276,14 @@ class LiveSessionService extends ChangeNotifier {
 
   promoteToHost() async {
     try {
-      //await agoraEngine.leaveChannel();
-      //ChannelMediaOptions options = const ChannelMediaOptions(
-      //  clientRoleType: ClientRoleType.clientRoleBroadcaster,
-      //  channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
-      //);
+      final token = await getToken(roomGuid);
+      await agoraEngine.renewToken(token);
       await agoraEngine.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
       await agoraEngine.muteLocalAudioStream(false);
       await agoraEngine.muteLocalVideoStream(false);
       await agoraEngine.startPreview();
       debugPrint("myErr became broadcaster");
       notifyListeners();
-      //final token = await getToken(_roomGuid);
-//
-      //await agoraEngine.joinChannel(
-      //  token: token,
-      //  channelId: roomGuid,
-      //  options: options,
-      //  uid: userService.userInfo?.userId ?? 0,
-      //);
-      //debugPrint("joined as host as ${options.clientRoleType}");
     } catch (e) {
       debugPrint("myErr $e");
     }
@@ -302,28 +291,16 @@ class LiveSessionService extends ChangeNotifier {
 
   demoteToViewer() async {
     try {
-      _isJoined = false;
-      notifyListeners();
-
-      await agoraEngine.leaveChannel();
-      await agoraEngine.stopPreview();
-      ChannelMediaOptions options = const ChannelMediaOptions(
-        clientRoleType: ClientRoleType.clientRoleAudience,
-        channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
-      );
+      final token = await getToken(roomGuid);
+      await agoraEngine.renewToken(token);
       await agoraEngine.setClientRole(role: ClientRoleType.clientRoleAudience);
-      final token = await getToken(_roomGuid);
-
-      await agoraEngine.joinChannel(
-        token: token,
-        channelId: roomGuid,
-        options: options,
-        uid: userService.userInfo?.userId ?? 0,
-      );
-      _isJoined = true;
+      await agoraEngine.muteLocalAudioStream(true);
+      await agoraEngine.muteLocalVideoStream(true);
+      await agoraEngine.stopPreview();
+      debugPrint("myErr became listener");
       notifyListeners();
     } catch (e) {
-      debugPrint("$e");
+      debugPrint("myErr $e");
     }
   }
 
