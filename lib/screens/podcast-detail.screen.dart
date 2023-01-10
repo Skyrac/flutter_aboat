@@ -8,7 +8,6 @@ import 'package:Talkaboat/widgets/chat.widget.dart';
 import 'package:Talkaboat/widgets/episode-list-with-header.widget.dart';
 import 'package:Talkaboat/widgets/podcast-details.widget.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -16,7 +15,6 @@ import '../injection/injector.dart';
 import '../models/search/search_result.model.dart';
 import '../services/audio/podcast.service.dart';
 import '../themes/colors.dart';
-import '../utils/common.dart';
 import '../utils/scaffold_wave.dart';
 import '../widgets/podcast-detail-sliver.widget.dart';
 
@@ -77,9 +75,6 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
   Widget build(BuildContext context) {
     userService.UpdatePodcastVisitDate(widget.podcastSearchResult.id);
     final size = MediaQuery.of(context).size;
-    Future.delayed(Duration.zero, () {
-      Provider.of<SelectEpisodePage>(context, listen: false).changeFalse();
-    });
     return ScaffoldWave(
         height: 33,
         appBar: AppBar(

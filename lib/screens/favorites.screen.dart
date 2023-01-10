@@ -2,9 +2,6 @@ import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/screens/search.screen.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import '../utils/common.dart';
 
 class FavoritesScreen extends StatefulWidget {
   const FavoritesScreen({Key? key}) : super(key: key);
@@ -18,9 +15,6 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Future.delayed(Duration.zero, () {
-      Provider.of<SelectEpisodePage>(context, listen: false).changeFalse();
-    });
     userService.SetLastFavoritesNotifcationUpdate();
     return SearchScreen(
       customSearchFunc: ((text, amount, offset) async {

@@ -6,12 +6,10 @@ import 'package:Talkaboat/widgets/login-button.widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../injection/injector.dart';
 import '../../services/user/user.service.dart';
-import '../../utils/common.dart';
 import '../../utils/scaffold_wave.dart';
 
 class SocialEntryScreen extends StatefulWidget {
@@ -55,9 +53,6 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
 
   @override
   Widget build(BuildContext context) {
-    Future.delayed(Duration.zero, () {
-      Provider.of<SelectEpisodePage>(context, listen: false).changeFalse();
-    });
     return SafeArea(
       child: DefaultTabController(
         length: 2,
