@@ -7,6 +7,7 @@ import 'package:Talkaboat/services/hubs/chat/chat.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/widgets/chat-message-tile.widget.dart';
 import 'package:flutter/material.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class LiveChat extends StatefulWidget {
   const LiveChat({
@@ -36,6 +37,7 @@ class _LiveChatState extends State<LiveChat> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey();
   List<ChatMessageDto> _messages = List.empty(growable: true);
   int? selectedIndex;
+  final itemController = ItemScrollController();
 
   @override
   initState() {
@@ -60,6 +62,10 @@ class _LiveChatState extends State<LiveChat> {
     super.dispose();
   }
 
+  Future scrollToItem(index) async {
+    itemController.jumpTo(index: index, alignment: 0.5);
+  }
+
   updateMessages() async {
     int latestId = _messages[_messages.length - 1].id;
     var allMessages = await chatService.getHistory(MessageHistoryRequestDto(roomId: widget.roomId, direction: 0));
@@ -80,23 +86,25 @@ class _LiveChatState extends State<LiveChat> {
         return SizeTransition(
             sizeFactor: animation,
             child: ChatMessageTile(
-                message: removedItem,
-                onSwipedMessage: (message) {
-                  widget.replyToMessage(message);
-                  widget.focusNode.requestFocus();
-                },
-                onEditMessage: (message) {
-                  widget.editMessage(message);
-                  widget.focusNode.requestFocus();
-                },
-                onDeleteMessage: (message) => chatService.deleteMessage(DeleteMessageDto(message.id, message.chatRoomId)),
-                cancelReplyAndEdit: widget.cancelReplyAndEdit,
-                selectIndex: (index) => setState(() {
-                      selectedIndex = index;
-                    }),
-                index: index,
-                selectedIndex: selectedIndex,
-                userService: userService));
+              message: removedItem,
+              onSwipedMessage: (message) {
+                widget.replyToMessage(message);
+                widget.focusNode.requestFocus();
+              },
+              onEditMessage: (message) {
+                widget.editMessage(message);
+                widget.focusNode.requestFocus();
+              },
+              onDeleteMessage: (message) => chatService.deleteMessage(DeleteMessageDto(message.id, message.chatRoomId)),
+              cancelReplyAndEdit: widget.cancelReplyAndEdit,
+              selectIndex: (index) => setState(() {
+                selectedIndex = index;
+              }),
+              index: index,
+              selectedIndex: selectedIndex,
+              userService: userService,
+              scrollToItem: () {},
+            ));
       }
 
       _listKey.currentState?.removeItem(index, builder);
@@ -149,27 +157,30 @@ class _LiveChatState extends State<LiveChat> {
           return SizeTransition(
               sizeFactor: animation,
               child: ChatMessageTile(
-                  message: item,
-                  onSwipedMessage: (message) {
-                    //widget.replyToMessage(message);
-                    //widget.focusNode.requestFocus();
-                  },
-                  onEditMessage: (message) {
-                    //widget.editMessage(message);
-                    //widget.focusNode.requestFocus();
-                  },
-                  onDeleteMessage: (message) => chatService.deleteMessage(DeleteMessageDto(message.id, message.chatRoomId)),
-                  cancelReplyAndEdit: () {},
-                  selectIndex: (index) => setState(() {}),
-                  index: index,
-                  selectedIndex: 0,
-                  userService: userService));
+                message: item,
+                onSwipedMessage: (message) {
+                  //widget.replyToMessage(message);
+                  //widget.focusNode.requestFocus();
+                },
+                onEditMessage: (message) {
+                  //widget.editMessage(message);
+                  //widget.focusNode.requestFocus();
+                },
+                onDeleteMessage: (message) => chatService.deleteMessage(DeleteMessageDto(message.id, message.chatRoomId)),
+                cancelReplyAndEdit: () {},
+                selectIndex: (index) => setState(() {}),
+                index: index,
+                selectedIndex: 0,
+                userService: userService,
+                scrollToItem: () {},
+              ));
         });
   }
 
   Widget buildMessages(List<ChatMessageDto> data) {
     final reversedData = data.reversed.toList(growable: false);
-    return ListView.builder(
+    return ScrollablePositionedList.builder(
+        itemScrollController: itemController,
         physics: const ScrollPhysics(),
         shrinkWrap: true,
         reverse: true,
@@ -193,6 +204,15 @@ class _LiveChatState extends State<LiveChat> {
                     selectedIndex = index;
                   }),
               index: index,
+              scrollToItem: () {
+                for (var element in reversedData) {
+                  var idMessage = element.id;
+                  var idMessageAnswer = item.answeredMessage?.id;
+                  if (idMessageAnswer == idMessage) {
+                    scrollToItem(reversedData.indexOf(element));
+                  }
+                }
+              },
               selectedIndex: selectedIndex,
               userService: userService);
         });

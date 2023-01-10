@@ -60,23 +60,25 @@ class _ChatState extends State<Chat> {
       itemBuilder: (BuildContext context, int index) {
         var item = data[index];
         return ChatMessageTile(
-            message: item,
-            onSwipedMessage: (message) {
-              widget.replyToMessage(message);
-              widget.focusNode.requestFocus();
-            },
-            onEditMessage: (message) {
-              widget.editMessage(message);
-              widget.focusNode.requestFocus();
-            },
-            onDeleteMessage: (message) => chatService.deleteMessage(DeleteMessageDto(message.id, message.chatRoomId)),
-            cancelReplyAndEdit: widget.cancelReplyAndEdit,
-            selectIndex: (index) => setState(() {
-                  selectedIndex = index;
-                }),
-            index: index,
-            selectedIndex: selectedIndex,
-            userService: userService);
+          message: item,
+          onSwipedMessage: (message) {
+            widget.replyToMessage(message);
+            widget.focusNode.requestFocus();
+          },
+          onEditMessage: (message) {
+            widget.editMessage(message);
+            widget.focusNode.requestFocus();
+          },
+          onDeleteMessage: (message) => chatService.deleteMessage(DeleteMessageDto(message.id, message.chatRoomId)),
+          cancelReplyAndEdit: widget.cancelReplyAndEdit,
+          selectIndex: (index) => setState(() {
+            selectedIndex = index;
+          }),
+          index: index,
+          selectedIndex: selectedIndex,
+          userService: userService,
+          scrollToItem: () {},
+        );
       });
 
   Future<List<ChatMessageDto>> getMessages(int roomId) async {

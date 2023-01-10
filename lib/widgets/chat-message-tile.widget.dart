@@ -13,6 +13,7 @@ class ChatMessageTile extends StatelessWidget {
       required this.onDeleteMessage,
       required this.cancelReplyAndEdit,
       required this.selectIndex,
+      required this.scrollToItem,
       required this.index,
       this.selectedIndex,
       required this.userService});
@@ -23,6 +24,7 @@ class ChatMessageTile extends StatelessWidget {
   final void Function(ChatMessageDto) onEditMessage;
   final void Function(ChatMessageDto) onDeleteMessage;
   final void Function() cancelReplyAndEdit;
+  final void Function() scrollToItem;
   final void Function(int?) selectIndex;
   final int index;
   final int? selectedIndex;
@@ -114,28 +116,33 @@ class ChatMessageTile extends StatelessWidget {
                 child: Column(
                   children: [
                     message.answeredMessage != null
-                        ? Container(
-                            padding: const EdgeInsets.all(5),
-                            margin: const EdgeInsets.only(bottom: 5),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: const Color.fromRGBO(48, 73, 123, 1),
+                        ? RawMaterialButton(
+                            onPressed: () {
+                              scrollToItem();
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              margin: const EdgeInsets.only(bottom: 5),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: const Color.fromRGBO(48, 73, 123, 1),
+                              ),
+                              child: Row(children: [
+                                Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                                    child: Text(
+                                      message.answeredMessage!.senderName.toString(),
+                                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
+                                    )),
+                                Center(
+                                    child: Text(
+                                  textAlign: TextAlign.center,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                  message.answeredMessage!.content,
+                                ))
+                              ]),
                             ),
-                            child: Row(children: [
-                              Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 5),
-                                  child: Text(
-                                    message.answeredMessage!.senderName.toString(),
-                                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
-                                  )),
-                              Center(
-                                  child: Text(
-                                textAlign: TextAlign.center,
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                                message.answeredMessage!.content,
-                              ))
-                            ]),
                           )
                         : const SizedBox(),
                     Container(
