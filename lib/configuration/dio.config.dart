@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter/material.dart';
 
 import '../injection/injector.dart';
 import '../services/user/user.service.dart';
@@ -46,12 +46,9 @@ Dio dio = Dio(options);
 void configDio() {
   int _activeRequestCount = 0;
   int _requestLimit = 10;
-  void showToast() => Fluttertoast.showToast(
-        msg: "Rate limiting",
-      );
   Timer.periodic(const Duration(seconds: 1), (timer) {
     _activeRequestCount = 0;
-    print("RESET 0");
+    debugPrint("RESET 0");
   });
 
   dio.interceptors.add(QueuedInterceptorsWrapper(onRequest: (options, handler) async {
@@ -59,8 +56,7 @@ void configDio() {
     options.headers['Authorization'] = "Bearer $token";
     _activeRequestCount++;
     if (_activeRequestCount >= _requestLimit) {
-      print("request $_activeRequestCount");
-      showToast();
+      debugPrint("request $_activeRequestCount");
       Future.delayed(Duration(seconds: 1), () {
         return handler.next(options);
       });
@@ -74,7 +70,7 @@ void configDio() {
   }, onResponse: (response, handler) {
     // when response is received
     _activeRequestCount--;
-    print("response $_activeRequestCount");
+    debugPrint("response $_activeRequestCount");
     // Do something with response data
     return handler.next(response); // continue
     // If you want to reject the request with a error message,
