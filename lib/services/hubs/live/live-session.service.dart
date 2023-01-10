@@ -108,7 +108,7 @@ class LiveSessionService extends ChangeNotifier {
 
   acceptHostRequest(String username) async {
     hostRequest.removeWhere((x) => x == username);
-    await _hub.AddHost(_roomGuid, username);
+    await addHost(username, _currentSess!.guid);
     notifyListeners();
   }
 
@@ -167,7 +167,7 @@ class LiveSessionService extends ChangeNotifier {
       RtcEngineEventHandler(
         onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
           _isJoined = true;
-          debugPrint("joined channel ${connection.channelId} ${connection.localUid}");
+          debugPrint("onJoinChannelSuccess ${connection.channelId} ${connection.localUid}");
           notifyListeners();
         },
         onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) async {
@@ -179,7 +179,7 @@ class LiveSessionService extends ChangeNotifier {
           notifyListeners();
         },
         onUserOffline: (RtcConnection connection, int remoteUid, UserOfflineReasonType reason) async {
-          debugPrint("error $remoteUid $reason");
+          debugPrint("onUserOffline $remoteUid $reason");
           _remoteUsers.remove(remoteUid);
           _userVideoOn[remoteUid] = false;
           if (_currentSess != null) {
@@ -188,7 +188,7 @@ class LiveSessionService extends ChangeNotifier {
           notifyListeners();
         },
         onError: (err, msg) {
-          debugPrint("error $err $msg");
+          debugPrint("onError $err $msg");
         },
         onLeaveChannel: (con, stats) {
           debugPrint("onLeaveChannel");
@@ -206,6 +206,24 @@ class LiveSessionService extends ChangeNotifier {
         },
       ),
     );
+    await agoraEngine.enableAudio();
+    await agoraEngine.enableVideo();
+
+    agoraEngine.enableDualStreamMode(enabled: true);
+    agoraEngine.setAudioProfile(
+        profile: AudioProfileType.audioProfileMusicHighQualityStereo, scenario: AudioScenarioType.audioScenarioMeeting);
+
+    // Set the video configuration
+    VideoEncoderConfiguration videoConfig = const VideoEncoderConfiguration(
+        mirrorMode: VideoMirrorModeType.videoMirrorModeAuto,
+        frameRate: 7,
+        bitrate: 90,
+        dimensions: VideoDimensions(width: 160, height: 90),
+        orientationMode: OrientationMode.orientationModeAdaptive,
+        degradationPreference: DegradationPreference.maintainBalanced);
+
+// Apply the configuration
+    agoraEngine.setVideoEncoderConfiguration(videoConfig);
   }
 
   Future<LiveSession?> openRoom(String roomName) async {
@@ -217,12 +235,11 @@ class LiveSessionService extends ChangeNotifier {
   Future<void> joinAsViewer(String roomId, String roomName) async {
     await setupVideoSdkEngine();
     ChannelMediaOptions options = const ChannelMediaOptions(
+      audienceLatencyLevel: AudienceLatencyLevelType.audienceLatencyLevelLowLatency,
       clientRoleType: ClientRoleType.clientRoleAudience,
       channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
     );
     await agoraEngine.setClientRole(role: ClientRoleType.clientRoleAudience);
-    await agoraEngine.enableAudio();
-    await agoraEngine.enableVideo();
     final token = await getToken(roomId);
 
     await join(roomId, roomName, options, token, false);
@@ -232,12 +249,11 @@ class LiveSessionService extends ChangeNotifier {
     notifyListeners();
     await setupVideoSdkEngine();
     ChannelMediaOptions options = const ChannelMediaOptions(
+      audienceLatencyLevel: AudienceLatencyLevelType.audienceLatencyLevelLowLatency,
       clientRoleType: ClientRoleType.clientRoleBroadcaster,
       channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
     );
     await agoraEngine.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
-    await agoraEngine.enableAudio();
-    await agoraEngine.enableVideo();
     await agoraEngine.startPreview();
     final token = await getToken(roomId);
 
@@ -259,28 +275,28 @@ class LiveSessionService extends ChangeNotifier {
 
   promoteToHost() async {
     try {
-      _isJoined = false;
-      notifyListeners();
-      await agoraEngine.leaveChannel();
-      ChannelMediaOptions options = const ChannelMediaOptions(
-        clientRoleType: ClientRoleType.clientRoleBroadcaster,
-        channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
-      );
+      //await agoraEngine.leaveChannel();
+      //ChannelMediaOptions options = const ChannelMediaOptions(
+      //  clientRoleType: ClientRoleType.clientRoleBroadcaster,
+      //  channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
+      //);
       await agoraEngine.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
+      await agoraEngine.muteLocalAudioStream(false);
+      await agoraEngine.muteLocalVideoStream(false);
       await agoraEngine.startPreview();
-      final token = await getToken(_roomGuid);
-
-      await agoraEngine.joinChannel(
-        token: token,
-        channelId: roomGuid,
-        options: options,
-        uid: userService.userInfo?.userId ?? 0,
-      );
-      debugPrint("joined as host as ${options.clientRoleType}");
-      _isJoined = true;
+      debugPrint("myErr became broadcaster");
       notifyListeners();
+      //final token = await getToken(_roomGuid);
+//
+      //await agoraEngine.joinChannel(
+      //  token: token,
+      //  channelId: roomGuid,
+      //  options: options,
+      //  uid: userService.userInfo?.userId ?? 0,
+      //);
+      //debugPrint("joined as host as ${options.clientRoleType}");
     } catch (e) {
-      debugPrint("$e");
+      debugPrint("myErr $e");
     }
   }
 

@@ -39,7 +39,11 @@ class LiveSessionTile extends StatelessWidget {
                   type: PageTransitionType.fade,
                   duration: const Duration(milliseconds: 300),
                   reverseDuration: const Duration(milliseconds: 200),
-                  child: LivestreamScreen(escapeWithNav: escapeWithNav),
+                  child: LivestreamScreen(
+                    escapeWithNav: escapeWithNav,
+                    session: session,
+                    isHost: false,
+                  ),
                 ));
               }
             },

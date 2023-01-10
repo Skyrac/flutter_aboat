@@ -1,102 +1,109 @@
-import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/models/chat/chat-dtos.dart';
-import 'package:Talkaboat/models/live/live-session.model.dart';
-import 'package:Talkaboat/services/hubs/live/live-session.service.dart';
 import 'package:Talkaboat/widgets/chat-input.widget.dart';
 import 'package:Talkaboat/widgets/live-users.bottom-sheet.dart';
 import 'package:flutter/material.dart';
 
-class LiveControlls extends StatefulWidget {
+class LiveControlls extends StatelessWidget {
   const LiveControlls(
       {super.key,
-      required this.liveSession,
+      required this.chatId,
       required this.focusNode,
       this.replyMessage,
       this.editedMessage,
-      required this.cancelReplyAndEdit});
+      required this.cancelReplyAndEdit,
+      required this.toggleChat,
+      required this.chatVisible,
+      required this.isHost,
+      required this.videoOn,
+      required this.localAudio,
+      required this.audioMuted,
+      required this.switchCamera,
+      required this.switchVideo,
+      required this.switchLocalAudio,
+      required this.switchAudio});
 
-  final LiveSession liveSession;
+  final int chatId;
   final FocusNode focusNode;
   final ChatMessageDto? replyMessage;
   final ChatMessageDto? editedMessage;
   final void Function() cancelReplyAndEdit;
-
-  @override
-  State<LiveControlls> createState() => _LiveControllsState();
-}
-
-class _LiveControllsState extends State<LiveControlls> {
-  final liveSessionService = getIt<LiveSessionService>();
+  final bool chatVisible;
+  final bool isHost;
+  final bool videoOn;
+  final bool localAudio;
+  final bool audioMuted;
+  final void Function() toggleChat;
+  final void Function() switchCamera;
+  final void Function() switchVideo;
+  final void Function() switchLocalAudio;
+  final void Function() switchAudio;
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     debugPrint("size: ${size.width} ${size.width - (5 * 2) - (10 * 2) - 100}");
-    return AnimatedBuilder(
-      animation: liveSessionService,
-      builder: (context, child) => Column(
-        children: [
-          SizedBox(
-            width: size.width,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                children: [
-                  SizedBox(
-                      height: 50,
-                      width: 50,
-                      child: MaterialButton(
-                        onPressed: () {
-                          liveSessionService.switchChat();
-                        },
-                        color: const Color.fromRGBO(29, 40, 58, 0.97),
-                        child: liveSessionService.chatVisible
-                            ? Image.asset("assets/icons/icon-chat-on.png")
-                            : Image.asset("assets/icons/icon-chat-off.png"),
-                      )),
-                  liveSessionService.chatVisible
-                      ? ChatInput(
-                          roomId: widget.liveSession.chat!.id,
-                          messageType: 0,
-                          width: size.width - (5 * 2) - (10 * 2) - 100,
-                          positionSelf: false,
-                          focusNode: widget.focusNode,
-                          cancelReplyAndEdit: widget.cancelReplyAndEdit,
-                          replyMessage: widget.replyMessage,
-                          editedMessage: widget.editedMessage,
-                        )
-                      : const SizedBox(),
-                ],
-              ),
+    return Column(
+      children: [
+        SizedBox(
+          width: size.width,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              children: [
+                SizedBox(
+                    height: 50,
+                    width: 50,
+                    child: MaterialButton(
+                      onPressed: () {
+                        toggleChat();
+                      },
+                      color: const Color.fromRGBO(29, 40, 58, 0.97),
+                      child: chatVisible
+                          ? Image.asset("assets/icons/icon-chat-on.png")
+                          : Image.asset("assets/icons/icon-chat-off.png"),
+                    )),
+                chatVisible
+                    ? ChatInput(
+                        roomId: chatId,
+                        messageType: 0,
+                        width: size.width - (5 * 2) - (10 * 2) - 100,
+                        positionSelf: false,
+                        focusNode: focusNode,
+                        cancelReplyAndEdit: cancelReplyAndEdit,
+                        replyMessage: replyMessage,
+                        editedMessage: editedMessage,
+                      )
+                    : const SizedBox(),
+              ],
             ),
           ),
-          const SizedBox(
-            height: 10,
-          ),
-          SizedBox(
-            width: size.width,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: liveSessionService.isHost
-                    ? [
-                        _changeCameraButton(),
-                        _changeVideoButton(),
-                        _callEndButton(),
-                        _changeAudioStreamButton(),
-                        _peopleButton(),
-                      ]
-                    : [
-                        _changeAudioMuteButton(),
-                        _callEndButton(),
-                        _peopleButton(),
-                      ],
-              ),
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        SizedBox(
+          width: size.width,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: isHost
+                  ? [
+                      _changeCameraButton(),
+                      _changeVideoButton(),
+                      _callEndButton(context),
+                      _changeAudioStreamButton(),
+                      _peopleButton(context),
+                    ]
+                  : [
+                      _changeAudioMuteButton(),
+                      _callEndButton(context),
+                      _peopleButton(context),
+                    ],
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -106,7 +113,7 @@ class _LiveControllsState extends State<LiveControlls> {
       child: MaterialButton(
           shape: const CircleBorder(),
           onPressed: () {
-            liveSessionService.switchCamera();
+            switchCamera();
           },
           color: const Color.fromRGBO(48, 73, 123, 0.6),
           child: Image.asset("assets/icons/icon-camera-switch.png")));
@@ -115,35 +122,27 @@ class _LiveControllsState extends State<LiveControlls> {
       height: 50,
       width: 50,
       child: MaterialButton(
-          shape: const CircleBorder(),
-          onPressed: () {
-            liveSessionService.switchVideo();
-          },
-          color: const Color.fromRGBO(48, 73, 123, 0.6),
-          child: AnimatedBuilder(
-            animation: liveSessionService,
-            builder: (context, child) => liveSessionService.videoOn
-                ? Image.asset("assets/icons/icon-video-on.png")
-                : Image.asset("assets/icons/icon-video-off.png"),
-          )));
+        shape: const CircleBorder(),
+        onPressed: () {
+          switchVideo();
+        },
+        color: const Color.fromRGBO(48, 73, 123, 0.6),
+        child: videoOn ? Image.asset("assets/icons/icon-video-on.png") : Image.asset("assets/icons/icon-video-off.png"),
+      ));
 
   Widget _changeAudioStreamButton() => SizedBox(
       height: 50,
       width: 50,
       child: MaterialButton(
-          shape: const CircleBorder(),
-          onPressed: () {
-            liveSessionService.switchLocalAudio();
-          },
-          color: const Color.fromRGBO(48, 73, 123, 0.6),
-          child: AnimatedBuilder(
-            animation: liveSessionService,
-            builder: (context, child) => liveSessionService.localAudio
-                ? Image.asset("assets/icons/icon-audio-on.png")
-                : Image.asset("assets/icons/icon-audio-off.png"),
-          )));
+        shape: const CircleBorder(),
+        onPressed: () {
+          switchLocalAudio();
+        },
+        color: const Color.fromRGBO(48, 73, 123, 0.6),
+        child: localAudio ? Image.asset("assets/icons/icon-audio-on.png") : Image.asset("assets/icons/icon-audio-off.png"),
+      ));
 
-  Widget _peopleButton() => SizedBox(
+  Widget _peopleButton(context) => SizedBox(
       height: 50,
       width: 50,
       child: MaterialButton(
@@ -165,7 +164,7 @@ class _LiveControllsState extends State<LiveControlls> {
           color: const Color.fromRGBO(48, 73, 123, 0.6),
           child: Image.asset("assets/icons/icon-people.png")));
 
-  Widget _callEndButton() => SizedBox(
+  Widget _callEndButton(context) => SizedBox(
       height: 60,
       width: 60,
       child: MaterialButton(
@@ -180,15 +179,11 @@ class _LiveControllsState extends State<LiveControlls> {
       height: 50,
       width: 50,
       child: MaterialButton(
-          shape: const CircleBorder(),
-          onPressed: () {
-            liveSessionService.switchAudio();
-          },
-          color: const Color.fromRGBO(48, 73, 123, 0.6),
-          child: AnimatedBuilder(
-            animation: liveSessionService,
-            builder: (context, child) => liveSessionService.audioMuted
-                ? Image.asset("assets/icons/icon-mute-on.png")
-                : Image.asset("assets/icons/icon-mute-off.png"),
-          )));
+        shape: const CircleBorder(),
+        onPressed: () {
+          switchAudio();
+        },
+        color: const Color.fromRGBO(48, 73, 123, 0.6),
+        child: audioMuted ? Image.asset("assets/icons/icon-mute-on.png") : Image.asset("assets/icons/icon-mute-off.png"),
+      ));
 }

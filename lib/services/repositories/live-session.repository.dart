@@ -77,10 +77,10 @@ class LiveSessionRepository {
   static Future<void> addHost(String roomId, String username) async {
     try {
       var response = await dio.put<String>('$API/room/$roomId/host/$username/add');
-      debugPrint("$response");
+      debugPrint("myErr $response");
       return;
     } catch (e) {
-      debugPrint("$e");
+      debugPrint("myErr $e");
       debugPrint((e as DioError).response?.data);
       return;
     }

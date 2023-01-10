@@ -36,6 +36,7 @@ class LiveHubService extends HubService {
   }
 
   void receivedAddedAsHost(List<Object?>? data) {
+    debugPrint("myErr receivedAddedAsHost $data");
     if (data != null && data[0] != null) {
       onAddedAsHostController.add(data[0] as String);
     }
@@ -58,10 +59,11 @@ class LiveHubService extends HubService {
       return;
     }
     try {
+      debugPrint("myErr RequestHostAccess $roomId");
       final result = await connection.invoke("RequestHostAccess", args: <Object>[roomId]);
-      debugPrint("$result");
+      debugPrint("myErr RequestHostAccess $result");
     } catch (e) {
-      debugPrint("$e");
+      debugPrint("myErr RequestHostAccess $e");
     }
   }
 
@@ -70,10 +72,11 @@ class LiveHubService extends HubService {
       return;
     }
     try {
+      debugPrint("myErr AddHost $roomId $username");
       final result = await connection.invoke("AddHost", args: <Object>[roomId, username]);
-      debugPrint("$result");
+      debugPrint("myErr AddHost $result");
     } catch (e) {
-      debugPrint("$e");
+      debugPrint("myErr AddHost $e");
     }
   }
 
@@ -94,10 +97,11 @@ class LiveHubService extends HubService {
       return;
     }
     try {
+      debugPrint("myErr Join");
       final result = await connection.invoke("Join", args: <Object>[roomId]);
-      debugPrint("$result");
+      debugPrint("myErr Join $result");
     } catch (e) {
-      debugPrint("$e");
+      debugPrint("myErr Join $e");
     }
   }
 
@@ -107,9 +111,9 @@ class LiveHubService extends HubService {
     }
     try {
       final result = await connection.invoke("Leave", args: <Object>[roomId]);
-      debugPrint("$result");
+      debugPrint("myErr Leave $result");
     } catch (e) {
-      debugPrint("$e");
+      debugPrint("myErr Leave $e");
     }
   }
 }

@@ -18,7 +18,7 @@ abstract class HubService {
   HubService() {
     Logger.root.level = Level.INFO;
     Logger.root.onRecord.listen((LogRecord rec) {
-      debugPrint('${rec.level.name}: ${rec.time}: ${rec.message}');
+      debugPrint('${rec.level.name}: $hubName ${rec.time}: ${rec.message}');
     });
 
     final hubProtLogger = Logger("SignalR - hub");
@@ -43,8 +43,10 @@ abstract class HubService {
       debugPrint("current state ${connection.state}");
       await connection.start();
       debugPrint("Connected to $hubName-hub");
+      return true;
     } catch (e) {
       debugPrint("$e");
+      return null;
     }
   }
 
@@ -54,13 +56,20 @@ abstract class HubService {
 
   Future<bool> checkConnection() async {
     if (!userService.isConnected) {
+      debugPrint("myError: not connected $hubName");
       return false;
     }
     var state = connection.state;
     if (state != HubConnectionState.Connected) {
       if (state != HubConnectionState.Connecting && state != HubConnectionState.Reconnecting) {
-        await connect();
+        debugPrint("myError: reconnecting $hubName");
+        final result = await connect();
+        debugPrint("myError: reconnect result $result");
+        if (result != null) {
+          return true;
+        }
       }
+      debugPrint("myError: not connected $state");
       return false;
     }
     return true;

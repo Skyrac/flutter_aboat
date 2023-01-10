@@ -268,7 +268,11 @@ class _LivestreamOverviewScreenState extends State<LivestreamOverviewScreen> {
                                 type: PageTransitionType.fade,
                                 duration: const Duration(milliseconds: 300),
                                 reverseDuration: const Duration(milliseconds: 200),
-                                child: LivestreamScreen(escapeWithNav: widget.escapeWithNav),
+                                child: LivestreamScreen(
+                                  escapeWithNav: widget.escapeWithNav,
+                                  session: response,
+                                  isHost: true,
+                                ),
                               ));
                             }
                           }
