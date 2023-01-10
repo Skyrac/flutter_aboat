@@ -75,7 +75,6 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
   Widget build(BuildContext context) {
     userService.UpdatePodcastVisitDate(widget.podcastSearchResult.id);
     final size = MediaQuery.of(context).size;
-
     return ScaffoldWave(
         height: 33,
         appBar: AppBar(
