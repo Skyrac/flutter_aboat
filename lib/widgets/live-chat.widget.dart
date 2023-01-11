@@ -80,23 +80,25 @@ class _LiveChatState extends State<LiveChat> {
         return SizeTransition(
             sizeFactor: animation,
             child: ChatMessageTile(
-                message: removedItem,
-                onSwipedMessage: (message) {
-                  widget.replyToMessage(message);
-                  widget.focusNode.requestFocus();
-                },
-                onEditMessage: (message) {
-                  widget.editMessage(message);
-                  widget.focusNode.requestFocus();
-                },
-                onDeleteMessage: (message) => chatService.deleteMessage(DeleteMessageDto(message.id, message.chatRoomId)),
-                cancelReplyAndEdit: widget.cancelReplyAndEdit,
-                selectIndex: (index) => setState(() {
-                      selectedIndex = index;
-                    }),
-                index: index,
-                selectedIndex: selectedIndex,
-                userService: userService));
+              message: removedItem,
+              onSwipedMessage: (message) {
+                widget.replyToMessage(message);
+                widget.focusNode.requestFocus();
+              },
+              onEditMessage: (message) {
+                widget.editMessage(message);
+                widget.focusNode.requestFocus();
+              },
+              onDeleteMessage: (message) => chatService.deleteMessage(DeleteMessageDto(message.id, message.chatRoomId)),
+              cancelReplyAndEdit: widget.cancelReplyAndEdit,
+              selectIndex: (index) => setState(() {
+                selectedIndex = index;
+              }),
+              index: index,
+              selectedIndex: selectedIndex,
+              userService: userService,
+              scrollToMessage: () {},
+            ));
       }
 
       _listKey.currentState?.removeItem(index, builder);
@@ -149,21 +151,23 @@ class _LiveChatState extends State<LiveChat> {
           return SizeTransition(
               sizeFactor: animation,
               child: ChatMessageTile(
-                  message: item,
-                  onSwipedMessage: (message) {
-                    //widget.replyToMessage(message);
-                    //widget.focusNode.requestFocus();
-                  },
-                  onEditMessage: (message) {
-                    //widget.editMessage(message);
-                    //widget.focusNode.requestFocus();
-                  },
-                  onDeleteMessage: (message) => chatService.deleteMessage(DeleteMessageDto(message.id, message.chatRoomId)),
-                  cancelReplyAndEdit: () {},
-                  selectIndex: (index) => setState(() {}),
-                  index: index,
-                  selectedIndex: 0,
-                  userService: userService));
+                message: item,
+                onSwipedMessage: (message) {
+                  //widget.replyToMessage(message);
+                  //widget.focusNode.requestFocus();
+                },
+                onEditMessage: (message) {
+                  //widget.editMessage(message);
+                  //widget.focusNode.requestFocus();
+                },
+                onDeleteMessage: (message) => chatService.deleteMessage(DeleteMessageDto(message.id, message.chatRoomId)),
+                cancelReplyAndEdit: () {},
+                selectIndex: (index) => setState(() {}),
+                index: index,
+                selectedIndex: 0,
+                userService: userService,
+                scrollToMessage: () {},
+              ));
         });
   }
 
@@ -178,23 +182,25 @@ class _LiveChatState extends State<LiveChat> {
         itemBuilder: (BuildContext context, int index) {
           final item = reversedData[index];
           return ChatMessageTile(
-              message: item,
-              onSwipedMessage: (message) {
-                widget.replyToMessage(message);
-                widget.focusNode.requestFocus();
-              },
-              onEditMessage: (message) {
-                widget.editMessage(message);
-                widget.focusNode.requestFocus();
-              },
-              onDeleteMessage: (message) => chatService.deleteMessage(DeleteMessageDto(message.id, message.chatRoomId)),
-              cancelReplyAndEdit: widget.cancelReplyAndEdit,
-              selectIndex: (index) => setState(() {
-                    selectedIndex = index;
-                  }),
-              index: index,
-              selectedIndex: selectedIndex,
-              userService: userService);
+            message: item,
+            onSwipedMessage: (message) {
+              widget.replyToMessage(message);
+              widget.focusNode.requestFocus();
+            },
+            onEditMessage: (message) {
+              widget.editMessage(message);
+              widget.focusNode.requestFocus();
+            },
+            onDeleteMessage: (message) => chatService.deleteMessage(DeleteMessageDto(message.id, message.chatRoomId)),
+            cancelReplyAndEdit: widget.cancelReplyAndEdit,
+            selectIndex: (index) => setState(() {
+              selectedIndex = index;
+            }),
+            index: index,
+            selectedIndex: selectedIndex,
+            userService: userService,
+            scrollToMessage: () {},
+          );
         });
   }
 }

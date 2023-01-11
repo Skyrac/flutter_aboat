@@ -54,7 +54,7 @@ dependencies:
   curved_navigation_bar: ^1.0.3
   social_login_buttons: ^1.0.6+2
   cached_network_image: ^3.2.2
-  url_launcher: ^6.1.6
+  url_launcher: 6.1.6
   share_plus: ^4.0.10
   debounce_throttle: ^2.0.0
   introduction_screen: ^3.0.2
