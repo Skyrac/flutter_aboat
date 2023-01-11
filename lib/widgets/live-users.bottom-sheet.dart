@@ -74,33 +74,35 @@ class _LiveUsersBottomSheetState extends State<LiveUsersBottomSheet> {
                               "Hosts Requests",
                               style: Theme.of(context).textTheme.titleLarge,
                             ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: liveService.hostRequest
-                                  .map(
-                                    (x) => Padding(
-                                      padding: const EdgeInsets.symmetric(vertical: 5),
-                                      child: Row(children: [
-                                        Text(x),
-                                        const Spacer(),
-                                        MaterialButton(
-                                          onPressed: () {
-                                            liveService.acceptHostRequest(x);
-                                          },
-                                          child: const Text("Accept"),
-                                        ),
-                                        const SizedBox(width: 5),
-                                        MaterialButton(
-                                          onPressed: () {
-                                            liveService.rejectHostRequest(x);
-                                          },
-                                          child: const Text("Reject"),
-                                        )
-                                      ]),
-                                    ),
-                                  )
-                                  .toList(),
-                            ),
+                            AnimatedBuilder(
+                                animation: liveService,
+                                builder: ((context, child) => Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: liveService.hostRequest
+                                          .map(
+                                            (x) => Padding(
+                                              padding: const EdgeInsets.symmetric(vertical: 5),
+                                              child: Row(children: [
+                                                Text(x),
+                                                const Spacer(),
+                                                MaterialButton(
+                                                  onPressed: () {
+                                                    liveService.acceptHostRequest(x);
+                                                  },
+                                                  child: const Text("Accept"),
+                                                ),
+                                                const SizedBox(width: 5),
+                                                MaterialButton(
+                                                  onPressed: () {
+                                                    liveService.rejectHostRequest(x);
+                                                  },
+                                                  child: const Text("Reject"),
+                                                )
+                                              ]),
+                                            ),
+                                          )
+                                          .toList(),
+                                    ))),
                           ]
                         : [
                             Center(

@@ -31,8 +31,10 @@ class LiveSessionService extends ChangeNotifier {
       }
     });
     _hub.onHostRequest.listen((event) {
-      hostRequest.add(event);
-      notifyListeners();
+      if (!hostRequest.contains(event)) {
+        hostRequest.add(event);
+        notifyListeners();
+      }
     });
   }
 
