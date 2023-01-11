@@ -181,6 +181,19 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
             ),
           ),
         );
+      } else {
+        list.add(
+          ViewContainer(
+            wrap: true,
+            userId: uid,
+            view: Container(
+              color: const Color.fromRGBO(29, 40, 58, 0.97),
+              child: Center(
+                child: SizedBox(height: 60, width: 60, child: Image.asset("assets/icons/icon-audio-only.png")),
+              ),
+            ),
+          ),
+        );
       }
     }
     return list;
