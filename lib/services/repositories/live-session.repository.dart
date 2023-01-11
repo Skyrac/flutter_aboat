@@ -101,10 +101,10 @@ class LiveSessionRepository {
   static Future<void> removeHost(String roomId, String username) async {
     try {
       var response = await dio.put<String>('$API/room/$roomId/host/$username/remove');
-      debugPrint("$response");
+      debugPrint("removeHost $response");
       return;
     } catch (e) {
-      debugPrint("$e");
+      debugPrint("removeHost $e");
       debugPrint((e as DioError).response?.data);
       return;
     }

@@ -139,8 +139,8 @@ class _LiveControllsState extends State<LiveControlls> {
           child: AnimatedBuilder(
             animation: liveSessionService,
             builder: (context, child) => liveSessionService.agoraSettings.localAudio
-                ? Image.asset("assets/icons/icon-audio-on.png")
-                : Image.asset("assets/icons/icon-audio-off.png"),
+                ? Image.asset("assets/icons/icon-audio-off.png")
+                : Image.asset("assets/icons/icon-audio-on.png"),
           )));
 
   Widget _peopleButton() => SizedBox(
@@ -182,7 +182,7 @@ class _LiveControllsState extends State<LiveControlls> {
       child: MaterialButton(
           shape: const CircleBorder(),
           onPressed: () {
-            liveSessionService.agoraSettings.switchAudio();
+            liveSessionService.agoraSettings.switchAudio(liveSessionService.remoteUsers);
           },
           color: const Color.fromRGBO(48, 73, 123, 0.6),
           child: AnimatedBuilder(

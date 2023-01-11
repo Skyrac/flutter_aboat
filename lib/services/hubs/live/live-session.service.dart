@@ -25,8 +25,9 @@ class LiveSessionService extends ChangeNotifier {
         debugPrint("onRemovedAsHost $event");
         if (event == userService.userInfo!.userName) {
           await demoteToViewer();
+          _currentSess!.hosts.removeWhere((x) => x.userName == event);
+          notifyListeners();
         }
-        notifyListeners();
       }
     });
     _hub.onHostRequest.listen((event) {
@@ -189,6 +190,13 @@ class LiveSessionService extends ChangeNotifier {
         },
         onRemoteVideoStateChanged: (connection, remoteUid, state, reason, elapsed) {
           debugPrint("onRemoteVideoStateChanged $remoteUid $state $reason");
+          if (state == RemoteVideoState.remoteVideoStateStopped) {
+            _userVideoOn[remoteUid] = false;
+            notifyListeners();
+          } else if (state == RemoteVideoState.remoteVideoStateStarting) {
+            _userVideoOn[remoteUid] = true;
+            notifyListeners();
+          }
         },
         onUserEnableVideo: (connection, remoteUid, enabled) {
           debugPrint("onUserEnableVideo $remoteUid $enabled");
@@ -230,6 +238,7 @@ class LiveSessionService extends ChangeNotifier {
     await _agoraSettings.agoraEngine.enableAudio();
     await _agoraSettings.agoraEngine.enableVideo();
     await _agoraSettings.agoraEngine.startPreview();
+    await _agoraSettings.agoraEngine.muteLocalAudioStream(false);
     final token = await getToken(roomId, userService.guest);
 
     await join(roomId, roomName, options, token, true);
@@ -252,6 +261,7 @@ class LiveSessionService extends ChangeNotifier {
     try {
       await _agoraSettings.agoraEngine.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
       await _agoraSettings.agoraEngine.startPreview();
+      await _agoraSettings.agoraEngine.muteLocalAudioStream(false);
       final token = await getToken(_roomGuid, userService.guest);
       _agoraSettings.agoraEngine.renewToken(token);
       debugPrint("joined as host as ${ClientRoleType.clientRoleBroadcaster}");
@@ -264,6 +274,7 @@ class LiveSessionService extends ChangeNotifier {
   demoteToViewer() async {
     try {
       debugPrint("demoting");
+      await _agoraSettings.agoraEngine.muteLocalAudioStream(true);
       await _agoraSettings.agoraEngine.setClientRole(role: ClientRoleType.clientRoleAudience);
       await _agoraSettings.agoraEngine.stopPreview();
       final token = await getToken(_roomGuid, userService.guest);

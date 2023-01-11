@@ -1,5 +1,3 @@
-import 'package:Talkaboat/injection/injector.dart';
-import 'package:Talkaboat/services/hubs/live/live-session.service.dart';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/foundation.dart';
 
@@ -11,7 +9,7 @@ class AgoraSettings extends ChangeNotifier {
   Camera _camera = Camera.front;
   bool _chatVisible = true;
   bool _videoOn = true;
-  bool _localAudio = true;
+  bool _localAudio = false;
   bool _audioMuted = false;
   Camera get camera => _camera;
   bool get chatVisible => _chatVisible;
@@ -56,12 +54,10 @@ class AgoraSettings extends ChangeNotifier {
     notifyListeners();
   }
 
-  final LiveSessionService live = getIt<LiveSessionService>();
-
-  switchAudio() async {
+  switchAudio(List<int> remoteUsers) async {
     _audioMuted = !_audioMuted;
 
-    for (var user in live.remoteUsers) {
+    for (var user in remoteUsers) {
       agoraEngine.muteRemoteAudioStream(uid: user, mute: _audioMuted);
     }
     notifyListeners();

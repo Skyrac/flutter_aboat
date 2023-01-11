@@ -74,7 +74,9 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
           body: AnimatedBuilder(
             animation: _liveService,
             builder: (context, child) => Stack(children: [
-              _liveService.isJoined ? _viewRows() : const Center(child: CircularProgressIndicator()),
+              _liveService.isJoined
+                  ? AnimatedBuilder(animation: _liveService.agoraSettings, builder: (context, child) => _viewRows())
+                  : const Center(child: CircularProgressIndicator()),
               Positioned(
                 bottom: 0,
                 child: Padding(
@@ -137,18 +139,33 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
     final List<ViewContainer> list = [];
     debugPrint("isHost ${_liveService.isHost}");
     if (_liveService.isHost) {
-      list.add(
-        ViewContainer(
-          wrap: true,
-          userId: 0,
-          view: AgoraVideoView(
-            controller: VideoViewController(
-              rtcEngine: _liveService.agoraSettings.agoraEngine,
-              canvas: const VideoCanvas(uid: 0),
+      if (_liveService.agoraSettings.videoOn) {
+        list.add(
+          ViewContainer(
+            wrap: true,
+            userId: 0,
+            view: AgoraVideoView(
+              controller: VideoViewController(
+                rtcEngine: _liveService.agoraSettings.agoraEngine,
+                canvas: const VideoCanvas(uid: 0),
+              ),
             ),
           ),
-        ),
-      );
+        );
+      } else {
+        list.add(
+          ViewContainer(
+            wrap: true,
+            userId: 0,
+            view: Container(
+              color: const Color.fromRGBO(29, 40, 58, 0.97),
+              child: Center(
+                child: SizedBox(height: 60, width: 60, child: Image.asset("assets/icons/icon-audio-only.png")),
+              ),
+            ),
+          ),
+        );
+      }
     }
     debugPrint("${_liveService.isHost} ${_liveService.remoteUsers}");
     for (var uid in _liveService.remoteUsers) {
