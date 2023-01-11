@@ -1,4 +1,5 @@
 import 'package:Talkaboat/models/podcasts/podcast.model.dart';
+import 'package:Talkaboat/navigator_keys.dart';
 import 'package:Talkaboat/widgets/podcast-list-tile.widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -11,9 +12,10 @@ import '../models/search/search_result.model.dart';
 import '../screens/login.screen.dart';
 import '../screens/podcast-detail.screen.dart';
 import '../services/user/user.service.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PodcastListWidget extends StatefulWidget {
-  const PodcastListWidget(this.escapeWithNav,
+  const PodcastListWidget(
       {Key? key, required this.searchResults, required this.direction, this.trailing, this.checkUpdate, this.scrollPhysics})
       : super(key: key);
   final List<SearchResult> searchResults;
@@ -21,7 +23,6 @@ class PodcastListWidget extends StatefulWidget {
   final Function? trailing;
   final bool? checkUpdate;
   final ScrollPhysics? scrollPhysics;
-  final Function escapeWithNav;
   @override
   State<PodcastListWidget> createState() => _PodcastListWidgetState();
 }
@@ -61,8 +62,8 @@ class _PodcastListWidgetState extends State<PodcastListWidget> {
         PopupMenuItem<String>(
           value: 'toggleLibrary',
           child: userService.isInFavorites(entry.id!)
-              ? const Card(child: Text('Remove from Library'))
-              : const Card(child: Text('Add to Library')),
+              ? Card(child: Text(AppLocalizations.of(context)!.removeFromLibrary))
+              : Card(child: Text(AppLocalizations.of(context)!.addToLibrary)),
         ),
       ];
 
@@ -72,7 +73,7 @@ class _PodcastListWidgetState extends State<PodcastListWidget> {
           switch (value) {
             case "toggleLibrary":
               if (!userService.isConnected) {
-                widget.escapeWithNav(PageTransition(
+                NavigatorKeys.navigatorKeyMain.currentState!.push(PageTransition(
                     alignment: Alignment.bottomCenter,
                     curve: Curves.bounceOut,
                     type: PageTransitionType.rightToLeftWithFade,
@@ -153,7 +154,7 @@ class _PodcastListWidgetState extends State<PodcastListWidget> {
                 type: PageTransitionType.rightToLeftWithFade,
                 duration: const Duration(milliseconds: 500),
                 reverseDuration: const Duration(milliseconds: 500),
-                child: PodcastDetailScreen(widget.escapeWithNav, podcastSearchResult: entry)));
+                child: PodcastDetailScreen(podcastSearchResult: entry)));
       },
       child: Padding(
           padding: const EdgeInsets.all(10),
@@ -200,7 +201,6 @@ class _PodcastListWidgetState extends State<PodcastListWidget> {
 
   Widget makeVerticalListTile(context, SearchResult entry) => PodcastListTileWidget(
         entry as Podcast,
-        escapeWithNav: widget.escapeWithNav,
       );
 
   @override

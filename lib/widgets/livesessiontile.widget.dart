@@ -1,5 +1,6 @@
 import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/models/live/live-session.model.dart';
+import 'package:Talkaboat/navigator_keys.dart';
 import 'package:Talkaboat/screens/livestream.screen.dart';
 import 'package:Talkaboat/services/hubs/live/live-session.service.dart';
 import 'package:Talkaboat/services/repositories/live-session.repository.dart';
@@ -8,10 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
 class LiveSessionTile extends StatelessWidget {
-  LiveSessionTile({super.key, required this.session, required this.escapeWithNav});
+  LiveSessionTile({super.key, required this.session});
 
   final LiveSession session;
-  final Function escapeWithNav;
   final liveService = getIt<LiveSessionService>();
 
   @override
@@ -33,13 +33,13 @@ class LiveSessionTile extends StatelessWidget {
                 LiveSessionRepository.leaveRoom(session.guid);
               } else {
                 liveService.setSession(session);
-                escapeWithNav(PageTransition(
+                NavigatorKeys.navigatorKeyMain.currentState!.push(PageTransition(
                   alignment: Alignment.bottomCenter,
                   curve: Curves.bounceOut,
                   type: PageTransitionType.fade,
                   duration: const Duration(milliseconds: 300),
                   reverseDuration: const Duration(milliseconds: 200),
-                  child: LivestreamScreen(escapeWithNav: escapeWithNav),
+                  child: const LivestreamScreen(),
                 ));
               }
             },

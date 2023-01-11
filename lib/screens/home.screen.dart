@@ -8,12 +8,12 @@ import 'package:Talkaboat/widgets/home-suggested.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:Talkaboat/widgets/quests/quest-list.widget.dart';
 import '../widgets/home-app-bar.widget.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen(this.setEpisode, this.selectTab, this.escapeWithNav, {Key? key}) : super(key: key);
+  const HomeScreen({Key? key, required this.setEpisode, required this.selectTab}) : super(key: key);
   final Function setEpisode;
   final Function selectTab;
-  final Function escapeWithNav;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -61,7 +61,6 @@ class _HomeScreenState extends State<HomeScreen> {
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(100),
           child: HomeAppBarWidget(
-            widget.escapeWithNav,
             refresh: refresh,
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(48),
@@ -73,14 +72,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: Colors.white.withOpacity(0.0),
                     border: const Border(bottom: BorderSide(color: Color.fromRGBO(164, 202, 255, 1))),
                   ),
-                  child: const TabBar(
-                    labelColor: Color.fromRGBO(188, 140, 75, 1),
-                    indicatorColor: Color.fromRGBO(188, 140, 75, 1),
-                    unselectedLabelColor: Color.fromRGBO(164, 202, 255, 1),
+                  child: TabBar(
+                    labelColor: const Color.fromRGBO(188, 140, 75, 1),
+                    indicatorColor: const Color.fromRGBO(188, 140, 75, 1),
+                    unselectedLabelColor: const Color.fromRGBO(164, 202, 255, 1),
                     tabs: [
-                      Tab(text: "Suggested"),
-                      Tab(text: "Categories"),
-                      Tab(text: "News"),
+                      Tab(text: AppLocalizations.of(context)!.suggested),
+                      Tab(text: AppLocalizations.of(context)!.categories),
+                      Tab(text: AppLocalizations.of(context)!.news),
                     ],
                   ),
                 ),
@@ -89,8 +88,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         body: TabBarView(children: [
-          HomeScreenSuggestedTab(widget.selectTab, widget.escapeWithNav),
-          HomeScreenCategoriesTab(widget.escapeWithNav),
+          HomeScreenSuggestedTab(widget.selectTab),
+          const HomeScreenCategoriesTab(),
           Container(),
         ]),
       ),

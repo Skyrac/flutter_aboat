@@ -9,6 +9,7 @@ import 'package:Talkaboat/widgets/episode-list-with-header.widget.dart';
 import 'package:Talkaboat/widgets/podcast-details.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../injection/injector.dart';
 import '../models/search/search_result.model.dart';
@@ -18,10 +19,9 @@ import '../utils/scaffold_wave.dart';
 import '../widgets/podcast-detail-sliver.widget.dart';
 
 class PodcastDetailScreen extends StatefulWidget {
-  const PodcastDetailScreen(this.escapeWithNav, {Key? key, required this.podcastSearchResult}) : super(key: key);
+  const PodcastDetailScreen({Key? key, required this.podcastSearchResult}) : super(key: key);
 
   final SearchResult podcastSearchResult;
-  final Function escapeWithNav;
 
   @override
   State<PodcastDetailScreen> createState() => _PodcastDetailScreenState();
@@ -32,6 +32,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
   final ChatService chatService = getIt<ChatService>();
   final userService = getIt<UserService>();
   late TabController tabController;
+  final ScrollController controller = ScrollController();
   final focusNode = FocusNode();
   int currentTab = 0;
   Future<SearchResult?>? _getPodcast;
@@ -56,6 +57,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
   @override
   dispose() {
     tabController.dispose();
+    controller.dispose();
     super.dispose();
   }
 
@@ -73,14 +75,8 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
   Widget build(BuildContext context) {
     userService.UpdatePodcastVisitDate(widget.podcastSearchResult.id);
     final size = MediaQuery.of(context).size;
-
     return ScaffoldWave(
         height: 33,
-        header: SliverPersistentHeader(
-          delegate: PodcastDetailSliver(widget.escapeWithNav,
-              expandedHeight: size.height * 0.4, podcast: widget.podcastSearchResult, controller: tabController),
-          pinned: true,
-        ),
         appBar: AppBar(
           centerTitle: false,
           leadingWidth: 35,
@@ -100,9 +96,8 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
                   tooltip: '',
                   onPressed: () => {
                         //TODO: Geräte Abhängigkeit prüfen
-                        Share.share(
-                            "Check the Podcast ${widget.podcastSearchResult.title} on Talkaboat.online mobile App! Start listening and earn while supporting new and upcoming podcasters.\n\n Download it now on \nAndroid: https://play.google.com/store/apps/details?id=com.aboat.talkaboat\n",
-                            subject: "Check this out! A Podcast on Talkaboat.online.")
+                        Share.share(AppLocalizations.of(context)!.share(widget.podcastSearchResult.title),
+                            subject: AppLocalizations.of(context)!.share2)
                       }),
             ),
             !userService.isConnected
@@ -170,17 +165,16 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
             )));
   }
 
-  List<Widget> createTabs(int podcastId, int roomId) {
+  List<Widget> createTabs(int podcastId, int roomId, ScrollController controller) {
     return [
       EpisodeHeaderList(
         podcastId: podcastId,
-        escapeWithNav: widget.escapeWithNav,
       ),
       PodcastDetails(
         podcastId: podcastId,
-        escapeWithNav: widget.escapeWithNav,
       ),
       Chat(
+        controller: controller,
         focusNode: focusNode,
         roomId: roomId,
         messageType: 1,
@@ -209,19 +203,28 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
   Widget createCustomScrollView(SearchResult podcastSearchResult) {
     final size = MediaQuery.of(context).size;
 
-    final tabs = createTabs(podcastSearchResult.id!, podcastSearchResult.roomId!);
+    final tabs = createTabs(podcastSearchResult.id!, podcastSearchResult.roomId!, controller);
 
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
-        Container(
-            constraints: BoxConstraints(minHeight: size.height * 0.5),
-            child: currentTab == 0 ? tabs[currentTab] : SingleChildScrollView(child: tabs[currentTab])),
+        CustomScrollView(shrinkWrap: true, controller: controller, slivers: [
+          SliverPersistentHeader(
+            delegate: PodcastDetailSliver(
+                expandedHeight: size.height * 0.4, podcast: widget.podcastSearchResult, controller: tabController),
+            pinned: true,
+          ),
+          SliverToBoxAdapter(
+            child: Container(constraints: BoxConstraints(minHeight: size.height * 0.5), child: tabs[currentTab]),
+          )
+        ]),
         tabController.index == 2
             ? ChatInput(
                 roomId: podcastSearchResult.roomId!,
                 focusNode: focusNode,
-                messageType: 1,
+                messageType: 2,
+                replyMessage: replyMessage,
+                editedMessage: editedMessage,
                 cancelReplyAndEdit: () {
                   setState(() {
                     replyMessage = null;

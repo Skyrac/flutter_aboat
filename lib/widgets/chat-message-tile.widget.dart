@@ -3,6 +3,7 @@ import 'package:Talkaboat/services/hubs/chat/chat.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:flutter/material.dart';
 import 'package:swipe_to/swipe_to.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ChatMessageTile extends StatelessWidget {
   const ChatMessageTile(
@@ -14,8 +15,9 @@ class ChatMessageTile extends StatelessWidget {
       required this.cancelReplyAndEdit,
       required this.selectIndex,
       required this.index,
-      this.selectedIndex,
-      required this.userService});
+      required this.selectedIndex,
+      required this.userService,
+      required this.scrollToMessage});
 
   final ChatMessageDto message;
   final UserService userService;
@@ -24,6 +26,7 @@ class ChatMessageTile extends StatelessWidget {
   final void Function(ChatMessageDto) onDeleteMessage;
   final void Function() cancelReplyAndEdit;
   final void Function(int?) selectIndex;
+  final void Function() scrollToMessage;
   final int index;
   final int? selectedIndex;
 
@@ -39,7 +42,7 @@ class ChatMessageTile extends StatelessWidget {
       context: context,
       position: RelativeRect.fromLTRB(left, top, 0, 0),
       items: [
-        const PopupMenuItem<String>(value: 'Answer', child: Text('Answer')),
+        PopupMenuItem<String>(value: 'Answer', child: Text(AppLocalizations.of(context)!.answer)),
       ],
       elevation: 8.0,
     );
@@ -62,9 +65,9 @@ class ChatMessageTile extends StatelessWidget {
       context: context,
       position: RelativeRect.fromLTRB(left, top, 0, 0),
       items: [
-        const PopupMenuItem<String>(value: 'Answer', child: Text('Answer')),
-        const PopupMenuItem<String>(value: 'Edit', child: Text('Edit')),
-        const PopupMenuItem<String>(value: 'Delete', child: Text('Delete')),
+        PopupMenuItem<String>(value: 'Answer', child: Text(AppLocalizations.of(context)!.answer)),
+        PopupMenuItem<String>(value: 'Edit', child: Text(AppLocalizations.of(context)!.edit)),
+        PopupMenuItem<String>(value: 'Delete', child: Text(AppLocalizations.of(context)!.delete)),
       ],
       elevation: 8.0,
     );
@@ -114,28 +117,33 @@ class ChatMessageTile extends StatelessWidget {
                 child: Column(
                   children: [
                     message.answeredMessage != null
-                        ? Container(
-                            padding: const EdgeInsets.all(5),
-                            margin: const EdgeInsets.only(bottom: 5),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: const Color.fromRGBO(48, 73, 123, 1),
+                        ? RawMaterialButton(
+                            onPressed: () {
+                              scrollToMessage();
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              margin: const EdgeInsets.only(bottom: 5),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: const Color.fromRGBO(48, 73, 123, 1),
+                              ),
+                              child: Row(children: [
+                                Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                                    child: Text(
+                                      message.answeredMessage!.senderName.toString(),
+                                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
+                                    )),
+                                Center(
+                                    child: Text(
+                                  textAlign: TextAlign.center,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                  message.answeredMessage!.content,
+                                ))
+                              ]),
                             ),
-                            child: Row(children: [
-                              Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 5),
-                                  child: Text(
-                                    message.answeredMessage!.senderName.toString(),
-                                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
-                                  )),
-                              Center(
-                                  child: Text(
-                                textAlign: TextAlign.center,
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                                message.answeredMessage!.content,
-                              ))
-                            ]),
                           )
                         : const SizedBox(),
                     Container(
@@ -163,19 +171,21 @@ class ChatMessageTile extends StatelessWidget {
                                   const SizedBox(
                                     width: 5,
                                   ),
-                                  IconButton(
-                                      padding: EdgeInsets.zero,
-                                      constraints: const BoxConstraints(),
-                                      onPressed: () {
-                                        onDeleteMessage(message);
-                                        selectIndex(null);
-                                        cancelReplyAndEdit();
-                                      },
-                                      icon: const Icon(
-                                        Icons.delete,
-                                        color: Color.fromRGBO(154, 0, 0, 1),
-                                        size: 28,
-                                      )),
+                                  userService.userInfo!.userName! == message.senderName
+                                      ? IconButton(
+                                          padding: EdgeInsets.zero,
+                                          constraints: const BoxConstraints(),
+                                          onPressed: () {
+                                            onDeleteMessage(message);
+                                            selectIndex(null);
+                                            cancelReplyAndEdit();
+                                          },
+                                          icon: const Icon(
+                                            Icons.delete,
+                                            color: Color.fromRGBO(154, 0, 0, 1),
+                                            size: 28,
+                                          ))
+                                      : const SizedBox(),
                                 ],
                               )
                             : Text(

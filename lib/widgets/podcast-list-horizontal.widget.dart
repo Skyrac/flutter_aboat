@@ -1,10 +1,10 @@
 import 'package:Talkaboat/models/podcasts/podcast.model.dart';
 import 'package:Talkaboat/widgets/podcast-list.widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PodcastListHorizontal extends StatelessWidget {
-  const PodcastListHorizontal(this.escapeWithNav,
-      {this.data, this.future, this.title, this.multiplier, this.seeAllCb, Key? key})
+  const PodcastListHorizontal({this.data, this.future, this.title, this.multiplier, this.seeAllCb, Key? key})
       : super(key: key);
 
   final Future<List<Podcast>>? future;
@@ -12,7 +12,6 @@ class PodcastListHorizontal extends StatelessWidget {
   final String? title;
   final String? multiplier;
   final void Function()? seeAllCb;
-  final Function escapeWithNav;
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +69,7 @@ class PodcastListHorizontal extends StatelessWidget {
               width: 10,
             ),
             // TODO: bottom align this text
-            Text("Reward $multiplier", style: Theme.of(context).textTheme.titleMedium)
+            Text(AppLocalizations.of(context)!.rewardParam(multiplier), style: Theme.of(context).textTheme.titleMedium)
           ]
         : [Container()];
 
@@ -91,7 +90,7 @@ class PodcastListHorizontal extends StatelessWidget {
                         child: Row(
                           children: [
                             Text(
-                              "See All",
+                              AppLocalizations.of(context)!.seeAll,
                               style: Theme.of(context).textTheme.titleSmall,
                             ),
                             const Icon(Icons.arrow_right_alt)
@@ -103,7 +102,7 @@ class PodcastListHorizontal extends StatelessWidget {
           : Container(),
       SizedBox(
         height: 150,
-        child: PodcastListWidget(escapeWithNav, direction: Axis.horizontal, searchResults: data),
+        child: PodcastListWidget(direction: Axis.horizontal, searchResults: data),
       )
     ]);
   }

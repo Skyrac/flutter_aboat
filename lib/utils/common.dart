@@ -54,6 +54,9 @@ String formatTime(int seconds) {
 }
 
 class CustomTrackShape extends RoundedRectSliderTrackShape {
+  final bool isMiniPlayer;
+  CustomTrackShape(this.isMiniPlayer);
+
   @override
   Rect getPreferredRect({
     required RenderBox parentBox,
@@ -66,11 +69,14 @@ class CustomTrackShape extends RoundedRectSliderTrackShape {
     final double trackLeft = offset.dx;
     final double trackTop = offset.dy + (parentBox.size.height - trackHeight!) / 2;
     final double trackWidth = parentBox.size.width;
-    return Rect.fromLTWH(trackLeft, trackTop, trackWidth, 20);
+    return Rect.fromLTWH(trackLeft, isMiniPlayer ? trackTop : trackTop - 2, trackWidth, isMiniPlayer ? 20 : 10);
   }
 }
 
 class SeekBar extends StatefulWidget {
+  final Color? color;
+  final bool? isPlay;
+  final bool isMiniPlayer;
   final Duration duration;
   final Duration position;
   final Duration bufferedPosition;
@@ -79,10 +85,13 @@ class SeekBar extends StatefulWidget {
 
   const SeekBar({
     Key? key,
+    required this.isMiniPlayer,
     required this.duration,
     required this.position,
     this.bufferedPosition = Duration.zero,
     this.onChanged,
+    this.isPlay,
+    this.color,
     this.onChangeEnd,
   }) : super(key: key);
 
@@ -117,40 +126,11 @@ class _SeekBarState extends State<SeekBar> {
     final size = MediaQuery.of(context).size;
     return Stack(
       children: [
-        //Background Slider Layout
-        // Positioned(
-        //   top: 0,
-        //   child: FillingSlider(
-        //     color: const Color.fromRGBO(99, 163, 253, 1),
-        //     fillColor: const Color.fromRGBO(62, 62, 62, 1),
-        //     initialValue: value,
-        //     width: size.width * 0.9,
-        //     height: 20,
-        //     direction: FillingSliderDirection.horizontal,
-        //     onFinish: (value) {
-        //       if (widget.onChangeEnd != null) {
-        //         widget.onChangeEnd!(Duration(milliseconds: value.round()));
-        //       }
-        //       _dragging = false;
-        //     },
-        //     onChange: (value, oldValue) {
-        //       if (!_dragging) {
-        //         _dragging = true;
-        //       }
-        //       setState(() {
-        //         _dragValue = value;
-        //       });
-        //       if (widget.onChanged != null) {
-        //         widget.onChanged!(Duration(milliseconds: value.round()));
-        //       }
-        //     },
-        //   ),
-        // ),
         Positioned(
           width: size.width,
           child: SliderTheme(
             data: _sliderThemeData.copyWith(
-              trackShape: CustomTrackShape(),
+              trackShape: CustomTrackShape(widget.isMiniPlayer),
               thumbShape: HiddenThumbComponentShape(),
               activeTrackColor: Colors.blue.shade100,
               inactiveTrackColor: Colors.grey.shade300,
@@ -169,10 +149,11 @@ class _SeekBarState extends State<SeekBar> {
           width: size.width,
           child: SliderTheme(
             data: _sliderThemeData.copyWith(
-              trackShape: CustomTrackShape(),
+              trackShape: CustomTrackShape(widget.isMiniPlayer),
               thumbShape: HiddenThumbComponentShape(),
-              activeTrackColor: const Color.fromRGBO(99, 163, 253, 1),
-              inactiveTrackColor: const Color.fromRGBO(62, 62, 62, 1),
+              activeTrackColor: widget.isMiniPlayer ? Color.fromRGBO(99, 163, 253, 1) : widget.color,
+              inactiveTrackColor:
+                  widget.isMiniPlayer ? const Color.fromRGBO(62, 62, 62, 1) : const Color.fromRGBO(15, 23, 41, 1),
             ),
             child: Slider(
               min: 0.0,
@@ -198,26 +179,30 @@ class _SeekBarState extends State<SeekBar> {
             ),
           ),
         ),
-        Positioned(
-            top: 0,
-            right: 0,
-            child: ClipPath(
-                clipper: CustomClipperRightCorner(), // <--
-                child: Container(
-                  width: 10,
-                  height: 6,
-                  color: const Color.fromRGBO(15, 23, 41, 1),
-                ))),
-        Positioned(
-            top: 0,
-            left: 0,
-            child: ClipPath(
-                clipper: CustomClipperLeftCorner(), // <--
-                child: Container(
-                  width: 10,
-                  height: 6,
-                  color: const Color.fromRGBO(15, 23, 41, 1),
-                ))),
+        widget.isMiniPlayer
+            ? Positioned(
+                top: 0,
+                right: 0,
+                child: ClipPath(
+                    clipper: CustomClipperRightCorner(), // <--
+                    child: Container(
+                      width: 10,
+                      height: 6,
+                      color: const Color.fromRGBO(15, 23, 41, 1),
+                    )))
+            : SizedBox(),
+        widget.isMiniPlayer
+            ? Positioned(
+                top: 0,
+                left: 0,
+                child: ClipPath(
+                    clipper: CustomClipperLeftCorner(), // <--
+                    child: Container(
+                      width: 10,
+                      height: 6,
+                      color: const Color.fromRGBO(15, 23, 41, 1),
+                    )))
+            : SizedBox(),
       ],
     );
   }
@@ -623,4 +608,18 @@ class QueueState {
   bool get hasNext => repeatMode != AudioServiceRepeatMode.none || (queueIndex ?? 0) + 1 < queue.length;
 
   List<int> get indices => shuffleIndices ?? List.generate(queue.length, (i) => i);
+}
+
+class SelectEpisodePage extends ChangeNotifier {
+  bool isSelectedPage = false;
+
+  void changeTrue() {
+    isSelectedPage = true;
+    notifyListeners();
+  }
+
+  void changeFalse() {
+    isSelectedPage = false;
+    notifyListeners();
+  }
 }

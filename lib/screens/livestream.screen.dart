@@ -10,9 +10,7 @@ import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/material.dart';
 
 class LivestreamScreen extends StatefulWidget {
-  const LivestreamScreen({Key? key, required this.escapeWithNav}) : super(key: key);
-
-  final Function escapeWithNav;
+  const LivestreamScreen({Key? key}) : super(key: key);
 
   @override
   State<LivestreamScreen> createState() => _LivestreamScreenState();

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/models/live/live-session.model.dart';
+import 'package:Talkaboat/navigator_keys.dart';
 import 'package:Talkaboat/screens/livestream.screen.dart';
 import 'package:Talkaboat/services/hubs/live/live-session.service.dart';
 import 'package:Talkaboat/services/repositories/live-session.repository.dart';
@@ -16,8 +17,7 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:page_transition/page_transition.dart';
 
 class LivestreamOverviewScreen extends StatefulWidget {
-  const LivestreamOverviewScreen(this.escapeWithNav, {Key? key}) : super(key: key);
-  final Function escapeWithNav;
+  const LivestreamOverviewScreen({Key? key}) : super(key: key);
 
   @override
   State<LivestreamOverviewScreen> createState() => _LivestreamOverviewScreenState();
@@ -73,8 +73,7 @@ class _LivestreamOverviewScreenState extends State<LivestreamOverviewScreen> {
         _pagingController.refresh();
       },
       child: ScaffoldWave(
-        appBar: PreferredSize(
-            preferredSize: const Size.fromHeight(60), child: HomeAppBarWidget(widget.escapeWithNav, refresh: refresh)),
+        appBar: PreferredSize(preferredSize: const Size.fromHeight(60), child: HomeAppBarWidget(refresh: refresh)),
         body: Padding(
           padding: const EdgeInsets.only(left: 10, right: 10),
           child: Column(
@@ -262,13 +261,13 @@ class _LivestreamOverviewScreenState extends State<LivestreamOverviewScreen> {
                             final response = await liveSessionService.openRoom(roomName);
                             if (response != null) {
                               liveSessionService.setSession(response);
-                              widget.escapeWithNav(PageTransition(
+                              NavigatorKeys.navigatorKeyMain.currentState!.push(PageTransition(
                                 alignment: Alignment.bottomCenter,
                                 curve: Curves.bounceOut,
                                 type: PageTransitionType.fade,
                                 duration: const Duration(milliseconds: 300),
                                 reverseDuration: const Duration(milliseconds: 200),
-                                child: LivestreamScreen(escapeWithNav: widget.escapeWithNav),
+                                child: const LivestreamScreen(),
                               ));
                             }
                           }
@@ -300,7 +299,7 @@ class _LivestreamOverviewScreenState extends State<LivestreamOverviewScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 5),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
-                        child: LiveSessionTile(session: item, escapeWithNav: widget.escapeWithNav),
+                        child: LiveSessionTile(session: item),
                       ),
                     ),
                   ),

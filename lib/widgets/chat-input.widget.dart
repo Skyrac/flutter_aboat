@@ -5,6 +5,7 @@ import 'package:Talkaboat/models/chat/edit-message-dto.dart';
 import 'package:Talkaboat/services/hubs/chat/chat.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ChatInput extends StatefulWidget {
   const ChatInput(
@@ -71,8 +72,7 @@ class _ChatInputState extends State<ChatInput> {
             messageRaw = content;
             if (isReplying) {
               chatService.sendMessage(
-                  CreateMessageDto(userService.userInfo!.userId ?? 0, widget.roomId, content, widget.messageType, 2,
-                      widget.replyMessage!.id),
+                  CreateMessageDto(0, widget.roomId, content, widget.messageType, 2, widget.replyMessage!.id),
                   userService.userInfo!.userName!);
               textEditController.clear();
             } else if (isEdit) {
@@ -81,9 +81,7 @@ class _ChatInputState extends State<ChatInput> {
               );
               textEditController.clear();
             } else {
-              chatService.sendMessage(
-                  CreateMessageDto(
-                      userService.userInfo!.userId ?? 0, widget.roomId, content, widget.messageType, null, null),
+              chatService.sendMessage(CreateMessageDto(0, widget.roomId, content, widget.messageType, null, null),
                   userService.userInfo!.userName!);
               textEditController.clear();
             }
@@ -102,11 +100,11 @@ class _ChatInputState extends State<ChatInput> {
           decoration: InputDecoration(
             border: InputBorder.none,
             alignLabelWithHint: true,
-            hintText: "Message",
+            hintText: AppLocalizations.of(context)!.message,
             prefixText: isReplying
-                ? "Answer: "
+                ? "${AppLocalizations.of(context)!.answer}: "
                 : isEdit
-                    ? "Edit: "
+                    ? "${AppLocalizations.of(context)!.edit}: "
                     : "",
             prefixStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: const Color.fromRGBO(99, 163, 253, 1),
@@ -115,8 +113,7 @@ class _ChatInputState extends State<ChatInput> {
               onPressed: () async {
                 if (isReplying) {
                   chatService.sendMessage(
-                      CreateMessageDto(userService.userInfo!.userId ?? 0, widget.roomId, messageRaw!, widget.messageType, 2,
-                          widget.replyMessage!.id),
+                      CreateMessageDto(0, widget.roomId, messageRaw!, widget.messageType, 2, widget.replyMessage!.id),
                       userService.userInfo!.userName!);
                   textEditController.clear();
                 } else if (isEdit) {
@@ -125,9 +122,7 @@ class _ChatInputState extends State<ChatInput> {
                   );
                   textEditController.clear();
                 } else {
-                  chatService.sendMessage(
-                      CreateMessageDto(
-                          userService.userInfo!.userId ?? 0, widget.roomId, messageRaw!, widget.messageType, null, null),
+                  chatService.sendMessage(CreateMessageDto(0, widget.roomId, messageRaw!, widget.messageType, null, null),
                       userService.userInfo!.userName!);
                   textEditController.clear();
                 }

@@ -1,25 +1,25 @@
+import 'dart:async';
 import 'dart:io';
 
-import 'package:Talkaboat/screens/favorites.screen.dart';
-import 'package:Talkaboat/screens/livestream-overview.screen.dart';
-import 'package:Talkaboat/screens/playlist.screen.dart';
-import 'package:Talkaboat/screens/social/social_entry.screen.dart';
+import 'package:Talkaboat/navigator_keys.dart';
+import 'package:Talkaboat/widgets/nested-view.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/utils/common.dart';
+import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lazy_load_indexed_stack/lazy_load_indexed_stack.dart';
 import 'package:open_store/open_store.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
 
 import '../injection/injector.dart';
 import '../models/podcasts/episode.model.dart';
 import '../services/audio/audio-handler.services.dart';
 import '../themes/colors.dart';
 import '../widgets/mini-player.widget.dart';
-import 'home.screen.dart';
 
 class AppScreen extends StatefulWidget {
   const AppScreen({Key? key, required this.title}) : super(key: key);
@@ -30,30 +30,23 @@ class AppScreen extends StatefulWidget {
 }
 
 class _AppScreenState extends State<AppScreen> with RouteAware {
-  late List<Widget> Tabs;
   final userService = getIt<UserService>();
   String _currentPage = "Home";
   List<String> pageKeys = ["Home", "Live", "Favorites", "Playlist", "Social"];
-  final Map<String, GlobalKey<NavigatorState>> _navigatorKeys = {
-    "Home": GlobalKey<NavigatorState>(),
-    "Live": GlobalKey<NavigatorState>(),
-    "Favorites": GlobalKey<NavigatorState>(),
-    "Playlist": GlobalKey<NavigatorState>(),
-    "Social": GlobalKey<NavigatorState>(),
-  };
 
   int currentTabIndex = 0;
   Episode? episode;
 
   Episode? setEpisode(Episode episode) {
-    this.episode = episode;
-    setState(() {});
+    setState(() {
+      this.episode = episode;
+    });
     return this.episode;
   }
 
   void _selectTab(String tabItem, int index) {
     if (tabItem == _currentPage) {
-      _navigatorKeys[tabItem]?.currentState?.popUntil((route) => route.isFirst);
+      //_navigatorKeys[tabItem]?.currentState?.popUntil((route) => route.isFirst);
     } else {
       setState(() {
         _currentPage = pageKeys[index];
@@ -62,28 +55,28 @@ class _AppScreenState extends State<AppScreen> with RouteAware {
     }
   }
 
-  Widget _buildOffstageNavigator(String tabItem) {
-    return Offstage(
-        offstage: _currentPage != tabItem,
-        child: Navigator(
-          key: _navigatorKeys[tabItem],
-          onGenerateRoute: (routeSettings) {
-            return MaterialPageRoute(builder: (context) => Tabs[currentTabIndex]);
-          },
-        ));
+  GlobalKey<NavigatorState> _navigatorKey() {
+    switch (currentTabIndex) {
+      case 0:
+        return NavigatorKeys.bottomNavigationBarHome;
+      case 1:
+        return NavigatorKeys.bottomNavigationBarLive;
+      case 2:
+        return NavigatorKeys.bottomNavigationBarFavorites;
+      case 3:
+        return NavigatorKeys.bottomNavigationBarPlaylist;
+      case 4:
+        return NavigatorKeys.bottomNavigationBarSocial;
+      default:
+        return NavigatorKeys.bottomNavigationBarHome;
+    }
   }
 
   @override
   initState() {
     super.initState();
-    Tabs = [
-      HomeScreen(setEpisode, _selectTab, escapeWithNav),
-      LivestreamOverviewScreen(escapeWithNav),
-      FavoritesScreen(escapeWithNav: escapeWithNav),
-      PlaylistScreen(escapeWithNav),
-      SocialEntryScreen(escapeWithNav)
-    ];
     checkUpdates(context);
+    BackButtonInterceptor.add(myInterceptor);
   }
 
   @override
@@ -94,8 +87,25 @@ class _AppScreenState extends State<AppScreen> with RouteAware {
 
   @override
   void dispose() {
+    BackButtonInterceptor.remove(myInterceptor);
     routeObserver.unsubscribe(this);
     super.dispose();
+  }
+
+  Future<bool> myInterceptor(bool stopDefaultButtonEvent, RouteInfo info) async {
+    Future.delayed(Duration.zero, () {
+      Provider.of<SelectEpisodePage>(context, listen: false).changeFalse();
+    });
+    final key = _navigatorKey();
+    final isfirst = await isCurrentRouteFirst(key.currentContext!);
+    if (isfirst) {
+      // kill app
+      return false;
+    } else {
+      //pop route
+      key.currentState!.pop();
+    }
+    return true;
   }
 
   @override
@@ -130,8 +140,8 @@ class _AppScreenState extends State<AppScreen> with RouteAware {
       showDialog(
           context: context,
           builder: (_) => AlertDialog(
-                title: const Text("Update required"),
-                content: const Text("Please update your app to continue"),
+                title: Text(AppLocalizations.of(context)!.updateRequired),
+                content: Text(AppLocalizations.of(context)!.pleaseUpdateYourApp),
                 elevation: 8,
                 actions: [
                   TextButton(
@@ -141,12 +151,12 @@ class _AppScreenState extends State<AppScreen> with RouteAware {
                           androidAppBundleId: 'com.aboat.talkaboat', // Android app bundle package name
                         );
                       },
-                      child: const Text("Update")),
+                      child: Text(AppLocalizations.of(context)!.update)),
                   TextButton(
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: const Text("Later"))
+                      child: Text(AppLocalizations.of(context)!.later))
                 ],
               ),
           barrierDismissible: true);
@@ -155,87 +165,73 @@ class _AppScreenState extends State<AppScreen> with RouteAware {
 
   final audioPlayerHandler = getIt<AudioPlayerHandler>();
 
-  late BuildContext _context;
-
-  escapeWithNav<T extends Object?>(Route<T> route) {
-    Navigator.of(_context).push(route);
+  Future<bool> isCurrentRouteFirst(BuildContext context) {
+    var completer = Completer<bool>();
+    Navigator.popUntil(context, (route) {
+      completer.complete(route.isFirst);
+      return true;
+    });
+    return completer.future;
   }
 
   @override
   Widget build(BuildContext context) {
-    _context = context;
     audioPlayerHandler.setEpisodeRefreshFunction(setEpisode);
-    return WillPopScope(
-      onWillPop: () async {
-        final isFirstRouteInCurrentTab = await _navigatorKeys[_currentPage]?.currentState?.maybePop();
-        if (isFirstRouteInCurrentTab != null && isFirstRouteInCurrentTab) {
-          if (_currentPage != "Home") {
-            _selectTab("Home", 1);
-
-            return false;
-          }
-          // let system handle back button if we're on the first route
-          return isFirstRouteInCurrentTab;
-        }
-        return false;
-      },
-      child: Scaffold(
-        body: LazyLoadIndexedStack(index: currentTabIndex, children: <Widget>[
-          _buildOffstageNavigator("Home"),
-          _buildOffstageNavigator("Live"),
-          _buildOffstageNavigator("Favorites"),
-          _buildOffstageNavigator("Playlist"),
-          _buildOffstageNavigator("Social"),
-        ]),
-        bottomNavigationBar: Container(
-          color: const Color.fromRGBO(15, 23, 41, 1),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              MiniPlayerWidget(escapeWithNav, episode: episode, navKey: _navigatorKeys[pageKeys[currentTabIndex]]!),
-              ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20.0),
-                  topRight: Radius.circular(20.0),
-                ),
-                child: BottomNavigationBar(
-                  backgroundColor: const Color.fromRGBO(29, 40, 58, 1),
-                  type: BottomNavigationBarType.fixed,
-                  selectedFontSize: 0,
-                  unselectedFontSize: 0,
-                  elevation: 0,
-                  showSelectedLabels: false,
-                  showUnselectedLabels: false,
-                  currentIndex: currentTabIndex,
-                  onTap: (index) {
-                    _selectTab(pageKeys[index], index);
-                  },
-                  items: <BottomNavigationBarItem>[
-                    BottomNavigationBarItem(
-                        icon: buttonNavbar("assets/images/home.png", 20, 20, "Home"),
-                        activeIcon: buttonNavbarActiv("assets/images/home.png", 20, 20, "Home"),
-                        label: ''),
-                    BottomNavigationBarItem(
-                        icon: buttonNavbar("assets/images/live.png", 29, 20, "Live"),
-                        activeIcon: buttonNavbarActiv("assets/images/live.png", 29, 20, "Live"),
-                        label: ''),
-                    BottomNavigationBarItem(
-                        icon: buttonNavbar("assets/images/favorites.png", 20, 20, "Favorites"),
-                        activeIcon: buttonNavbarActiv("assets/images/favorites.png", 20, 20, "Favorites"),
-                        label: ''),
-                    BottomNavigationBarItem(
-                        icon: buttonNavbar("assets/images/playlist.png", 30, 20, "Playlists"),
-                        activeIcon: buttonNavbarActiv("assets/images/playlist.png", 30, 20, "Playlists"),
-                        label: ''),
-                    BottomNavigationBarItem(
-                        icon: buttonNavbar("assets/images/social.png", 20, 20, "Social"),
-                        activeIcon: buttonNavbarActiv("assets/images/social.png", 20, 20, "Social"),
-                        label: ''),
-                  ],
-                ),
+    return Scaffold(
+      body: NestedView(
+        navigatorKey: _navigatorKey(),
+        routeName: _currentPage,
+        setEpisode: setEpisode,
+        selectTab: _selectTab,
+      ),
+      bottomNavigationBar: Container(
+        color: const Color.fromRGBO(15, 23, 41, 1),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            MiniPlayerWidget(episode: episode, navKey: _navigatorKey()),
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20.0),
+                topRight: Radius.circular(20.0),
               ),
-            ],
-          ),
+              child: BottomNavigationBar(
+                backgroundColor: const Color.fromRGBO(29, 40, 58, 1),
+                type: BottomNavigationBarType.fixed,
+                selectedFontSize: 0,
+                unselectedFontSize: 0,
+                elevation: 0,
+                showSelectedLabels: false,
+                showUnselectedLabels: false,
+                currentIndex: currentTabIndex,
+                onTap: (index) {
+                  _selectTab(pageKeys[index], index);
+                },
+                items: <BottomNavigationBarItem>[
+                  BottomNavigationBarItem(
+                      icon: buttonNavbar("assets/images/home.png", 20, 20, "Home"),
+                      activeIcon: buttonNavbarActiv("assets/images/home.png", 20, 20, "Home"),
+                      label: ''),
+                  BottomNavigationBarItem(
+                      icon: buttonNavbar("assets/images/live.png", 29, 20, "Live"),
+                      activeIcon: buttonNavbarActiv("assets/images/live.png", 29, 20, "Live"),
+                      label: ''),
+                  BottomNavigationBarItem(
+                      icon: buttonNavbar("assets/images/favorites.png", 20, 20, "Favorites"),
+                      activeIcon: buttonNavbarActiv("assets/images/favorites.png", 20, 20, "Favorites"),
+                      label: ''),
+                  BottomNavigationBarItem(
+                      icon: buttonNavbar("assets/images/playlist.png", 30, 20, "Playlists"),
+                      activeIcon: buttonNavbarActiv("assets/images/playlist.png", 30, 20, "Playlists"),
+                      label: ''),
+                  BottomNavigationBarItem(
+                      icon: buttonNavbar("assets/images/social.png", 20, 20, "Social"),
+                      activeIcon: buttonNavbarActiv("assets/images/social.png", 20, 20, "Social"),
+                      label: ''),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

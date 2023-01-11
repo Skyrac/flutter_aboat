@@ -4,12 +4,12 @@ import 'package:Talkaboat/services/audio/podcast.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/widgets/podcast-list.widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PodcastEpisodePodcast extends StatefulWidget {
-  const PodcastEpisodePodcast({super.key, required this.podcastId, required this.escapeWithNav});
+  const PodcastEpisodePodcast({super.key, required this.podcastId});
 
   final int podcastId;
-  final Function escapeWithNav;
 
   @override
   State<PodcastEpisodePodcast> createState() => _PodcastEpisodePodcastState();
@@ -40,7 +40,6 @@ class _PodcastEpisodePodcastState extends State<PodcastEpisodePodcast> {
                   height: 105,
                   width: MediaQuery.of(context).size.width,
                   child: PodcastListWidget(
-                    widget.escapeWithNav,
                     searchResults: [podcast!],
                     direction: Axis.vertical,
                   ));
@@ -104,14 +103,14 @@ class _PodcastEpisodePodcastState extends State<PodcastEpisodePodcast> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  children: const [
+                  children: [
                     Icon(
                       Icons.favorite,
                       size: 20,
                     ),
                     Padding(
                       padding: EdgeInsets.only(left: 10),
-                      child: Text('Add to favorites'),
+                      child: Text(AppLocalizations.of(context)!.addToFavorites),
                     ),
                   ],
                 ),
@@ -128,14 +127,14 @@ class _PodcastEpisodePodcastState extends State<PodcastEpisodePodcast> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  children: const [
+                  children: [
                     Icon(
                       Icons.favorite,
                       size: 20,
                     ),
                     Padding(
                       padding: EdgeInsets.only(left: 10),
-                      child: Text('Remove from favorites'),
+                      child: Text(AppLocalizations.of(context)!.removeFromFavorites),
                     ),
                   ],
                 ),

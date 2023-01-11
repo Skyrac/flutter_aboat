@@ -1,15 +1,18 @@
 import 'dart:convert';
 
+import 'package:Talkaboat/services/user/reward.service.dart';
 
 import '../../configuration/dio.config.dart';
 import '../../injection/injector.dart';
 import '../../models/rewards/reward.model.dart';
 import '../user/user.service.dart';
+
 class TrackingRepository {
   TrackingRepository._();
 
   static const API = "/v1/media";
   static final userService = getIt<UserService>();
+  static final rewardService = getIt<RewardService>();
 
   static dynamic createRequestData(int owner, int asset, int playTime) {
     return {"Owner": owner, "Asset": asset, "PlayTime": playTime};
@@ -43,9 +46,9 @@ class TrackingRepository {
   }
 
   static validateAndUpdate(response) {
-    if(response.data != null && response.data!.isNotEmpty) {
+    if (response.data != null && response.data!.isNotEmpty) {
       var convertedData = Reward.fromJson(json.decode(response.data!));
-      userService.updateRewards(convertedData);
+      rewardService.Update(convertedData);
     }
   }
 

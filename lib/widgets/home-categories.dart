@@ -5,11 +5,10 @@ import 'package:Talkaboat/services/audio/podcast.service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomeScreenCategoriesTab extends StatefulWidget {
-  const HomeScreenCategoriesTab(this.escapeWithNav, {Key? key}) : super(key: key);
-
-  final Function escapeWithNav;
+  const HomeScreenCategoriesTab({Key? key}) : super(key: key);
 
   @override
   State<HomeScreenCategoriesTab> createState() => _HomeScreenCategoriesTabState();
@@ -68,8 +67,10 @@ class _HomeScreenCategoriesTabState extends State<HomeScreenCategoriesTab> {
                     search = text.toLowerCase();
                   });
                 }),
-                decoration: const InputDecoration(
-                    border: InputBorder.none, hintText: "Search for category...", suffixIcon: Icon(Icons.search)),
+                decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: AppLocalizations.of(context)!.searchForCategory,
+                    suffixIcon: Icon(Icons.search)),
                 style: Theme.of(context).textTheme.titleLarge,
               ),
             ),
@@ -121,7 +122,6 @@ class _HomeScreenCategoriesTabState extends State<HomeScreenCategoriesTab> {
                     reverseDuration: const Duration(milliseconds: 500),
                     child: CategoryScreen(
                       category,
-                      widget.escapeWithNav,
                     )));
               },
               child: Padding(

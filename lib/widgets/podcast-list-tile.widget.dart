@@ -7,11 +7,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PodcastListTileWidget extends StatefulWidget {
-  const PodcastListTileWidget(this.podcast, {this.stateChangeCb, required this.escapeWithNav, Key? key}) : super(key: key);
+  const PodcastListTileWidget(this.podcast, {this.stateChangeCb, Key? key}) : super(key: key);
   final Podcast podcast;
-  final Function escapeWithNav;
   final void Function()? stateChangeCb;
   @override
   State<PodcastListTileWidget> createState() => _PodcastListTileWidgetState();
@@ -37,14 +37,14 @@ class _PodcastListTileWidgetState extends State<PodcastListTileWidget> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  children: const [
+                  children: [
                     Icon(
                       Icons.favorite,
                       size: 20,
                     ),
                     Padding(
                       padding: EdgeInsets.only(left: 10),
-                      child: Text('Add to favorites'),
+                      child: Text(AppLocalizations.of(context)!.addToFavorites),
                     ),
                   ],
                 ),
@@ -61,14 +61,14 @@ class _PodcastListTileWidgetState extends State<PodcastListTileWidget> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  children: const [
+                  children: [
                     Icon(
                       Icons.favorite,
                       size: 20,
                     ),
                     Padding(
                       padding: EdgeInsets.only(left: 10),
-                      child: Text('Remove from favorites'),
+                      child: Text(AppLocalizations.of(context)!.removeFromFavorites),
                     ),
                   ],
                 ),
@@ -92,7 +92,7 @@ class _PodcastListTileWidgetState extends State<PodcastListTileWidget> {
                 type: PageTransitionType.rightToLeftWithFade,
                 duration: const Duration(milliseconds: 500),
                 reverseDuration: const Duration(milliseconds: 500),
-                child: PodcastDetailScreen(widget.escapeWithNav, podcastSearchResult: widget.podcast)));
+                child: PodcastDetailScreen(podcastSearchResult: widget.podcast)));
           },
           child: Row(children: [
             SizedBox(
@@ -133,7 +133,7 @@ class _PodcastListTileWidgetState extends State<PodcastListTileWidget> {
                   const Spacer(),
                   Row(children: [
                     Text(
-                      "${widget.podcast.totalEpisodes!} Episodes",
+                      AppLocalizations.of(context)!.episodesParam(widget.podcast.totalEpisodes!),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.titleSmall,
@@ -146,7 +146,7 @@ class _PodcastListTileWidgetState extends State<PodcastListTileWidget> {
                             const Image(
                               image: AssetImage("assets/icons/icon_fire.png"),
                             ),
-                            Text(" Reward x1.5",
+                            Text(" ${AppLocalizations.of(context)!.reward} x1.5",
                                 maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleSmall),
                           ]
                         : [])

@@ -2,13 +2,11 @@ import 'package:Talkaboat/screens/search.screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
-
 import '../screens/settings/settings.screen.dart';
 
 class HomeAppBarWidget extends StatelessWidget {
-  const HomeAppBarWidget(this.escapeWithNav, {Key? key, this.refresh, this.bottom}) : super(key: key);
+  const HomeAppBarWidget({Key? key, this.refresh, this.bottom}) : super(key: key);
   final Function? refresh;
-  final Function escapeWithNav;
   final PreferredSizeWidget? bottom;
   @override
   Widget build(BuildContext context) {
@@ -48,9 +46,7 @@ class HomeAppBarWidget extends StatelessWidget {
                       type: PageTransitionType.rightToLeftWithFade,
                       duration: const Duration(milliseconds: 500),
                       reverseDuration: const Duration(milliseconds: 500),
-                      child: SearchScreen(
-                        escapeWithNav: escapeWithNav,
-                      )));
+                      child: const SearchScreen()));
             },
           ),
         ),
@@ -86,7 +82,7 @@ class HomeAppBarWidget extends StatelessWidget {
                       type: PageTransitionType.rightToLeftWithFade,
                       duration: const Duration(milliseconds: 500),
                       reverseDuration: const Duration(milliseconds: 500),
-                      child: SettingsScreen(escapeWithNav, refresh: refresh)));
+                      child: SettingsScreen(refresh: refresh)));
             },
           ),
         )

@@ -1,3 +1,4 @@
+import 'package:Talkaboat/navigator_keys.dart';
 import 'package:Talkaboat/services/downloading/file-downloader.service.dart';
 import 'package:Talkaboat/utils/common.dart';
 import 'package:audio_service/audio_service.dart';
@@ -13,15 +14,14 @@ import '../screens/login.screen.dart';
 import '../services/audio/audio-handler.services.dart';
 import '../services/user/user.service.dart';
 import 'bottom-sheets/playlist.bottom-sheet.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class EpisodePreviewWidget extends StatefulWidget {
-  const EpisodePreviewWidget(this.episode, this.direction, this.onPlayEpisode, this.refresh, this.escapeWithNav, {Key? key})
-      : super(key: key);
+  const EpisodePreviewWidget(this.episode, this.direction, this.onPlayEpisode, this.refresh, {Key? key}) : super(key: key);
   final Episode episode;
   final Axis direction;
   final Function onPlayEpisode;
   final Function refresh;
-  final Function escapeWithNav;
 
   @override
   State<EpisodePreviewWidget> createState() => _EpisodePreviewWidgetState();
@@ -39,7 +39,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
         PopupMenuItem<String>(
             value: 'add',
             child: Container(
-                width: 176,
+                width: Localizations.localeOf(context).toString() == "de" ? 210 : 176,
                 height: 30,
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5),
@@ -54,7 +54,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                     const SizedBox(
                       width: 10,
                     ),
-                    Text('Add to playlist',
+                    Text(AppLocalizations.of(context)!.addToPlaylist,
                         style:
                             Theme.of(context).textTheme.titleMedium?.copyWith(color: const Color.fromRGBO(99, 163, 253, 1))),
                   ],
@@ -62,7 +62,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
         PopupMenuItem<String>(
             value: 'download',
             child: Container(
-                width: 176,
+                width: Localizations.localeOf(context).toString() == "de" ? 210 : 176,
                 height: 30,
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5),
@@ -81,7 +81,10 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                     const SizedBox(
                       width: 10,
                     ),
-                    Text(FileDownloadService.containsFile(entry.audio!) ? 'Delete' : 'Download',
+                    Text(
+                        FileDownloadService.containsFile(entry.audio!)
+                            ? AppLocalizations.of(context)!.delete
+                            : AppLocalizations.of(context)!.download,
                         style:
                             Theme.of(context).textTheme.titleMedium?.copyWith(color: const Color.fromRGBO(99, 163, 253, 1))),
                   ],
@@ -94,7 +97,8 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
           side: BorderSide(color: Color.fromRGBO(188, 140, 75, 1)),
           borderRadius: BorderRadius.all(Radius.circular(10.0)),
         ),
-        constraints: const BoxConstraints.expand(width: 196, height: 110),
+        constraints:
+            BoxConstraints.expand(width: Localizations.localeOf(context).toString() == "de" ? 230 : 196, height: 110),
         color: const Color.fromRGBO(15, 23, 41, 1),
         child: Container(
           padding: const EdgeInsets.fromLTRB(14, 30, 14, 30),
@@ -114,7 +118,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
               break;
             case "add":
               if (!userService.isConnected) {
-                widget.escapeWithNav(PageTransition(
+                NavigatorKeys.navigatorKeyMain.currentState!.push(PageTransition(
                     alignment: Alignment.bottomCenter,
                     curve: Curves.bounceOut,
                     type: PageTransitionType.rightToLeftWithFade,
