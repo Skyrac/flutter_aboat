@@ -37,6 +37,18 @@ class LiveSessionRepository {
     }
   }
 
+  static Future<ResponseModel> getTokenGuest(String roomGuid) async {
+    try {
+      var response = await dio.get<String>('$API/authorize/$roomGuid/guest');
+      var data = ResponseModel.fromJson(json.decode(response.data!));
+      return data;
+    } catch (e) {
+      debugPrint("$e");
+      debugPrint((e as DioError).response?.data);
+      return ResponseModel();
+    }
+  }
+
   static Future<LiveSession?> openRoom(LiveSessionConfiguration configuration) async {
     try {
       var response = await dio.post<String>('$API/room', data: configuration);
@@ -62,7 +74,7 @@ class LiveSessionRepository {
     }
   }
 
-  static Future<void> closeRoom(String roomId) async {
+  static Future<void> leaveRoom(String roomId) async {
     try {
       var response = await dio.put<String>('$API/room/$roomId/leave');
       debugPrint("$response");

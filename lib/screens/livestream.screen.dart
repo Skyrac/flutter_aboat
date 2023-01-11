@@ -35,7 +35,6 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
   ChatMessageDto? editedMessage;
 
   late StreamSubscription<String> onAddedHostSub;
-  bool isChangingState = false;
 
   @override
   void initState() {
@@ -50,30 +49,14 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
       }
     });
 
-    _liveService.onAddedAsHost.listen((event) async {
-      /*if (event == userService.userInfo!.userName) {
-        await _liveService.updateHosts(userService.userInfo!.userName, false);
-        isChangingState = true;
-        Navigator.of(context).pop();
-        widget.escapeWithNav(PageTransition(
-          alignment: Alignment.bottomCenter,
-          curve: Curves.bounceOut,
-          type: PageTransitionType.fade,
-          duration: const Duration(milliseconds: 300),
-          reverseDuration: const Duration(milliseconds: 200),
-          child: LivestreamScreen(
-            escapeWithNav: widget.escapeWithNav,
-          ),
-        ));
-      } else {
-        await _liveService.updateHosts(null, null);
-      }*/
+    _liveService.onLiveSessionEnded.listen((event) async {
+      Navigator.of(context).pop();
     });
   }
 
   @override
   void dispose() {
-    Future.microtask(() => _liveService.leave(isChangingState));
+    Future.microtask(() => _liveService.leave());
     super.dispose();
   }
 
@@ -112,29 +95,32 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
                           });
                         },
                       ),
-                      LiveChat(
-                        roomId: _liveService.currentSession!.chat!.id,
-                        visible: _liveService.chatVisible,
-                        focusNode: focusNode,
-                        replyToMessage: (message) {
-                          setState(() {
-                            editedMessage = null;
-                            replyMessage = message;
-                          });
-                        },
-                        editMessage: (message) {
-                          setState(() {
-                            replyMessage = null;
-                            editedMessage = message;
-                          });
-                        },
-                        cancelReplyAndEdit: () {
-                          setState(() {
-                            replyMessage = null;
-                            editedMessage = null;
-                          });
-                        },
-                      )
+                      AnimatedBuilder(
+                        animation: _liveService.agoraSettings,
+                        builder: (context, child) => LiveChat(
+                          roomId: _liveService.currentSession!.chat!.id,
+                          visible: _liveService.agoraSettings.chatVisible,
+                          focusNode: focusNode,
+                          replyToMessage: (message) {
+                            setState(() {
+                              editedMessage = null;
+                              replyMessage = message;
+                            });
+                          },
+                          editMessage: (message) {
+                            setState(() {
+                              replyMessage = null;
+                              editedMessage = message;
+                            });
+                          },
+                          cancelReplyAndEdit: () {
+                            setState(() {
+                              replyMessage = null;
+                              editedMessage = null;
+                            });
+                          },
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -157,15 +143,15 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
           userId: 0,
           view: AgoraVideoView(
             controller: VideoViewController(
-              rtcEngine: _liveService.agoraEngine,
+              rtcEngine: _liveService.agoraSettings.agoraEngine,
               canvas: const VideoCanvas(uid: 0),
             ),
           ),
         ),
       );
     }
-    debugPrint("${_liveService.isHost} ${_liveService.users}");
-    for (var uid in _liveService.users) {
+    debugPrint("${_liveService.isHost} ${_liveService.remoteUsers}");
+    for (var uid in _liveService.remoteUsers) {
       if (_liveService.userVideoOn[uid] ?? false) {
         debugPrint("view for $uid ${_liveService.currentSession!.guid}");
         list.add(
@@ -174,7 +160,7 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
             userId: uid,
             view: AgoraVideoView(
               controller: VideoViewController.remote(
-                rtcEngine: _liveService.agoraEngine,
+                rtcEngine: _liveService.agoraSettings.agoraEngine,
                 canvas: VideoCanvas(uid: uid),
                 connection: RtcConnection(channelId: _liveService.currentSession!.guid),
               ),

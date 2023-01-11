@@ -33,7 +33,7 @@ class _LiveControllsState extends State<LiveControlls> {
     final size = MediaQuery.of(context).size;
     debugPrint("size: ${size.width} ${size.width - (5 * 2) - (10 * 2) - 100}");
     return AnimatedBuilder(
-      animation: liveSessionService,
+      animation: liveSessionService.agoraSettings,
       builder: (context, child) => Column(
         children: [
           SizedBox(
@@ -47,14 +47,14 @@ class _LiveControllsState extends State<LiveControlls> {
                       width: 50,
                       child: MaterialButton(
                         onPressed: () {
-                          liveSessionService.switchChat();
+                          liveSessionService.agoraSettings.switchChat();
                         },
                         color: const Color.fromRGBO(29, 40, 58, 0.97),
-                        child: liveSessionService.chatVisible
+                        child: liveSessionService.agoraSettings.chatVisible
                             ? Image.asset("assets/icons/icon-chat-on.png")
                             : Image.asset("assets/icons/icon-chat-off.png"),
                       )),
-                  liveSessionService.chatVisible
+                  liveSessionService.agoraSettings.chatVisible
                       ? ChatInput(
                           roomId: widget.liveSession.chat!.id,
                           messageType: 0,
@@ -106,7 +106,7 @@ class _LiveControllsState extends State<LiveControlls> {
       child: MaterialButton(
           shape: const CircleBorder(),
           onPressed: () {
-            liveSessionService.switchCamera();
+            liveSessionService.agoraSettings.switchCamera();
           },
           color: const Color.fromRGBO(48, 73, 123, 0.6),
           child: Image.asset("assets/icons/icon-camera-switch.png")));
@@ -117,12 +117,12 @@ class _LiveControllsState extends State<LiveControlls> {
       child: MaterialButton(
           shape: const CircleBorder(),
           onPressed: () {
-            liveSessionService.switchVideo();
+            liveSessionService.agoraSettings.switchVideo();
           },
           color: const Color.fromRGBO(48, 73, 123, 0.6),
           child: AnimatedBuilder(
             animation: liveSessionService,
-            builder: (context, child) => liveSessionService.videoOn
+            builder: (context, child) => liveSessionService.agoraSettings.videoOn
                 ? Image.asset("assets/icons/icon-video-on.png")
                 : Image.asset("assets/icons/icon-video-off.png"),
           )));
@@ -133,12 +133,12 @@ class _LiveControllsState extends State<LiveControlls> {
       child: MaterialButton(
           shape: const CircleBorder(),
           onPressed: () {
-            liveSessionService.switchLocalAudio();
+            liveSessionService.agoraSettings.switchLocalAudio();
           },
           color: const Color.fromRGBO(48, 73, 123, 0.6),
           child: AnimatedBuilder(
             animation: liveSessionService,
-            builder: (context, child) => liveSessionService.localAudio
+            builder: (context, child) => liveSessionService.agoraSettings.localAudio
                 ? Image.asset("assets/icons/icon-audio-on.png")
                 : Image.asset("assets/icons/icon-audio-off.png"),
           )));
@@ -182,12 +182,12 @@ class _LiveControllsState extends State<LiveControlls> {
       child: MaterialButton(
           shape: const CircleBorder(),
           onPressed: () {
-            liveSessionService.switchAudio();
+            liveSessionService.agoraSettings.switchAudio();
           },
           color: const Color.fromRGBO(48, 73, 123, 0.6),
           child: AnimatedBuilder(
             animation: liveSessionService,
-            builder: (context, child) => liveSessionService.audioMuted
+            builder: (context, child) => liveSessionService.agoraSettings.audioMuted
                 ? Image.asset("assets/icons/icon-mute-on.png")
                 : Image.asset("assets/icons/icon-mute-off.png"),
           )));

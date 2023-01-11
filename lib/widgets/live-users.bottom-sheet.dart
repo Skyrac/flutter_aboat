@@ -161,14 +161,14 @@ class _LiveUsersBottomSheetState extends State<LiveUsersBottomSheet> {
                               child: Row(children: [
                                 Text(x.userName),
                                 const Spacer(),
-                                canAddUsers
+                                /*canAddUsers
                                     ? MaterialButton(
                                         onPressed: () {
                                           liveService.addHost(x.userName, liveService.currentSession!.guid);
                                         },
                                         child: const Text("Add"),
                                       )
-                                    : const SizedBox()
+                                    : const SizedBox()*/
                               ]),
                             ),
                           )

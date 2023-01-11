@@ -30,7 +30,7 @@ class LiveSessionTile extends StatelessWidget {
               debugPrint("show livestream");
               debugPrint("$session");
               if (session.configuration!.superhostName == userService.userInfo?.userName) {
-                LiveSessionRepository.closeRoom(session.guid);
+                LiveSessionRepository.leaveRoom(session.guid);
               } else {
                 liveService.setSession(session);
                 escapeWithNav(PageTransition(

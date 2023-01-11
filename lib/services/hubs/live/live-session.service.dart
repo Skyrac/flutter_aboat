@@ -3,14 +3,13 @@ import 'dart:async';
 import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/models/live/live-session-configuration.model.dart';
 import 'package:Talkaboat/models/live/live-session.model.dart';
+import 'package:Talkaboat/services/hubs/live/agorasettings.dart';
 import 'package:Talkaboat/services/hubs/live/live-hub.service.dart';
 import 'package:Talkaboat/services/repositories/live-session.repository.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
-
-enum Camera { front, back }
 
 class LiveSessionService extends ChangeNotifier {
   LiveSessionService() : super() {
@@ -23,7 +22,7 @@ class LiveSessionService extends ChangeNotifier {
     });
     _hub.onRemovedAsHost.listen((event) async {
       if (_currentSess != null) {
-        _currentSess!.hosts.removeWhere((x) => x.userName == event);
+        debugPrint("onRemovedAsHost $event");
         if (event == userService.userInfo!.userName) {
           await demoteToViewer();
         }
@@ -36,6 +35,12 @@ class LiveSessionService extends ChangeNotifier {
         notifyListeners();
       }
     });
+  }
+
+  @override
+  Future<void> dispose() async {
+    await leave();
+    super.dispose();
   }
 
   Stream<String> get onAddedAsHost => _hub.onAddedAsHost;
@@ -108,64 +113,48 @@ class LiveSessionService extends ChangeNotifier {
   final LiveHubService _hub = LiveHubService();
   final List<String> hostRequest = List.empty(growable: true);
 
-  acceptHostRequest(String username) async {
-    hostRequest.removeWhere((x) => x == username);
-    await _hub.AddHost(_roomGuid, username);
-    notifyListeners();
-  }
-
-  rejectHostRequest(String username) async {
-    hostRequest.removeWhere((x) => x == username);
-    //await _hub.RemoveHostAccess(_roomGuid, username);
-    notifyListeners();
-  }
-
-  static const String appId = "c0ad2b8f2be149788fabb9d916f0fbef";
-  final _remoteUsers = <int>[];
-  final Map<int, bool> _userVideoOn = {};
   bool _isJoined = false;
   String _roomGuid = "";
   String _roomName = "";
-  late RtcEngine _agoraEngine;
-  Camera _camera = Camera.front;
-  bool _chatVisible = true;
-  bool _videoOn = true;
-  bool _localAudio = true;
-  bool _audioMuted = false;
 
   bool get isJoined => _isJoined;
   String get roomGuid => _roomGuid;
   String get roomName => _roomName;
-  List<int> get users => _remoteUsers;
+  AgoraSettings _agoraSettings = AgoraSettings();
+  AgoraSettings get agoraSettings => _agoraSettings;
+
+  final _remoteUsers = <int>[];
+  List<int> get remoteUsers => _remoteUsers;
+
+  final Map<int, bool> _userVideoOn = {};
   Map<int, bool> get userVideoOn => _userVideoOn;
-  RtcEngine get agoraEngine => _agoraEngine;
-  Camera get camera => _camera;
-  bool get chatVisible => _chatVisible;
-  bool get videoOn => _videoOn;
-  bool get localAudio => _localAudio;
-  bool get audioMuted => _audioMuted;
 
   LiveSession? _currentSess;
   LiveSession? get currentSession => _currentSess;
   bool get isHost =>
-      _remoteUsers.contains(userService.userInfo?.userId) ||
+      remoteUsers.contains(userService.userInfo?.userId) ||
       (currentSession?.hosts.map((x) => x.userName).contains(userService.userInfo?.userName) ?? false);
+
+  setSession(LiveSession sess) {
+    _currentSess = sess;
+    notifyListeners();
+  }
 
   final userService = getIt<UserService>();
 
-  Future<String> getToken(String roomId) async {
-    var response = await LiveSessionRepository.getToken(roomId);
+  Future<String> getToken(String roomId, bool isGuest) async {
+    var response = await (isGuest ? LiveSessionRepository.getTokenGuest(roomId) : LiveSessionRepository.getToken(roomId));
     debugPrint(response.data);
     return response.data!;
   }
 
   Future<void> setupVideoSdkEngine() async {
     await [Permission.microphone, Permission.camera].request();
-    _agoraEngine = createAgoraRtcEngine();
-    await _agoraEngine.initialize(const RtcEngineContext(appId: appId));
-    await _agoraEngine.enableAudioVolumeIndication(interval: 200, smooth: 3, reportVad: true);
+    _agoraSettings = AgoraSettings(engine: createAgoraRtcEngine());
+    await _agoraSettings.agoraEngine.initialize(const RtcEngineContext(appId: AgoraSettings.appId));
+    await _agoraSettings.agoraEngine.enableAudioVolumeIndication(interval: 200, smooth: 3, reportVad: true);
 
-    agoraEngine.registerEventHandler(
+    _agoraSettings.agoraEngine.registerEventHandler(
       RtcEngineEventHandler(
         onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
           _isJoined = true;
@@ -222,10 +211,10 @@ class LiveSessionService extends ChangeNotifier {
       clientRoleType: ClientRoleType.clientRoleAudience,
       channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
     );
-    await agoraEngine.setClientRole(role: ClientRoleType.clientRoleAudience);
-    await agoraEngine.enableAudio();
-    await agoraEngine.enableVideo();
-    final token = await getToken(roomId);
+    await _agoraSettings.agoraEngine.setClientRole(role: ClientRoleType.clientRoleAudience);
+    await _agoraSettings.agoraEngine.enableAudio();
+    await _agoraSettings.agoraEngine.enableVideo();
+    final token = await getToken(roomId, userService.guest);
 
     await join(roomId, roomName, options, token, false);
   }
@@ -237,11 +226,11 @@ class LiveSessionService extends ChangeNotifier {
       clientRoleType: ClientRoleType.clientRoleBroadcaster,
       channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
     );
-    await agoraEngine.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
-    await agoraEngine.enableAudio();
-    await agoraEngine.enableVideo();
-    await agoraEngine.startPreview();
-    final token = await getToken(roomId);
+    await _agoraSettings.agoraEngine.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
+    await _agoraSettings.agoraEngine.enableAudio();
+    await _agoraSettings.agoraEngine.enableVideo();
+    await _agoraSettings.agoraEngine.startPreview();
+    final token = await getToken(roomId, userService.guest);
 
     await join(roomId, roomName, options, token, true);
   }
@@ -250,7 +239,7 @@ class LiveSessionService extends ChangeNotifier {
     _roomGuid = roomGuid;
     _roomName = roomName;
     await setupHub(roomGuid, asHost);
-    await agoraEngine.joinChannel(
+    await _agoraSettings.agoraEngine.joinChannel(
       token: token,
       channelId: roomGuid,
       options: options,
@@ -261,25 +250,11 @@ class LiveSessionService extends ChangeNotifier {
 
   promoteToHost() async {
     try {
-      _isJoined = false;
-      notifyListeners();
-      await agoraEngine.leaveChannel();
-      ChannelMediaOptions options = const ChannelMediaOptions(
-        clientRoleType: ClientRoleType.clientRoleBroadcaster,
-        channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
-      );
-      await agoraEngine.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
-      await agoraEngine.startPreview();
-      final token = await getToken(_roomGuid);
-
-      await agoraEngine.joinChannel(
-        token: token,
-        channelId: roomGuid,
-        options: options,
-        uid: userService.userInfo?.userId ?? 0,
-      );
-      debugPrint("joined as host as ${options.clientRoleType}");
-      _isJoined = true;
+      await _agoraSettings.agoraEngine.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
+      await _agoraSettings.agoraEngine.startPreview();
+      final token = await getToken(_roomGuid, userService.guest);
+      _agoraSettings.agoraEngine.renewToken(token);
+      debugPrint("joined as host as ${ClientRoleType.clientRoleBroadcaster}");
       notifyListeners();
     } catch (e) {
       debugPrint("$e");
@@ -288,47 +263,31 @@ class LiveSessionService extends ChangeNotifier {
 
   demoteToViewer() async {
     try {
-      _isJoined = false;
-      notifyListeners();
-
-      await agoraEngine.leaveChannel();
-      await agoraEngine.stopPreview();
-      ChannelMediaOptions options = const ChannelMediaOptions(
-        clientRoleType: ClientRoleType.clientRoleAudience,
-        channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
-      );
-      await agoraEngine.setClientRole(role: ClientRoleType.clientRoleAudience);
-      final token = await getToken(_roomGuid);
-
-      await agoraEngine.joinChannel(
-        token: token,
-        channelId: roomGuid,
-        options: options,
-        uid: userService.userInfo?.userId ?? 0,
-      );
-      _isJoined = true;
+      debugPrint("demoting");
+      await _agoraSettings.agoraEngine.setClientRole(role: ClientRoleType.clientRoleAudience);
+      await _agoraSettings.agoraEngine.stopPreview();
+      final token = await getToken(_roomGuid, userService.guest);
+      _agoraSettings.agoraEngine.renewToken(token);
+      debugPrint("joined as viewer as ${ClientRoleType.clientRoleAudience}");
       notifyListeners();
     } catch (e) {
       debugPrint("$e");
     }
   }
 
-  // TODO: isChangingState sollte obsolet sein da immer false
-  Future<void> leave(bool isChangingState) async {
+  Future<void> leave() async {
     await cleanupHub();
-    await agoraEngine.stopPreview();
-    await agoraEngine.leaveChannel();
-    await agoraEngine.disableVideo();
-    await agoraEngine.disableAudio();
-    await agoraEngine.release();
+    await _agoraSettings.agoraEngine.stopPreview();
+    await _agoraSettings.agoraEngine.leaveChannel();
+    await _agoraSettings.agoraEngine.disableVideo();
+    await _agoraSettings.agoraEngine.disableAudio();
+    await _agoraSettings.agoraEngine.release();
     _isJoined = false;
 
-    if (!isChangingState) {
-      await LiveSessionRepository.closeRoom(_roomGuid);
-      _roomName = "";
-      _currentSess = null;
-      _roomGuid = "";
-    }
+    await LiveSessionRepository.leaveRoom(_roomGuid);
+    _roomName = "";
+    _currentSess = null;
+    _roomGuid = "";
     notifyListeners();
   }
 
@@ -347,49 +306,6 @@ class LiveSessionService extends ChangeNotifier {
     hostRequest.clear();
   }
 
-  @override
-  Future<void> dispose() async {
-    await leave(false);
-    super.dispose();
-  }
-
-  Future<void> switchCamera() async {
-    await agoraEngine.switchCamera();
-    if (_camera == Camera.front) {
-      _camera = Camera.back;
-    } else {
-      _camera = Camera.front;
-    }
-
-    notifyListeners();
-  }
-
-  switchChat() {
-    _chatVisible = !_chatVisible;
-    notifyListeners();
-  }
-
-  switchVideo() async {
-    _videoOn = !_videoOn;
-    await agoraEngine.enableLocalVideo(_videoOn);
-    notifyListeners();
-  }
-
-  switchLocalAudio() async {
-    _localAudio = !_localAudio;
-    await agoraEngine.muteLocalAudioStream(_localAudio);
-    notifyListeners();
-  }
-
-  switchAudio() async {
-    _audioMuted = !_audioMuted;
-
-    for (var user in _remoteUsers) {
-      agoraEngine.muteRemoteAudioStream(uid: user, mute: _audioMuted);
-    }
-    notifyListeners();
-  }
-
   removeHost(String username, String roomId) async {
     await LiveSessionRepository.removeHost(roomId, username);
     return await _hub.RemoveHostAccess(roomId, username);
@@ -406,8 +322,14 @@ class LiveSessionService extends ChangeNotifier {
     }
   }
 
-  setSession(LiveSession sess) {
-    _currentSess = sess;
+  acceptHostRequest(String username) async {
+    hostRequest.removeWhere((x) => x == username);
+    await _hub.AddHost(_roomGuid, username);
+    notifyListeners();
+  }
+
+  rejectHostRequest(String username) async {
+    hostRequest.removeWhere((x) => x == username);
     notifyListeners();
   }
 }

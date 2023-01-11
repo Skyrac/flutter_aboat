@@ -12,10 +12,10 @@ class LiveHubService extends HubService {
     connection.on("HostRequest", receivedHostRequest);
     connection.on("LiveSessionEnded", receivedLiveSessionEnded);
     connection.on("UserJoined", (event) {
-      debugPrint("$event");
+      debugPrint("UserJoined $event");
     });
     connection.on("UserLeft", (event) {
-      debugPrint("$event");
+      debugPrint("UserLeft $event");
     });
   }
 
@@ -48,6 +48,7 @@ class LiveHubService extends HubService {
   }
 
   void receivedLiveSessionEnded(List<Object?>? data) {
+    debugPrint("onLiveSessionEnded $data");
     if (data != null && data[0] != null) {
       onLiveSessionEndedController.add("ended");
     }
@@ -82,10 +83,11 @@ class LiveHubService extends HubService {
       return;
     }
     try {
+      debugPrint("RemoveHostAccess $roomId $username");
       final result = await connection.invoke("RemoveHostAccess", args: <Object>[roomId, username]);
-      debugPrint("$result");
+      debugPrint("RemoveHostAccess $result");
     } catch (e) {
-      debugPrint("$e");
+      debugPrint("RemoveHostAccess $e");
     }
   }
 
