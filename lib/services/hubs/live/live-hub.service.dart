@@ -49,7 +49,7 @@ class LiveHubService extends HubService {
 
   void receivedLiveSessionEnded(List<Object?>? data) {
     debugPrint("onLiveSessionEnded $data");
-    if (data != null && data[0] != null) {
+    if (data != null) {
       onLiveSessionEndedController.add("ended");
     }
   }
