@@ -71,7 +71,8 @@ class _ChatInputState extends State<ChatInput> {
             messageRaw = content;
             if (isReplying) {
               chatService.sendMessage(
-                  CreateMessageDto(0, widget.roomId, content, widget.messageType, 2, widget.replyMessage!.id),
+                  CreateMessageDto(userService.userInfo!.userId ?? 0, widget.roomId, content, widget.messageType, 2,
+                      widget.replyMessage!.id),
                   userService.userInfo!.userName!);
               textEditController.clear();
             } else if (isEdit) {
@@ -80,7 +81,9 @@ class _ChatInputState extends State<ChatInput> {
               );
               textEditController.clear();
             } else {
-              chatService.sendMessage(CreateMessageDto(0, widget.roomId, content, widget.messageType, null, null),
+              chatService.sendMessage(
+                  CreateMessageDto(
+                      userService.userInfo!.userId ?? 0, widget.roomId, content, widget.messageType, null, null),
                   userService.userInfo!.userName!);
               textEditController.clear();
             }
@@ -112,7 +115,8 @@ class _ChatInputState extends State<ChatInput> {
               onPressed: () async {
                 if (isReplying) {
                   chatService.sendMessage(
-                      CreateMessageDto(0, widget.roomId, messageRaw!, widget.messageType, 2, widget.replyMessage!.id),
+                      CreateMessageDto(userService.userInfo!.userId ?? 0, widget.roomId, messageRaw!, widget.messageType, 2,
+                          widget.replyMessage!.id),
                       userService.userInfo!.userName!);
                   textEditController.clear();
                 } else if (isEdit) {
@@ -121,7 +125,9 @@ class _ChatInputState extends State<ChatInput> {
                   );
                   textEditController.clear();
                 } else {
-                  chatService.sendMessage(CreateMessageDto(0, widget.roomId, messageRaw!, widget.messageType, null, null),
+                  chatService.sendMessage(
+                      CreateMessageDto(
+                          userService.userInfo!.userId ?? 0, widget.roomId, messageRaw!, widget.messageType, null, null),
                       userService.userInfo!.userName!);
                   textEditController.clear();
                 }
