@@ -30,7 +30,6 @@ class ChatRoomDto {
 
 @JsonSerializable()
 class ChatMessageDto {
-  final GlobalKey globalKey;
   int id;
   int chatRoomId;
   ChatMessageDto? answeredMessage;
@@ -52,8 +51,7 @@ class ChatMessageDto {
       required this.senderName,
       this.updated,
       required this.isEdited,
-      this.chatMember,
-      required this.globalKey});
+      this.chatMember});
 
   factory ChatMessageDto.fromJson(Map<String, dynamic> json) => _$ChatMessageDtoFromJson(json);
 

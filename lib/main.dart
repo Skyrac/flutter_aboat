@@ -24,6 +24,8 @@ import 'firebase_options.dart';
 import 'injection/injector.dart';
 
 void main() async {
+  //runApp(const MaterialApp(home: Agora()));
+  //return;
   WidgetsFlutterBinding.ensureInitialized();
   LicenseRegistry.addLicense(() async* {
     final license = await rootBundle.loadString('assets/google_fonts/OFL.txt');
@@ -63,7 +65,7 @@ class _MyAppState extends State<MyApp> {
       child: MaterialApp(
           navigatorKey: NavigatorKeys.navigatorKeyMain,
           title: 'Talkaboat',
-          localizationsDelegates: [
+          localizationsDelegates: const [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,

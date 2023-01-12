@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 
 class SearchBar extends StatefulWidget {
-  const SearchBar({this.placeholder, this.onChanged, this.onSubmitted, this.shadowColor, this.initialSearch, Key? key})
+  const SearchBar(
+      {this.paddingHorizontal,
+      this.placeholder,
+      this.onChanged,
+      this.onSubmitted,
+      this.shadowColor,
+      this.initialSearch,
+      Key? key})
       : super(key: key);
 
   final String? placeholder;
@@ -9,6 +16,7 @@ class SearchBar extends StatefulWidget {
   final void Function(String text)? onSubmitted;
   final Color? shadowColor;
   final String? initialSearch;
+  final double? paddingHorizontal;
 
   @override
   State<SearchBar> createState() => _SearchBarState();
@@ -26,7 +34,7 @@ class _SearchBarState extends State<SearchBar> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 70, vertical: 10),
+      padding: EdgeInsets.symmetric(horizontal: widget.paddingHorizontal ?? 70, vertical: 10),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(10),
         child: Container(

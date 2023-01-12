@@ -20,11 +20,6 @@ class ChatHubService extends HubService {
     connection.on("DeleteMessage", receiveDeletedMessage);
   }
 
-  @override
-  connect() async {
-    await super.connect();
-  }
-
   //#region Events
   final StreamController<ChatMessageDto> onReceiveMessageController = StreamController.broadcast();
   final StreamController<ChatMessageDto> onEditMessageController = StreamController.broadcast();
@@ -60,38 +55,53 @@ class ChatHubService extends HubService {
 
   //#region RPC Calls
   sendMessage(CreateMessageDto message) async {
+    if (!await checkConnection()) {
+      return;
+    }
     try {
       return await connection.invoke("SendMessage", args: <Object>[message]);
     } catch (e) {
-      debugPrint("$e");
+      debugPrint("sendMessage $e");
     }
   }
 
   editMessage(EditMessageDto message) async {
+    if (!await checkConnection()) {
+      return;
+    }
     try {
       return await connection.invoke("EditMessage", args: <Object>[message]);
     } catch (e) {
-      debugPrint("$e");
+      debugPrint("editMessage $e");
     }
   }
 
   deleteMessage(DeleteMessageDto message) async {
+    if (!await checkConnection()) {
+      return;
+    }
     try {
       return await connection.invoke("DeleteMessage", args: <Object>[message]);
     } catch (e) {
-      debugPrint("$e");
+      debugPrint("deleteMessage $e");
     }
   }
 
   joinRoom(JoinRoomDto data) async {
+    if (!await checkConnection()) {
+      return;
+    }
     try {
       return await connection.invoke("JoinRoom", args: <Object>[data]);
     } catch (e) {
-      debugPrint("$e");
+      debugPrint("joinRoom $e");
     }
   }
 
   leaveRoom(JoinRoomDto data) async {
+    if (!await checkConnection()) {
+      return;
+    }
     try {
       return await connection.invoke("LeaveRoom", args: <Object>[data]);
     } catch (e) {
@@ -100,16 +110,21 @@ class ChatHubService extends HubService {
   }
 
   Future<List<ChatMessageDto>> getHistory(MessageHistoryRequestDto data) async {
+    if (!await checkConnection()) {
+      debugPrint("getHistory no connection");
+      return List.empty();
+    }
     try {
       var response = await connection.invoke("GetHistory", args: <Object>[data]);
       if (response == null) {
+        debugPrint("getHistory no history");
         return List.empty();
       }
       var convertedData =
           List<ChatMessageDto>.from(json.decode(json.encode(response)).map((data) => ChatMessageDto.fromJson(data)));
       return convertedData;
     } catch (e) {
-      debugPrint("$e");
+      debugPrint("getHistory $e");
       return List.empty();
     }
   }

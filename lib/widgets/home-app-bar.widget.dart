@@ -2,12 +2,12 @@ import 'package:Talkaboat/screens/search.screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../screens/settings/settings.screen.dart';
 
 class HomeAppBarWidget extends StatelessWidget {
-  const HomeAppBarWidget({Key? key, this.refresh}) : super(key: key);
+  const HomeAppBarWidget({Key? key, this.refresh, this.bottom}) : super(key: key);
   final Function? refresh;
+  final PreferredSizeWidget? bottom;
   @override
   Widget build(BuildContext context) {
     return AppBar(
@@ -20,29 +20,7 @@ class HomeAppBarWidget extends StatelessWidget {
       ),
       leadingWidth: 45,
       titleSpacing: 10,
-      bottom: PreferredSize(
-        preferredSize: const Size.fromHeight(48),
-        child: Container(
-          width: MediaQuery.of(context).size.width,
-          padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.0),
-              border: const Border(bottom: BorderSide(color: Color.fromRGBO(164, 202, 255, 1))),
-            ),
-            child: TabBar(
-              labelColor: Color.fromRGBO(188, 140, 75, 1),
-              indicatorColor: Color.fromRGBO(188, 140, 75, 1),
-              unselectedLabelColor: Color.fromRGBO(164, 202, 255, 1),
-              tabs: [
-                Tab(text: AppLocalizations.of(context)!.suggested),
-                Tab(text: AppLocalizations.of(context)!.categories),
-                Tab(text: AppLocalizations.of(context)!.news),
-              ],
-            ),
-          ),
-        ),
-      ),
+      bottom: bottom,
       title: Text(
         "Talkaboat",
         style: GoogleFonts.inter(

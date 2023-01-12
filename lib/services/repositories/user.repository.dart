@@ -147,7 +147,7 @@ class UserRepository {
       debugPrint(response.data);
       return ResponseModel.fromJson(json.decode(response.data!));
     } catch (exception) {
-      debugPrint("eexception");
+      debugPrint("$exception");
       debugPrint("${(exception as DioError).response}");
       if ((exception as DioError).response != null) {
         var data = json.decode((exception as DioError).response!.data);
