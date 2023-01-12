@@ -609,3 +609,17 @@ class QueueState {
 
   List<int> get indices => shuffleIndices ?? List.generate(queue.length, (i) => i);
 }
+
+class SelectEpisodePage extends ChangeNotifier {
+  bool isSelectedPage = false;
+
+  void changeTrue() {
+    isSelectedPage = true;
+    notifyListeners();
+  }
+
+  void changeFalse() {
+    isSelectedPage = false;
+    notifyListeners();
+  }
+}

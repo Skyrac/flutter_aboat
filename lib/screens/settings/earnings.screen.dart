@@ -1,6 +1,7 @@
 import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/services/user/reward.service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../models/rewards/reward-detail.model.dart';
 import '../../themes/colors.dart';
@@ -27,7 +28,7 @@ class _EarningsScreenState extends State<EarningsScreen> {
         child: Scaffold(
             body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           AppBar(
-            title: const Text("Earnings"),
+            title: Text(AppLocalizations.of(context)!.earnings),
           ),
           FutureBuilder(
             builder: (context, snapshot) {
@@ -50,11 +51,11 @@ class _EarningsScreenState extends State<EarningsScreen> {
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: DataTable(
-                      columns: const [
-                        DataColumn(label: Text("Date")),
-                        DataColumn(label: Text("Earned")),
-                        DataColumn(label: Text("Claimable")),
-                        DataColumn(label: Text("Description")),
+                      columns: [
+                        DataColumn(label: Text(AppLocalizations.of(context)!.date)),
+                        DataColumn(label: Text(AppLocalizations.of(context)!.earned)),
+                        DataColumn(label: Text(AppLocalizations.of(context)!.claimable)),
+                        DataColumn(label: Text(AppLocalizations.of(context)!.description)),
                       ],
                       rows: generateDataRows(listData),
                     ),

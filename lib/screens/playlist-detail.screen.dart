@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../injection/injector.dart';
 
 import '../models/playlist/playlist.model.dart';
@@ -33,14 +34,14 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
-              children: const [
+              children: [
                 Icon(
                   Icons.playlist_remove,
                   size: 20,
                 ),
                 Padding(
                   padding: EdgeInsets.only(left: 10),
-                  child: Text('Remove from Playlist'),
+                  child: Text(AppLocalizations.of(context)!.removeFromPlaylist),
                 ),
               ],
             ),

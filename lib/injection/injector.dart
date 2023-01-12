@@ -1,6 +1,6 @@
 import 'package:Talkaboat/services/hubs/chat/chat.service.dart';
 import 'package:Talkaboat/services/hubs/reward/reward-hub.service.dart';
-import 'package:Talkaboat/services/live/live-session.service.dart';
+import 'package:Talkaboat/services/hubs/live/live-session.service.dart';
 import 'package:Talkaboat/services/quests/quest.service.dart';
 import 'package:Talkaboat/services/user/reward.service.dart';
 import 'package:Talkaboat/services/user/social.service.dart';

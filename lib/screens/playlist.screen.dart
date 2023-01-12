@@ -3,6 +3,7 @@ import 'package:Talkaboat/utils/scaffold_wave.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../injection/injector.dart';
 import '../models/playlist/playlist.model.dart';
@@ -265,7 +266,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
         builder: (context) => AlertDialog(
               shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20.0))),
               backgroundColor: const Color.fromRGBO(48, 73, 123, 1),
-              title: const Text("New Playlist..."),
+              title: Text(AppLocalizations.of(context)!.newPlaylist),
               elevation: 8,
               content: Container(
                 height: 50,
@@ -335,14 +336,13 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                     height: 40,
                     width: 150,
                     child: Center(
-                      child: Text(
-                        "Create",
-                        style: Theme.of(context)
-                            .textTheme
-                            .labelLarge
-                            ?.copyWith(color: const Color.fromRGBO(15, 23, 41, 1), fontWeight: FontWeight.w600),
-                      ),
-                    ),
+                        child: Text(
+                      AppLocalizations.of(context)!.create,
+                      style: Theme.of(context)
+                          .textTheme
+                          .labelLarge
+                          ?.copyWith(color: const Color.fromRGBO(15, 23, 41, 1), fontWeight: FontWeight.w600),
+                    )),
                   ),
                 ),
                 RawMaterialButton(
@@ -366,16 +366,15 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                     height: 40,
                     width: 80,
                     child: Center(
-                      child: Text(
-                        "Cancel",
-                        style: Theme.of(context)
-                            .textTheme
-                            .labelLarge
-                            ?.copyWith(color: const Color.fromRGBO(164, 202, 255, 1), fontWeight: FontWeight.w600),
-                      ),
-                    ),
+                        child: Text(
+                      AppLocalizations.of(context)!.cancel,
+                      style: Theme.of(context)
+                          .textTheme
+                          .labelLarge
+                          ?.copyWith(color: const Color.fromRGBO(164, 202, 255, 1), fontWeight: FontWeight.w600),
+                    )),
                   ),
-                )
+                ),
               ],
             ));
   }
