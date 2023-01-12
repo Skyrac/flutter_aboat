@@ -1,0 +1,18 @@
+class LiveUser {
+  late int userId;
+  late String userName;
+
+  LiveUser({required this.userId, required this.userName});
+
+  LiveUser.fromJson(Map<String, dynamic> json) {
+    userId = json['user_Id'];
+    userName = json['userName'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['user_Id'] = userId;
+    data['userName'] = userName;
+    return data;
+  }
+}

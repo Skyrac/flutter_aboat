@@ -14,8 +14,19 @@ class UserInfoData {
   bool? ambassador;
   Badge? userBadge;
   bool? artist;
+  late int? userId;
 
-  UserInfoData({this.userName,this.email,this.verified,this.addresses,this.rewards,this.referrer,this.ambassador,this.userBadge,this.artist,});
+  UserInfoData({
+    this.userName,
+    this.email,
+    this.verified,
+    this.addresses,
+    this.rewards,
+    this.referrer,
+    this.ambassador,
+    this.userBadge,
+    this.artist,
+  });
 
   factory UserInfoData.fromJson(Map<String, dynamic> json) => _$UserInfoDataFromJson(json);
 
@@ -32,7 +43,15 @@ class Badge {
   int? dailyTasks;
   int? rank;
 
-  Badge({required this.name,required this.vesting,required this.multiplier,required this.rewardLimit,required this.referrerRewardMultiplier,required this.dailyTasks,required this.rank,});
+  Badge({
+    required this.name,
+    required this.vesting,
+    required this.multiplier,
+    required this.rewardLimit,
+    required this.referrerRewardMultiplier,
+    required this.dailyTasks,
+    required this.rank,
+  });
 
   factory Badge.fromJson(Map<String, dynamic> json) => _$BadgeFromJson(json);
 

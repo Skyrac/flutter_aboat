@@ -1,7 +1,7 @@
 import 'package:Talkaboat/screens/favorites.screen.dart';
 import 'package:Talkaboat/screens/home.screen.dart';
+import 'package:Talkaboat/screens/livestream-overview.screen.dart';
 import 'package:Talkaboat/screens/playlist.screen.dart';
-import 'package:Talkaboat/screens/search.screen.dart';
 import 'package:Talkaboat/screens/social/social_entry.screen.dart';
 import 'package:flutter/material.dart';
 
@@ -19,7 +19,7 @@ class NestedView extends StatelessWidget {
   ) {
     return {
       "Home": (context) => HomeScreen(setEpisode: setEpisode, selectTab: selectTab),
-      "Live": (context) => const SearchScreen(),
+      "Live": (context) => const LivestreamOverviewScreen(),
       "Favorites": (context) => const FavoritesScreen(),
       "Playlist": (context) => const PlaylistScreen(),
       "Social": (context) => const SocialEntryScreen()

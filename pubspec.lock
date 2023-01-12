@@ -14,7 +14,7 @@ packages:
       name: agora_rtc_engine
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "6.0.0"
+    version: "6.1.0"
   analyzer:
     dependency: transitive
     description:
@@ -615,7 +615,7 @@ packages:
       name: iris_event
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.2.0"
+    version: "2.0.0"
   jiffy:
     dependency: "direct main"
     description:
@@ -665,6 +665,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.4.7"
+  jwt_decode:
+    dependency: "direct main"
+    description:
+      name: jwt_decode
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.1"
   lints:
     dependency: transitive
     description:
@@ -673,12 +680,12 @@ packages:
     source: hosted
     version: "2.0.0"
   logging:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: logging
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.2"
+    version: "1.1.0"
   matcher:
     dependency: transitive
     description:
@@ -692,7 +699,7 @@ packages:
       name: material_color_utilities
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.0"
+    version: "0.1.5"
   md2_tab_indicator:
     dependency: "direct main"
     description:
@@ -966,6 +973,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.27.5"
+  scrollview_observer:
+    dependency: "direct main"
+    description:
+      name: scrollview_observer
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.9.1"
   share_plus:
     dependency: "direct main"
     description:
@@ -1104,10 +1118,10 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: "3c7ee06c55b1dc5724f1eef55eb913fb72935582"
+      resolved-ref: "2e623d5335be2b676576cf0912cedf0bfa3b19d0"
       url: "https://github.com/daubit/signalr_client.git"
     source: git
-    version: "1.3.3"
+    version: "1.3.4"
   simple_observable:
     dependency: transitive
     description:
@@ -1154,7 +1168,7 @@ packages:
       name: source_span
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.9.1"
+    version: "1.9.0"
   sqflite:
     dependency: transitive
     description:
@@ -1231,7 +1245,7 @@ packages:
       name: test_api
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.4.13"
+    version: "0.4.12"
   timing:
     dependency: transitive
     description:
@@ -1322,7 +1336,7 @@ packages:
       name: vector_math
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.3"
+    version: "2.1.2"
   visibility_detector:
     dependency: transitive
     description:

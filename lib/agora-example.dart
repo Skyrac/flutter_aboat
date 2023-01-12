@@ -1,17 +1,70 @@
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
+
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-const appId = "c0ad2b8f2be149788fabb9d916f0fbef";
-const token =
-    "006c0ad2b8f2be149788fabb9d916f0fbefIAArwYBSMbJr5TX5I6/Yxw4hL1Yvj01kkRlLUtbxutVsSikV+3O4bbbIEABy68VqZZ13YwEAAQD1WXZj";
-const channel = "test2";
+const appId = "e3054f4262824f6d95aceacc878f8f64";
 
 class AgoraExample extends StatefulWidget {
-  const AgoraExample({Key? key}) : super(key: key);
+  const AgoraExample({Key? key, required this.isHost}) : super(key: key);
+
+  final bool isHost;
 
   @override
   State<AgoraExample> createState() => _AgoraExampleState();
+}
+
+const int tokenRoleHost = 1; // use 1 for Host/Broadcaster, 2 for Subscriber/Audience
+const int tokenRoleViewer = 2; // use 1 for Host/Broadcaster, 2 for Subscriber/Audience
+const String serverUrl =
+    "https://agora-token-service-production-45b7.up.railway.app"; // The base URL to your token server, for example "https://agora-token-service-production-92ff.up.railway.app"
+const int tokenExpireTime = 3600; // Expire time in Seconds.
+const bool isTokenExpiring = false; // Set to true when the token is about to expire
+const channelName = "f";
+
+Future<String> getHostToken() async {
+  String url =
+      '$serverUrl/rtc/$channelName/${tokenRoleHost.toString()}/uid/${1.toString()}?expiry=${tokenExpireTime.toString()}';
+
+  // Send the request
+  final response = await http.get(Uri.parse(url));
+
+  if (response.statusCode == 200) {
+    // If the server returns an OK response, then parse the JSON.
+    Map<String, dynamic> json = jsonDecode(response.body);
+    String newToken = json['rtcToken'];
+    debugPrint('Token Received: $newToken');
+    // Use the token to join a channel or renew an expiring token
+    return newToken;
+  } else {
+    // If the server did not return an OK response,
+    // then throw an exception.
+    throw Exception('Failed to fetch a token. Make sure that your server URL is valid');
+  }
+}
+
+Future<String> getViewerToken() async {
+  String url =
+      '$serverUrl/rtc/$channelName/${tokenRoleViewer.toString()}/uid/${2.toString()}?expiry=${tokenExpireTime.toString()}';
+
+  // Send the request
+  final response = await http.get(Uri.parse(url));
+
+  if (response.statusCode == 200) {
+    // If the server returns an OK response, then parse the JSON.
+    Map<String, dynamic> json = jsonDecode(response.body);
+    String newToken = json['rtcToken'];
+    debugPrint('Token Received: $newToken');
+    // Use the token to join a channel or renew an expiring token
+    return newToken;
+  } else {
+    // If the server did not return an OK response,
+    // then throw an exception.
+    throw Exception('Failed to fetch a token. Make sure that your server URL is valid');
+  }
 }
 
 class _AgoraExampleState extends State<AgoraExample> {
@@ -59,19 +112,36 @@ class _AgoraExampleState extends State<AgoraExample> {
       })),
     );
 
-    await _engine.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
-    await _engine.enableVideo();
-    await _engine.startPreview();
+    if (widget.isHost) {
+      await _engine.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
+      await _engine.enableVideo();
+      await _engine.startPreview();
+      final token = await getHostToken();
 
-    await _engine.joinChannel(
-      token: token,
-      channelId: channel,
-      uid: 0,
-      options: const ChannelMediaOptions(
-        clientRoleType: ClientRoleType.clientRoleBroadcaster,
-        channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
-      ),
-    );
+      await _engine.joinChannel(
+        token: token,
+        channelId: channelName,
+        uid: 1,
+        options: const ChannelMediaOptions(
+          clientRoleType: ClientRoleType.clientRoleBroadcaster,
+          channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
+        ),
+      );
+    } else {
+      await _engine.setClientRole(role: ClientRoleType.clientRoleAudience);
+      await _engine.enableVideo();
+      final token = await getViewerToken();
+
+      await _engine.joinChannel(
+        token: token,
+        channelId: channelName,
+        uid: 2,
+        options: const ChannelMediaOptions(
+          clientRoleType: ClientRoleType.clientRoleAudience,
+          channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
+        ),
+      );
+    }
   }
 
   // Create UI with local view and remote view
@@ -115,7 +185,7 @@ class _AgoraExampleState extends State<AgoraExample> {
         controller: VideoViewController.remote(
           rtcEngine: _engine,
           canvas: VideoCanvas(uid: _remoteUid),
-          connection: const RtcConnection(channelId: channel),
+          connection: const RtcConnection(channelId: channelName),
         ),
       );
     } else {

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:Talkaboat/models/chat/chat-dtos.dart';
-import 'package:Talkaboat/screens/podcast-episode.screen.dart';
 import 'package:Talkaboat/services/hubs/chat/chat.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/widgets/chat-input.widget.dart';
@@ -9,7 +8,6 @@ import 'package:Talkaboat/widgets/chat.widget.dart';
 import 'package:Talkaboat/widgets/episode-list-with-header.widget.dart';
 import 'package:Talkaboat/widgets/podcast-details.widget.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -76,102 +74,96 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
   @override
   Widget build(BuildContext context) {
     userService.UpdatePodcastVisitDate(widget.podcastSearchResult.id);
-    final size = MediaQuery.of(context).size;
 
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (context) => SelectMessage(),
-        )
-      ],
-      child: ScaffoldWave(
-          height: 33,
-          appBar: AppBar(
-            centerTitle: false,
-            leadingWidth: 35,
-            titleSpacing: 3,
-            backgroundColor: const Color.fromRGBO(29, 40, 58, 1),
-            title: Text(
-              widget.podcastSearchResult.title!,
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: const Color.fromRGBO(99, 163, 253, 1),
-                  ),
-            ),
-            actions: [
-              Padding(
-                padding: const EdgeInsets.only(right: 5),
-                child: IconButton(
-                    icon: const Icon(Icons.share, color: Color.fromRGBO(99, 163, 253, 0.5), size: 36),
-                    tooltip: '',
-                    onPressed: () => {
-                          //TODO: Geräte Abhängigkeit prüfen
-                          Share.share(AppLocalizations.of(context)!.share(widget.podcastSearchResult.title),
-                              subject: AppLocalizations.of(context)!.share2)
-                        }),
+    return ScaffoldWave(
+      height: 33,
+      appBar: AppBar(
+        centerTitle: false,
+        leadingWidth: 35,
+        titleSpacing: 3,
+        backgroundColor: const Color.fromRGBO(29, 40, 58, 1),
+        title: Text(
+          widget.podcastSearchResult.title!,
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                color: const Color.fromRGBO(99, 163, 253, 1),
               ),
-              !userService.isConnected
-                  ? const SizedBox()
-                  : userService.isInFavorites(widget.podcastSearchResult.id)
-                      // : isFav
-                      ? Padding(
-                          padding: const EdgeInsets.only(right: 10),
-                          child: IconButton(
-                            icon: const Icon(Icons.favorite, color: Color.fromRGBO(99, 163, 253, 0.5), size: 36),
-                            tooltip: '',
-                            onPressed: () async {
-                              await userService.removeFromFavorites(widget.podcastSearchResult.id!);
-                              setState(() {});
-                            },
-                          ),
-                        )
-                      : Padding(
-                          padding: const EdgeInsets.only(right: 10),
-                          child: IconButton(
-                            icon: const Icon(Icons.favorite_border, color: Color.fromRGBO(99, 163, 253, 0.5), size: 36),
-                            tooltip: '',
-                            onPressed: () async {
-                              await userService.addToFavorites(widget.podcastSearchResult.id!);
-                              setState(() {});
-                            },
-                          ),
-                        ),
-            ],
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 5),
+            child: IconButton(
+                icon: const Icon(Icons.share, color: Color.fromRGBO(99, 163, 253, 0.5), size: 36),
+                tooltip: '',
+                onPressed: () => {
+                      //TODO: Geräte Abhängigkeit prüfen
+                      Share.share(AppLocalizations.of(context)!.share(widget.podcastSearchResult.title),
+                          subject: AppLocalizations.of(context)!.share2)
+                    }),
           ),
-          body: Container(
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: [
-                DefaultColors.primaryColor.shade900,
-                DefaultColors.secondaryColor.shade900,
-                DefaultColors.secondaryColor.shade900
-              ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
-              child: FutureBuilder<SearchResult?>(
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    if (snapshot.hasError) {
-                      return Center(
-                        child: Text(
-                          '${snapshot.error} occurred',
-                          style: const TextStyle(fontSize: 18),
-                        ),
-                      );
-                    } else if (snapshot.hasData && snapshot.data != null) {
-                      // Extracting data from snapshot object
-                      return createCustomScrollView(snapshot.data!);
-                    } else {
-                      return const Center(
-                        child: Text(
-                          'No data found for this podcast. Please try again later!',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                      );
-                    }
-                  }
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                },
-                future: _getPodcast,
-              ))),
+          !userService.isConnected
+              ? const SizedBox()
+              : userService.isInFavorites(widget.podcastSearchResult.id)
+                  // : isFav
+                  ? Padding(
+                      padding: const EdgeInsets.only(right: 10),
+                      child: IconButton(
+                        icon: const Icon(Icons.favorite, color: Color.fromRGBO(99, 163, 253, 0.5), size: 36),
+                        tooltip: '',
+                        onPressed: () async {
+                          await userService.removeFromFavorites(widget.podcastSearchResult.id!);
+                          setState(() {});
+                        },
+                      ),
+                    )
+                  : Padding(
+                      padding: const EdgeInsets.only(right: 10),
+                      child: IconButton(
+                        icon: const Icon(Icons.favorite_border, color: Color.fromRGBO(99, 163, 253, 0.5), size: 36),
+                        tooltip: '',
+                        onPressed: () async {
+                          await userService.addToFavorites(widget.podcastSearchResult.id!);
+                          setState(() {});
+                        },
+                      ),
+                    ),
+        ],
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+            gradient: LinearGradient(colors: [
+          DefaultColors.primaryColor.shade900,
+          DefaultColors.secondaryColor.shade900,
+          DefaultColors.secondaryColor.shade900
+        ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
+        child: FutureBuilder<SearchResult?>(
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.hasError) {
+                return Center(
+                  child: Text(
+                    '${snapshot.error} occurred',
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                );
+              } else if (snapshot.hasData && snapshot.data != null) {
+                // Extracting data from snapshot object
+                return createCustomScrollView(snapshot.data!);
+              } else {
+                return const Center(
+                  child: Text(
+                    'No data found for this podcast. Please try again later!',
+                    style: TextStyle(fontSize: 18),
+                  ),
+                );
+              }
+            }
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+          future: _getPodcast,
+        ),
+      ),
     );
   }
 
