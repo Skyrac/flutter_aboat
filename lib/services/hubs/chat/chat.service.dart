@@ -37,43 +37,56 @@ class ChatService extends ChangeNotifier {
 
   bool get isConnected => _hub.isConnected;
 
-  _reconcileNewMessage(ChatMessageDto message) {
-    _mutex.run(() {
+  _reconcileNewMessage(ChatMessageDto message) async {
+    debugPrint("new message ${message.content}");
+    var shouldNotifiy = false;
+    await _mutex.run(() {
       if (_rooms[message.chatRoomId] != null) {
         if (!_rooms[message.chatRoomId]!.any((x) => x.id == message.id)) {
           _rooms[message.chatRoomId]!.add(message);
-          notifyListeners();
+          shouldNotifiy = true;
         }
       } else {
         debugPrint("Tried to edit message that was not cached localy");
       }
     });
+    if (shouldNotifiy) {
+      notifyListeners();
+    }
   }
 
-  _reconcileEditMessageFull(ChatMessageDto message) {
-    _mutex.run(() {
+  _reconcileEditMessageFull(ChatMessageDto message) async {
+    var shouldNotifiy = false;
+    await _mutex.run(() {
       if (_rooms[message.chatRoomId] != null) {
         int index = _rooms[message.chatRoomId]!.indexWhere((x) => x.id == message.id);
         if (index > -1) {
           _rooms[message.chatRoomId]!.removeAt(index);
           _rooms[message.chatRoomId]!.insert(index, message);
-          notifyListeners();
+          shouldNotifiy = true;
         }
       } else {
         debugPrint("Tried to edit message that was not cached localy");
       }
     });
+    if (shouldNotifiy) {
+      notifyListeners();
+    }
   }
 
-  _reconcileRemoveMessage(int roomId, int messageId) {
-    _mutex.run(() {
+  _reconcileRemoveMessage(int roomId, int messageId) async {
+    var shouldNotifiy = false;
+    await _mutex.run(() {
       if (_rooms[roomId] != null) {
         _rooms[roomId]!.removeWhere((value) => value.id == messageId);
-        notifyListeners();
+        shouldNotifiy = true;
       } else {
         debugPrint("Tried to delete message that was not cached localy");
       }
     });
+    if (shouldNotifiy) {
+      notifyListeners();
+    }
   }
 
   connect() async {
@@ -87,7 +100,7 @@ class ChatService extends ChangeNotifier {
   sendMessage(CreateMessageDto message, String username) async {
     try {
       final m = await _hub.sendMessage(message);
-      debugPrint("$m");
+      debugPrint("sendMessage $m");
     } catch (e) {
       debugPrint("$e");
     }
@@ -120,6 +133,9 @@ class ChatService extends ChangeNotifier {
     } catch (e) {
       debugPrint("$e");
     }
+
+    await getHistory(MessageHistoryRequestDto(roomId: data.roomId, direction: 0));
+    notifyListeners();
   }
 
   leaveRoom(JoinRoomDto data) async {
@@ -133,18 +149,28 @@ class ChatService extends ChangeNotifier {
     });
   }
 
+  List<ChatMessageDto> messages(int roomId) {
+    return _rooms[roomId] ?? List.empty();
+  }
+
   Future<List<ChatMessageDto>> getHistory(MessageHistoryRequestDto data, {bool forceRefresh = false}) async {
+    debugPrint("getHistory ${data.roomId}");
     if (_rooms[data.roomId] == null) {
+      debugPrint("getHistory room null ${data.roomId}");
       _rooms[data.roomId] = List.empty(growable: true);
     }
     if (_rooms[data.roomId]!.isEmpty || forceRefresh) {
+      debugPrint("getHistory room empty ${data.roomId}");
       try {
         List<ChatMessageDto> messages = await _hub.getHistory(data);
+        debugPrint("getHistory added messages ${messages.length}");
+
         _rooms[data.roomId]!.addAll(messages);
       } catch (e) {
-        debugPrint("$e");
+        debugPrint("getHistory $e");
       }
     }
+    debugPrint("getHistory found ${_rooms[data.roomId]?.length ?? -1} messages");
     return _rooms[data.roomId] ?? List.empty();
   }
 

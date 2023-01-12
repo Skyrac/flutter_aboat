@@ -61,7 +61,7 @@ class ChatHubService extends HubService {
     try {
       return await connection.invoke("SendMessage", args: <Object>[message]);
     } catch (e) {
-      debugPrint("$e");
+      debugPrint("sendMessage $e");
     }
   }
 
@@ -72,7 +72,7 @@ class ChatHubService extends HubService {
     try {
       return await connection.invoke("EditMessage", args: <Object>[message]);
     } catch (e) {
-      debugPrint("$e");
+      debugPrint("editMessage $e");
     }
   }
 
@@ -83,7 +83,7 @@ class ChatHubService extends HubService {
     try {
       return await connection.invoke("DeleteMessage", args: <Object>[message]);
     } catch (e) {
-      debugPrint("$e");
+      debugPrint("deleteMessage $e");
     }
   }
 
@@ -94,7 +94,7 @@ class ChatHubService extends HubService {
     try {
       return await connection.invoke("JoinRoom", args: <Object>[data]);
     } catch (e) {
-      debugPrint("$e");
+      debugPrint("joinRoom $e");
     }
   }
 
@@ -111,18 +111,20 @@ class ChatHubService extends HubService {
 
   Future<List<ChatMessageDto>> getHistory(MessageHistoryRequestDto data) async {
     if (!await checkConnection()) {
+      debugPrint("getHistory no connection");
       return List.empty();
     }
     try {
       var response = await connection.invoke("GetHistory", args: <Object>[data]);
       if (response == null) {
+        debugPrint("getHistory no history");
         return List.empty();
       }
       var convertedData =
           List<ChatMessageDto>.from(json.decode(json.encode(response)).map((data) => ChatMessageDto.fromJson(data)));
       return convertedData;
     } catch (e) {
-      debugPrint("$e");
+      debugPrint("getHistory $e");
       return List.empty();
     }
   }

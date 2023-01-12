@@ -13,9 +13,9 @@ class ChatMessageTile extends StatelessWidget {
       required this.onEditMessage,
       required this.onDeleteMessage,
       required this.cancelReplyAndEdit,
-      required this.selectIndex,
+      required this.selectMessage,
       required this.index,
-      required this.selectedIndex,
+      required this.selectedMessage,
       required this.userService,
       required this.scrollToMessage});
 
@@ -25,10 +25,10 @@ class ChatMessageTile extends StatelessWidget {
   final void Function(ChatMessageDto) onEditMessage;
   final void Function(ChatMessageDto) onDeleteMessage;
   final void Function() cancelReplyAndEdit;
-  final void Function(int?) selectIndex;
+  final void Function(int?) selectMessage;
   final void Function() scrollToMessage;
   final int index;
-  final int? selectedIndex;
+  final int? selectedMessage;
 
   _showPopupMenu(BuildContext context, Offset offset, ChatMessageDto entry) async {
     double left = offset.dx;
@@ -80,7 +80,7 @@ class ChatMessageTile extends StatelessWidget {
         break;
       case 'Delete':
         onDeleteMessage(message);
-        selectIndex(null);
+        selectMessage(null);
         cancelReplyAndEdit();
         break;
     }
@@ -93,11 +93,11 @@ class ChatMessageTile extends StatelessWidget {
       child: SwipeTo(
         onLeftSwipe: () {
           onSwipedMessage(message);
-          selectIndex(index);
+          selectMessage(message.id);
         },
         child: GestureDetector(
           onLongPressStart: (LongPressStartDetails details) {
-            selectIndex(index);
+            selectMessage(message.id);
             if (userService.isConnected) {
               if (userService.userInfo!.userName! == message.senderName) {
                 _showPopupMenuOwner(context, details.globalPosition, message);
@@ -109,8 +109,9 @@ class ChatMessageTile extends StatelessWidget {
           child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                color:
-                    selectedIndex == index ? const Color.fromRGBO(99, 163, 253, 1) : const Color.fromRGBO(29, 40, 58, 0.5),
+                color: selectedMessage == message.id
+                    ? const Color.fromRGBO(99, 163, 253, 1)
+                    : const Color.fromRGBO(29, 40, 58, 0.5),
               ),
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
@@ -153,14 +154,14 @@ class ChatMessageTile extends StatelessWidget {
                           message.senderName.toString(),
                           style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
                         ),
-                        selectedIndex == index
+                        selectedMessage == message.id
                             ? Row(
                                 children: [
                                   IconButton(
                                       padding: EdgeInsets.zero,
                                       constraints: const BoxConstraints(),
                                       onPressed: () {
-                                        selectIndex(null);
+                                        selectMessage(null);
                                         cancelReplyAndEdit();
                                       },
                                       icon: const Icon(
@@ -177,7 +178,7 @@ class ChatMessageTile extends StatelessWidget {
                                           constraints: const BoxConstraints(),
                                           onPressed: () {
                                             onDeleteMessage(message);
-                                            selectIndex(null);
+                                            selectMessage(null);
                                             cancelReplyAndEdit();
                                           },
                                           icon: const Icon(

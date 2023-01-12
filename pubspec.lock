@@ -973,6 +973,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.27.5"
+  scrollview_observer:
+    dependency: "direct main"
+    description:
+      name: scrollview_observer
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.9.1"
   share_plus:
     dependency: "direct main"
     description:

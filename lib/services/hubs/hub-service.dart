@@ -60,6 +60,7 @@ abstract class HubService {
     if (state != HubConnectionState.Connected) {
       if (state != HubConnectionState.Connecting && state != HubConnectionState.Reconnecting) {
         await connect();
+        return checkConnection();
       }
       return false;
     }

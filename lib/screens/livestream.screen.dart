@@ -4,7 +4,7 @@ import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/models/chat/chat-dtos.dart';
 import 'package:Talkaboat/services/hubs/live/live-session.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
-import 'package:Talkaboat/widgets/live-chat.widget.dart';
+import 'package:Talkaboat/widgets/chat.widget.dart';
 import 'package:Talkaboat/widgets/livecontrolls.widget.dart';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +33,7 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
   ChatMessageDto? editedMessage;
 
   late StreamSubscription<String> onAddedHostSub;
+  final ScrollController controller = ScrollController();
 
   @override
   void initState() {
@@ -55,6 +56,7 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
   @override
   void dispose() {
     Future.microtask(() => _liveService.leave());
+    controller.dispose();
     super.dispose();
   }
 
@@ -97,29 +99,43 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
                       ),
                       AnimatedBuilder(
                         animation: _liveService.agoraSettings,
-                        builder: (context, child) => LiveChat(
-                          roomId: _liveService.currentSession!.chat!.id,
-                          visible: _liveService.agoraSettings.chatVisible,
-                          focusNode: focusNode,
-                          replyToMessage: (message) {
-                            setState(() {
-                              editedMessage = null;
-                              replyMessage = message;
-                            });
-                          },
-                          editMessage: (message) {
-                            setState(() {
-                              replyMessage = null;
-                              editedMessage = message;
-                            });
-                          },
-                          cancelReplyAndEdit: () {
-                            setState(() {
-                              replyMessage = null;
-                              editedMessage = null;
-                            });
-                          },
-                        ),
+                        builder: (context, child) {
+                          if (!_liveService.agoraSettings.chatVisible) {
+                            return const SizedBox();
+                          }
+                          final size = MediaQuery.of(context).size;
+                          return SizedBox(
+                            height: size.height / 2,
+                            width: size.width - (10 * 2),
+                            child: Chat(
+                              padBottom: false,
+                              neverScroll: false,
+                              controller: controller,
+                              roomId: _liveService.currentSession!.chat!.id,
+                              focusNode: focusNode,
+                              messageType: 0,
+                              reverse: true,
+                              replyToMessage: (message) {
+                                setState(() {
+                                  editedMessage = null;
+                                  replyMessage = message;
+                                });
+                              },
+                              editMessage: (message) {
+                                setState(() {
+                                  replyMessage = null;
+                                  editedMessage = message;
+                                });
+                              },
+                              cancelReplyAndEdit: () {
+                                setState(() {
+                                  replyMessage = null;
+                                  editedMessage = null;
+                                });
+                              },
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),
