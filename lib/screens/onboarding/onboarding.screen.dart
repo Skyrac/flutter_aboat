@@ -105,9 +105,9 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
       showBackButton: false,
       //rtl: true, // Display as right-to-left
       back: const Icon(Icons.arrow_back),
-      skip: Text(AppLocalizations.of(context)!.skip, style: TextStyle(fontWeight: FontWeight.w600)),
+      skip: Text(AppLocalizations.of(context)!.skip, style: const TextStyle(fontWeight: FontWeight.w600)),
       next: const Icon(Icons.arrow_forward),
-      done: Text(AppLocalizations.of(context)!.done, style: TextStyle(fontWeight: FontWeight.w600)),
+      done: Text(AppLocalizations.of(context)!.done, style: const TextStyle(fontWeight: FontWeight.w600)),
       curve: Curves.fastLinearToSlowEaseIn,
       controlsMargin: const EdgeInsets.all(16),
       controlsPadding: const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 4.0),

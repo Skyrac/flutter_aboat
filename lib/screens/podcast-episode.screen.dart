@@ -100,7 +100,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> with Single
                   tooltip: '',
                   onPressed: () => {
                         //TODO: Geräte Abhängigkeit prüfen
-                        Share.share(AppLocalizations.of(context)!.share(widget.episode!.title),
+                        Share.share(AppLocalizations.of(context)!.share(widget.episode.title),
                             subject: AppLocalizations.of(context)!.share2)
                       }),
             ),

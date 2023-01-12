@@ -35,12 +35,12 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Icon(
+                const Icon(
                   Icons.playlist_remove,
                   size: 20,
                 ),
                 Padding(
-                  padding: EdgeInsets.only(left: 10),
+                  padding: const EdgeInsets.only(left: 10),
                   child: Text(AppLocalizations.of(context)!.removeFromPlaylist),
                 ),
               ],

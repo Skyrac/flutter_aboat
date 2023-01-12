@@ -79,7 +79,7 @@ class HomeAppBarWidget extends StatelessWidget {
                   },
                 ),
               )
-            : SizedBox(),
+            : const SizedBox(),
         Padding(
           padding: const EdgeInsets.only(right: 10),
           child: IconButton(

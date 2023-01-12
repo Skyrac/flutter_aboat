@@ -70,7 +70,7 @@ class _HomeScreenCategoriesTabState extends State<HomeScreenCategoriesTab> {
                 decoration: InputDecoration(
                     border: InputBorder.none,
                     hintText: AppLocalizations.of(context)!.searchForCategory,
-                    suffixIcon: Icon(Icons.search)),
+                    suffixIcon: const Icon(Icons.search)),
                 style: Theme.of(context).textTheme.titleLarge,
               ),
             ),

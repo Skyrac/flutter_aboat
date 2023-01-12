@@ -53,7 +53,7 @@ class _PodcastDetailsState extends State<PodcastDetails> {
                         width: 30,
                         child: Text(
                           AppLocalizations.of(context)!.title,
-                          style: TextStyle(fontWeight: FontWeight.w600),
+                          style: const TextStyle(fontWeight: FontWeight.w600),
                         ),
                       ),
                       const SizedBox(
@@ -75,7 +75,7 @@ class _PodcastDetailsState extends State<PodcastDetails> {
                       children: [
                         Text(
                           AppLocalizations.of(context)!.episodes,
-                          style: TextStyle(fontWeight: FontWeight.w600),
+                          style: const TextStyle(fontWeight: FontWeight.w600),
                         ),
                         Text(snapshot.data!.totalEpisodes!.toString())
                       ],
@@ -86,7 +86,7 @@ class _PodcastDetailsState extends State<PodcastDetails> {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       AppLocalizations.of(context)!.authors,
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                      style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                   ),
                   Container(
@@ -104,7 +104,7 @@ class _PodcastDetailsState extends State<PodcastDetails> {
                     margin: const EdgeInsets.only(bottom: 7),
                     child: Text(
                       AppLocalizations.of(context)!.categories,
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                      style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                   ),
                   buildCategoryBadges(context, snapshot.data!.genreIds!),

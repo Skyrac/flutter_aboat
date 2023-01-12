@@ -104,12 +104,12 @@ class _PodcastEpisodePodcastState extends State<PodcastEpisodePodcast> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.favorite,
                       size: 20,
                     ),
                     Padding(
-                      padding: EdgeInsets.only(left: 10),
+                      padding: const EdgeInsets.only(left: 10),
                       child: Text(AppLocalizations.of(context)!.addToFavorites),
                     ),
                   ],
@@ -128,12 +128,12 @@ class _PodcastEpisodePodcastState extends State<PodcastEpisodePodcast> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.favorite,
                       size: 20,
                     ),
                     Padding(
-                      padding: EdgeInsets.only(left: 10),
+                      padding: const EdgeInsets.only(left: 10),
                       child: Text(AppLocalizations.of(context)!.removeFromFavorites),
                     ),
                   ],

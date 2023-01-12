@@ -54,8 +54,8 @@ class WalletButton extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             color: const Color.fromRGBO(29, 40, 58, 1),
-            boxShadow: [
-              const BoxShadow(
+            boxShadow: const [
+              BoxShadow(
                 color: Color.fromRGBO(0, 0, 0, 0.25),
                 spreadRadius: -0.2,
                 blurRadius: 0,

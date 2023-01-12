@@ -15,6 +15,5 @@ class SmartContract {
       debugPrint("$e");
     }
     return List.empty();
-    ;
   }
 }

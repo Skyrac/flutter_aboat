@@ -69,7 +69,7 @@ class _PlaylistBottomSheetState extends State<PlaylistBottomSheet> {
                       decoration: InputDecoration(
                           border: InputBorder.none,
                           hintText: AppLocalizations.of(context)!.searchPlaylist,
-                          suffixIcon: Icon(Icons.search)),
+                          suffixIcon: const Icon(Icons.search)),
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                   ),

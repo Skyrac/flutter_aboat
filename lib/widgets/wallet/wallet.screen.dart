@@ -209,10 +209,10 @@ class _WalletScreenState extends State<WalletScreen> {
                                                                     context,
                                                                     item,
                                                                     () => setState(() {
-                                                                          addresses!.remove(item);
+                                                                          addresses.remove(item);
                                                                         }));
                                                                 setState(() {
-                                                                  addresses!.length;
+                                                                  addresses.length;
                                                                 });
                                                               },
                                                               icon: const Icon(
