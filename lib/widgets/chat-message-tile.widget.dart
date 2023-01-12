@@ -6,18 +6,19 @@ import 'package:swipe_to/swipe_to.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ChatMessageTile extends StatelessWidget {
-  const ChatMessageTile(
-      {super.key,
-      required this.message,
-      required this.onSwipedMessage,
-      required this.onEditMessage,
-      required this.onDeleteMessage,
-      required this.cancelReplyAndEdit,
-      required this.selectMessage,
-      required this.index,
-      required this.selectedMessage,
-      required this.userService,
-      required this.scrollToMessage});
+  const ChatMessageTile({
+    super.key,
+    required this.message,
+    required this.onSwipedMessage,
+    required this.onEditMessage,
+    required this.onDeleteMessage,
+    required this.cancelReplyAndEdit,
+    required this.selectMessage,
+    required this.index,
+    required this.selectedMessage,
+    required this.userService,
+    required this.scrollToMessage,
+  });
 
   final ChatMessageDto message;
   final UserService userService;

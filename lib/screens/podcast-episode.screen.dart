@@ -45,6 +45,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> with Single
 
   ChatMessageDto? replyMessage;
   ChatMessageDto? editedMessage;
+
   final ScrollController controller = ScrollController();
   @override
   initState() {
@@ -72,7 +73,6 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> with Single
     Future.delayed(Duration.zero, () {
       Provider.of<SelectEpisodePage>(context, listen: false).changeTrue();
     });
-    final size = MediaQuery.of(context).size;
     userService.UpdatePodcastVisitDate(widget.episode.podcastId);
     return WillPopScope(
       onWillPop: () async {
@@ -80,91 +80,93 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> with Single
         return true;
       },
       child: ScaffoldWave(
-          height: 33,
-          appBar: AppBar(
-            centerTitle: false,
-            leadingWidth: 35,
-            titleSpacing: 3,
-            backgroundColor: const Color.fromRGBO(29, 40, 58, 1),
-            title: Text(
-              widget.episode.title!,
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: const Color.fromRGBO(99, 163, 253, 1),
-                  ),
-            ),
-            actions: [
-              Padding(
-                padding: const EdgeInsets.only(right: 5),
-                child: IconButton(
-                    icon: const Icon(Icons.share, color: Color.fromRGBO(99, 163, 253, 0.5), size: 36),
-                    tooltip: '',
-                    onPressed: () => {
-                          //TODO: Geräte Abhängigkeit prüfen
-                          Share.share(AppLocalizations.of(context)!.share(widget.episode!.title),
-                              subject: AppLocalizations.of(context)!.share2)
-                        }),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(right: 10),
-                child: IconButton(
-                  icon: const Icon(Icons.format_list_bulleted, color: Color.fromRGBO(99, 163, 253, 0.5), size: 36),
-                  tooltip: '',
-                  onPressed: () {
-                    if (!userService.isConnected) {
-                      NavigatorKeys.navigatorKeyMain.currentState!.push(PageTransition(
-                          alignment: Alignment.bottomCenter,
-                          curve: Curves.bounceOut,
-                          type: PageTransitionType.rightToLeftWithFade,
-                          duration: const Duration(milliseconds: 500),
-                          reverseDuration: const Duration(milliseconds: 500),
-                          child: LoginScreen(true, refreshParent: () => setState(() {}))));
-                    } else {
-                      showModalBottomSheet(
-                          isScrollControlled: true,
-                          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-                          context: context,
-                          builder: (context) => PlaylistBottomSheet(episodeToAdd: widget.episode));
-                    }
-                  },
+        height: 33,
+        appBar: AppBar(
+          centerTitle: false,
+          leadingWidth: 35,
+          titleSpacing: 3,
+          backgroundColor: const Color.fromRGBO(29, 40, 58, 1),
+          title: Text(
+            widget.episode.title!,
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  color: const Color.fromRGBO(99, 163, 253, 1),
                 ),
-              )
-            ],
           ),
-          body: Container(
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: [
-                DefaultColors.primaryColor.shade900,
-                DefaultColors.secondaryColor.shade900,
-                DefaultColors.secondaryColor.shade900
-              ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
-              child: FutureBuilder<SearchResult?>(
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    if (snapshot.hasError) {
-                      return Center(
-                        child: Text(
-                          '${snapshot.error} occurred',
-                          style: const TextStyle(fontSize: 18),
-                        ),
-                      );
-                    } else if (snapshot.hasData && snapshot.data != null) {
-                      // Extracting data from snapshot object
-                      return createCustomScrollView(snapshot.data!);
-                    } else {
-                      return const Center(
-                        child: Text(
-                          'No data found for this podcast. Please try again later!',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                      );
-                    }
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 5),
+              child: IconButton(
+                  icon: const Icon(Icons.share, color: Color.fromRGBO(99, 163, 253, 0.5), size: 36),
+                  tooltip: '',
+                  onPressed: () => {
+                        //TODO: Geräte Abhängigkeit prüfen
+                        Share.share(AppLocalizations.of(context)!.share(widget.episode!.title),
+                            subject: AppLocalizations.of(context)!.share2)
+                      }),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: IconButton(
+                icon: const Icon(Icons.format_list_bulleted, color: Color.fromRGBO(99, 163, 253, 0.5), size: 36),
+                tooltip: '',
+                onPressed: () {
+                  if (!userService.isConnected) {
+                    NavigatorKeys.navigatorKeyMain.currentState!.push(PageTransition(
+                        alignment: Alignment.bottomCenter,
+                        curve: Curves.bounceOut,
+                        type: PageTransitionType.rightToLeftWithFade,
+                        duration: const Duration(milliseconds: 500),
+                        reverseDuration: const Duration(milliseconds: 500),
+                        child: LoginScreen(true, refreshParent: () => setState(() {}))));
+                  } else {
+                    showModalBottomSheet(
+                        isScrollControlled: true,
+                        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+                        context: context,
+                        builder: (context) => PlaylistBottomSheet(episodeToAdd: widget.episode));
                   }
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
                 },
-                future: _getPodcast,
-              ))),
+              ),
+            )
+          ],
+        ),
+        body: Container(
+          decoration: BoxDecoration(
+              gradient: LinearGradient(colors: [
+            DefaultColors.primaryColor.shade900,
+            DefaultColors.secondaryColor.shade900,
+            DefaultColors.secondaryColor.shade900
+          ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
+          child: FutureBuilder<SearchResult?>(
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text(
+                      '${snapshot.error} occurred',
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                  );
+                } else if (snapshot.hasData && snapshot.data != null) {
+                  // Extracting data from snapshot object
+                  return createCustomScrollView(snapshot.data!);
+                } else {
+                  return const Center(
+                    child: Text(
+                      'No data found for this podcast. Please try again later!',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  );
+                }
+              }
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            },
+            future: _getPodcast,
+          ),
+        ),
+      ),
     );
   }
 

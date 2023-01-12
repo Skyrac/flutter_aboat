@@ -72,15 +72,10 @@ class _ChatState extends State<Chat> {
             controller: widget.controller,
             physics: widget.neverScroll ? const NeverScrollableScrollPhysics() : const ScrollPhysics(),
             shrinkWrap: true,
-            itemCount: data.length + (widget.padBottom ? 1 : 0),
+            itemCount: data.length,
             reverse: widget.reverse,
             scrollDirection: Axis.vertical,
             itemBuilder: (BuildContext context, int index) {
-              if (index == data.length) {
-                return const SizedBox(
-                  height: 60,
-                );
-              }
               var item = data[index];
               return ChatMessageTile(
                   message: item,
@@ -138,7 +133,12 @@ class _ChatState extends State<Chat> {
             child: Stack(
               alignment: Alignment.bottomCenter,
               children: [
-                buildMessages(data),
+                widget.padBottom && userService.isConnected
+                    ? Container(
+                        margin: const EdgeInsets.only(bottom: 60),
+                        child: buildMessages(data),
+                      )
+                    : buildMessages(data)
               ],
             ),
           );
