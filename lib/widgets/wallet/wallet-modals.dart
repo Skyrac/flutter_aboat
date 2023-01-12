@@ -140,7 +140,7 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                   const SizedBox(
                     height: 10,
                   ),
-                  ClaimButton(context, "Claim ABOAT", () {
+                  ClaimButton(context, "Claim ABOAT", () async {
                     debugPrint("Claim ABOAT");
                     debugPrint(widget.selectedAddress);
                     debugPrint(widget.selectedChain);
@@ -151,7 +151,7 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                     if (double.parse(textController.text) >= 5000 &&
                         widget.selectedChainId != null &&
                         widget.selectedAddress != null) {
-                      userService.claimABOAT(
+                      await userService.claimABOAT(
                           widget.selectedChainId!, widget.selectedAddress!, double.parse(textController.text));
                       textController.text = "";
                       Navigator.pop(context);
@@ -187,9 +187,8 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                     ]),
                   ),
                   ClaimButton(context,
-                      widget.selectedChain == null ? "Convert to {{chain-native}}" : "Convert to ${widget.selectedChain}",
-                      () {
-                    debugPrint("Convert to {{chain-native}}");
+                      widget.selectedChain == null ? "Convert to Chain-Native" : "Convert to ${widget.selectedChain}", () {
+                    debugPrint("Convert to Chain-Native");
                     if (textController.text.isEmpty) {
                       return;
                     }

@@ -204,12 +204,15 @@ class UserRepository {
 
   static Future<bool> claimABOAT(int chainId, String address, double amount) async {
     try {
+      debugPrint('/v1/user/$chainId/claim/$address/$amount');
       var response = await dio.post<String>(
         '/v1/user/$chainId/claim/$address/$amount',
       );
+      debugPrint('${response.data}');
       return true;
     } catch (exception) {
       debugPrint(exception.toString());
+      debugPrint((exception as DioError).message);
       return false;
     }
   }
