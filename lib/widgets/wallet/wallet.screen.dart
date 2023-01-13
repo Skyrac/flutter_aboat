@@ -154,10 +154,10 @@ class _WalletScreenState extends State<WalletScreen> {
                       debugPrint("Claim");
                     }, Colors.white, "assets/images/arrow_right.png"),
                     WalletButton("Connect new wallet", () async {
-                      if (Platform.isAndroid) {
-                        launchUrlString("https://app.aboat-entertainment.com/wallet/add",
-                            mode: LaunchMode.externalApplication);
-                      } else {
+                      //if (Platform.isAndroid) {
+                      launchUrlString("https://app.aboat-entertainment.com/wallet/add",
+                          mode: LaunchMode.externalApplication);
+                      /*} else {
                         if (connector.connected) {
                           await connector.killSession();
                         }
@@ -185,7 +185,7 @@ class _WalletScreenState extends State<WalletScreen> {
                           }
                         }
                         connector.killSession();
-                      }
+                      }*/
                     }, Colors.white, "assets/images/arrow_right.png"),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
