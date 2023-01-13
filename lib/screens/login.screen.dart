@@ -221,6 +221,7 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
     } catch (exception) {
+      userService.logout();
       debugPrint("$exception");
     }
 

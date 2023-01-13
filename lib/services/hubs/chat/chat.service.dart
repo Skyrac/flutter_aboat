@@ -98,11 +98,13 @@ class ChatService extends ChangeNotifier {
 
   //#region RPC Calls
   sendMessage(CreateMessageDto message, String username) async {
-    try {
-      final m = await _hub.sendMessage(message);
-      debugPrint("sendMessage $m");
-    } catch (e) {
-      debugPrint("$e");
+    if (message.content.isNotEmpty) {
+      try {
+        final m = await _hub.sendMessage(message);
+        debugPrint("sendMessage $m");
+      } catch (e) {
+        debugPrint("$e");
+      }
     }
   }
 
