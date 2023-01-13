@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/models/chat/chat-dtos.dart';
+import 'package:Talkaboat/services/audio/audio-handler.services.dart';
 import 'package:Talkaboat/services/hubs/live/live-session.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/widgets/chat.widget.dart';
@@ -27,6 +28,7 @@ class ViewContainer {
 class _LivestreamScreenState extends State<LivestreamScreen> {
   final LiveSessionService _liveService = getIt<LiveSessionService>();
   final UserService userService = getIt<UserService>();
+  final audioHandler = getIt<AudioPlayerHandler>();
 
   final focusNode = FocusNode();
   ChatMessageDto? replyMessage;
@@ -39,6 +41,7 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
   void initState() {
     super.initState();
     Future.microtask(() {
+      audioHandler.pause();
       if (_liveService.currentSession != null) {
         if (_liveService.isHost) {
           _liveService.joinAsHost(_liveService.currentSession!.guid, _liveService.currentSession!.configuration!.roomName);
