@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:Talkaboat/widgets/wallet/wallet-buttons.dart';
 import 'package:Talkaboat/widgets/wallet/wallet-modals.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +33,14 @@ class _WalletScreenState extends State<WalletScreen> {
       icons: ['https://talkaboat.online/assets/images/aboat.png'],
     ),
   );
+
+  @override
+  void dispose() {
+    if (connector.connected) {
+      connector.killSession();
+    }
+    super.dispose();
+  }
 
   // TODO: type this
   Future<List<dynamic>?> connectWallet(BuildContext context) async {
@@ -144,30 +154,38 @@ class _WalletScreenState extends State<WalletScreen> {
                       debugPrint("Claim");
                     }, Colors.white, "assets/images/arrow_right.png"),
                     WalletButton("Connect new wallet", () async {
-                      final r = await connectWallet(context);
-                      if (r == null) {
-                        return;
-                      }
-                      final session = r[0];
-                      final uri = r[1];
-                      debugPrint("Connect new wallet ${session.accounts[0]} from $uri");
-                      final message = await userService.addWallet(session.accounts[0]);
-                      if (connector.connected) {
-                        try {
-                          debugPrint("Message received $message");
-                          EthereumWalletConnectProvider provider = EthereumWalletConnectProvider(connector);
-                          launchUrlString(uri, mode: LaunchMode.externalApplication);
-                          final signature =
-                              await provider.personalSign(message: message, address: session.accounts[0], password: "");
-                          debugPrint(signature);
-                          await userService.addWalletConfirm(session.accounts[0], signature, false, message);
-                        } catch (exp) {
-                          debugPrint("Error while signing transaction");
-                          debugPrint(exp.toString());
+                      if (Platform.isAndroid) {
+                        launchUrlString("https://app.aboat-entertainment.com/wallet/add",
+                            mode: LaunchMode.externalApplication);
+                      } else {
+                        if (connector.connected) {
+                          await connector.killSession();
                         }
+                        final r = await connectWallet(context);
+                        if (r == null) {
+                          return;
+                        }
+                        final session = r[0];
+                        final uri = r[1];
+                        debugPrint("Connect new wallet ${session!.accounts[0]} from $uri");
+                        final message = await userService.addWallet(session!.accounts[0]);
+                        if (connector.connected) {
+                          try {
+                            debugPrint("Message received $message");
+                            EthereumWalletConnectProvider provider = EthereumWalletConnectProvider(connector);
+                            launchUrlString(uri, mode: LaunchMode.externalApplication);
+                            final signature =
+                                await provider.personalSign(message: message, address: session!.accounts[0], password: "");
+                            debugPrint(signature);
+                            await userService.addWalletConfirm(session!.accounts[0], signature, false, message);
+                            await connector.killSession();
+                          } catch (exp) {
+                            debugPrint("Error while signing transaction");
+                            debugPrint(exp.toString());
+                          }
+                        }
+                        connector.killSession();
                       }
-
-                      connector.killSession();
                     }, Colors.white, "assets/images/arrow_right.png"),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),

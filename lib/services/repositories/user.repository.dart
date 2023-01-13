@@ -184,6 +184,7 @@ class UserRepository {
       // }
     } catch (exception) {
       debugPrint(exception.toString());
+      debugPrint((exception as DioError).message);
       // return false;
     }
   }
