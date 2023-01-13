@@ -176,7 +176,7 @@ class _PodcastEpisodeDetailsState extends State<PodcastEpisodeDetails> {
                                           width: 30,
                                           child: Text(
                                             AppLocalizations.of(context)!.title,
-                                            style: TextStyle(fontWeight: FontWeight.w600),
+                                            style: const TextStyle(fontWeight: FontWeight.w600),
                                           ),
                                         ),
                                         const SizedBox(
@@ -200,7 +200,7 @@ class _PodcastEpisodeDetailsState extends State<PodcastEpisodeDetails> {
                                             width: 60,
                                             child: Text(
                                               AppLocalizations.of(context)!.podcast,
-                                              style: TextStyle(fontWeight: FontWeight.w600),
+                                              style: const TextStyle(fontWeight: FontWeight.w600),
                                             ),
                                           ),
                                           const SizedBox(
@@ -223,7 +223,7 @@ class _PodcastEpisodeDetailsState extends State<PodcastEpisodeDetails> {
                                         children: [
                                           Text(
                                             AppLocalizations.of(context)!.duration,
-                                            style: TextStyle(fontWeight: FontWeight.w600),
+                                            style: const TextStyle(fontWeight: FontWeight.w600),
                                           ),
                                           Text.rich(TextSpan(children: [
                                             TextSpan(text: duration.inHours != 0 ? '${duration.inHours % 60}st ' : ""),
@@ -240,7 +240,7 @@ class _PodcastEpisodeDetailsState extends State<PodcastEpisodeDetails> {
                                       alignment: Alignment.centerLeft,
                                       child: Text(
                                         AppLocalizations.of(context)!.authors,
-                                        style: TextStyle(fontWeight: FontWeight.w600),
+                                        style: const TextStyle(fontWeight: FontWeight.w600),
                                       ),
                                     ),
                                     Container(
@@ -258,7 +258,7 @@ class _PodcastEpisodeDetailsState extends State<PodcastEpisodeDetails> {
                                       margin: const EdgeInsets.only(bottom: 7),
                                       child: Text(
                                         AppLocalizations.of(context)!.categories,
-                                        style: TextStyle(fontWeight: FontWeight.w600),
+                                        style: const TextStyle(fontWeight: FontWeight.w600),
                                       ),
                                     ),
                                     buildCategoryBadges(context, episodeItem.genreIds ?? ""),
@@ -341,7 +341,7 @@ class _PodcastEpisodeDetailsState extends State<PodcastEpisodeDetails> {
           ),
           Container(
             margin: const EdgeInsets.only(top: 5),
-            padding: EdgeInsets.symmetric(horizontal: 0.2),
+            padding: const EdgeInsets.symmetric(horizontal: 0.2),
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), border: Border.all(color: color)),
             height: 11,
             width: 333,
@@ -349,8 +349,8 @@ class _PodcastEpisodeDetailsState extends State<PodcastEpisodeDetails> {
               color: color,
               isPlay: isPlay,
               isMiniPlayer: false,
-              duration: duration ?? Duration.zero,
-              position: position ?? Duration.zero,
+              duration: duration,
+              position: position,
               onChangeEnd: (newPosition) {
                 audioPlayer.seek(newPosition);
               },

@@ -57,7 +57,7 @@ class _ClaimBottomSheetState extends State<ClaimBottomSheet> {
                               )
                             : progressWithMethod(ownershipMethods)
                         : Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 0, vertical: 30),
+                            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 30),
                             child: Center(child: Text(AppLocalizations.of(context)!.ownership)),
                           ),
                   ],
@@ -105,7 +105,7 @@ class _ClaimBottomSheetState extends State<ClaimBottomSheet> {
         mainAxisSize: MainAxisSize.max,
         children: [
           Text(AppLocalizations.of(context)!.verifyByEMail, style: Theme.of(context).textTheme.titleLarge),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Text(AppLocalizations.of(context)!.verifyYourPodcastOwnership, style: Theme.of(context).textTheme.bodyMedium),
@@ -147,11 +147,11 @@ class _ClaimBottomSheetState extends State<ClaimBottomSheet> {
                           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
                           child: Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.email,
                                 color: Colors.black,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 10,
                               ),
                               Text(
@@ -177,11 +177,11 @@ class _ClaimBottomSheetState extends State<ClaimBottomSheet> {
                           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
                           child: Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.pin,
                                 color: Colors.black,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 10,
                               ),
                               Text(
@@ -198,7 +198,7 @@ class _ClaimBottomSheetState extends State<ClaimBottomSheet> {
               ],
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 50,
           ),
           OnlyKYC()

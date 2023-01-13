@@ -84,8 +84,10 @@ dependencies:
   jwt_decode: ^0.3.1
   logging: ^1.1.0
   back_button_interceptor: ^6.0.2
-  provider: ^6.0.5
+  walletconnect_dart: ^0.0.11
   fluttertoast: ^8.1.2
+  web3dart: ^2.5.1
+  provider: ^6.0.5
   scrollview_observer: ^1.9.1
 
 dev_dependencies:

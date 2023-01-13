@@ -148,7 +148,7 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
                 decoration: InputDecoration(
                     border: InputBorder.none,
                     hintText: AppLocalizations.of(context)!.searchFriends,
-                    suffixIcon: Icon(Icons.search)),
+                    suffixIcon: const Icon(Icons.search)),
                 style: Theme.of(context).textTheme.titleLarge,
               ),
             ),

@@ -532,7 +532,39 @@ class UserService {
     if (success) {
       logout();
     }
+    return success;
   }
 
+  deleteWallet(String address) async {
+    final success = await UserRepository.deleteWallet(address);
+    if (success) {
+      debugPrint("$address deleted");
+    }
+    return success;
+  }
+
+  addWallet(String address) async {
+    return await UserRepository.addWallet(address);
+  }
+
+  addWalletConfirm(String address, String signature, bool newsletter, String guid) async {
+    return await UserRepository.addWalletConfirm(address, signature, newsletter, guid);
+  }
+
+  claimABOAT(int chainId, String address, double amount) async {
+    try {
+      return await UserRepository.claimABOAT(chainId, address, amount);
+    } catch (exception) {
+      debugPrint(exception.toString());
+    }
+  }
+
+  claimABOATNative(int chainId, String address, double amount) async {
+    try {
+      return await UserRepository.claimABOATNative(chainId, address, amount);
+    } catch (exception) {
+      debugPrint(exception.toString());
+    }
+  }
   //#endregion
 }

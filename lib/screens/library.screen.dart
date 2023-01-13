@@ -90,6 +90,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
                       future: userService.getFavorites(),
                     ),
                   )
-                : Center(child: LoginButton())));
+                : const Center(child: LoginButton())));
   }
 }

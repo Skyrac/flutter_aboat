@@ -385,7 +385,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             },
                             borderRadius: BorderRadius.circular(10),
                             child: Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 10),
+                                padding: const EdgeInsets.symmetric(horizontal: 10),
                                 child: Text(AppLocalizations.of(context)!.continueAsGuest))))
                   ]),
                   isLoading

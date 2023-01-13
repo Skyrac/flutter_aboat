@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../injection/injector.dart';
-import '../models/rewards/reward.model.dart';
 import '../services/audio/audio-handler.services.dart';
 import '../services/state/state.service.dart';
 import '../services/user/user.service.dart';

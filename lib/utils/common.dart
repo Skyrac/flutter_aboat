@@ -151,7 +151,7 @@ class _SeekBarState extends State<SeekBar> {
             data: _sliderThemeData.copyWith(
               trackShape: CustomTrackShape(widget.isMiniPlayer),
               thumbShape: HiddenThumbComponentShape(),
-              activeTrackColor: widget.isMiniPlayer ? Color.fromRGBO(99, 163, 253, 1) : widget.color,
+              activeTrackColor: widget.isMiniPlayer ? const Color.fromRGBO(99, 163, 253, 1) : widget.color,
               inactiveTrackColor:
                   widget.isMiniPlayer ? const Color.fromRGBO(62, 62, 62, 1) : const Color.fromRGBO(15, 23, 41, 1),
             ),
@@ -190,7 +190,7 @@ class _SeekBarState extends State<SeekBar> {
                       height: 6,
                       color: const Color.fromRGBO(15, 23, 41, 1),
                     )))
-            : SizedBox(),
+            : const SizedBox(),
         widget.isMiniPlayer
             ? Positioned(
                 top: 0,
@@ -202,7 +202,7 @@ class _SeekBarState extends State<SeekBar> {
                       height: 6,
                       color: const Color.fromRGBO(15, 23, 41, 1),
                     )))
-            : SizedBox(),
+            : const SizedBox(),
       ],
     );
   }
