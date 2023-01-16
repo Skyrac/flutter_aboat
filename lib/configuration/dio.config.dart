@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
+import 'package:flutter/material.dart';
 
 import '../injection/injector.dart';
 import '../services/user/user.service.dart';
@@ -41,15 +44,33 @@ var cacheOptions = CacheOptions(
 Dio dio = Dio(options);
 
 void configDio() {
-  dio.interceptors.add(InterceptorsWrapper(onRequest: (options, handler) {
+  int _activeRequestCount = 0;
+  int _requestLimit = 10;
+  Timer.periodic(const Duration(seconds: 1), (timer) {
+    _activeRequestCount = 0;
+    debugPrint("RESET 0");
+  });
+
+  dio.interceptors.add(QueuedInterceptorsWrapper(onRequest: (options, handler) async {
     final token = getIt<UserService>().token;
     options.headers['Authorization'] = "Bearer $token";
-    return handler.next(options); //continue
+    _activeRequestCount++;
+    if (_activeRequestCount >= _requestLimit) {
+      debugPrint("request $_activeRequestCount");
+      Future.delayed(Duration(seconds: 1), () {
+        return handler.next(options);
+      });
+    } else {
+      return handler.next(options);
+    }
     // If you want to resolve the request with some custom data，
     // you can resolve a `Response` object eg: `handler.resolve(response)`.
     // If you want to reject the request with a error message,
     // you can reject a `DioError` object eg: `handler.reject(dioError)`
   }, onResponse: (response, handler) {
+    // when response is received
+    _activeRequestCount--;
+    debugPrint("response $_activeRequestCount");
     // Do something with response data
     return handler.next(response); // continue
     // If you want to reject the request with a error message,
