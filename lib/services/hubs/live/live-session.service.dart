@@ -151,6 +151,18 @@ class LiveSessionService extends ChangeNotifier {
     return response.data!;
   }
 
+  switchAudioWithRewardTracking() async {
+    await _agoraSettings.switchAudio(_remoteUsers);
+
+    if (_agoraSettings.audioMuted) {
+      // switch from muted to unmuted
+      rewardHub.Mute(roomGuid, 1, (await agoraSettings.agoraEngine.getCurrentMonotonicTimeInMs() / 1000).round());
+    } else {
+      // switch from unmuted to muted
+      rewardHub.Unmute(roomGuid, 1, (await agoraSettings.agoraEngine.getCurrentMonotonicTimeInMs() / 1000).round());
+    }
+  }
+
   Future<void> setupVideoSdkEngine() async {
     await [Permission.microphone, Permission.camera].request();
     _agoraSettings = AgoraSettings(engine: createAgoraRtcEngine());

@@ -37,9 +37,10 @@ class RewardHubService extends HubService {
     }
     try {
       var data = createRequestData(owner, asset, playTime);
-      await connection.invoke("Play", args: <Object>[data]);
+      var result = await connection.invoke("Play", args: <Object>[data]);
+      debugPrint("Play $result");
     } catch (e) {
-      debugPrint("$e");
+      debugPrint("Play $e");
     }
   }
 
@@ -67,7 +68,7 @@ class RewardHubService extends HubService {
     }
   }
 
-  Future<void> Mute(int owner, int asset, int playTime) async {
+  Future<void> Mute(dynamic owner, int asset, int playTime) async {
     if (!await checkConnection()) {
       return;
     }
@@ -79,7 +80,7 @@ class RewardHubService extends HubService {
     }
   }
 
-  Future<void> Unmute(int owner, int asset, int playTime) async {
+  Future<void> Unmute(dynamic owner, int asset, int playTime) async {
     if (!await checkConnection()) {
       return;
     }

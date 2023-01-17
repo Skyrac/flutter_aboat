@@ -31,7 +31,7 @@ Future<void> configureDependencies() async {
   getIt.registerSingleton(StateService());
   getIt.registerSingleton(TokenService());
   getIt.registerSingleton(QuestService());
-  getIt.registerSingleton(LiveSessionService());
   getIt.registerSingleton(RewardHubService());
   getIt.registerSingleton(ChatService());
+  getIt.registerSingleton(LiveSessionService());
 }
