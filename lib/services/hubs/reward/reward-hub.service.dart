@@ -31,7 +31,7 @@ class RewardHubService extends HubService {
     return {"Owner": owner, "Asset": asset, "PlayTime": playTime};
   }
 
-  Future<void> Play(int owner, int asset, int playTime) async {
+  Future<void> Play(dynamic owner, int asset, int playTime) async {
     if (!await checkConnection()) {
       return;
     }
@@ -55,7 +55,7 @@ class RewardHubService extends HubService {
     }
   }
 
-  Future<void> Stop(int owner, int asset, int playTime) async {
+  Future<void> Stop(dynamic owner, int asset, int playTime) async {
     if (!await checkConnection()) {
       return;
     }
@@ -91,7 +91,7 @@ class RewardHubService extends HubService {
     }
   }
 
-  Future<void> Heartbeat(int owner, int asset, int playTime) async {
+  Future<void> Heartbeat(dynamic owner, int asset, int playTime) async {
     if (!await checkConnection()) {
       return;
     }

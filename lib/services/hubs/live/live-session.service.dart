@@ -5,6 +5,7 @@ import 'package:Talkaboat/models/live/live-session-configuration.model.dart';
 import 'package:Talkaboat/models/live/live-session.model.dart';
 import 'package:Talkaboat/services/hubs/live/agorasettings.dart';
 import 'package:Talkaboat/services/hubs/live/live-hub.service.dart';
+import 'package:Talkaboat/services/hubs/reward/reward-hub.service.dart';
 import 'package:Talkaboat/services/repositories/live-session.repository.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:flutter/material.dart';
@@ -142,6 +143,7 @@ class LiveSessionService extends ChangeNotifier {
   }
 
   final userService = getIt<UserService>();
+  final rewardHub = getIt<RewardHubService>();
 
   Future<String> getToken(String roomId, bool isGuest) async {
     var response = await (isGuest ? LiveSessionRepository.getTokenGuest(roomId) : LiveSessionRepository.getToken(roomId));
@@ -203,6 +205,9 @@ class LiveSessionService extends ChangeNotifier {
           _userVideoOn[remoteUid] = enabled;
           notifyListeners();
         },
+        onRtcStats: (connection, stats) {
+          rewardHub.Heartbeat(roomGuid, 1, stats.duration ?? 0);
+        },
       ),
     );
   }
@@ -255,6 +260,7 @@ class LiveSessionService extends ChangeNotifier {
       uid: userService.userInfo?.userId ?? 0,
     );
     notifyListeners();
+    rewardHub.Play(_roomGuid, 1, 0);
   }
 
   promoteToHost() async {
@@ -287,6 +293,7 @@ class LiveSessionService extends ChangeNotifier {
   }
 
   Future<void> leave() async {
+    await rewardHub.Stop(_roomGuid, 1, (await agoraSettings.agoraEngine.getCurrentMonotonicTimeInMs() / 1000).round());
     await cleanupHub();
     await _agoraSettings.agoraEngine.stopPreview();
     await _agoraSettings.agoraEngine.leaveChannel();
