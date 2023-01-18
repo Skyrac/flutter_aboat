@@ -5,6 +5,7 @@ import 'package:Talkaboat/models/live/live-session-configuration.model.dart';
 import 'package:Talkaboat/models/live/live-session.model.dart';
 import 'package:Talkaboat/services/hubs/live/agorasettings.dart';
 import 'package:Talkaboat/services/hubs/live/live-hub.service.dart';
+import 'package:Talkaboat/services/hubs/reward/reward-hub.service.dart';
 import 'package:Talkaboat/services/repositories/live-session.repository.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:flutter/material.dart';
@@ -142,11 +143,24 @@ class LiveSessionService extends ChangeNotifier {
   }
 
   final userService = getIt<UserService>();
+  final rewardHub = getIt<RewardHubService>();
 
   Future<String> getToken(String roomId, bool isGuest) async {
     var response = await (isGuest ? LiveSessionRepository.getTokenGuest(roomId) : LiveSessionRepository.getToken(roomId));
     debugPrint(response.data);
     return response.data!;
+  }
+
+  switchAudioWithRewardTracking() async {
+    await _agoraSettings.switchAudio(_remoteUsers);
+
+    if (_agoraSettings.audioMuted) {
+      // switch from muted to unmuted
+      rewardHub.MuteLiveStream(roomGuid);
+    } else {
+      // switch from unmuted to muted
+      rewardHub.UnmuteLiveStream(roomGuid);
+    }
   }
 
   Future<void> setupVideoSdkEngine() async {
@@ -203,6 +217,9 @@ class LiveSessionService extends ChangeNotifier {
           _userVideoOn[remoteUid] = enabled;
           notifyListeners();
         },
+        onRtcStats: (connection, stats) {
+          rewardHub.HeartbeatLiveStream(roomGuid);
+        },
       ),
     );
   }
@@ -255,6 +272,7 @@ class LiveSessionService extends ChangeNotifier {
       uid: userService.userInfo?.userId ?? 0,
     );
     notifyListeners();
+    rewardHub.PlayLiveStream(_roomGuid);
   }
 
   promoteToHost() async {
@@ -287,6 +305,7 @@ class LiveSessionService extends ChangeNotifier {
   }
 
   Future<void> leave() async {
+    await rewardHub.StopLiveStream(_roomGuid);
     await cleanupHub();
     await _agoraSettings.agoraEngine.stopPreview();
     await _agoraSettings.agoraEngine.leaveChannel();

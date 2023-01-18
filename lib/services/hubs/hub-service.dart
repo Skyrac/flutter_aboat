@@ -18,7 +18,7 @@ abstract class HubService {
   HubService() {
     Logger.root.level = Level.INFO;
     Logger.root.onRecord.listen((LogRecord rec) {
-      debugPrint('${rec.level.name}: ${rec.time}: ${rec.message}');
+      debugPrint('${rec.level.name}: ${rec.time}: $hubName: ${rec.message}');
     });
 
     final hubProtLogger = Logger("SignalR - hub");

@@ -182,7 +182,7 @@ class _LiveControllsState extends State<LiveControlls> {
       child: MaterialButton(
           shape: const CircleBorder(),
           onPressed: () {
-            liveSessionService.agoraSettings.switchAudio(liveSessionService.remoteUsers);
+            liveSessionService.switchAudioWithRewardTracking();
           },
           color: const Color.fromRGBO(48, 73, 123, 0.6),
           child: AnimatedBuilder(
