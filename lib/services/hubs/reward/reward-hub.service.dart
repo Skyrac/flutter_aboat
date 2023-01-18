@@ -27,11 +27,11 @@ class RewardHubService extends HubService {
     }
   }
 
-  dynamic createRequestData(int owner, int asset, int playTime) {
+  dynamic createRequestData(dynamic owner, int asset, int playTime) {
     return {"Owner": owner, "Asset": asset, "PlayTime": playTime};
   }
 
-  Future<void> Play(dynamic owner, int asset, int playTime) async {
+  Future<void> Play(int owner, int asset, int playTime) async {
     if (!await checkConnection()) {
       return;
     }
@@ -41,6 +41,23 @@ class RewardHubService extends HubService {
       debugPrint("Play $result");
     } catch (e) {
       debugPrint("Play $e");
+    }
+  }
+
+  Future<void> PlayLiveStream(String guid) async {
+    if (!await checkConnection()) {
+      return;
+    }
+    try {
+      var result = await connection.invoke("Play", args: <Object>[
+        {
+          "Owner": guid,
+          "Type": 1,
+        }
+      ]);
+      debugPrint("PlayLiveStream $result");
+    } catch (e) {
+      debugPrint("PlayLiveStream $e");
     }
   }
 
@@ -56,7 +73,7 @@ class RewardHubService extends HubService {
     }
   }
 
-  Future<void> Stop(dynamic owner, int asset, int playTime) async {
+  Future<void> Stop(int owner, int asset, int playTime) async {
     if (!await checkConnection()) {
       return;
     }
@@ -68,7 +85,24 @@ class RewardHubService extends HubService {
     }
   }
 
-  Future<void> Mute(dynamic owner, int asset, int playTime) async {
+  Future<void> StopLiveStream(String guid) async {
+    if (!await checkConnection()) {
+      return;
+    }
+    try {
+      var result = await connection.invoke("Stop", args: <Object>[
+        {
+          "Owner": guid,
+          "Type": 1,
+        }
+      ]);
+      debugPrint("StopLiveStream $result");
+    } catch (e) {
+      debugPrint("StopLiveStream $e");
+    }
+  }
+
+  Future<void> Mute(int owner, int asset, int playTime) async {
     if (!await checkConnection()) {
       return;
     }
@@ -80,7 +114,24 @@ class RewardHubService extends HubService {
     }
   }
 
-  Future<void> Unmute(dynamic owner, int asset, int playTime) async {
+  Future<void> MuteLiveStream(String guid) async {
+    if (!await checkConnection()) {
+      return;
+    }
+    try {
+      var result = await connection.invoke("Mute", args: <Object>[
+        {
+          "Owner": guid,
+          "Type": 1,
+        }
+      ]);
+      debugPrint("MuteLiveStream $result");
+    } catch (e) {
+      debugPrint("MuteLiveStream $e");
+    }
+  }
+
+  Future<void> Unmute(int owner, int asset, int playTime) async {
     if (!await checkConnection()) {
       return;
     }
@@ -92,7 +143,24 @@ class RewardHubService extends HubService {
     }
   }
 
-  Future<void> Heartbeat(dynamic owner, int asset, int playTime) async {
+  Future<void> UnmuteLiveStream(String guid) async {
+    if (!await checkConnection()) {
+      return;
+    }
+    try {
+      var result = await connection.invoke("Unmute", args: <Object>[
+        {
+          "Owner": guid,
+          "Type": 1,
+        }
+      ]);
+      debugPrint("UnmuteLiveStream $result");
+    } catch (e) {
+      debugPrint("UnmuteLiveStream $e");
+    }
+  }
+
+  Future<void> Heartbeat(int owner, int asset, int playTime) async {
     if (!await checkConnection()) {
       return;
     }
@@ -101,6 +169,23 @@ class RewardHubService extends HubService {
       await connection.invoke("Heartbeat", args: <Object>[data]);
     } catch (e) {
       debugPrint("$e");
+    }
+  }
+
+  Future<void> HeartbeatLiveStream(String guid) async {
+    if (!await checkConnection()) {
+      return;
+    }
+    try {
+      var result = await connection.invoke("Heartbeat", args: <Object>[
+        {
+          "Owner": guid,
+          "Type": 1,
+        }
+      ]);
+      debugPrint("HeartbeatLiveStream $result");
+    } catch (e) {
+      debugPrint("HeartbeatLiveStream $e");
     }
   }
 }

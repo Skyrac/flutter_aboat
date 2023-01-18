@@ -156,10 +156,10 @@ class LiveSessionService extends ChangeNotifier {
 
     if (_agoraSettings.audioMuted) {
       // switch from muted to unmuted
-      rewardHub.Mute(roomGuid, 1, (await agoraSettings.agoraEngine.getCurrentMonotonicTimeInMs() / 1000).round());
+      rewardHub.MuteLiveStream(roomGuid);
     } else {
       // switch from unmuted to muted
-      rewardHub.Unmute(roomGuid, 1, (await agoraSettings.agoraEngine.getCurrentMonotonicTimeInMs() / 1000).round());
+      rewardHub.UnmuteLiveStream(roomGuid);
     }
   }
 
@@ -218,7 +218,7 @@ class LiveSessionService extends ChangeNotifier {
           notifyListeners();
         },
         onRtcStats: (connection, stats) {
-          rewardHub.Heartbeat(roomGuid, 1, stats.duration ?? 0);
+          rewardHub.HeartbeatLiveStream(roomGuid);
         },
       ),
     );
@@ -272,7 +272,7 @@ class LiveSessionService extends ChangeNotifier {
       uid: userService.userInfo?.userId ?? 0,
     );
     notifyListeners();
-    rewardHub.Play(_roomGuid, 1, 0);
+    rewardHub.PlayLiveStream(_roomGuid);
   }
 
   promoteToHost() async {
@@ -305,7 +305,7 @@ class LiveSessionService extends ChangeNotifier {
   }
 
   Future<void> leave() async {
-    await rewardHub.Stop(_roomGuid, 1, (await agoraSettings.agoraEngine.getCurrentMonotonicTimeInMs() / 1000).round());
+    await rewardHub.StopLiveStream(_roomGuid);
     await cleanupHub();
     await _agoraSettings.agoraEngine.stopPreview();
     await _agoraSettings.agoraEngine.leaveChannel();
