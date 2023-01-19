@@ -6,6 +6,7 @@ import 'package:Talkaboat/widgets/login-button.widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../injection/injector.dart';
 import '../../services/user/user.service.dart';
@@ -106,7 +107,7 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
   }
 
   Widget createFeedBody() {
-    return const Center(child: Text("There are no posts in your feed yet."));
+    return Center(child: Text(AppLocalizations.of(context)!.thereAreNoPosts));
   }
 
   Widget createFriendBody() {
@@ -144,8 +145,10 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
                     search = text.toLowerCase();
                   });
                 }),
-                decoration: const InputDecoration(
-                    border: InputBorder.none, hintText: "Search friends...", suffixIcon: Icon(Icons.search)),
+                decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: AppLocalizations.of(context)!.searchFriends,
+                    suffixIcon: const Icon(Icons.search)),
                 style: Theme.of(context).textTheme.titleLarge,
               ),
             ),

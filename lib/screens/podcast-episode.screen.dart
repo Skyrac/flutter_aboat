@@ -7,7 +7,9 @@ import 'package:Talkaboat/widgets/podcast-episode-details.widget.dart';
 import 'package:Talkaboat/widgets/podcast-episode-podcast.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../injection/injector.dart';
 import '../models/podcasts/episode.model.dart';
@@ -15,6 +17,7 @@ import '../models/podcasts/podcast.model.dart';
 import '../models/search/search_result.model.dart';
 import '../services/audio/podcast.service.dart';
 import '../themes/colors.dart';
+import '../utils/common.dart';
 import '../utils/scaffold_wave.dart';
 import '../widgets/bottom-sheets/playlist.bottom-sheet.dart';
 import '../widgets/podcast-episode-sliver.widget.dart';
@@ -23,7 +26,9 @@ import 'login.screen.dart';
 class PodcastEpisodeScreen extends StatefulWidget {
   final Episode episode;
   final Duration position;
-  const PodcastEpisodeScreen({super.key, required this.episode, required this.position});
+  final Function isActiv;
+
+  const PodcastEpisodeScreen({super.key, required this.episode, required this.position, required this.isActiv});
 
   @override
   State<PodcastEpisodeScreen> createState() => _PodcastEpisodeScreenState();
@@ -41,6 +46,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> with Single
   ChatMessageDto? replyMessage;
   ChatMessageDto? editedMessage;
 
+  final ScrollController controller = ScrollController();
   @override
   initState() {
     super.initState();
@@ -58,21 +64,23 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> with Single
   @override
   dispose() {
     tabController.dispose();
-
+    controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    Future.delayed(Duration.zero, () {
+      Provider.of<SelectEpisodePage>(context, listen: false).changeTrue();
+    });
     userService.UpdatePodcastVisitDate(widget.episode.podcastId);
-    return ScaffoldWave(
+    return WillPopScope(
+      onWillPop: () async {
+        Provider.of<SelectEpisodePage>(context, listen: false).changeFalse();
+        return true;
+      },
+      child: ScaffoldWave(
         height: 33,
-        header: SliverPersistentHeader(
-          delegate:
-              PodcastEpisodeSliver(expandedHeight: size.height * 0.4, episode: widget.episode, controller: tabController),
-          pinned: true,
-        ),
         appBar: AppBar(
           centerTitle: false,
           leadingWidth: 35,
@@ -92,9 +100,8 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> with Single
                   tooltip: '',
                   onPressed: () => {
                         //TODO: Geräte Abhängigkeit prüfen
-                        Share.share(
-                            "Check the Podcast ${widget.episode.title} on Talkaboat.online mobile App! Start listening and earn while supporting new and upcoming podcasters.\n\n Download it now on \nAndroid: https://play.google.com/store/apps/details?id=com.aboat.talkaboat\n",
-                            subject: "Check this out! A Podcast on Talkaboat.online.")
+                        Share.share(AppLocalizations.of(context)!.share(widget.episode.title),
+                            subject: AppLocalizations.of(context)!.share2)
                       }),
             ),
             Padding(
@@ -124,43 +131,46 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> with Single
           ],
         ),
         body: Container(
-            decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [
-              DefaultColors.primaryColor.shade900,
-              DefaultColors.secondaryColor.shade900,
-              DefaultColors.secondaryColor.shade900
-            ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
-            child: FutureBuilder<SearchResult?>(
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  if (snapshot.hasError) {
-                    return Center(
-                      child: Text(
-                        '${snapshot.error} occurred',
-                        style: const TextStyle(fontSize: 18),
-                      ),
-                    );
-                  } else if (snapshot.hasData && snapshot.data != null) {
-                    // Extracting data from snapshot object
-                    return createCustomScrollView(snapshot.data!);
-                  } else {
-                    return const Center(
-                      child: Text(
-                        'No data found for this podcast. Please try again later!',
-                        style: TextStyle(fontSize: 18),
-                      ),
-                    );
-                  }
+          decoration: BoxDecoration(
+              gradient: LinearGradient(colors: [
+            DefaultColors.primaryColor.shade900,
+            DefaultColors.secondaryColor.shade900,
+            DefaultColors.secondaryColor.shade900
+          ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
+          child: FutureBuilder<SearchResult?>(
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text(
+                      '${snapshot.error} occurred',
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                  );
+                } else if (snapshot.hasData && snapshot.data != null) {
+                  // Extracting data from snapshot object
+                  return createCustomScrollView(snapshot.data!);
+                } else {
+                  return const Center(
+                    child: Text(
+                      'No data found for this podcast. Please try again later!',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  );
                 }
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              },
-              future: _getPodcast,
-            )));
+              }
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            },
+            future: _getPodcast,
+          ),
+        ),
+      ),
+    );
   }
 
-  List<Widget> createTabs(Episode episode, int roomId, Duration position) {
+  List<Widget> createTabs(Episode episode, int roomId, Duration position, ScrollController controller) {
     return [
       PodcastEpisodeDetails(
         episode: episode,
@@ -168,6 +178,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> with Single
       ),
       PodcastEpisodePodcast(podcastId: episode.podcastId!),
       Chat(
+        controller: controller,
         focusNode: focusNode,
         roomId: roomId,
         messageType: 2,
@@ -195,19 +206,28 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> with Single
 
   Widget createCustomScrollView(SearchResult podcastSearchResult) {
     final size = MediaQuery.of(context).size;
-    final tabs = createTabs(widget.episode, podcastSearchResult.roomId!, widget.position);
+    final tabs = createTabs(widget.episode, podcastSearchResult.roomId!, widget.position, controller);
 
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
-        Container(
-            constraints: BoxConstraints(minHeight: size.height * 0.5),
-            child: currentTab == 0 ? SingleChildScrollView(child: tabs[currentTab]) : tabs[currentTab]),
+        CustomScrollView(shrinkWrap: true, controller: controller, slivers: [
+          SliverPersistentHeader(
+            delegate:
+                PodcastEpisodeSliver(expandedHeight: size.height * 0.4, episode: widget.episode, controller: tabController),
+            pinned: true,
+          ),
+          SliverToBoxAdapter(
+            child: Container(constraints: BoxConstraints(minHeight: size.height * 0.5), child: tabs[currentTab]),
+          )
+        ]),
         tabController.index == 2
             ? ChatInput(
                 roomId: podcastSearchResult.roomId!,
                 focusNode: focusNode,
                 messageType: 2,
+                replyMessage: replyMessage,
+                editedMessage: editedMessage,
                 cancelReplyAndEdit: () {
                   setState(() {
                     replyMessage = null;

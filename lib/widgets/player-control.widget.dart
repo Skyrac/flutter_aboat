@@ -1,10 +1,10 @@
 import 'package:Talkaboat/screens/search.screen.dart';
+import 'package:Talkaboat/services/user/reward.service.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../injection/injector.dart';
-import '../models/rewards/reward.model.dart';
 import '../services/audio/audio-handler.services.dart';
 import '../services/state/state.service.dart';
 import '../services/user/user.service.dart';
@@ -20,6 +20,7 @@ class _PlayerControlWidgetState extends State<PlayerControlWidget> with SingleTi
   late final audioHandler = getIt<AudioPlayerHandler>();
   late AnimationController _controller;
   final userService = getIt<UserService>();
+  final rewardService = getIt<RewardService>();
   final stateService = getIt<StateService>();
   @override
   void initState() {
@@ -101,14 +102,12 @@ class _PlayerControlWidgetState extends State<PlayerControlWidget> with SingleTi
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  StreamBuilder<Reward>(
-                      stream: userService.rewardStream(),
-                      builder: (context, snapshot) {
-                        return Text(
-                          "${snapshot.data == null || snapshot.data!.total == null ? 0 : snapshot.data?.total?.round()}",
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontSize: 10, color: Colors.white),
-                        );
-                      }),
+                  ValueListenableBuilder(
+                      valueListenable: rewardService,
+                      builder: (context, reward, widget) => Text(
+                            "${reward.total?.round()}",
+                            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontSize: 10, color: Colors.white),
+                          )),
                   const SizedBox(
                     width: 5,
                   ),

@@ -4,6 +4,7 @@ import 'package:Talkaboat/services/audio/podcast.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/widgets/podcast-list.widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PodcastEpisodePodcast extends StatefulWidget {
   const PodcastEpisodePodcast({super.key, required this.podcastId});
@@ -102,14 +103,14 @@ class _PodcastEpisodePodcastState extends State<PodcastEpisodePodcast> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  children: const [
-                    Icon(
+                  children: [
+                    const Icon(
                       Icons.favorite,
                       size: 20,
                     ),
                     Padding(
-                      padding: EdgeInsets.only(left: 10),
-                      child: Text('Add to favorites'),
+                      padding: const EdgeInsets.only(left: 10),
+                      child: Text(AppLocalizations.of(context)!.addToFavorites),
                     ),
                   ],
                 ),
@@ -126,14 +127,14 @@ class _PodcastEpisodePodcastState extends State<PodcastEpisodePodcast> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  children: const [
-                    Icon(
+                  children: [
+                    const Icon(
                       Icons.favorite,
                       size: 20,
                     ),
                     Padding(
-                      padding: EdgeInsets.only(left: 10),
-                      child: Text('Remove from favorites'),
+                      padding: const EdgeInsets.only(left: 10),
+                      child: Text(AppLocalizations.of(context)!.removeFromFavorites),
                     ),
                   ],
                 ),

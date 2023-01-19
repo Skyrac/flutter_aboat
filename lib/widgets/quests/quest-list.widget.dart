@@ -6,6 +6,7 @@ import 'package:Talkaboat/themes/colors_new.dart';
 import 'package:Talkaboat/utils/Snackbar_Creator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class QuestListWidget extends StatefulWidget {
   const QuestListWidget({Key? key, required this.direction, this.trailing, this.checkUpdate}) : super(key: key);
@@ -25,7 +26,7 @@ class _QuestListWidgetState extends State<QuestListWidget> {
       itemBuilder: (BuildContext context, int index) {
         if (index - 1 == -1) {
           var item = Quest();
-          item.name = "Watch ad to unlock quest";
+          item.name = AppLocalizations.of(context)!.unlockQuest;
           return makeAdCard(context, item);
         } else {
           final item = data[index - 1];
@@ -84,7 +85,7 @@ class _QuestListWidgetState extends State<QuestListWidget> {
                           height: 70,
                           child: Center(
                               child: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                            Text("Completed",
+                            Text(AppLocalizations.of(context)!.completed,
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 2,
                                 textAlign: TextAlign.center,
@@ -126,7 +127,7 @@ class _QuestListWidgetState extends State<QuestListWidget> {
   Widget makeUnlock(context, Quest quest) => InkWell(
         borderRadius: BorderRadius.circular(10.0),
         onTap: () async {
-          ShowSnackBar(context, "Loading ad...");
+          ShowSnackBar(context, AppLocalizations.of(context)!.loadingAd);
           AdManager.showQuestAd((String result) async => {
                 if (result.isEmpty)
                   {await Future.delayed(const Duration(seconds: 2)), setState(() {})}

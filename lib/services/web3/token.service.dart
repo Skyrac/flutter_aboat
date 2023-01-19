@@ -1,14 +1,13 @@
 import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/services/repositories/token.repository.dart';
-import 'package:Talkaboat/services/user/user.service.dart';
+import 'package:Talkaboat/services/user/reward.service.dart';
 
 class TokenService {
-  final userService = getIt<UserService>();
+  final rewardService = getIt<RewardService>();
 
   Future<num> donate(int podcastId, double amount) async {
-
     var result = await TokenRepository.donateAboatToPodcast(podcastId, amount);
-    await userService.getRewards();
-    return userService.rewards.vested ?? 0;
+    await rewardService.getRewards();
+    return rewardService.value.vested ?? 0;
   }
 }

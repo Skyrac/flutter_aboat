@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:Talkaboat/models/rewards/reward.model.dart';
 import 'package:Talkaboat/services/hubs/chat/chat.service.dart';
+import 'package:Talkaboat/services/user/reward.service.dart';
 import 'package:Talkaboat/services/user/social.service.dart';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:jwt_decode/jwt_decode.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
@@ -16,8 +19,6 @@ import '../../injection/injector.dart';
 import '../../models/playlist/playlist.model.dart';
 import '../../models/podcasts/podcast.model.dart';
 import '../../models/response.model.dart';
-import '../../models/rewards/reward-detail.model.dart';
-import '../../models/rewards/reward.model.dart';
 import '../../models/user/user-info-model.dart';
 import '../hubs/reward/reward-hub.service.dart';
 import '../repositories/podcast.repository.dart';
@@ -33,7 +34,6 @@ class UserService {
   UserInfoData? userInfo;
   List<Podcast> favorites = List.empty();
   List<Playlist> playlists = List.empty();
-  Reward rewards = Reward();
   Map<int, List<Podcast>> podcastProposalsHomeScreen = {};
   ResponseModel? lastConnectionState;
   DateTime? lastNotificationSeen;
@@ -48,13 +48,9 @@ class UserService {
   get isConnected => token.isNotEmpty && userInfo != null;
   get guest => _guest;
 
-  get availableToken => rewards.vested;
-  Stream<Reward> rewardStream() async* {
-    while (true) {
-      await Future.delayed(const Duration(milliseconds: 500));
-      yield rewards;
-    }
-  }
+  final rewardService = getIt<RewardService>();
+  get availableToken => rewardService.value.vested;
+  get lockedToken => rewardService.value.unvested;
 
   Future<bool> socialLogin(SocialLogin socialType, BuildContext context) async {
     UserCredential? credential;
@@ -226,10 +222,6 @@ class UserService {
     }
   }
 
-  updateRewards(Reward newRewards) {
-    rewards = newRewards;
-  }
-
   static Future<UserService> init() async {
     var userService = UserService();
     await userService.setInitialValues();
@@ -245,7 +237,7 @@ class UserService {
       if (userInfo != null) {
         debugPrint("$userInfo");
         _guest = false;
-        await getRewards();
+        await rewardService.getRewards();
         await getFavorites(refresh: true);
         await getFriends();
         var lastUpdate = prefs.getInt(LAST_NOTIFICATION_UPDATE);
@@ -261,10 +253,6 @@ class UserService {
     podcastProposalsHomeScreen[2] = podcasts.skip(20).take(10).toList();
   }
 
-  getRewards() async {
-    rewards = await UserRepository.getUserRewards();
-  }
-
   getFriends() async {
     await friendService.initialize();
   }
@@ -272,6 +260,7 @@ class UserService {
   Future<bool> getUserInfo() async {
     debugPrint("Get User Info");
     userInfo = await UserRepository.getUserInfo();
+    userInfo!.userId = int.parse(Jwt.parseJwt(token)["primarysid"]);
     if (userInfo == null || userInfo!.userName == null) {
       logout();
       return false;
@@ -354,7 +343,7 @@ class UserService {
     baseLogin = false;
     token = "";
     userInfo = null;
-    rewards = Reward();
+    rewardService.Update(Reward());
     favorites = List.empty();
     GoogleSignIn googleSignIn = GoogleSignIn();
     FacebookAuth facebookAuth = FacebookAuth.instance;
@@ -538,16 +527,44 @@ class UserService {
     return podcastProposalsHomeScreen[genre];
   }
 
-  Future<List<RewardDetail>> getUserRewardDetails() async {
-    return await UserRepository.getDetailedUserRewards();
-  }
-
   deleteAccount() async {
     final success = await UserRepository.deleteAccount();
     if (success) {
       logout();
     }
+    return success;
   }
 
+  deleteWallet(String address) async {
+    final success = await UserRepository.deleteWallet(address);
+    if (success) {
+      debugPrint("$address deleted");
+    }
+    return success;
+  }
+
+  addWallet(String address) async {
+    return await UserRepository.addWallet(address);
+  }
+
+  addWalletConfirm(String address, String signature, bool newsletter, String guid) async {
+    return await UserRepository.addWalletConfirm(address, signature, newsletter, guid);
+  }
+
+  claimABOAT(int chainId, String address, double amount) async {
+    try {
+      return await UserRepository.claimABOAT(chainId, address, amount);
+    } catch (exception) {
+      debugPrint(exception.toString());
+    }
+  }
+
+  claimABOATNative(int chainId, String address, double amount) async {
+    try {
+      return await UserRepository.claimABOATNative(chainId, address, amount);
+    } catch (exception) {
+      debugPrint(exception.toString());
+    }
+  }
   //#endregion
 }

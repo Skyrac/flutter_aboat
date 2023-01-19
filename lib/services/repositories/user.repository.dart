@@ -14,7 +14,7 @@ class UserRepository {
 
   static Future<String?> requestEmailLogin(String email) async {
     try {
-      var response = await Dio().post<String>('https://api.talkaboat.online/v1/user/login/email/$email');
+      var response = await dio.post<String>('https://api.talkaboat.online/v1/user/login/email/$email');
       var convertedData = response.data;
       debugPrint(convertedData);
       return convertedData;
@@ -26,7 +26,7 @@ class UserRepository {
 
   static Future<String> emailLogin(String email, String pin) async {
     try {
-      var response = await Dio()
+      var response = await dio
           .post<String>('https://api.talkaboat.online/v1/user/login/email', data: {"address": email, "signature": pin});
       debugPrint('data: ${response.data}');
       if (response.data == "Value cannot be null. (Parameter 'User not found! Please register before sign in.')") {
@@ -147,7 +147,7 @@ class UserRepository {
       debugPrint(response.data);
       return ResponseModel.fromJson(json.decode(response.data!));
     } catch (exception) {
-      debugPrint("eexception");
+      debugPrint("$exception");
       debugPrint("${(exception as DioError).response}");
       if ((exception as DioError).response != null) {
         var data = json.decode((exception as DioError).response!.data);
@@ -163,5 +163,70 @@ class UserRepository {
     var response = await dio.delete<String>('/v1/user');
 
     return response.data == null ? false : response.data!.isNotEmpty;
+  }
+
+  static Future<bool> deleteWallet(String address) async {
+    var response = await dio.delete<String>('/v1/user/login/$address/delete');
+
+    return response.data == null ? false : true;
+  }
+
+  static Future<Object?> addWallet(String address) async {
+    try {
+      var response = await dio.post<String>(
+        '/v1/wallet/$address/add',
+      );
+      debugPrint("addWallet response ${response.data!}");
+      var data = json.decode(response.data!)["text"];
+      return data;
+      // if (data["message"] != null) {
+      //   return ResponseModel(status: data["statusCode"], text: data["message"]);
+      // }
+    } catch (exception) {
+      debugPrint(exception.toString());
+      debugPrint((exception as DioError).message);
+      // return false;
+    }
+  }
+
+  static Future<ResponseModel?> addWalletConfirm(String address, String signature, bool newsletter, String guid) async {
+    try {
+      debugPrint("${{"address": address, "signature": signature, "newsletter": newsletter, "guid": guid}}");
+      var response = await dio.post<String>('/v1/wallet/$address/add/confirm',
+          data: {"address": address, "signature": signature, "newsletter": newsletter, "guid": guid});
+      debugPrint("addWalletConfirm ${response.data}");
+      return ResponseModel.fromJson(json.decode(response.data!));
+    } catch (exception) {
+      debugPrint("exception");
+      debugPrint("${(exception as DioError).response}");
+      return ResponseModel();
+    }
+  }
+
+  static Future<bool> claimABOAT(int chainId, String address, double amount) async {
+    try {
+      debugPrint('/v1/user/$chainId/claim/$address/$amount');
+      var response = await dio.post<String>(
+        '/v1/user/$chainId/claim/$address/$amount',
+      );
+      debugPrint('${response.data}');
+      return true;
+    } catch (exception) {
+      debugPrint(exception.toString());
+      debugPrint((exception as DioError).message);
+      return false;
+    }
+  }
+
+  static Future<bool> claimABOATNative(int chainId, String address, double amount) async {
+    try {
+      var response = await dio.post<String>(
+        '/v1/user/$chainId/claim/$address/$amount/native',
+      );
+      return true;
+    } catch (exception) {
+      debugPrint(exception.toString());
+      return false;
+    }
   }
 }

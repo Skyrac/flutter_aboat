@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:Talkaboat/screens/app.screen.dart';
@@ -5,7 +6,9 @@ import 'package:Talkaboat/themes/colors.dart';
 import 'package:Talkaboat/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../injection/injector.dart';
 import '../services/repositories/user.repository.dart';
@@ -62,7 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
           isLoading = false;
         });
       } else {
-        ShowSnackBar(context, "Error getting PIN");
+        ShowSnackBar(context, AppLocalizations.of(context)!.errorGettingPIN);
         setState(() {
           isLoading = false;
         });
@@ -87,7 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
       } else if (result == "true") {
         navAway(navigator);
       } else {
-        ShowSnackBar(context, "Error logging in");
+        Fluttertoast.showToast(msg: AppLocalizations.of(context)!.errorLoggingIn);
       }
       setState(() {
         isLoading = false;
@@ -192,7 +195,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           color: const Color.fromRGBO(99, 163, 253, 1), // set border color
                           width: 2.0), // set border width
                       borderRadius: const BorderRadius.all(Radius.circular(20.0))),
-                  child: const Center(child: Text("OR"))),
+                  child: Center(child: Text(AppLocalizations.of(context)!.or))),
               const Expanded(
                   child: Divider(
                 color: Color.fromRGBO(99, 163, 253, 1),
@@ -218,6 +221,7 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
     } catch (exception) {
+      userService.logout();
       debugPrint("$exception");
     }
 
@@ -226,13 +230,12 @@ class _LoginScreenState extends State<LoginScreen> {
     });
     if (userService.lastConnectionState != null && userService.lastConnectionState?.text != null) {
       if (userService.lastConnectionState?.text == "not_connected") {
-        // TODO: do we ever get to this code or is this state unreachable?
-        ShowSnackBar(context, "Check your E-Mail and Verify the Pin");
+        ShowSnackBar(context, AppLocalizations.of(context)!.checkYourEMail);
         final bodyMediumTheme = Theme.of(context).textTheme.bodyMedium;
-        final pinResult = await showInputDialog(context, "Confirm PIN", (_) {
+        final pinResult = await showInputDialog(context, AppLocalizations.of(context)!.confirmPIN, (_) {
           return [
             TextSpan(
-              text: 'You should receive a PIN on ',
+              text: AppLocalizations.of(context)!.receivePIN,
               style: bodyMediumTheme,
             ),
             TextSpan(
@@ -240,20 +243,19 @@ class _LoginScreenState extends State<LoginScreen> {
               style: bodyMediumTheme?.copyWith(fontWeight: FontWeight.w600),
             ),
             TextSpan(
-              text:
-                  ' to verify your login. If you have no account registered under your email, you’ll be asked to setup an username after sign in.',
+              text: AppLocalizations.of(context)!.receivePIN2,
               style: bodyMediumTheme,
             ),
           ];
-        }, "Pin...", (pin) => pin.length >= 7, "Invalid Pin");
+        }, "Pin...", (pin) => pin.length >= 7, AppLocalizations.of(context)!.invalidPin);
         //showAlert(context, socialLoginPinVerification, "Verify Pin", "Pin", "", verifySocialLoginPin);
       } else if (userService.lastConnectionState?.text == "new_account") {
         await doSocialRegister(context, Theme.of(context).textTheme.bodyMedium!, navigator, null);
       } else {
-        ShowSnackBar(context, "Unresolved response. Please contact an admin.");
+        ShowSnackBar(context, AppLocalizations.of(context)!.unresolvedResponse);
       }
     } else {
-      ShowSnackBar(context, "Unable to verify your login.");
+      ShowSnackBar(context, AppLocalizations.of(context)!.unableToVerify);
     }
   }
 
@@ -278,21 +280,20 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<String?> showUsernameDialog(BuildContext context, TextStyle theme, String? rejectedUsername) async {
     final username = await showInputDialog(
         context,
-        "Choose an username",
+        AppLocalizations.of(context)!.chooseAnUsername,
         (_) => [
               TextSpan(
-                text:
-                    'Your username will be shown for in social media features as well as comments and ratings you might leave for podcasts and episodes.',
+                text: AppLocalizations.of(context)!.yourUsernameWillBeShown,
                 style: theme,
               ),
               rejectedUsername != null
                   ? TextSpan(
-                      text: 'The username $rejectedUsername is invalid or already taken',
+                      text: AppLocalizations.of(context)!.usernameIsInvalid(rejectedUsername),
                       style: theme.copyWith(color: Colors.red.shade100),
                     )
                   : const TextSpan()
             ],
-        "Username...",
+        "${AppLocalizations.of(context)!.username}...",
         null,
         null);
     return username;
@@ -300,33 +301,38 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> doEmailRegister(
       BuildContext context, TextStyle theme, String pinResult, NavigatorState navigator, String? rejectedUsername) async {
-    final username = await showUsernameDialog(context, theme, rejectedUsername);
-    if (username != null) {
-      setState(() {
-        isLoading = true;
-      });
-      final registerResult = await userService.emailRegister(emailController.text, pinResult, username, false);
-      setState(() {
-        isLoading = false;
-      });
-      debugPrint("registerResult $registerResult");
-      if (registerResult == null) {
-        // returns error
-        navAway(navigator);
-      } else {
-        // register error
-        if (registerResult.contains("username_invalid") ||
-            registerResult.contains("User or Wallet is already registered!")) {
-          debugPrint("invalid $username");
-          await doEmailRegister(context, theme, pinResult, navigator, username);
+    var isUsernameValid = false;
+    while (!isUsernameValid) {
+      final username = await showUsernameDialog(context, theme, rejectedUsername);
+      if (username != null) {
+        setState(() {
+          isLoading = true;
+        });
+        final registerResult = await userService.emailRegister(emailController.text, pinResult, username, false);
+        setState(() {
+          isLoading = false;
+        });
+        isUsernameValid = true;
+        debugPrint("registerResult $registerResult");
+        if (registerResult == null) {
+          // returns error
+          navAway(navigator);
         } else {
-          ShowSnackBar(context, "Error registering");
+          // register error
+          if (registerResult.contains("username_invalid") ||
+              registerResult.contains("User or Wallet is already registered!")) {
+            debugPrint("invalid $username");
+            isUsernameValid = false;
+            Fluttertoast.showToast(msg: "invalid username $username");
+          } else {
+            ShowSnackBar(context, AppLocalizations.of(context)!.errorRegistering);
+          }
         }
+      } else {
+        debugPrint("cancel");
+        // cancel
+        return;
       }
-    } else {
-      debugPrint("cancel");
-      // cancel
-      return;
     }
   }
 
@@ -349,7 +355,7 @@ class _LoginScreenState extends State<LoginScreen> {
         if (registerResult.contains("username_invalid")) {
           await doSocialRegister(context, theme, navigator, username);
         } else {
-          ShowSnackBar(context, "Error registering");
+          ShowSnackBar(context, AppLocalizations.of(context)!.errorRegistering);
         }
       }
     } else {
@@ -379,8 +385,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               navAway(Navigator.of(context));
                             },
                             borderRadius: BorderRadius.circular(10),
-                            child: const Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 10), child: Text("Continue as guest"))))
+                            child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 10),
+                                child: Text(AppLocalizations.of(context)!.continueAsGuest))))
                   ]),
                   isLoading
                       ? Positioned(
@@ -417,10 +424,11 @@ class _LoginScreenState extends State<LoginScreen> {
                               final navigator = Navigator.of(context);
                               final bodyMediumTheme = Theme.of(context).textTheme.bodyMedium;
                               await sendPinRequest();
-                              final pinResult = await showInputDialog(context, "Confirm PIN", (_) {
+                              final pinResult =
+                                  await showInputDialog(context, AppLocalizations.of(context)!.confirmPIN, (_) {
                                 return [
                                   TextSpan(
-                                    text: 'You should receive a PIN on ',
+                                    text: AppLocalizations.of(context)!.receivePIN,
                                     style: bodyMediumTheme,
                                   ),
                                   TextSpan(
@@ -428,12 +436,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                     style: bodyMediumTheme?.copyWith(fontWeight: FontWeight.w600),
                                   ),
                                   TextSpan(
-                                    text:
-                                        ' to verify your login. If you have no account registered under your email, you’ll be asked to setup an username after sign in.',
+                                    text: AppLocalizations.of(context)!.receivePIN2,
                                     style: bodyMediumTheme,
                                   ),
                                 ];
-                              }, "Pin...", (pin) => pin.length >= 7, "Invalid Pin");
+                              }, "Pin...", (pin) => pin.length >= 7, AppLocalizations.of(context)!.invalidPin);
                               if (pinResult != null) {
                                 // Confirm
                                 setState(() {
@@ -453,7 +460,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 // Cancel from PIN Dialog
                                 return;
                               }
-                            }, emailController, "Request PIN"),
+                            }, emailController, AppLocalizations.of(context)!.requestPIN),
                             SizedBox(height: size.height * 0.05),
                             createAppleLogin(),
                             SizedBox(height: Platform.isIOS ? 10 : 0),
@@ -521,7 +528,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   width: 10,
                 ),
                 Text(
-                  "Sign in with $text",
+                  AppLocalizations.of(context)!.signIn(text),
                   style: Theme.of(context)
                       .textTheme
                       .titleLarge
@@ -549,14 +556,14 @@ class _LoginScreenState extends State<LoginScreen> {
         return StatefulBuilder(builder: (context, setState) {
           return Container(
             width: 150,
-            height: 150,
+            height: Localizations.localeOf(context).toString() == "de" ? 300 : 150,
             color: Colors.black12,
             child: Stack(alignment: Alignment.center, children: [
               Positioned(
                 top: 200,
                 child: Container(
                   width: 300,
-                  height: 260,
+                  height: Localizations.localeOf(context).toString() == "de" ? 300 : 260,
                   decoration:
                       BoxDecoration(borderRadius: BorderRadius.circular(20), color: const Color.fromRGBO(48, 73, 123, 1)),
                   child: Column(
@@ -670,7 +677,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 width: 150,
                                 child: Center(
                                   child: Text(
-                                    "Confirm",
+                                    AppLocalizations.of(context)!.confirm,
                                     style: Theme.of(context)
                                         .textTheme
                                         .labelLarge
@@ -704,7 +711,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 width: 80,
                                 child: Center(
                                   child: Text(
-                                    "Cancel",
+                                    AppLocalizations.of(context)!.cancel,
                                     style: Theme.of(context).textTheme.labelLarge?.copyWith(
                                         color: const Color.fromRGBO(164, 202, 255, 1), fontWeight: FontWeight.w600),
                                   ),

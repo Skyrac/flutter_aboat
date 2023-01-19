@@ -4,6 +4,7 @@ import 'package:Talkaboat/themes/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:introduction_screen/introduction_screen.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../login.screen.dart';
 
@@ -68,34 +69,31 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         PageViewModel(
           title: "Podcasts",
           image: _buildImage('images/intro_podcasts.png'),
-          body:
-              "Enjoy more than 700.000 Podcasts while earning Aboat Token and supporting your favorite podcasters for doing so",
+          body: AppLocalizations.of(context)!.pageInfo,
           decoration: pageDecoration,
         ),
         PageViewModel(
-          title: "Daily Tasks",
+          title: AppLocalizations.of(context)!.dailyTasks,
           image: _buildImage('images/intro_tasks.png', 225),
-          body: "Finish your daily tasks to earn great rewards and get an insight into blockchain while helping creators",
+          body: AppLocalizations.of(context)!.pageInfo2,
           decoration: pageDecoration,
         ),
         PageViewModel(
-          title: "Friends",
+          title: AppLocalizations.of(context)!.friends,
           image: _buildImage('images/intro_social.png', 275),
-          body: "Add or invite your friends to share your latest news, achievements or your favorite podcast",
+          body: AppLocalizations.of(context)!.pageInfo3,
           decoration: pageDecoration,
         ),
         PageViewModel(
-          title: "Cryptocurrency",
-          body:
-              "We help you to take the first step into cryptocurrencies in a secure and fun environment\n\nYou can take it step by step without all the heavy technical details or the need to use money",
+          title: AppLocalizations.of(context)!.cryptocurrency,
+          body: AppLocalizations.of(context)!.pageInfo4,
           image: _buildImage('images/intro_crypto.png'),
           decoration: pageDecoration,
         ),
         PageViewModel(
-          title: "Take a share",
+          title: AppLocalizations.of(context)!.takeAShare,
           image: _buildImage('images/intro_crypto_social.png'),
-          body:
-              "We provide new ways for creators and the community to help each other\n\nOne of this is by buying Non-Fungible Tokens from creators to access income or content rights",
+          body: AppLocalizations.of(context)!.pageInfo5,
           decoration: pageDecoration,
         ),
       ],
@@ -107,9 +105,9 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
       showBackButton: false,
       //rtl: true, // Display as right-to-left
       back: const Icon(Icons.arrow_back),
-      skip: const Text('Skip', style: TextStyle(fontWeight: FontWeight.w600)),
+      skip: Text(AppLocalizations.of(context)!.skip, style: const TextStyle(fontWeight: FontWeight.w600)),
       next: const Icon(Icons.arrow_forward),
-      done: const Text('Done', style: TextStyle(fontWeight: FontWeight.w600)),
+      done: Text(AppLocalizations.of(context)!.done, style: const TextStyle(fontWeight: FontWeight.w600)),
       curve: Curves.fastLinearToSlowEaseIn,
       controlsMargin: const EdgeInsets.all(16),
       controlsPadding: const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 4.0),

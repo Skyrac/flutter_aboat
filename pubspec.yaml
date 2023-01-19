@@ -31,7 +31,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  flutter_localizations:
+    sdk: flutter
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
@@ -53,7 +54,7 @@ dependencies:
   curved_navigation_bar: ^1.0.3
   social_login_buttons: ^1.0.6+2
   cached_network_image: ^3.2.2
-  url_launcher: ^6.1.6
+  url_launcher: 6.1.6
   share_plus: ^4.0.10
   debounce_throttle: ^2.0.0
   introduction_screen: ^3.0.2
@@ -73,14 +74,21 @@ dependencies:
     git:
       url: https://github.com/daubit/signalr_client.git
       ref: master # branch name
-  agora_rtc_engine: ^6.0.0
+  agora_rtc_engine: 6.1.0
   permission_handler: ^9.2.0
   json_annotation: ^4.7.0
   swipe_to: ^1.0.2
   audio_session: ^0.1.11
   http: ^0.13.5
   font_awesome_flutter: ^10.2.1
+  jwt_decode: ^0.3.1
+  logging: ^1.1.0
   back_button_interceptor: ^6.0.2
+  walletconnect_dart: ^0.0.11
+  fluttertoast: ^8.1.2
+  web3dart: ^2.5.1
+  provider: ^6.0.5
+  scrollview_observer: ^1.9.1
 
 dev_dependencies:
   build_runner: ^2.0.0
@@ -109,6 +117,7 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  generate: true
   assets:
     - assets/images/
     - assets/icons/
