@@ -38,6 +38,7 @@ workflows:
       - keychain initialize
       - app-store-connect fetch-signing-files com.aboat-entertainment.talkaboat --type IOS_APP_STORE --create
       - keychain add-certificates
+      - pod install --repo-update
       - xcode-project use-profiles
       - flutter pub get
       - find . -name "Podfile" -execdir pod install \;
