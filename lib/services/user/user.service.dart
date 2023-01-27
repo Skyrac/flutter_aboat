@@ -551,6 +551,10 @@ class UserService {
     return await UserRepository.addWalletConfirm(address, signature, newsletter, guid);
   }
 
+  Future<ResponseModel?> getWalletAddRequestCode() async {
+    return await UserRepository.getWalletAddRequestCode();
+  }
+
   claimABOAT(int chainId, String address, double amount) async {
     try {
       return await UserRepository.claimABOAT(chainId, address, amount);
