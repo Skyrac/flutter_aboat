@@ -155,8 +155,17 @@ class _WalletScreenState extends State<WalletScreen> {
                     }, Colors.white, "assets/images/arrow_right.png"),
                     WalletButton("Connect new wallet", () async {
                       //if (Platform.isAndroid) {
-                      launchUrlString("https://app.aboat-entertainment.com/wallet/add",
-                          mode: LaunchMode.externalApplication);
+                      final code = await userService.getWalletAddRequestCode();
+                      if (code != null && code.data != null) {
+                        if (Platform.isAndroid) {
+                          launchUrlString(
+                              "https://metamask.app.link/dapp/app.aboat-entertainment.com/wallet/add?wc=${code.data}",
+                              mode: LaunchMode.externalApplication);
+                        } else {
+                          launchUrlString("metamask://dapp/app.aboat-entertainment.com/wallet/add?wc=${code.data}",
+                              mode: LaunchMode.externalApplication);
+                        }
+                      }
                       /*} else {
                         if (connector.connected) {
                           await connector.killSession();

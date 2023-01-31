@@ -229,4 +229,16 @@ class UserRepository {
       return false;
     }
   }
+
+  static Future<ResponseModel?> getWalletAddRequestCode() async {
+    try {
+      var response = await dio.get<String>('/v1/wallet/connect/request');
+      debugPrint("addWalletConfirm ${response.data}");
+      return ResponseModel.fromJson(json.decode(response.data!));
+    } catch (exception) {
+      debugPrint("exception");
+      debugPrint("${(exception as DioError).response}");
+      return ResponseModel();
+    }
+  }
 }
