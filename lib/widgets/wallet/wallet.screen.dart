@@ -157,8 +157,14 @@ class _WalletScreenState extends State<WalletScreen> {
                       //if (Platform.isAndroid) {
                       final code = await userService.getWalletAddRequestCode();
                       if (code != null && code.data != null) {
-                        launchUrlString("https://app.aboat-entertainment.com/wallet/add?wc=${code.data}",
-                            mode: LaunchMode.externalApplication);
+                        if (Platform.isAndroid) {
+                          launchUrlString(
+                              "https://metamask.app.link/dapp/app.aboat-entertainment.com/wallet/add?wc=${code.data}",
+                              mode: LaunchMode.externalApplication);
+                        } else {
+                          launchUrlString("metamask://dapp/app.aboat-entertainment.com/wallet/add?wc=${code.data}",
+                              mode: LaunchMode.externalApplication);
+                        }
                       }
                       /*} else {
                         if (connector.connected) {
