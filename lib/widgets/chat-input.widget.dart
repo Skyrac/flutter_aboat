@@ -88,6 +88,7 @@ class _ChatInputState extends State<ChatInput> {
             if (widget.cancelReplyAndEdit != null) {
               widget.cancelReplyAndEdit!();
             }
+            FocusManager.instance.primaryFocus?.unfocus();
           },
           onChanged: (text) {
             messageRaw = text;
@@ -129,6 +130,7 @@ class _ChatInputState extends State<ChatInput> {
                 if (widget.cancelReplyAndEdit != null) {
                   widget.cancelReplyAndEdit!();
                 }
+                FocusManager.instance.primaryFocus?.unfocus();
               },
               icon: const Icon(Icons.send, color: Color.fromRGBO(99, 163, 253, 1)),
             ),
