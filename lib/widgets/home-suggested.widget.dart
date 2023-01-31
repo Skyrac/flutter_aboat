@@ -108,17 +108,23 @@ class _HomeScreenSuggestedTabState extends State<HomeScreenSuggestedTab> {
               IconButton(
                   onPressed: () {
                     setState(() {});
+                    setState(() {
+                      r = !r;
+                    });
                   },
                   icon: const Icon(Icons.refresh))
             ],
           )),
-      const SizedBox(
+      SizedBox(
           height: 184,
           child: QuestListWidget(
             direction: Axis.horizontal,
+            checkUpdate: r,
           ))
     ]);
   }
+
+  bool r = false;
 
   Widget createFavoritesList(BuildContext context) {
     return Padding(
