@@ -1,6 +1,7 @@
 import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/services/audio/podcast.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
+import 'package:Talkaboat/utils/Snackbar_Creator.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -272,8 +273,13 @@ class _ClaimBottomSheetState extends State<ClaimBottomSheet> {
                   child: Card(
                     color: DefaultColors.primaryColor,
                     child: InkWell(
-                      onTap: (() {
+                      onTap: (() async {
                         //1. Send Request Info to backend
+                        if(await podcastService.sendPodcastKycOwnershipRequest(widget.podcastId)) {
+                          Navigator.pop(context);
+                        } else {
+                          ShowSnackBar(context, "Error while sending Email to office. Please try again or contact: partner@aboat-entertainment.com");
+                        }
                         //2. Backend checks if username is verified and hasn't requested verification before
                         //3. Backend sends notification to support team to verify ownership
                       }),

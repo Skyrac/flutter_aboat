@@ -46,6 +46,15 @@ class PodcastRepository {
     }
   }
 
+  static Future<bool> sendPodcastKycOwnershipRequest(int podcastId) async {
+    try {
+      var response = await dio.get<String>('$API/admin/$podcastId/ownership/kyc');
+      return response.statusCode != null && response.statusCode == 200;
+    } catch (ex) {
+      return false;
+    }
+  }
+
   static Future<List<Podcast>> getRandomPodcastByGenre(int amount, int genre) async {
     try {
       var response = await dio.get<String>('$API/search/random/$amount/$genre');

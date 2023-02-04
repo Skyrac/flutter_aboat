@@ -20,7 +20,7 @@ UserInfoData _$UserInfoDataFromJson(Map<String, dynamic> json) => UserInfoData(
           ? null
           : Badge.fromJson(json['userBadge'] as Map<String, dynamic>),
       artist: json['artist'] as bool?,
-    );
+    )..userId = json['userId'] as int?;
 
 Map<String, dynamic> _$UserInfoDataToJson(UserInfoData instance) =>
     <String, dynamic>{
@@ -33,6 +33,7 @@ Map<String, dynamic> _$UserInfoDataToJson(UserInfoData instance) =>
       'ambassador': instance.ambassador,
       'userBadge': instance.userBadge,
       'artist': instance.artist,
+      'userId': instance.userId,
     };
 
 Badge _$BadgeFromJson(Map<String, dynamic> json) => Badge(

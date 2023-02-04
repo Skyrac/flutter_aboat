@@ -33,6 +33,10 @@ class PodcastService {
     }
   }
 
+  Future<bool> sendPodcastKycOwnershipRequest(int podcastId) async {
+    return await PodcastRepository.sendPodcastKycOwnershipRequest(podcastId);
+  }
+
   Future<ResponseModel> getPodcastOwnerDetails(int podcastId) {
     return PodcastRepository.getPodcastOwnership(podcastId);
   }

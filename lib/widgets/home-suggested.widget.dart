@@ -107,7 +107,8 @@ class _HomeScreenSuggestedTabState extends State<HomeScreenSuggestedTab> {
               Text(title, style: Theme.of(context).textTheme.titleLarge),
               IconButton(
                   onPressed: () {
-                    setState(() {});
+                    setState(() {
+                    });
                     setState(() {
                       r = !r;
                     });
