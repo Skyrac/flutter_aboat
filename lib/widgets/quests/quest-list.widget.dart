@@ -156,7 +156,7 @@ class _QuestListWidgetState extends State<QuestListWidget> {
                     child: Center(
                         child: Text(quest.name!,
                             overflow: TextOverflow.ellipsis,
-                            maxLines: 2,
+                            maxLines: 3,
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.titleMedium)),
                   )),
@@ -183,7 +183,7 @@ class _QuestListWidgetState extends State<QuestListWidget> {
             Padding(
                 padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10, top: 0),
                 child: Text(quest.description!,
-                    overflow: TextOverflow.ellipsis, maxLines: 3, style: Theme.of(context).textTheme.labelMedium)),
+                    overflow: TextOverflow.ellipsis, maxLines: 5, style: Theme.of(context).textTheme.labelMedium)),
             const Expanded(child: SizedBox()),
             Column(
               children: [

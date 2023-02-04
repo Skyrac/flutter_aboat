@@ -8,7 +8,7 @@ class StormmMission {
   int requiredLikes;
   int requiredRetweets;
   String url;
-  Duration remainingTime;
+  String remainingTime;
 
   StormmMission(this.requiredLikes,this.requiredRetweets,this.url,this.remainingTime,);
 

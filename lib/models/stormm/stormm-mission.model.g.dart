@@ -11,7 +11,7 @@ StormmMission _$StormmMissionFromJson(Map<String, dynamic> json) =>
       json['requiredLikes'] as int,
       json['requiredRetweets'] as int,
       json['url'] as String,
-      Duration(microseconds: json['remainingTime'] as int),
+      json['remainingTime'] as String,
     );
 
 Map<String, dynamic> _$StormmMissionToJson(StormmMission instance) =>
@@ -19,5 +19,5 @@ Map<String, dynamic> _$StormmMissionToJson(StormmMission instance) =>
       'requiredLikes': instance.requiredLikes,
       'requiredRetweets': instance.requiredRetweets,
       'url': instance.url,
-      'remainingTime': instance.remainingTime.inMicroseconds,
+      'remainingTime': instance.remainingTime,
     };

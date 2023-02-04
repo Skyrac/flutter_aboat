@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:Talkaboat/models/rewards/reward.model.dart';
+import 'package:Talkaboat/models/stormm/stormm-mission.model.dart';
 import 'package:Talkaboat/services/hubs/chat/chat.service.dart';
 import 'package:Talkaboat/services/user/reward.service.dart';
 import 'package:Talkaboat/services/user/social.service.dart';
@@ -22,6 +23,7 @@ import '../../models/response.model.dart';
 import '../../models/user/user-info-model.dart';
 import '../hubs/reward/reward-hub.service.dart';
 import '../repositories/podcast.repository.dart';
+import '../repositories/stormm.repository.dart';
 import '../repositories/user.repository.dart';
 
 enum SocialLogin { Google, Facebook, Apple }
@@ -569,6 +571,10 @@ class UserService {
     } catch (exception) {
       debugPrint(exception.toString());
     }
+  }
+
+  Future<List<StormmMission>> getStormmMissions() async {
+    return await StormmRepository.getStormmMissions();
   }
   //#endregion
 }

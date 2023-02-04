@@ -12,6 +12,8 @@ import 'package:Talkaboat/widgets/quests/quest-list.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import 'stormm-missions.widget.dart';
+
 class HomeScreenSuggestedTab extends StatefulWidget {
   const HomeScreenSuggestedTab(this.selectTab, {Key? key}) : super(key: key);
 
@@ -45,6 +47,7 @@ class _HomeScreenSuggestedTabState extends State<HomeScreenSuggestedTab> {
                   ),
                 );
               })),
+          const StormmMissionWidget(),
           const SizedBox(height: 20),
           PodcastListHorizontal(
               future: podcastService.search("", amount: 10, offset: 0, rank: PodcastRank.Receiver),
