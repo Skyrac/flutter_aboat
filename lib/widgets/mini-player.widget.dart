@@ -49,7 +49,7 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
     Size deviceSize = MediaQuery.of(context).size;
     return Container(
       margin: const EdgeInsets.only(bottom: 18),
-      width: deviceSize.width * 0.9,
+      width: deviceSize.width * 0.91,
       height: 56,
       decoration: BoxDecoration(color: const Color.fromRGBO(29, 40, 58, 0.7), borderRadius: BorderRadius.circular(10)),
       child: StreamBuilder<MediaState>(
@@ -152,7 +152,7 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
                         AnimatedContainer(
                             padding: const EdgeInsets.only(right: 5),
                             duration: const Duration(milliseconds: 500),
-                            width: 60,
+                            width: 65,
                             height: 50,
                             child: const PlayerControlWidget()),
                       ],

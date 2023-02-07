@@ -43,7 +43,7 @@ class _PodcastListWidgetState extends State<PodcastListWidget> {
 
   Future<void> _fetchPage(int pageKey) async {
     try {
-      debugPrint("fetch $pageKey");
+      debugPrint("podcast list fetch $pageKey");
       final newItems = widget.searchResults.skip(pageKey).take(_pageSize).toList();
       final isLastPage = newItems.length < _pageSize;
       if (isLastPage) {
