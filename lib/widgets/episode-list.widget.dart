@@ -21,7 +21,7 @@ class _EpisodeListState extends State<EpisodeList> {
   final audioPlayer = getIt<AudioPlayerHandler>();
   final PagingController<int, Episode> _pagingController = PagingController(firstPageKey: 0);
 
-  final _pageSize = 5;
+  final _pageSize = 10;
 
   int currentItems = 0;
 
@@ -64,17 +64,6 @@ class _EpisodeListState extends State<EpisodeList> {
       await audioPlayer.updateEpisodeQueue(data, index: index);
     }
   }
-
-  Widget buildEpisodes(List<Episode> data) => ListView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        itemBuilder: (BuildContext context, int index) {
-          var episode = data[index];
-          var episodeIndex = index;
-          return EpisodePreviewWidget(
-              episode, Axis.vertical, () => {selectEpisode(episodeIndex, data)}, () => setState(() {}));
-        },
-        itemCount: data.length, // 1000 list items
-      );
 
   @override
   Widget build(BuildContext context) {

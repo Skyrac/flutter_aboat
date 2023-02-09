@@ -96,7 +96,7 @@ class _PlayerControlWidgetState extends State<PlayerControlWidget> with SingleTi
             } else {
               _controller.stop();
             }
-            if (userService.isConnected) {
+            if (userService.guest) {
               return const SizedBox();
             }
             return Container(

@@ -175,8 +175,6 @@ class _PodcastListWidgetState extends State<PodcastListWidget> {
                                 child: CachedNetworkImage(
                                   imageUrl: entry.image ?? 'https://picsum.photos/200',
                                   fit: BoxFit.cover,
-                                  cacheManager: CacheManager(Config(entry.image ?? 'https://picsum.photos/200',
-                                      stalePeriod: const Duration(days: 2))),
                                   placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
                                   // progressIndicatorBuilder: (context, url, downloadProgress) =>
                                   //     CircularProgressIndicator(value: downloadProgress.progress),

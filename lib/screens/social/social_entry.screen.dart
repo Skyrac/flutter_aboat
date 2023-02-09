@@ -217,10 +217,6 @@ class _SocialEntryScreenState extends State<SocialEntryScreen> with SingleTicker
                                   child: CachedNetworkImage(
                                 imageUrl: element.image ??
                                     "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=wavatar&f=y",
-                                cacheManager: CacheManager(Config(
-                                    element.image ??
-                                        "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=wavatar&f=y",
-                                    stalePeriod: const Duration(days: 2))),
                                 fit: BoxFit.fill,
                                 placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
                                 errorWidget: (context, url, error) => const Icon(Icons.error),

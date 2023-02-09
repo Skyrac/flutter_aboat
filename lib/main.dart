@@ -13,11 +13,13 @@ import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'configuration/dio.config.dart';
 import 'firebase_options.dart';
@@ -27,6 +29,14 @@ void main() async {
   //runApp(const MaterialApp(home: Agora()));
   //return;
   WidgetsFlutterBinding.ensureInitialized();
+  Future.microtask(() async {
+    final prefs = await SharedPreferences.getInstance();
+    final didEvict = prefs.getBool("evictedCache");
+    if (didEvict == null || didEvict == false) {
+      await DefaultCacheManager().emptyCache();
+      await prefs.setBool("evictedCache", true);
+    }
+  });
   LicenseRegistry.addLicense(() async* {
     final license = await rootBundle.loadString('assets/google_fonts/OFL.txt');
     yield LicenseEntryWithLineBreaks(['google_fonts'], license);

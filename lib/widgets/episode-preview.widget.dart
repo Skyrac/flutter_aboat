@@ -192,8 +192,6 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                                       children: [
                                         CachedNetworkImage(
                                           imageUrl: entry.image ?? 'https://picsum.photos/200',
-                                          cacheManager: CacheManager(Config(entry.image ?? 'https://picsum.photos/200',
-                                              stalePeriod: const Duration(days: 2))),
                                           fit: BoxFit.fill,
                                           placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
                                           errorWidget: (context, url, error) => const Icon(Icons.error),
@@ -257,8 +255,6 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                           child: SizedBox(
                               child: CachedNetworkImage(
                             imageUrl: entry.image ?? 'https://picsum.photos/200',
-                            cacheManager: CacheManager(
-                                Config(entry.image ?? 'https://picsum.photos/200', stalePeriod: const Duration(days: 2))),
                             fit: BoxFit.fill,
                             placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
                             errorWidget: (context, url, error) => const Icon(Icons.error),

@@ -104,7 +104,6 @@ class _PodcastListTileWidgetState extends State<PodcastListTileWidget> {
                   child: CachedNetworkImage(
                     imageUrl: widget.podcast.image ?? '',
                     fit: BoxFit.fill,
-                    cacheManager: CacheManager(Config(widget.podcast.image ?? '', stalePeriod: const Duration(days: 2))),
                     placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
                     // progressIndicatorBuilder: (context, url, downloadProgress) =>
                     //     CircularProgressIndicator(value: downloadProgress.progress),
