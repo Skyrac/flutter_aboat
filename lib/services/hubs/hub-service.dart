@@ -57,6 +57,7 @@ abstract class HubService {
       return false;
     }
     var state = connection.state;
+    debugPrint("$state");
     if (state != HubConnectionState.Connected) {
       if (state != HubConnectionState.Connecting && state != HubConnectionState.Reconnecting) {
         await connect();

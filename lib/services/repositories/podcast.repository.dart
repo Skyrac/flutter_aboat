@@ -16,7 +16,7 @@ class PodcastRepository {
   static const API = "/v1/podcast";
   static Future<List<Episode?>> getEpisodesMock(int podcastId) async {
     try {
-      var response = await dio.get<String>('https://api.talkaboat.online/v1/podcast/3855/episodes/asc/0/10');
+      var response = await dio.get<String>('/v1/podcast/3855/episodes/asc/0/10');
       var l = jsonDecode(response.data!);
       List<Episode> episodes = List<Episode>.from(l.map((model) => Episode.fromJson(model)));
       return episodes;
@@ -29,10 +29,25 @@ class PodcastRepository {
   static Future<List<Podcast>> getRandomPodcast(int amount) async {
     try {
       var response = await dio.get<String>('$API/search/random/$amount');
+
       var list = List<Podcast>.from(json.decode(response.data!).map((data) => Podcast.fromJson(data)));
+      debugPrint("$list");
       return list;
     } catch (e) {
-      debugPrint("$e");
+      debugPrint(e.toString());
+      return List.empty();
+    }
+  }
+
+  static Future<List<Podcast>> getRandomPodcastsByRank(int amount, PodcastRank rank) async {
+    try {
+      var response = await dio.get<String>('$API/search/random/$amount/rank/${rank.id}');
+
+      var list = List<Podcast>.from(json.decode(response.data!).map((data) => Podcast.fromJson(data)));
+      debugPrint("$list");
+      return list;
+    } catch (e) {
+      debugPrint(e.toString());
       return List.empty();
     }
   }
@@ -42,6 +57,7 @@ class PodcastRepository {
       var response = await dio.get<String>('$API/ownership/$podcastId');
       return ResponseModel.fromJson(json.decode(response.data!));
     } catch (ex) {
+      debugPrint(ex.toString());
       return ResponseModel(text: 'error');
     }
   }
@@ -51,6 +67,7 @@ class PodcastRepository {
       var response = await dio.get<String>('$API/admin/$podcastId/ownership/kyc');
       return response.statusCode != null && response.statusCode == 200;
     } catch (ex) {
+      debugPrint(ex.toString());
       return false;
     }
   }
@@ -61,6 +78,7 @@ class PodcastRepository {
       var list = List<Podcast>.from(json.decode(response.data!).map((data) => Podcast.fromJson(data)));
       return list;
     } catch (ex) {
+      debugPrint(ex.toString());
       return List.empty();
     }
   }
@@ -71,6 +89,7 @@ class PodcastRepository {
       var list = List<Podcast>.from(json.decode(response.data!).map((data) => Podcast.fromJson(data)));
       return list;
     } catch (ex) {
+      debugPrint(ex.toString());
       return List.empty();
     }
   }

@@ -249,7 +249,8 @@ class UserService {
       }
       //TODO: Vorschläge basierend auf den Vorzügen des Nutzers laden
     }
-    var podcasts = await PodcastRepository.getRandomPodcast(20);
+    var podcasts = await PodcastRepository.getRandomPodcast(30);
+    debugPrint("$podcasts");
     podcastProposalsHomeScreen[0] = podcasts.take(10).toList();
     podcastProposalsHomeScreen[1] = podcasts.skip(10).take(10).toList();
     podcastProposalsHomeScreen[2] = podcasts.skip(20).take(10).toList();
@@ -262,7 +263,7 @@ class UserService {
   Future<bool> getUserInfo() async {
     debugPrint("Get User Info");
     userInfo = await UserRepository.getUserInfo();
-    userInfo!.userId = int.parse(Jwt.parseJwt(token)["primarysid"]);
+    userInfo!.userId = int.parse(Jwt.parseJwt(token)["nameid"]);
     if (userInfo == null || userInfo!.userName == null) {
       logout();
       return false;
@@ -526,6 +527,7 @@ class UserService {
   }
 
   getProposals(int genre) {
+    debugPrint("$genre");
     return podcastProposalsHomeScreen[genre];
   }
 
