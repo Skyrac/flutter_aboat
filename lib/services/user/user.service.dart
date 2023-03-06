@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:Talkaboat/models/rewards/reward.model.dart';
 import 'package:Talkaboat/models/stormm/stormm-mission.model.dart';
+import 'package:Talkaboat/services/dynamiclinks/dynamic-links.service.dart';
 import 'package:Talkaboat/services/hubs/chat/chat.service.dart';
 import 'package:Talkaboat/services/user/reward.service.dart';
 import 'package:Talkaboat/services/user/social.service.dart';
@@ -273,7 +274,7 @@ class UserService {
 
   Future<String?> emailRegister(String email, String pin, String username, bool newsletter) async {
     try {
-      var response = await UserRepository.emailRegister(email, pin, username, newsletter);
+      var response = await UserRepository.emailRegister(email, pin, username, newsletter, prefs.getString(DynamicLinkUtils.REFERAL_QUERY_PARAM));
       debugPrint("response ${response.toJson()}");
       if (response.data == null || response.data!.isEmpty) {
         return response.text ?? "false";
@@ -323,7 +324,7 @@ class UserService {
 
   Future<String?> firebaseRegister(String username, bool newsletter) async {
     try {
-      var response = await UserRepository.firebaseRegister(firebaseToken, username, newsletter);
+      var response = await UserRepository.firebaseRegister(firebaseToken, username, newsletter, prefs.getString(DynamicLinkUtils.REFERAL_QUERY_PARAM));
       if (response.data == null || response.data!.isEmpty) {
         return response.text ?? "false";
       }

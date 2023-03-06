@@ -28,6 +28,8 @@
     "removeFromFavorites" : "Aus Favoriten entfernen",
     "addToLibrary" : "Zur Bibliothek hinzufügen",
     "removeFromLibrary" : "Aus Bibliothek entfernen",
+    "refDesc": "Freunde einladen und an deren verdiensten Teilhaben",
+    "shareRef": "Einladungslink teilen",
     "search" : "Suche",
     "searchIn" : "Suche in {category}",
     "searchForCategory" : "Suche nach Kategorie...",    

@@ -1,7 +1,10 @@
 import 'package:Talkaboat/screens/settings/earnings.screen.dart';
+import 'package:Talkaboat/services/dynamiclinks/dynamic-links.service.dart';
+import 'package:Talkaboat/themes/colors_new.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../injection/injector.dart';
 import '../../services/downloading/file-downloader.service.dart';
@@ -98,7 +101,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       reverseDuration: const Duration(milliseconds: 200),
                       child: const EarningsScreen()));
             }, true),
+
             const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 22.5, vertical: 0),
+              child: Text(AppLocalizations.of(context)!.refDesc, style: Theme.of(context).textTheme.titleLarge)),
+              createMenuPoint(
+                Text(AppLocalizations.of(context)!.shareRef,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith()), () {
+              final refLink = DynamicLinkUtils.createInvite();
+              Share.share("$refLink");
+            }, false, showTrailing: false),
+            const SizedBox(height: 20),
             createMenuPoint(
                 Text(AppLocalizations.of(context)!.clearCache,
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.grey)), () {
@@ -175,7 +189,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   createMenuPoint(Widget title, click, onlyWhenSignedIn, {showTrailing = true}) {
     return !onlyWhenSignedIn || userService.isConnected
         ? Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 5),
+            padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 0),
             child: TextButton(
                 onPressed: click,
                 child: Row(
@@ -183,7 +197,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     Expanded(child: title),
                     showTrailing ? const Icon(Icons.navigate_next_outlined) : const SizedBox()
                   ],
-                )),
+                ),
+            style: ButtonStyle(backgroundColor: MaterialStatePropertyAll(NewDefaultColors.secondaryColorAlphaBlend.shade700))),
           )
         : const SizedBox();
   }

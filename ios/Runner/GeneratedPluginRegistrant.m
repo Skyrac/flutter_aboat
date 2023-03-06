@@ -42,6 +42,12 @@
 @import firebase_core;
 #endif
 
+#if __has_include(<firebase_dynamic_links/FLTFirebaseDynamicLinksPlugin.h>)
+#import <firebase_dynamic_links/FLTFirebaseDynamicLinksPlugin.h>
+#else
+@import firebase_dynamic_links;
+#endif
+
 #if __has_include(<firebase_remote_config/FLTFirebaseRemoteConfigPlugin.h>)
 #import <firebase_remote_config/FLTFirebaseRemoteConfigPlugin.h>
 #else
@@ -141,6 +147,7 @@
   [FLTFirebaseAnalyticsPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTFirebaseAnalyticsPlugin"]];
   [FLTFirebaseAuthPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTFirebaseAuthPlugin"]];
   [FLTFirebaseCorePlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTFirebaseCorePlugin"]];
+  [FLTFirebaseDynamicLinksPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTFirebaseDynamicLinksPlugin"]];
   [FLTFirebaseRemoteConfigPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTFirebaseRemoteConfigPlugin"]];
   [FlutterFacebookAuthPlugin registerWithRegistrar:[registry registrarForPlugin:@"FlutterFacebookAuthPlugin"]];
   [FluttertoastPlugin registerWithRegistrar:[registry registrarForPlugin:@"FluttertoastPlugin"]];

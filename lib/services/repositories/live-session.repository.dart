@@ -52,7 +52,7 @@ class LiveSessionRepository {
   static Future<LiveSession?> openRoom(LiveSessionConfiguration configuration) async {
     try {
       var response = await dio.post<String>('$API/room', data: configuration);
-
+      debugPrint(response.toString());
       var data = LiveSession.fromJson(json.decode(response.data!));
       debugPrint(data.toString());
       return data;

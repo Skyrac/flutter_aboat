@@ -126,7 +126,6 @@ class _AppScreenState extends State<AppScreen> with RouteAware {
 
   checkUpdates(context) async {
     final remoteConfig = FirebaseRemoteConfig.instance;
-    await remoteConfig.setDefaults(const {"iosBuildNumber": 1, "androidBuildNumber": 1});
     await remoteConfig.setConfigSettings(RemoteConfigSettings(
       fetchTimeout: const Duration(minutes: 1),
       minimumFetchInterval: const Duration(hours: 1),

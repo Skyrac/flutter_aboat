@@ -118,12 +118,10 @@ class UserRepository {
     }
   }
 
-  static Future<ResponseModel> firebaseRegister(String userIdToken, String username, bool newsletter) async {
+  static Future<ResponseModel> firebaseRegister(String userIdToken, String username, bool newsletter, String? referrer) async {
     try {
-      debugPrint(
-          "${{"address": "Social: $username", "signature": userIdToken, "userName": username, "newsletter": newsletter}}");
       var response = await dio.post<String>('/v1/user/register/firebase',
-          data: {"address": "Social: $username", "signature": userIdToken, "userName": username, "newsletter": newsletter});
+          data: {"address": "Social: $username", "signature": userIdToken, "userName": username, "newsletter": newsletter, "referrer": referrer});
       var convertedData = ResponseModel.fromJson(json.decode(response.data!));
       debugPrint(response.data);
       return convertedData;
@@ -140,10 +138,10 @@ class UserRepository {
     }
   }
 
-  static Future<ResponseModel> emailRegister(String email, String pin, String username, bool newsletter) async {
+  static Future<ResponseModel> emailRegister(String email, String pin, String username, bool newsletter, String? referrer) async {
     try {
       var response = await dio.post<String>('/v1/user/register/email',
-          data: {"address": email, "guid": pin, "userName": username, "newsletter": newsletter});
+          data: {"address": email, "guid": pin, "userName": username, "newsletter": newsletter, "referrer": referrer});
       debugPrint(response.data);
       return ResponseModel.fromJson(json.decode(response.data!));
     } catch (exception) {
