@@ -108,8 +108,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: Text(AppLocalizations.of(context)!.refDesc, style: Theme.of(context).textTheme.titleLarge)),
               createMenuPoint(
                 Text(AppLocalizations.of(context)!.shareRef,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith()), () {
-              final refLink = DynamicLinkUtils.createInvite();
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith()), () async {
+              final refLink = await DynamicLinkUtils.createInvite();
               Share.share("$refLink");
             }, false, showTrailing: false),
             const SizedBox(height: 20),
