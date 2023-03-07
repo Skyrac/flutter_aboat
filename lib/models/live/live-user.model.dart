@@ -5,7 +5,7 @@ class LiveUser {
   LiveUser({required this.userId, required this.userName});
 
   LiveUser.fromJson(Map<String, dynamic> json) {
-    userId = json['user_Id'];
+    userId = json['userId'];
     userName = json['userName'];
   }
 

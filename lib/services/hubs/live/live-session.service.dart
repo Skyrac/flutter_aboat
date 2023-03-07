@@ -264,6 +264,7 @@ class LiveSessionService extends ChangeNotifier {
   Future<void> join(String roomGuid, String roomName, ChannelMediaOptions options, String token, bool asHost) async {
     _roomGuid = roomGuid;
     _roomName = roomName;
+    debugPrint("Join Room $roomGuid");
     await setupHub(roomGuid, asHost);
     await _agoraSettings.agoraEngine.joinChannel(
       token: token,
@@ -285,7 +286,7 @@ class LiveSessionService extends ChangeNotifier {
       debugPrint("joined as host as ${ClientRoleType.clientRoleBroadcaster}");
       notifyListeners();
     } catch (e) {
-      debugPrint("$e");
+      debugPrint("Promote to Host Error: $e");
     }
   }
 
@@ -300,7 +301,7 @@ class LiveSessionService extends ChangeNotifier {
       debugPrint("joined as viewer as ${ClientRoleType.clientRoleAudience}");
       notifyListeners();
     } catch (e) {
-      debugPrint("$e");
+      debugPrint("Demote to Viewer Error: $e");
     }
   }
 
