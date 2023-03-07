@@ -11,7 +11,7 @@ class LiveUser {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['user_Id'] = userId;
+    data['userId'] = userId;
     data['userName'] = userName;
     return data;
   }

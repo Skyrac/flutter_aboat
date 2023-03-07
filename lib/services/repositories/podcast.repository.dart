@@ -112,6 +112,7 @@ class PodcastRepository {
       var list = List<PodcastGenre>.from(json.decode(response.data!).map((data) => PodcastGenre.fromJson(data)));
       return list;
     } catch (ex) {
+      debugPrint("Error on receiving Genres: $ex");
       return List.empty();
     }
   }
