@@ -16,6 +16,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:tweet_ui/models/api/v2/tweet_v2.dart';
 
 import '../../injection/injector.dart';
 import '../../models/playlist/playlist.model.dart';
@@ -24,6 +25,7 @@ import '../../models/response.model.dart';
 import '../../models/user/user-info-model.dart';
 import '../hubs/reward/reward-hub.service.dart';
 import '../repositories/podcast.repository.dart';
+import '../repositories/social-media.repository.dart';
 import '../repositories/stormm.repository.dart';
 import '../repositories/user.repository.dart';
 
@@ -289,6 +291,11 @@ class UserService {
     } catch (_) {
       return "false";
     }
+  }
+
+
+  Future<List<TweetV2Response>> getNews() async {
+    return await SocialMediaRepository.getNews();
   }
 
   //#region Login/Logout
