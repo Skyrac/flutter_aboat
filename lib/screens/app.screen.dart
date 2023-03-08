@@ -65,8 +65,8 @@ class _AppScreenState extends State<AppScreen> with RouteAware {
         return NavigatorKeys.bottomNavigationBarFavorites;
       case 3:
         return NavigatorKeys.bottomNavigationBarPlaylist;
-      case 4:
-        return NavigatorKeys.bottomNavigationBarSocial;
+      //case 4:
+        //return NavigatorKeys.bottomNavigationBarSocial;
       default:
         return NavigatorKeys.bottomNavigationBarHome;
     }
@@ -223,10 +223,10 @@ class _AppScreenState extends State<AppScreen> with RouteAware {
                       icon: buttonNavbar("assets/images/playlist.png", 30, 20, "Playlists"),
                       activeIcon: buttonNavbarActiv("assets/images/playlist.png", 30, 20, "Playlists"),
                       label: ''),
-                  BottomNavigationBarItem(
-                      icon: buttonNavbar("assets/images/social.png", 20, 20, "Social"),
-                      activeIcon: buttonNavbarActiv("assets/images/social.png", 20, 20, "Social"),
-                      label: ''),
+                  //BottomNavigationBarItem(
+                  //    icon: buttonNavbar("assets/images/social.png", 20, 20, "Social"),
+                  //    activeIcon: buttonNavbarActiv("assets/images/social.png", 20, 20, "Social"),
+                  //    label: ''),
                 ],
               ),
             ),
