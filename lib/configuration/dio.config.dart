@@ -6,9 +6,9 @@ import '../services/user/user.service.dart';
 
 var options = BaseOptions(
   //baseUrl: "http://192.168.10.177:5000/",
-  baseUrl: 'https://talkaboat.azurewebsites.net/',
+  baseUrl: 'https://api.talkaboat.online/',
   connectTimeout: 5000,
-  receiveTimeout: 15000,
+  receiveTimeout: 15000
 );
 
 var cacheOptions = CacheOptions(

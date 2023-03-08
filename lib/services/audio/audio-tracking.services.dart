@@ -4,7 +4,7 @@ import '../../injection/injector.dart';
 import '../../models/podcasts/episode.model.dart';
 
 int heartbeatCounter = 0;
-const heartbeatLimit = 20;
+const heartbeatLimit = 10;
 MediaItem? currentlyPlayingMediaItem;
 Function? setEpisode;
 RewardHubService _rewardHub = getIt<RewardHubService>();

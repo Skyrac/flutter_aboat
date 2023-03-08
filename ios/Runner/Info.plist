@@ -26,6 +26,10 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>FirebaseDynamicLinksCustomDomains</key>
+    <array>
+        <string>https://talkaboat.page.link/</string>
+    </array>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

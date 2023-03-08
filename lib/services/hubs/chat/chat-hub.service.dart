@@ -56,6 +56,7 @@ class ChatHubService extends HubService {
   //#region RPC Calls
   sendMessage(CreateMessageDto message) async {
     if (!await checkConnection()) {
+
       return;
     }
     try {

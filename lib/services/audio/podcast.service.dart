@@ -8,6 +8,8 @@ import '../repositories/podcast.repository.dart';
 
 class PodcastService {
   Podcast? podcast;
+  Map<PodcastRank, List<Podcast>> randomRankPodcasts = {};
+
 
   Future<List<Episode>> getPodcastDetailEpisodes(podcastId, sort, amount) async {
     if (podcast != null && podcast!.episodes != null && podcast!.episodes!.isNotEmpty && podcast!.podcastId == podcastId) {
@@ -39,6 +41,13 @@ class PodcastService {
 
   Future<ResponseModel> getPodcastOwnerDetails(int podcastId) {
     return PodcastRepository.getPodcastOwnership(podcastId);
+  }
+
+  Future<List<Podcast>> getRandomPodcastsByRank(int amount, PodcastRank rank) async {
+    if(!randomRankPodcasts.containsKey(rank) || randomRankPodcasts[rank]!.length < amount) {
+      randomRankPodcasts[rank] = await PodcastRepository.getRandomPodcastsByRank(amount, rank);
+    }
+    return Future.value(randomRankPodcasts[rank]!.take(amount).toList());
   }
 
   Future<Podcast> getPodcastDetails(int podcastId, String sort, int amount) async {

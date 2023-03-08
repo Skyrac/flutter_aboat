@@ -10,6 +10,8 @@ import 'package:Talkaboat/widgets/quests/quest-list.widget.dart';
 import '../widgets/home-app-bar.widget.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../widgets/home-news.widget.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key, required this.setEpisode, required this.selectTab}) : super(key: key);
   final Function setEpisode;
@@ -90,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
         body: TabBarView(children: [
           HomeScreenSuggestedTab(widget.selectTab),
           const HomeScreenCategoriesTab(),
-          Container(),
+          const HomeNewsScreenWidget(),
         ]),
       ),
     );
