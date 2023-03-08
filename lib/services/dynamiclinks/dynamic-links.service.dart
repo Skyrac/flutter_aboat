@@ -31,7 +31,7 @@ class DynamicLinkUtils {
 
   static Future<Uri> createInvite() async {
     String url = "${REFERAL_QUERY_PARAM}=${userService.userInfo?.userName}"; // it can be any url, it does not have to be an existing one
-    final refLink = (await createDynamicLink(url)).previewLink!;
+    final refLink = (await createDynamicLink(url)).shortUrl;
     debugPrint("$refLink");
     return refLink;
   }
