@@ -13,7 +13,6 @@ class StormmRepository {
   static Future<List<StormmMission>> getStormmMissions() async {
     try {
       var response = await dio.get<String>('$API');
-      debugPrint("kekse $response");
       return List<StormmMission>.from(json.decode(response.data!).map((data) => StormmMission.fromJson(data)));
     } catch (e) {
       debugPrint("$e");

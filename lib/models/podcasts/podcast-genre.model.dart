@@ -6,8 +6,8 @@ class PodcastGenre {
   PodcastGenre(this.name, this.imageUrl, this.genreId);
 
   PodcastGenre.fromJson(Map<String, dynamic> json) {
-    name = json['name'];
-    imageUrl = json['image'];
-    genreId = json['id'];
+    name = json['genreName'];
+    imageUrl = json['genreIcon'];
+    genreId = json['genreId'];
   }
 }

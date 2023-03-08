@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:Talkaboat/models/rewards/reward.model.dart';
 import 'package:Talkaboat/models/stormm/stormm-mission.model.dart';
+import 'package:Talkaboat/services/dynamiclinks/dynamic-links.service.dart';
 import 'package:Talkaboat/services/hubs/chat/chat.service.dart';
 import 'package:Talkaboat/services/user/reward.service.dart';
 import 'package:Talkaboat/services/user/social.service.dart';
@@ -15,6 +16,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:tweet_ui/models/api/v2/tweet_v2.dart';
 
 import '../../injection/injector.dart';
 import '../../models/playlist/playlist.model.dart';
@@ -23,6 +25,7 @@ import '../../models/response.model.dart';
 import '../../models/user/user-info-model.dart';
 import '../hubs/reward/reward-hub.service.dart';
 import '../repositories/podcast.repository.dart';
+import '../repositories/social-media.repository.dart';
 import '../repositories/stormm.repository.dart';
 import '../repositories/user.repository.dart';
 
@@ -249,7 +252,8 @@ class UserService {
       }
       //TODO: Vorschläge basierend auf den Vorzügen des Nutzers laden
     }
-    var podcasts = await PodcastRepository.getRandomPodcast(20);
+    var podcasts = await PodcastRepository.getRandomPodcast(30);
+    debugPrint("$podcasts");
     podcastProposalsHomeScreen[0] = podcasts.take(10).toList();
     podcastProposalsHomeScreen[1] = podcasts.skip(10).take(10).toList();
     podcastProposalsHomeScreen[2] = podcasts.skip(20).take(10).toList();
@@ -262,7 +266,7 @@ class UserService {
   Future<bool> getUserInfo() async {
     debugPrint("Get User Info");
     userInfo = await UserRepository.getUserInfo();
-    userInfo!.userId = int.parse(Jwt.parseJwt(token)["primarysid"]);
+    userInfo!.userId = int.parse(Jwt.parseJwt(token)["nameid"]);
     if (userInfo == null || userInfo!.userName == null) {
       logout();
       return false;
@@ -272,7 +276,7 @@ class UserService {
 
   Future<String?> emailRegister(String email, String pin, String username, bool newsletter) async {
     try {
-      var response = await UserRepository.emailRegister(email, pin, username, newsletter);
+      var response = await UserRepository.emailRegister(email, pin, username, newsletter, prefs.getString(DynamicLinkUtils.REFERAL_QUERY_PARAM));
       debugPrint("response ${response.toJson()}");
       if (response.data == null || response.data!.isEmpty) {
         return response.text ?? "false";
@@ -287,6 +291,11 @@ class UserService {
     } catch (_) {
       return "false";
     }
+  }
+
+
+  Future<List<TweetV2Response>> getNews() async {
+    return await SocialMediaRepository.getNews();
   }
 
   //#region Login/Logout
@@ -322,7 +331,7 @@ class UserService {
 
   Future<String?> firebaseRegister(String username, bool newsletter) async {
     try {
-      var response = await UserRepository.firebaseRegister(firebaseToken, username, newsletter);
+      var response = await UserRepository.firebaseRegister(firebaseToken, username, newsletter, prefs.getString(DynamicLinkUtils.REFERAL_QUERY_PARAM));
       if (response.data == null || response.data!.isEmpty) {
         return response.text ?? "false";
       }
@@ -526,6 +535,7 @@ class UserService {
   }
 
   getProposals(int genre) {
+    debugPrint("$genre");
     return podcastProposalsHomeScreen[genre];
   }
 

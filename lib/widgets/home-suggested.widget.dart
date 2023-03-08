@@ -35,7 +35,7 @@ class _HomeScreenSuggestedTabState extends State<HomeScreenSuggestedTab> {
         children: [
           ...createOnlyLoggedInWidgets(context),
           PodcastListHorizontal(
-              future: podcastService.search("", amount: 10, offset: 0, rank: PodcastRank.NewComer),
+              future: podcastService.getRandomPodcastsByRank( 10, PodcastRank.NewComer),
               title: "Newcomer",
               multiplier: "x1.5",
               seeAllCb: (() {
@@ -50,7 +50,7 @@ class _HomeScreenSuggestedTabState extends State<HomeScreenSuggestedTab> {
           const StormmMissionWidget(),
           const SizedBox(height: 20),
           PodcastListHorizontal(
-              future: podcastService.search("", amount: 10, offset: 0, rank: PodcastRank.Receiver),
+              future: podcastService.getRandomPodcastsByRank( 10, PodcastRank.Receiver),
               title: "Receiver",
               multiplier: "x1.25",
               seeAllCb: (() {
@@ -64,7 +64,7 @@ class _HomeScreenSuggestedTabState extends State<HomeScreenSuggestedTab> {
               })),
           const SizedBox(height: 20),
           PodcastListHorizontal(
-              future: podcastService.search("", amount: 10, offset: 0, rank: PodcastRank.Hodler),
+              future: podcastService.getRandomPodcastsByRank( 10, PodcastRank.Hodler),
               title: "Holder",
               multiplier: "x1.1",
               seeAllCb: (() {
@@ -201,6 +201,7 @@ class _HomeScreenSuggestedTabState extends State<HomeScreenSuggestedTab> {
                       } else if (snapshot.hasData && snapshot.data != null) {
                         if (snapshot.data != null && snapshot.data!.isNotEmpty) {
                           userService.podcastProposalsHomeScreen[genre] = snapshot.data!;
+                          debugPrint("${snapshot.data}");
                           return PodcastListWidget(direction: Axis.horizontal, searchResults: homeState.map[genre]!);
                         }
                       }

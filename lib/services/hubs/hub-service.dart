@@ -10,7 +10,7 @@ abstract class HubService {
   final useTestServer = false;
   final userService = getIt<UserService>();
   final testServerUrl = "http://192.168.10.177:5000/hubs/";
-  final serverUrl = "https://api.talkaboat.online/hubs/";
+  final serverUrl = "http://talkaboat.azurewebsites.net/hubs/";
   late final HttpConnectionOptions options;
   late final HubConnection connection;
   final hubName = "";
@@ -29,8 +29,9 @@ abstract class HubService {
         accessTokenFactory: () async => Future.value(userService.token),
         requestTimeout: 15000,
         logger: transportProtLogger,
-        logMessageContent: true,
-        transport: HttpTransportType.ServerSentEvents);
+        transport: HttpTransportType.WebSockets,
+        skipNegotiation: true,
+        logMessageContent: true);
     connection = HubConnectionBuilder()
         .withUrl((useTestServer && !isProduction ? testServerUrl : serverUrl) + hubName, options: options)
         .withAutomaticReconnect(retryDelays: [0, 1000, 2000, 4000, 8000, 16000, 32000])
@@ -57,6 +58,7 @@ abstract class HubService {
       return false;
     }
     var state = connection.state;
+    debugPrint("$state");
     if (state != HubConnectionState.Connected) {
       if (state != HubConnectionState.Connecting && state != HubConnectionState.Reconnecting) {
         await connect();
