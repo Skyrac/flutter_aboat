@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 
 import '../../configuration/dio.config.dart';
@@ -208,7 +209,7 @@ class UserRepository {
         '/v1/user/$chainId/claim/$address/$amount',
       );
       debugPrint('${response.data}');
-      return true;
+      return response.statusCode == 200;
     } catch (exception) {
       debugPrint(exception.toString());
       debugPrint((exception as DioError).message);
@@ -221,7 +222,7 @@ class UserRepository {
       var response = await dio.post<String>(
         '/v1/user/$chainId/claim/$address/$amount/native',
       );
-      return true;
+      return response.statusCode == 200;
     } catch (exception) {
       debugPrint(exception.toString());
       return false;

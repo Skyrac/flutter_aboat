@@ -1,6 +1,7 @@
 import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/themes/colors.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:introduction_screen/introduction_screen.dart';
@@ -19,6 +20,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   final introKey = GlobalKey<IntroductionScreenState>();
   void _onIntroEnd(context) async {
     await getIt<UserService>().finishIntroduction();
+    await FirebaseAnalytics.instance.logTutorialComplete();
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => const LoginScreen(false)),
     );
@@ -32,6 +34,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
 
   @override
   initState() {
+    FirebaseAnalytics.instance.logTutorialBegin();
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
         systemNavigationBarColor: DefaultColors.secondaryColorBase, // navigation bar color
         statusBarColor: DefaultColors.secondaryColor.shade900 // status bar color

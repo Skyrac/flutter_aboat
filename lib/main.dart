@@ -3,12 +3,14 @@ import 'dart:io';
 import 'package:Talkaboat/l10n/l10n.dart';
 import 'package:Talkaboat/navigator_keys.dart';
 import 'package:Talkaboat/screens/root.screen.dart';
+import 'package:Talkaboat/services/ads/ad-manager.service.dart';
 import 'package:Talkaboat/services/dynamiclinks/dynamic-links.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/themes/colors.dart';
 import 'package:Talkaboat/themes/default.theme_new.dart';
 import 'package:Talkaboat/utils/common.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/foundation.dart';
@@ -49,11 +51,12 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await FirebaseAnalytics.instance.logAppOpen();
   await configureDependencies();
   configDio();
   await getIt<UserService>().getCoreData();
   final PendingDynamicLinkData? initialLink = await FirebaseDynamicLinks.instance.getInitialLink();
-
+  AdManager.preLoadAd(false);
   runApp(MyApp(initialLink: initialLink));
 }
 

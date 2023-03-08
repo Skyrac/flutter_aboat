@@ -8,6 +8,7 @@ import 'package:Talkaboat/services/hubs/chat/chat.service.dart';
 import 'package:Talkaboat/services/user/reward.service.dart';
 import 'package:Talkaboat/services/user/social.service.dart';
 import 'package:crypto/crypto.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
@@ -267,6 +268,7 @@ class UserService {
     debugPrint("Get User Info");
     userInfo = await UserRepository.getUserInfo();
     userInfo!.userId = int.parse(Jwt.parseJwt(token)["nameid"]);
+    await FirebaseAnalytics.instance.setUserId(id: "${userInfo!.userId}");
     if (userInfo == null || userInfo!.userName == null) {
       logout();
       return false;
@@ -283,7 +285,10 @@ class UserService {
       }
       token = response.data ?? "";
       prefs.setString(TOKEN_IDENTIFIER, token);
+      await FirebaseAnalytics.instance.logSignUp(signUpMethod: "Email");
       if (token.isNotEmpty) {
+
+        await FirebaseAnalytics.instance.logLogin(loginMethod: "Email");
         await getCoreData();
         return userInfo != null ? null : "false";
       }
@@ -310,6 +315,7 @@ class UserService {
     prefs.setString(TOKEN_IDENTIFIER, token);
     if (token.isNotEmpty) {
       await getCoreData();
+      await FirebaseAnalytics.instance.logLogin(loginMethod: "Email");
       return userInfo != null ? "true" : "false";
     }
     return "false";
@@ -323,6 +329,8 @@ class UserService {
     token = response.data ?? "";
     prefs.setString(TOKEN_IDENTIFIER, token);
     if (response.data != null && response.data!.isNotEmpty) {
+
+      await FirebaseAnalytics.instance.logLogin(loginMethod: "Firebase");
       await getCoreData();
       return userInfo != null;
     }
@@ -339,7 +347,10 @@ class UserService {
       prefs.setString(TOKEN_IDENTIFIER, token);
       debugPrint("token: $token");
 
+      await FirebaseAnalytics.instance.logSignUp(signUpMethod: "Firebase");
       if (token.isNotEmpty) {
+
+        await FirebaseAnalytics.instance.logLogin(loginMethod: "Firebase");
         await getCoreData();
         return userInfo != null ? null : "false";
       }
@@ -527,6 +538,7 @@ class UserService {
   }
 
   Future<void> UpdatePodcastVisitDate(int? id) async {
+    await FirebaseAnalytics.instance.logSelectContent(contentType: "Podcast", itemId: "$id");
     if (id == null || !isConnected || !favorites.any((element) => id.isEqual(element.podcastId!))) {
       return;
     }
@@ -569,7 +581,11 @@ class UserService {
 
   claimABOAT(int chainId, String address, double amount) async {
     try {
-      return await UserRepository.claimABOAT(chainId, address, amount);
+      final result = await UserRepository.claimABOAT(chainId, address, amount);
+      if(result) {
+        await FirebaseAnalytics.instance.logSpendVirtualCurrency(itemName: "Claim", virtualCurrencyName: "ABOAT", value: amount);
+      }
+      return result;
     } catch (exception) {
       debugPrint(exception.toString());
     }
@@ -577,7 +593,10 @@ class UserService {
 
   claimABOATNative(int chainId, String address, double amount) async {
     try {
-      return await UserRepository.claimABOATNative(chainId, address, amount);
+      final result = await UserRepository.claimABOATNative(chainId, address, amount);
+      if(result) {
+        await FirebaseAnalytics.instance.logSpendVirtualCurrency(itemName: "Claim Native", virtualCurrencyName: "ABOAT", value: amount);
+      }
     } catch (exception) {
       debugPrint(exception.toString());
     }
