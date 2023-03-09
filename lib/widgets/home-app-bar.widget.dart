@@ -18,27 +18,30 @@ class HomeAppBarWidget extends StatelessWidget {
     return AppBar(
       backgroundColor: const Color.fromRGBO(29, 40, 58, 1),
       leading: Padding(
-        padding: const EdgeInsets.only(left: 15),
+        padding: const EdgeInsets.only(left: 10),
         child: Image.asset(
           "assets/images/aboat1.png",
         ),
       ),
-      leadingWidth: 45,
+      leadingWidth: 35,
       titleSpacing: 10,
       bottom: bottom,
-      title: Text(
-        "Talkaboat",
-        style: GoogleFonts.inter(
-            textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Color.fromRGBO(99, 163, 253, 1))),
+      title: Padding(
+        padding: const EdgeInsets.only(top: 8.0),
+        child: Text(
+          "Talkaboat",
+          style: GoogleFonts.inter(
+              textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Color.fromRGBO(99, 163, 253, 1))),
+        ),
       ),
       actions: [
         Padding(
-          padding: const EdgeInsets.only(right: 15),
+          padding: const EdgeInsets.only(right: 5),
           child: IconButton(
             icon: Image.asset(
               "assets/images/search.png",
-              width: 30,
-              height: 30,
+              width: 24,
+              height: 24,
               fit: BoxFit.cover,
             ),
             tooltip: '',
@@ -57,12 +60,12 @@ class HomeAppBarWidget extends StatelessWidget {
         ),
         userService.isConnected
             ? Padding(
-                padding: const EdgeInsets.only(right: 15),
+                padding: const EdgeInsets.only(right: 5),
                 child: IconButton(
                   icon: Image.asset(
                     "assets/images/wallet.png",
-                    width: 35,
-                    height: 30,
+                    width: 25,
+                    height: 20,
                     fit: BoxFit.cover,
                   ),
                   tooltip: '',
@@ -85,8 +88,8 @@ class HomeAppBarWidget extends StatelessWidget {
           child: IconButton(
             icon: Image.asset(
               "assets/images/settings.png",
-              width: 35,
-              height: 35,
+              width: 30,
+              height: 30,
               fit: BoxFit.cover,
             ),
             tooltip: '',

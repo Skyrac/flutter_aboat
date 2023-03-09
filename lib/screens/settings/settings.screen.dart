@@ -2,9 +2,12 @@ import 'package:Talkaboat/screens/settings/earnings.screen.dart';
 import 'package:Talkaboat/services/dynamiclinks/dynamic-links.service.dart';
 import 'package:Talkaboat/themes/colors_new.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:social_login_buttons/social_login_buttons.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../injection/injector.dart';
 import '../../services/downloading/file-downloader.service.dart';
@@ -73,6 +76,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
     return SafeArea(
         child: Container(
       decoration: BoxDecoration(
@@ -112,7 +116,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
               final refLink = await DynamicLinkUtils.createInvite();
               Share.share("$refLink");
             }, false, showTrailing: false),
-            const SizedBox(height: 20),
+            SizedBox(height: height * 0.25),
+            Row(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(children: [
+                  IconButton(onPressed: ( () async => {
+                    await launchUrl(Uri.parse("https://t.me/talkaboat"))
+                  }), iconSize: 32, color: Colors.lightBlue, icon: const Icon(FontAwesomeIcons.telegram)),
+                  Text("Telegram")
+                ],),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                  IconButton(onPressed: ( () async => {
+                    await launchUrl(Uri.parse("https://twitter.com/talkaboat"))
+                  }), iconSize: 32, color: Colors.lightBlueAccent, icon: const Icon(FontAwesomeIcons.twitter)),
+                  Text("Twitter")
+                ],),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(children: [
+                  IconButton(onPressed: ( () async => {
+                    await launchUrl(Uri.parse("https://aboat-entertainment.com"))
+                  }), iconSize: 32, color: Colors.grey, icon: const Icon(Icons.blur_circular)),
+                  Text("Website")
+                ],),
+              ),
+            ],),
             createMenuPoint(
                 Text(AppLocalizations.of(context)!.clearCache,
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.grey)), () {
