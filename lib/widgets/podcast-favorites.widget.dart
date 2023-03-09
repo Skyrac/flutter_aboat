@@ -23,6 +23,17 @@ class PodcastListFavoritesWidget extends StatefulWidget {
 
 class _PodcastListFavoritesWidgetState extends State<PodcastListFavoritesWidget> {
   final userService = getIt<UserService>();
+
+  @override
+  void dispose() {
+    ImageCache _imageCache = PaintingBinding.instance!.imageCache!;
+
+    _imageCache.clear();
+
+    _imageCache.clearLiveImages();
+    super.dispose();
+  }
+
   popupMenu(BuildContext context, SearchResult entry) => <PopupMenuEntry<String>>[
         PopupMenuItem<String>(
           value: 'toggleLibrary',

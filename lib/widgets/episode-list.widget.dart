@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 class EpisodeList extends StatefulWidget {
-  const EpisodeList({super.key, required this.episodes, this.controller});
-
+  const EpisodeList({super.key, required this.podcastImage, required this.episodes, this.controller});
+  final String? podcastImage;
   final List<Episode> episodes;
   final ScrollController? controller;
 
@@ -73,7 +73,7 @@ class _EpisodeListState extends State<EpisodeList> {
         physics: const NeverScrollableScrollPhysics(),
         builderDelegate: PagedChildBuilderDelegate<Episode>(
           itemBuilder: (context, item, index) {
-            return EpisodePreviewWidget(
+            return EpisodePreviewWidget(widget.podcastImage,
                 item, Axis.vertical, () => {selectEpisode(index, widget.episodes)}, () => setState(() {}));
           },
         ));

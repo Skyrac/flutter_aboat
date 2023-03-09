@@ -20,6 +20,16 @@ class PodcastListTileWidget extends StatefulWidget {
 class _PodcastListTileWidgetState extends State<PodcastListTileWidget> {
   final userService = getIt<UserService>();
 
+  @override
+  void dispose() {
+    ImageCache _imageCache = PaintingBinding.instance!.imageCache!;
+
+    _imageCache.clear();
+
+    _imageCache.clearLiveImages();
+    super.dispose();
+  }
+
   popupMenu(BuildContext context, Podcast entry) {
     if (!userService.isConnected) {
       return <PopupMenuItem<String>>[];

@@ -41,6 +41,16 @@ class _PodcastListWidgetState extends State<PodcastListWidget> {
     });
   }
 
+  @override
+  void dispose() {
+    ImageCache _imageCache = PaintingBinding.instance!.imageCache!;
+
+    _imageCache.clear();
+
+    _imageCache.clearLiveImages();
+    super.dispose();
+  }
+
   Future<void> _fetchPage(int pageKey) async {
     try {
       debugPrint("podcast list fetch $pageKey");

@@ -17,7 +17,8 @@ import 'bottom-sheets/playlist.bottom-sheet.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class EpisodePreviewWidget extends StatefulWidget {
-  const EpisodePreviewWidget(this.episode, this.direction, this.onPlayEpisode, this.refresh, {Key? key}) : super(key: key);
+  const EpisodePreviewWidget(this.podcastImage, this.episode, this.direction, this.onPlayEpisode, this.refresh, {Key? key}) : super(key: key);
+  final String? podcastImage;
   final Episode episode;
   final Axis direction;
   final Function onPlayEpisode;
@@ -34,7 +35,15 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
   // void refresh() {
   //   setState(() {});
   // }
+  @override
+  void dispose() {
+    ImageCache _imageCache = PaintingBinding.instance!.imageCache!;
 
+    _imageCache.clear();
+
+    _imageCache.clearLiveImages();
+    super.dispose();
+  }
   popupMenu(BuildContext context, Episode entry) => <PopupMenuEntry<String>>[
         PopupMenuItem<String>(
             value: 'add',
@@ -191,7 +200,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                                     child: Stack(
                                       children: [
                                         CachedNetworkImage(
-                                          imageUrl: entry.image ?? 'https://picsum.photos/200',
+                                          imageUrl: widget.podcastImage ?? 'https://picsum.photos/200',
                                           fit: BoxFit.fill,
                                           placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
                                           errorWidget: (context, url, error) => const Icon(Icons.error),
@@ -254,7 +263,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                           borderRadius: BorderRadius.circular(10),
                           child: SizedBox(
                               child: CachedNetworkImage(
-                            imageUrl: entry.image ?? 'https://picsum.photos/200',
+                            imageUrl: widget.podcastImage  ?? 'https://picsum.photos/200',
                             fit: BoxFit.fill,
                             placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
                             errorWidget: (context, url, error) => const Icon(Icons.error),

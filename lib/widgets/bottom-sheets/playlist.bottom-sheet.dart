@@ -21,6 +21,17 @@ class _PlaylistBottomSheetState extends State<PlaylistBottomSheet> {
   final userService = getIt<UserService>();
   final playlistSearchController = TextEditingController();
   String search = '';
+
+  @override
+  void dispose() {
+    ImageCache _imageCache = PaintingBinding.instance!.imageCache!;
+
+    _imageCache.clear();
+
+    _imageCache.clearLiveImages();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return ScaffoldWave(

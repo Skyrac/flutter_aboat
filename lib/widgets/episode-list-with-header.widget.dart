@@ -4,10 +4,12 @@ import 'package:Talkaboat/widgets/episode-list.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class EpisodeHeaderList extends StatefulWidget {
-  const EpisodeHeaderList({super.key, required this.podcastId, this.controller});
+import '../models/search/search_result.model.dart';
 
-  final int podcastId;
+class EpisodeHeaderList extends StatefulWidget {
+  const EpisodeHeaderList({super.key, required this.podcastSearchResult, this.controller});
+
+  final SearchResult podcastSearchResult;
   final ScrollController? controller;
 
   @override
@@ -66,6 +68,7 @@ class _EpisodeHeaderListState extends State<EpisodeHeaderList> {
               return Flexible(
                   flex: 1,
                   child: EpisodeList(
+                    podcastImage: widget.podcastSearchResult.image,
                     episodes: snapshot.data!,
                     controller: widget.controller,
                   ));
@@ -73,7 +76,7 @@ class _EpisodeHeaderListState extends State<EpisodeHeaderList> {
           }
           return const SizedBox(height: 105, child: Center(child: CircularProgressIndicator()));
         },
-        future: podcastService.getPodcastDetailEpisodes(widget.podcastId, sort == 0 ? "asc" : "desc", -1),
+        future: podcastService.getPodcastDetailEpisodes(widget.podcastSearchResult.id, sort == 0 ? "asc" : "desc", -1),
       )
     ]);
   }

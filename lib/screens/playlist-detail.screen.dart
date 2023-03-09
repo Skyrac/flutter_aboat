@@ -22,6 +22,16 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
   final userService = getIt<UserService>();
   final audioHandler = getIt<AudioPlayerHandler>();
 
+  @override
+  void dispose() {
+    ImageCache _imageCache = PaintingBinding.instance!.imageCache!;
+
+    _imageCache.clear();
+
+    _imageCache.clearLiveImages();
+    super.dispose();
+  }
+
   popupMenu(BuildContext context, Track entry) => <PopupMenuEntry<String>>[
         PopupMenuItem<String>(
           value: 'remove',

@@ -21,6 +21,16 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
   final userService = getIt<UserService>();
   final playlistCreationController = TextEditingController();
 
+  @override
+  void dispose() {
+    ImageCache _imageCache = PaintingBinding.instance!.imageCache!;
+
+    _imageCache.clear();
+
+    _imageCache.clearLiveImages();
+    super.dispose();
+  }
+
   popupMenu(context, Playlist entry) => <PopupMenuEntry<String>>[
         /*PopupMenuItem<String>(
             value: 'rename',

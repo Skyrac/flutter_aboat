@@ -25,6 +25,16 @@ class _CategoryScreenState extends State<CategoryScreen> {
   final podcastService = getIt<PodcastService>();
 
   @override
+  void dispose() {
+    ImageCache _imageCache = PaintingBinding.instance!.imageCache!;
+
+    _imageCache.clear();
+
+    _imageCache.clearLiveImages();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ScaffoldWave(
       appBar: AppBar(

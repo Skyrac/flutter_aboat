@@ -138,6 +138,11 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   void dispose() {
+    ImageCache _imageCache = PaintingBinding.instance!.imageCache!;
+
+    _imageCache.clear();
+
+    _imageCache.clearLiveImages();
     _pagingController.dispose();
     _controller.removeListener(scrollUpdate);
     _controller.dispose();

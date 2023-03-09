@@ -170,7 +170,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
   List<Widget> createTabs(int podcastId, int roomId, ScrollController controller) {
     return [
       EpisodeHeaderList(
-        podcastId: podcastId,
+        podcastSearchResult: widget.podcastSearchResult,
       ),
       PodcastDetails(
         podcastId: podcastId,

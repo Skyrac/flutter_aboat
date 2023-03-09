@@ -42,7 +42,11 @@ class _HomeScreenSuggestedTabState<T extends HomeScreenSuggestedTab> extends Sta
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    debugPrint("Dispose");
+    ImageCache _imageCache = PaintingBinding.instance!.imageCache!;
+
+    _imageCache.clear();
+
+    _imageCache.clearLiveImages();
     AdManager.dispose();
     super.dispose();
   }
