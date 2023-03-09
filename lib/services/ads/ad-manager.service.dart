@@ -12,11 +12,20 @@ class AdManager {
   AdManager._();
   static final userService = getIt<UserService>();
 
-  static var rewardedQuestAd;
+  static late RewardedAd? rewardedQuestAd;
 
   static var callback;
 
   static var isAdLoading = false;
+
+  static dispose() {
+    if(rewardedQuestAd != null) {
+      rewardedQuestAd!.dispose();
+    }
+    rewardedQuestAd = null;
+    isAdLoading = false;
+    callback = null;
+  }
 
   static preLoadAd(bool show) {
     if(isAdLoading) {
@@ -32,6 +41,11 @@ class AdManager {
             debugPrint('$ad loaded.');
             // Keep a reference to the ad so you can show it later.
             rewardedQuestAd = ad;
+            debugPrint("Show ad after loading");
+            var username = userService.userInfo?.userName;
+            debugPrint(username);
+            var options = ServerSideVerificationOptions(userId: username);
+            rewardedQuestAd!.setServerSideOptions(options);
             rewardedQuestAd!.fullScreenContentCallback = FullScreenContentCallback(
               onAdShowedFullScreenContent: (RewardedAd ad) => debugPrint('$ad onAdShowedFullScreenContent.'),
               onAdDismissedFullScreenContent: (RewardedAd ad) {
@@ -56,12 +70,7 @@ class AdManager {
                 FirebaseAnalytics.instance.logAdImpression(adPlatform: "Google AdMob", adFormat: "Rewarded Ad", adUnitName: ad.adUnitId)
             },);
             if(show) {
-              debugPrint("Show ad after loading");
-              var username = userService.userInfo?.userName;
-              debugPrint(username);
-              var options = ServerSideVerificationOptions(userId: username);
-              rewardedQuestAd.setServerSideOptions(options);
-              rewardedQuestAd.show(onUserEarnedReward: (AdWithoutView ad,
+              rewardedQuestAd!.show(onUserEarnedReward: (AdWithoutView ad,
                   RewardItem rewardItem) {
                 FirebaseAnalytics.instance.logAdImpression(
                     adPlatform: "Google AdMob",
@@ -95,10 +104,10 @@ class AdManager {
     }
     var username = userService.userInfo?.userName;
     var options = ServerSideVerificationOptions(userId: username);
-    rewardedQuestAd.setServerSideOptions(options);
+    rewardedQuestAd!.setServerSideOptions(options);
 
     debugPrint("Show preloaded ad");
-    rewardedQuestAd.show(onUserEarnedReward: (AdWithoutView ad, RewardItem rewardItem) {
+    rewardedQuestAd!.show(onUserEarnedReward: (AdWithoutView ad, RewardItem rewardItem) {
       preLoadAd(false);
       callback("");
     });

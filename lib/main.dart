@@ -56,7 +56,6 @@ void main() async {
   configDio();
   await getIt<UserService>().getCoreData();
   final PendingDynamicLinkData? initialLink = await FirebaseDynamicLinks.instance.getInitialLink();
-  AdManager.preLoadAd(false);
   runApp(MyApp(initialLink: initialLink));
 }
 

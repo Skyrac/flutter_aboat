@@ -1,6 +1,7 @@
 import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/models/podcasts/podcast-rank.model.dart';
 import 'package:Talkaboat/screens/search.screen.dart';
+import 'package:Talkaboat/services/ads/ad-manager.service.dart';
 import 'package:Talkaboat/services/audio/podcast.service.dart';
 import 'package:Talkaboat/services/repositories/podcast.repository.dart';
 import 'package:Talkaboat/services/state/state.service.dart';
@@ -19,14 +20,57 @@ class HomeScreenSuggestedTab extends StatefulWidget {
 
   final Function selectTab;
 
+
   @override
   State<HomeScreenSuggestedTab> createState() => _HomeScreenSuggestedTabState();
 }
 
-class _HomeScreenSuggestedTabState extends State<HomeScreenSuggestedTab> {
+class _HomeScreenSuggestedTabState<T extends HomeScreenSuggestedTab> extends State<HomeScreenSuggestedTab>
+    with WidgetsBindingObserver {
   final homeState = getIt<StateService>();
   final userService = getIt<UserService>();
   final podcastService = getIt<PodcastService>();
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addObserver(this);
+    debugPrint("Init");
+    AdManager.preLoadAd(false);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    debugPrint("Dispose");
+    AdManager.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        debugPrint("Resumed");
+        AdManager.preLoadAd(false);
+        break;
+      case AppLifecycleState.inactive:
+
+        debugPrint("Inactive");
+        AdManager.dispose();
+        break;
+      case AppLifecycleState.paused:
+
+        debugPrint("Paused");
+        AdManager.dispose();
+        break;
+      case AppLifecycleState.detached:
+
+        debugPrint("Detached");
+        AdManager.dispose();
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
