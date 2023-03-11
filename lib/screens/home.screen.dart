@@ -44,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           )),
       const SizedBox(
-          height: 184,
+          height: 224,
           child: QuestListWidget(
             direction: Axis.horizontal,
           ))

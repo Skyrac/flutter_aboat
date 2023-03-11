@@ -35,6 +35,7 @@ class QuestService {
     if (rewards == null) {
       return false;
     }
+
     rewardService.Update(rewards);
     return true;
   }

@@ -112,4 +112,8 @@ class AdManager {
       callback("");
     });
   }
+
+  static void setAdvertismentIdentifier(String uuid) {
+
+  }
 }

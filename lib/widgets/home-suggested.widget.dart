@@ -168,7 +168,7 @@ class _HomeScreenSuggestedTabState<T extends HomeScreenSuggestedTab> extends Sta
             ],
           )),
       SizedBox(
-          height: 184,
+          height: 224,
           child: QuestListWidget(
             direction: Axis.horizontal,
             checkUpdate: r,
