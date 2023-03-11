@@ -169,7 +169,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler with SeekHandler implement
   }
 
   AudioSource _itemToSource(MediaItem mediaItem) {
-    final audioSource = AudioSource.uri(Uri.parse(mediaItem.id));
+    final audioSource = ProgressiveAudioSource(Uri.parse(mediaItem.id));
     _mediaItemExpando[audioSource] = mediaItem;
     return audioSource;
   }
@@ -347,5 +347,22 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler with SeekHandler implement
   @override
   void setEpisodeRefreshFunction(Function setEpisodeFunction) {
     setEpisode = setEpisodeFunction;
+  }
+}
+class MyCustomSource extends StreamAudioSource {
+  final List<int> bytes;
+  MyCustomSource(this.bytes);
+
+  @override
+  Future<StreamAudioResponse> request([int? start, int? end]) async {
+    start ??= 0;
+    end ??= bytes.length;
+    return StreamAudioResponse(
+      sourceLength: bytes.length,
+      contentLength: end - start,
+      offset: start,
+      stream: Stream.value(bytes.sublist(start, end)),
+      contentType: 'audio/mpeg',
+    );
   }
 }
