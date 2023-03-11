@@ -21,7 +21,7 @@ class _RootScreenState extends State<RootScreen> {
   String _authStatus = 'Unknown';
 
   @override
-  void initState() async {
+  void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async => await initPlugin());
     super.initState();
   }
