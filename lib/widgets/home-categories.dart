@@ -18,6 +18,7 @@ class _HomeScreenCategoriesTabState extends State<HomeScreenCategoriesTab> {
   final podcastService = getIt<PodcastService>();
   @override
   void dispose() {
+    podcastService.selectedLanguage = null;
     ImageCache _imageCache = PaintingBinding.instance!.imageCache!;
 
     _imageCache.clear();

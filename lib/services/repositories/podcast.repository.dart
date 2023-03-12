@@ -30,7 +30,7 @@ class PodcastRepository {
     try {
       var url = '$API/search/random/$amount';
       if(language != null) {
-        url += '?lang=$language';
+        url += '?language=$language';
       }
       var response = await dio.get<String>(url);
 
@@ -47,7 +47,7 @@ class PodcastRepository {
     try {
       var url = '$API/search/random/$amount/rank/${rank.id}';
       if(language != null) {
-        url += '?lang=$language';
+        url += '?language=$language';
       }
       var response = await dio.get<String>(url);
       var list = List<Podcast>.from(json.decode(response.data!).map((data) => Podcast.fromJson(data)));
@@ -83,7 +83,7 @@ class PodcastRepository {
     try {
       var url = '$API/search/random/$amount/$genre';
       if(language != null) {
-        url += '?lang=$language';
+        url += '?language=$language';
       }
       var response = await dio.get<String>(url);
       var list = List<Podcast>.from(json.decode(response.data!).map((data) => Podcast.fromJson(data)));
@@ -98,7 +98,7 @@ class PodcastRepository {
     try {
       var url = '$API/search/top/$amount/$genre';
       if(language != null) {
-        url += '?lang=$language';
+        url += '?language=$language';
       }
       var response = await dio.get<String>(url);
       var list = List<Podcast>.from(json.decode(response.data!).map((data) => Podcast.fromJson(data)));
@@ -113,7 +113,7 @@ class PodcastRepository {
     try {
       var url = '$API/search/random/$amount/$genre';
       if(language != null) {
-        url += '?lang=$language';
+        url += '?language=$language';
       }
       // TODO: use correct endpoint for newcomers when it is implemented in the backend
       var response = await dio.get<String>(url);

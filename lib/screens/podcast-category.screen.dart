@@ -26,6 +26,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
 
   @override
   void dispose() {
+    podcastService.selectedLanguage = null;
     ImageCache _imageCache = PaintingBinding.instance!.imageCache!;
 
     _imageCache.clear();

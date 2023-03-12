@@ -143,8 +143,9 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   void dispose() {
-    ImageCache _imageCache = PaintingBinding.instance!.imageCache!;
 
+    podcastService.selectedLanguage = null;
+    ImageCache _imageCache = PaintingBinding.instance!.imageCache!;
     _imageCache.clear();
 
     _imageCache.clearLiveImages();

@@ -49,12 +49,6 @@ class _SearchBarState extends State<SearchBar> {
     super.initState();
     _editingController.text = widget.initialSearch ?? "";
   }
-  @override
-  void dispose() {
-    podcastService.selectedLanguage = null;
-    super.dispose();
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +60,13 @@ class _SearchBarState extends State<SearchBar> {
         LanguageModel(Name: AppLocalizations.of(context)!.fr, Value: "fr"),
         LanguageModel(Name: AppLocalizations.of(context)!.es, Value: "es")
       ];
-      dropdownValue = list[0];
+      switch(podcastService.selectedLanguage) {
+        case "de": dropdownValue = list[1]; break;
+        case "en": dropdownValue = list[2]; break;
+        case "fr": dropdownValue = list[3]; break;
+        case "es": dropdownValue = list[4]; break;
+        default: dropdownValue = list[0]; break;
+      }
     }
     return Column(
       children: [
