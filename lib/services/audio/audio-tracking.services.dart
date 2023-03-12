@@ -36,6 +36,7 @@ Future<void> positionUpdate(Duration position, MediaItem? currentMediaItem) asyn
     if (heartbeatCounter > heartbeatLimit) {
       heartbeatCounter = 0;
       var playTime = position.inSeconds;
+      currentMediaItem.extras!["playTime"] = playTime;
       int podcastId = currentMediaItem.extras!["podcastId"] ?? 0;
       int episodeId = currentMediaItem.extras!["episodeId"] ?? 0;
       await _rewardHub.Heartbeat(podcastId, episodeId, playTime);

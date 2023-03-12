@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:Talkaboat/services/downloading/file-downloader.service.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
+import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -34,11 +35,12 @@ abstract class AudioPlayerHandler implements AudioHandler {
 /// mapped onto the handler's state.
 class AudioPlayerHandlerImpl extends BaseAudioHandler with SeekHandler implements AudioPlayerHandler {
   List<Episode>? episodes;
+  Episode? currentEpisode;
   // ignore: close_sinks
   final BehaviorSubject<List<MediaItem>> _recentSubject = BehaviorSubject.seeded(<MediaItem>[]);
   // final _mediaLibrary = MediaLibrary();
   final _player = AudioPlayer();
-  final _playlist = ConcatenatingAudioSource(children: []);
+  final _playlist = ConcatenatingAudioSource(children: [], useLazyPreparation: true);
   @override
   final BehaviorSubject<double> volume = BehaviorSubject.seeded(1.0);
   @override
@@ -163,13 +165,17 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler with SeekHandler implement
     });
     // Broadcast the current queue.
     _effectiveSequence.map((sequence) => sequence.map((source) => _mediaItemExpando[source]!).toList()).pipe(queue);
-    AudioService.position.listen((event) async => await positionUpdate(event, mediaItem.value));
+    AudioService.position.listen((event) async => {
+      await positionUpdate(event, mediaItem.value),
+      episodes![_player.currentIndex!].playTime = event.inSeconds,
+      debugPrint("${episodes![_player.currentIndex!].playTime}")
+    });
     playbackState.listen((PlaybackState state) async => await receiveUpdate(
         state, mediaItem.value, _player.position, episodes == null ? null : episodes![_player.currentIndex!]));
   }
 
   AudioSource _itemToSource(MediaItem mediaItem) {
-    final audioSource = ProgressiveAudioSource(Uri.parse(mediaItem.id));
+    final audioSource = ProgressiveAudioSource(Uri.parse(mediaItem.id), duration: mediaItem.duration);
     _mediaItemExpando[audioSource] = mediaItem;
     return audioSource;
   }
@@ -226,8 +232,12 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler with SeekHandler implement
     await _playlist.clear();
     await _playlist.addAll(_itemsToSources(queue));
 
-    await _player.setAudioSource(_playlist);
+    await _player.setAudioSource(_playlist, preload: true);
     var continueTime = queue[index].extras!["playTime"];
+    if(continueTime != null && continueTime > 0 && queue[index].duration! + const Duration(seconds: 60) >= Duration(seconds: continueTime)) {
+      continueTime = 0;
+      queue[index].extras!["playTime"] = 0;
+    }
     await _player.seek(Duration(seconds: continueTime ?? 0), index: index);
     if (autoPlay) {
       await _player.play();
@@ -236,7 +246,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler with SeekHandler implement
 
   Future<MediaItem> convertEpisodeToMediaItem(Episode episode) async {
     var playTime = episode.playTime!;
-    if (episode.audioLengthSec! < episode.playTime! + 20) {
+    if (episode.audioLengthSec == null || episode.audioLengthSec! <= 0 || episode.audioLengthSec! < episode.playTime! + 60) {
       playTime = 0;
     }
     final episodeId = episode.episodeId;
@@ -260,10 +270,17 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler with SeekHandler implement
 
   @override
   Future<void> updateEpisodeQueue(List<Episode> episodes, {int index = 0}) async {
-    this.episodes = episodes;
-    await updateQueue(
-        (await Future.wait(episodes.map((episode) async => await convertEpisodeToMediaItem(episode)))).toList(),
-        index: index);
+    if(this.episodes == episodes) {
+      await skipToQueueItem(index);
+    } else {
+      this.episodes = episodes;
+      currentEpisode = episodes[index];
+      await updateQueue(
+          (await Future.wait(
+              episodes.map((episode) async => await convertEpisodeToMediaItem(
+                  episode)))).toList(),
+          index: index);
+    }
   }
 
   @override
@@ -292,8 +309,12 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler with SeekHandler implement
   @override
   Future<void> skipToQueueItem(int index) async {
     if (index < 0 || index >= _playlist.children.length) return;
+    final episode = episodes![index];
+    if (episode.audioLengthSec == null || episode.audioLengthSec! <= 0 || episode.playTime == null || episode.audioLengthSec! < episode.playTime! + 60) {
+      episode.playTime = 0;
+    }
     // This jumps to the beginning of the queue item at [index].
-    _player.seek(Duration.zero, index: _player.shuffleModeEnabled ? _player.shuffleIndices![index] : index);
+    _player.seek(Duration(seconds: int.parse(episodes![index].playTime!.toString())), index: _player.shuffleModeEnabled ? _player.shuffleIndices![index] : index);
   }
 
   @override
@@ -347,22 +368,5 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler with SeekHandler implement
   @override
   void setEpisodeRefreshFunction(Function setEpisodeFunction) {
     setEpisode = setEpisodeFunction;
-  }
-}
-class MyCustomSource extends StreamAudioSource {
-  final List<int> bytes;
-  MyCustomSource(this.bytes);
-
-  @override
-  Future<StreamAudioResponse> request([int? start, int? end]) async {
-    start ??= 0;
-    end ??= bytes.length;
-    return StreamAudioResponse(
-      sourceLength: bytes.length,
-      contentLength: end - start,
-      offset: start,
-      stream: Stream.value(bytes.sublist(start, end)),
-      contentType: 'audio/mpeg',
-    );
   }
 }
