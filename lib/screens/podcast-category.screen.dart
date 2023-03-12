@@ -93,6 +93,12 @@ class _CategoryScreenState extends State<CategoryScreen> {
       children: [
         SearchBar(
           placeholder: AppLocalizations.of(context)!.searchIn(widget.category.name),
+          showLanguageDropdown: true,
+          onChanged: (text, changedLanguage) => {
+            if(changedLanguage) {
+              setState(() { })
+            }
+          },
           onSubmitted: (text) {
             Navigator.push(
               context,

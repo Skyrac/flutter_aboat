@@ -1,5 +1,6 @@
 import 'package:Talkaboat/models/podcasts/podcast-genre.model.dart';
 import 'package:Talkaboat/models/podcasts/podcast-rank.model.dart';
+import 'package:flutter/material.dart';
 
 import '../../models/podcasts/episode.model.dart';
 import '../../models/podcasts/podcast.model.dart';
@@ -9,6 +10,7 @@ import '../repositories/podcast.repository.dart';
 class PodcastService {
   Podcast? podcast;
   Map<PodcastRank, List<Podcast>> randomRankPodcasts = {};
+  String? selectedLanguage;
 
 
   Future<List<Episode>> getPodcastDetailEpisodes(podcastId, sort, amount) async {
@@ -45,7 +47,7 @@ class PodcastService {
 
   Future<List<Podcast>> getRandomPodcastsByRank(int amount, PodcastRank rank) async {
     if(!randomRankPodcasts.containsKey(rank) || randomRankPodcasts[rank]!.length < amount) {
-      randomRankPodcasts[rank] = await PodcastRepository.getRandomPodcastsByRank(amount, rank);
+      randomRankPodcasts[rank] = await PodcastRepository.getRandomPodcastsByRank(amount, rank, selectedLanguage);
     }
     return Future.value(randomRankPodcasts[rank]!.take(amount).toList());
   }
@@ -58,11 +60,11 @@ class PodcastService {
   }
 
   Future<List<Podcast>> getTopPodcastByGenre(int amount, int genre) {
-    return PodcastRepository.getTopPodcastByGenre(amount, genre);
+    return PodcastRepository.getTopPodcastByGenre(amount, genre, selectedLanguage);
   }
 
   Future<List<Podcast>> getNewcomersByGenre(int amount, int genre) {
-    return PodcastRepository.getNewcomersByGenre(amount, genre);
+    return PodcastRepository.getNewcomersByGenre(amount, genre, selectedLanguage);
   }
 
   List<PodcastGenre>? genres;
@@ -77,7 +79,8 @@ class PodcastService {
   }
 
   Future<List<Podcast>> search(String search, {int? genre, int amount = 10, int offset = 0, PodcastRank? rank}) {
-    return PodcastRepository.search(search, amount, offset, genre: genre, rank: rank);
+    debugPrint(selectedLanguage);
+    return PodcastRepository.search(search, amount, offset, genre: genre, rank: rank, language: selectedLanguage);
   }
 }
 

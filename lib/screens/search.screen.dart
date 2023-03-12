@@ -49,6 +49,7 @@ class _SearchScreenState extends State<SearchScreen> {
     });
     debouncer.setValue(widget.initialValue ?? "");
     debouncer.values.listen((val) {
+      debugPrint("Refresh");
       _pagingController.refresh();
     });
     _controller.addListener(scrollUpdate);
@@ -96,8 +97,12 @@ class _SearchScreenState extends State<SearchScreen> {
           SearchBar(
             initialSearch: widget.initialValue,
             placeholder: "",
-            onChanged: (text) {
+            showLanguageDropdown: true,
+            onChanged: (text, changedLanguage) {
               debouncer.setValue(text);
+              if(changedLanguage) {
+                _pagingController.refresh();
+              }
             },
             shadowColor: const Color.fromRGBO(99, 163, 253, 1.0),
           ),

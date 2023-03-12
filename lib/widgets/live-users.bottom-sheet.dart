@@ -62,7 +62,7 @@ class _LiveUsersBottomSheetState extends State<LiveUsersBottomSheet> {
                     SearchBar(
                       initialSearch: "",
                       placeholder: "Search for User ...",
-                      onChanged: (text) {
+                      onChanged: (text, changedLanguage) {
                         debouncer.setValue(text);
                       },
                       paddingHorizontal: 0,

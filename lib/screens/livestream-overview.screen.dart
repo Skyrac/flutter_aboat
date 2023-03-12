@@ -85,7 +85,7 @@ class _LivestreamOverviewScreenState extends State<LivestreamOverviewScreen> {
               SearchBar(
                 initialSearch: "",
                 placeholder: "Search for Live-Session...",
-                onChanged: (text) {
+                onChanged: (text, changedLanguage) {
                   debouncer.setValue(text);
                 },
                 paddingHorizontal: 0,

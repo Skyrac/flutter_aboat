@@ -26,9 +26,13 @@ class PodcastRepository {
     return List.generate(0, (index) => null);
   }
 
-  static Future<List<Podcast>> getRandomPodcast(int amount) async {
+  static Future<List<Podcast>> getRandomPodcast(int amount, String? language) async {
     try {
-      var response = await dio.get<String>('$API/search/random/$amount');
+      var url = '$API/search/random/$amount';
+      if(language != null) {
+        url += '?lang=$language';
+      }
+      var response = await dio.get<String>(url);
 
       var list = List<Podcast>.from(json.decode(response.data!).map((data) => Podcast.fromJson(data)));
       debugPrint("$list");
@@ -39,10 +43,13 @@ class PodcastRepository {
     }
   }
 
-  static Future<List<Podcast>> getRandomPodcastsByRank(int amount, PodcastRank rank) async {
+  static Future<List<Podcast>> getRandomPodcastsByRank(int amount, PodcastRank rank, String? language) async {
     try {
-      var response = await dio.get<String>('$API/search/random/$amount/rank/${rank.id}');
-
+      var url = '$API/search/random/$amount/rank/${rank.id}';
+      if(language != null) {
+        url += '?lang=$language';
+      }
+      var response = await dio.get<String>(url);
       var list = List<Podcast>.from(json.decode(response.data!).map((data) => Podcast.fromJson(data)));
       debugPrint("$list");
       return list;
@@ -72,9 +79,13 @@ class PodcastRepository {
     }
   }
 
-  static Future<List<Podcast>> getRandomPodcastByGenre(int amount, int genre) async {
+  static Future<List<Podcast>> getRandomPodcastByGenre(int amount, int genre, String? language) async {
     try {
-      var response = await dio.get<String>('$API/search/random/$amount/$genre');
+      var url = '$API/search/random/$amount/$genre';
+      if(language != null) {
+        url += '?lang=$language';
+      }
+      var response = await dio.get<String>(url);
       var list = List<Podcast>.from(json.decode(response.data!).map((data) => Podcast.fromJson(data)));
       return list;
     } catch (ex) {
@@ -83,9 +94,13 @@ class PodcastRepository {
     }
   }
 
-  static Future<List<Podcast>> getTopPodcastByGenre(int amount, int genre) async {
+  static Future<List<Podcast>> getTopPodcastByGenre(int amount, int genre, String? language) async {
     try {
-      var response = await dio.get<String>('$API/search/top/$amount/$genre');
+      var url = '$API/search/top/$amount/$genre';
+      if(language != null) {
+        url += '?lang=$language';
+      }
+      var response = await dio.get<String>(url);
       var list = List<Podcast>.from(json.decode(response.data!).map((data) => Podcast.fromJson(data)));
       return list;
     } catch (ex) {
@@ -94,10 +109,14 @@ class PodcastRepository {
     }
   }
 
-  static Future<List<Podcast>> getNewcomersByGenre(int amount, int genre) async {
+  static Future<List<Podcast>> getNewcomersByGenre(int amount, int genre, String? language) async {
     try {
+      var url = '$API/search/random/$amount/$genre';
+      if(language != null) {
+        url += '?lang=$language';
+      }
       // TODO: use correct endpoint for newcomers when it is implemented in the backend
-      var response = await dio.get<String>('$API/search/random/$amount/$genre');
+      var response = await dio.get<String>(url);
       var list = List<Podcast>.from(json.decode(response.data!).map((data) => Podcast.fromJson(data)));
       return list;
     } catch (e) {
@@ -117,7 +136,7 @@ class PodcastRepository {
     }
   }
 
-  static Future<List<Podcast>> search(String search, int amount, int offset, {int? genre, PodcastRank? rank}) async {
+  static Future<List<Podcast>> search(String search, int amount, int offset, {int? genre, PodcastRank? rank, String? language}) async {
     try {
       final body = {"amount": amount, "offset": offset, "queue": search};
       if (genre != null) {
@@ -125,6 +144,9 @@ class PodcastRepository {
       }
       if (rank != null) {
         body["rank"] = rank.id.toString();
+      }
+      if(language != null) {
+        body["Language"] = language;
       }
       var response = await dio.post<String>('$API/search', data: body);
       debugPrint(response.data);

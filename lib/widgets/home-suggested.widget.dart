@@ -256,7 +256,7 @@ class _HomeScreenSuggestedTabState<T extends HomeScreenSuggestedTab> extends Sta
                     }
                     return const Center(child: CircularProgressIndicator());
                   },
-                  future: PodcastRepository.getRandomPodcast(10),
+                  future: PodcastRepository.getRandomPodcast(10, podcastService.selectedLanguage),
                 ))
     ]);
   }

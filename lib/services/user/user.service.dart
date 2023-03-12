@@ -253,7 +253,7 @@ class UserService {
       }
       //TODO: Vorschläge basierend auf den Vorzügen des Nutzers laden
     }
-    var podcasts = await PodcastRepository.getRandomPodcast(30);
+    var podcasts = await PodcastRepository.getRandomPodcast(30, '');
     debugPrint("$podcasts");
     podcastProposalsHomeScreen[0] = podcasts.take(10).toList();
     podcastProposalsHomeScreen[1] = podcasts.skip(10).take(10).toList();

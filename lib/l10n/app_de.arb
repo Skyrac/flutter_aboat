@@ -122,5 +122,10 @@
     "Kryptowährung" : "Kryptowährung",
     "takeAShare" : "Nehmen Sie einen Anteil",
     "searchAndFilter" : "Suchen und Filtern",
+    "defaultLanguage": "Alle",
+    "de": "Deutsch",
+    "en": "Englisch",
+    "es": "Spanisch",
+    "fr": "Französisch",
     "appTrackingCustomText": "Wir kümmern uns um Ihre Privatsphäre und Datensicherheit. Wir halten diese App kostenlos, indem wir Anzeigen schalten. Können wir Ihre Daten weiterhin verwenden, um personalisierte Anzeigen für Sie anzuzeigen?\n\nSie können Ihre Auswahl jederzeit in den App-Einstellungen ändern. Unsere Partner erfassen Daten und verwenden eine eindeutige Kennung auf Ihrem Gerät, um Ihnen personalisierte Werbung anzuzeigen."
 }                                
