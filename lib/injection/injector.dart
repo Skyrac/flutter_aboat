@@ -4,6 +4,7 @@ import 'package:Talkaboat/services/hubs/live/live-session.service.dart';
 import 'package:Talkaboat/services/quests/quest.service.dart';
 import 'package:Talkaboat/services/user/reward.service.dart';
 import 'package:Talkaboat/services/user/social.service.dart';
+import 'package:Talkaboat/services/videos/youtube/youtube-video.service.dart';
 import 'package:Talkaboat/services/web3/token.service.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:get_it/get_it.dart';
@@ -34,4 +35,5 @@ Future<void> configureDependencies() async {
   getIt.registerSingleton(RewardHubService());
   getIt.registerSingleton(ChatService());
   getIt.registerSingleton(LiveSessionService());
+  getIt.registerSingleton(YouTubeVideoService());
 }

@@ -60,9 +60,9 @@ class _CategoryScreenState extends State<CategoryScreen> {
         child: FutureBuilder(
           future: Future.wait([
             podcastService.getTopPodcastByGenre(10, widget.category.genreId),
-            podcastService.search("", genre: widget.category.genreId, rank: PodcastRank.NewComer),
-            podcastService.search("", genre: widget.category.genreId, rank: PodcastRank.Receiver),
-            podcastService.search("", genre: widget.category.genreId, rank: PodcastRank.Hodler),
+            podcastService.search("", genre: widget.category.genreId, rank: Rank.NewComer),
+            podcastService.search("", genre: widget.category.genreId, rank: Rank.Receiver),
+            podcastService.search("", genre: widget.category.genreId, rank: Rank.Hodler),
           ]),
           builder: ((context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
@@ -122,7 +122,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                     context,
                     buildSearchScreenTransition(
                         genreId: widget.category.genreId,
-                        rank: PodcastRank.NewComer,
+                        rank: Rank.NewComer,
                         imageUrl: widget.category.imageUrl,
                         title: "Newcomer in ${widget.category.name}"),
                   );
@@ -159,7 +159,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                     context,
                     buildSearchScreenTransition(
                         genreId: widget.category.genreId,
-                        rank: PodcastRank.Receiver,
+                        rank: Rank.Receiver,
                         imageUrl: widget.category.imageUrl,
                         title: "Receivers in ${widget.category.name}"),
                   );
@@ -181,7 +181,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                     context,
                     buildSearchScreenTransition(
                         genreId: widget.category.genreId,
-                        rank: PodcastRank.Hodler,
+                        rank: Rank.Hodler,
                         imageUrl: widget.category.imageUrl,
                         title: "Hodlers in ${widget.category.name}"),
                   );

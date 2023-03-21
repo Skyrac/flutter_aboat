@@ -83,14 +83,14 @@ class _PodcastHomeScreenSuggestedTabState<T extends PodcastHomeScreenSuggestedTa
         children: [
           ...createOnlyLoggedInWidgets(context),
           PodcastListHorizontal(
-              future: podcastService.getRandomPodcastsByRank( 10, PodcastRank.NewComer),
+              future: podcastService.getRandomPodcastsByRank( 10, Rank.NewComer),
               title: "Newcomer",
               multiplier: "x1.5",
               seeAllCb: (() {
                 Navigator.push(
                   context,
                   buildSearchScreenTransition(
-                    rank: PodcastRank.NewComer,
+                    rank: Rank.NewComer,
                     title: "Newcomers",
                   ),
                 );
@@ -98,28 +98,28 @@ class _PodcastHomeScreenSuggestedTabState<T extends PodcastHomeScreenSuggestedTa
           const StormmMissionWidget(),
           const SizedBox(height: 20),
           PodcastListHorizontal(
-              future: podcastService.getRandomPodcastsByRank( 10, PodcastRank.Receiver),
+              future: podcastService.getRandomPodcastsByRank( 10, Rank.Receiver),
               title: "Receiver",
               multiplier: "x1.25",
               seeAllCb: (() {
                 Navigator.push(
                   context,
                   buildSearchScreenTransition(
-                    rank: PodcastRank.Receiver,
+                    rank: Rank.Receiver,
                     title: "Receivers",
                   ),
                 );
               })),
           const SizedBox(height: 20),
           PodcastListHorizontal(
-              future: podcastService.getRandomPodcastsByRank( 10, PodcastRank.Hodler),
+              future: podcastService.getRandomPodcastsByRank( 10, Rank.Hodler),
               title: "Holder",
               multiplier: "x1.1",
               seeAllCb: (() {
                 Navigator.push(
                   context,
                   buildSearchScreenTransition(
-                    rank: PodcastRank.Hodler,
+                    rank: Rank.Hodler,
                     title: "Hodlers",
                   ),
                 );

@@ -1,57 +1,57 @@
-enum PodcastRank { NewComer, Receiver, Hodler }
+enum Rank { NewComer, Receiver, Hodler }
 
-extension RankId on PodcastRank {
+extension RankId on Rank {
   int get id {
     switch (this) {
-      case PodcastRank.NewComer:
+      case Rank.NewComer:
         return 0;
-      case PodcastRank.Receiver:
+      case Rank.Receiver:
         return 1;
-      case PodcastRank.Hodler:
+      case Rank.Hodler:
         return 2;
     }
   }
 }
 
-PodcastRank? PodcastRankfromNumber(int? id) {
+Rank? PodcastRankfromNumber(int? id) {
   if (id == null) {
     return null;
   }
   switch (id) {
     case 0:
-      return PodcastRank.NewComer;
+      return Rank.NewComer;
     case 1:
-      return PodcastRank.Receiver;
+      return Rank.Receiver;
     case 2:
-      return PodcastRank.Hodler;
+      return Rank.Hodler;
   }
   return null;
 }
 
-String? PodcastRankNamefromRank(PodcastRank? rank) {
+String? PodcastRankNamefromRank(Rank? rank) {
   if (rank == null) {
     return null;
   }
   switch (rank) {
-    case PodcastRank.NewComer:
+    case Rank.NewComer:
       return "Newcomer";
-    case PodcastRank.Receiver:
+    case Rank.Receiver:
       return "Receiver";
-    case PodcastRank.Hodler:
+    case Rank.Hodler:
       return "Hodler";
   }
 }
 
-String? PodcastMultiplerfromRank(PodcastRank? rank) {
+String? PodcastMultiplerfromRank(Rank? rank) {
   if (rank == null) {
     return null;
   }
   switch (rank) {
-    case PodcastRank.NewComer:
+    case Rank.NewComer:
       return "x1.5";
-    case PodcastRank.Receiver:
+    case Rank.Receiver:
       return "x1.25";
-    case PodcastRank.Hodler:
+    case Rank.Hodler:
       return "x1.1";
   }
 }

@@ -12,7 +12,7 @@ import '../repositories/podcast.repository.dart';
 class PodcastService {
   Podcast? podcast;
   final userService = getIt<UserService>();
-  Map<PodcastRank, List<Podcast>> randomRankPodcasts = {};
+  Map<Rank, List<Podcast>> randomRankPodcasts = {};
 
 
 
@@ -48,7 +48,7 @@ class PodcastService {
     return PodcastRepository.getPodcastOwnership(podcastId);
   }
 
-  Future<List<Podcast>> getRandomPodcastsByRank(int amount, PodcastRank rank) async {
+  Future<List<Podcast>> getRandomPodcastsByRank(int amount, Rank rank) async {
     if(!randomRankPodcasts.containsKey(rank) || randomRankPodcasts[rank]!.length < amount) {
       randomRankPodcasts[rank] = await PodcastRepository.getRandomPodcastsByRank(amount, rank, userService.selectedLanguage);
     }
@@ -81,7 +81,7 @@ class PodcastService {
     }
   }
 
-  Future<List<Podcast>> search(String search, {int? genre, int amount = 10, int offset = 0, PodcastRank? rank}) {
+  Future<List<Podcast>> search(String search, {int? genre, int amount = 10, int offset = 0, Rank? rank}) {
     return PodcastRepository.search(search, amount, offset, genre: genre, rank: rank, language: userService.selectedLanguage);
   }
 }

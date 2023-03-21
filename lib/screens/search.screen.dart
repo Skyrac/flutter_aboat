@@ -3,15 +3,18 @@ import 'package:Talkaboat/models/podcasts/podcast-rank.model.dart';
 import 'package:Talkaboat/models/podcasts/podcast.model.dart';
 import 'package:Talkaboat/services/audio/podcast.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
+import 'package:Talkaboat/services/videos/youtube/youtube-video.service.dart';
 import 'package:Talkaboat/utils/scaffold_wave.dart';
 import 'package:Talkaboat/widgets/podcasts/podcast-list-tile.widget.dart';
 import 'package:Talkaboat/widgets/searchbar.widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 
 class SearchScreen  extends StatefulWidget  {
@@ -27,7 +30,7 @@ class SearchScreen  extends StatefulWidget  {
 
   final AppBar? appBar;
   final int? onlyGenre;
-  final PodcastRank? onlyRank;
+  final Rank? onlyRank;
   final String? initialValue;
   final bool? refreshOnStateChange;
   final Future<List<Podcast>> Function(String text, int amount, int offset)? customSearchFunc;
@@ -38,11 +41,12 @@ class SearchScreen  extends StatefulWidget  {
 
 class _SearchScreenState extends State<SearchScreen> {
   final podcastService = getIt<PodcastService>();
+  final youtubeService = getIt<YouTubeVideoService>();
   final userService = getIt<UserService>();
   final debouncer = Debouncer<String>(const Duration(milliseconds: 250), initialValue: "");
-
+  bool isWifi = false;
   static const _pageSize = 20;
-
+  int activeIndex = 0;
   final PagingController<int, dynamic> _pagingController = PagingController(firstPageKey: 0);
 
   @override
@@ -53,14 +57,17 @@ class _SearchScreenState extends State<SearchScreen> {
     });
     debouncer.setValue(widget.initialValue ?? "");
     debouncer.values.listen((val) {
-      debugPrint("Refresh");
       _pagingController.refresh();
     });
     _controller.addListener(scrollUpdate);
   }
 
   scrollUpdate() {
+    debugPrint("Height: ${_controller.offset}");
+    int newIndex = (_controller.offset / (MediaQuery.of(context).size.height - 500)).round();
     setState(() {
+      activeIndex = newIndex;
+      debugPrint("$newIndex");
       offset = _controller.offset;
     });
   }
@@ -89,7 +96,14 @@ class _SearchScreenState extends State<SearchScreen> {
           amount: _pageSize, offset: pageKey, genre: widget.onlyGenre, rank: widget.onlyRank);
     }
     if(userService.currentView.label == ContentViews.Videos) {
-
+      final connectivityResult = await (Connectivity().checkConnectivity());
+      if (connectivityResult == ConnectivityResult.mobile) {
+        isWifi = false;
+      } else if (connectivityResult == ConnectivityResult.wifi) {
+        isWifi = true;
+      }
+      return await youtubeService.search(debouncer.value,
+          amount: _pageSize, offset: pageKey, genre: widget.onlyGenre, rank: widget.onlyRank);
     }
   }
 
@@ -129,14 +143,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   padding: const EdgeInsets.only(left: 10),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
-                    child: PodcastListTileWidget(
-                      item,
-                      stateChangeCb: widget.refreshOnStateChange != null && widget.refreshOnStateChange! == true
-                          ? () {
-                              _pagingController.refresh();
-                            }
-                          : null,
-                    ),
+                    child: createTileWidget(item, index)
                   ),
                 ),
               ),
@@ -147,6 +154,54 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
+  Widget createTileWidget(item, index) {
+    switch(userService.currentView.label) {
+      case ContentViews.Podcasts: return PodcastListTileWidget(
+        item,
+        stateChangeCb: widget.refreshOnStateChange != null && widget.refreshOnStateChange! == true
+            ? () {
+          _pagingController.refresh();
+        }
+            : null,
+      );
+      case ContentViews.Videos:
+        YoutubePlayerController youtubePlayerController = YoutubePlayerController(
+        initialVideoId: item.id,
+        flags: YoutubePlayerFlags(
+          autoPlay: index == activeIndex && isWifi,
+          mute: true,
+        ),
+      );
+      return Column(
+        children: [
+          YoutubePlayer(
+            controller: youtubePlayerController,
+            aspectRatio: 16 / 9,
+            showVideoProgressIndicator: false,
+            onReady: () {
+              if (index != activeIndex) {
+                youtubePlayerController.pause();
+              }
+            },
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(item.title, style: Theme.of(context).textTheme.titleLarge),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+              Text(item.author),
+              Text(item.duration)
+            ],),
+          ),
+          SizedBox(height: 20)
+        ],
+      );
+    }
+  }
   AppBar buildAppbar(BuildContext context) {
     return AppBar(
       backgroundColor: const Color.fromRGBO(29, 40, 58, 1),
@@ -170,7 +225,7 @@ class _SearchScreenState extends State<SearchScreen> {
 }
 
 PageTransition buildSearchScreenTransition(
-    {String? intitialValue, int? genreId, PodcastRank? rank, String? title, String? imageUrl}) {
+    {String? intitialValue, int? genreId, Rank? rank, String? title, String? imageUrl}) {
   return PageTransition(
     alignment: Alignment.bottomCenter,
     curve: Curves.bounceOut,

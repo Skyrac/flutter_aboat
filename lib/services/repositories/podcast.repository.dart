@@ -43,7 +43,7 @@ class PodcastRepository {
     }
   }
 
-  static Future<List<Podcast>> getRandomPodcastsByRank(int amount, PodcastRank rank, String? language) async {
+  static Future<List<Podcast>> getRandomPodcastsByRank(int amount, Rank rank, String? language) async {
     try {
       var url = '$API/search/random/$amount/rank/${rank.id}';
       if(language != null) {
@@ -136,7 +136,7 @@ class PodcastRepository {
     }
   }
 
-  static Future<List<Podcast>> search(String search, int amount, int offset, {int? genre, PodcastRank? rank, String? language}) async {
+  static Future<List<Podcast>> search(String search, int amount, int offset, {int? genre, Rank? rank, String? language}) async {
     try {
       final body = {"amount": amount, "offset": offset, "queue": search};
       if (genre != null) {
