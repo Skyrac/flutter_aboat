@@ -5,6 +5,7 @@ import 'package:Talkaboat/services/audio/podcast.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/services/videos/youtube/youtube-video.service.dart';
 import 'package:Talkaboat/utils/scaffold_wave.dart';
+import 'package:Talkaboat/widgets/ads/native-ad.widget.dart';
 import 'package:Talkaboat/widgets/podcasts/podcast-list-tile.widget.dart';
 import 'package:Talkaboat/widgets/searchbar.widget.dart';
 import 'package:Talkaboat/widgets/videos/youtube/youtube-video-detail.widget.dart';
@@ -16,6 +17,8 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+
+import '../widgets/ads/banner-ad.widget.dart';
 
 
 class SearchScreen  extends StatefulWidget  {
@@ -142,7 +145,17 @@ class _SearchScreenState extends State<SearchScreen> {
                   padding: const EdgeInsets.only(left: 10),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
-                    child: createTileWidget(item, index)
+                    child: Column(children: [
+                      index % 5 == 0 ? Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: SizedBox(
+                          height: 100,
+                            width: MediaQuery.of(context).size.width,
+                            child: AdBannerWidget()
+                        ),
+                      ) : Container(),
+                      createTileWidget(item, index)]
+                    )
                   ),
                 ),
               ),

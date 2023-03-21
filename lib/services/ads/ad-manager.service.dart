@@ -27,6 +27,33 @@ class AdManager {
     callback = null;
   }
 
+  static Future<AppOpenAd?> loadAppStartAd() async {
+    AppOpenAd? appOpenAd;
+    final AdRequest request = AdRequest();
+    final adLoadCallback = AppOpenAdLoadCallback(
+      onAdLoaded: (ad) {
+        appOpenAd = ad;
+        print('App start ad loaded');
+      },
+      onAdFailedToLoad: (error) {
+        print('App start ad failed to load: $error');
+      },
+    );
+
+    try {
+      await AppOpenAd.load(
+        adUnitId: Platform.isIOS ? "ca-app-pub-3269278654019042/4003240837" : "ca-app-pub-3269278654019042/2156926258",
+        request: request,
+        adLoadCallback: adLoadCallback,
+        orientation: AppOpenAd.orientationPortrait,
+      );
+    } catch (e) {
+      print('Error loading app start ad: $e');
+    }
+
+    return appOpenAd;
+  }
+
   static preLoadAd(bool show) {
     if(isAdLoading) {
       return;

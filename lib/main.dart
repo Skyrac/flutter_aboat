@@ -68,8 +68,39 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   final userService = getIt<UserService>();
+  AppOpenAd? _appOpenAd;
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance?.addObserver(this);
+    AdManager.loadAppStartAd().then((ad) => {
+      _appOpenAd = ad,
+      if(userService.newUser) {
+        _appOpenAd?.show(),
+        AdManager.loadAppStartAd().then((ad) => _appOpenAd = ad)
+      }
+    });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && _appOpenAd != null) {
+      _appOpenAd?.show();
+      _appOpenAd = null;
+      AdManager.loadAppStartAd().then((ad) => _appOpenAd = ad);
+    } else if(_appOpenAd == null) {
+      AdManager.loadAppStartAd().then((ad) => {
+        _appOpenAd = ad,
+        if(userService.newUser) {
+          _appOpenAd?.show(),
+          AdManager.loadAppStartAd().then((ad) => _appOpenAd = ad)
+        }
+      });
+    }
+  }
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
