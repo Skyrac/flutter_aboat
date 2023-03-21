@@ -27,8 +27,8 @@ class RewardHubService extends HubService {
     }
   }
 
-  dynamic createRequestData(dynamic owner, int asset, int playTime) {
-    return {"owner": owner.toString(), "asset": asset, "playTime": playTime};
+  dynamic createRequestData(dynamic owner, dynamic asset, int playTime, { int? type }) {
+    return {"owner": owner.toString(), "asset": asset, "playTime": playTime, "type": type ?? 0};
   }
 
   Future<void> Play(int owner, int asset, int playTime) async {
@@ -169,6 +169,19 @@ class RewardHubService extends HubService {
     try {
       var data = createRequestData(owner, asset, playTime);
 
+      debugPrint("$data sending heartbeat for $owner episode $asset");
+      await connection.invoke("Heartbeat", args: <Object>[data]);
+    } catch (e) {
+      debugPrint("Heartbeat Error $e");
+    }
+  }
+
+  Future<void> HeartbeatYouTube(String owner, String asset, int playTime) async {
+    if (!await checkConnection()) {
+      return;
+    }
+    try {
+      var data = createRequestData(owner, asset, playTime, type: 3);
       debugPrint("$data sending heartbeat for $owner episode $asset");
       await connection.invoke("Heartbeat", args: <Object>[data]);
     } catch (e) {

@@ -1,4 +1,6 @@
 import 'package:Talkaboat/models/videos/youtube/youtube-video-simple.model.dart';
+import 'package:Talkaboat/services/hubs/reward/reward-hub.service.dart';
+import 'package:Talkaboat/services/user/reward.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/utils/scaffold_wave.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +9,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../injection/injector.dart';
+import 'dart:async';
 
 class YouTubeVideoDetailScreen extends StatefulWidget {
   const YouTubeVideoDetailScreen({Key? key, required this.youTubeVideo}) : super(key: key);
@@ -20,6 +23,8 @@ class _YouTubeVideoDetailScreenState extends State<YouTubeVideoDetailScreen> {
   late YoutubePlayerController _controller;
   bool _showComments = false;
   final userService = getIt<UserService>();
+  final rewardService = getIt<RewardHubService>();
+  Timer? _timer;
 
   void _toggleComments() {
     setState(() {
@@ -49,7 +54,24 @@ class _YouTubeVideoDetailScreenState extends State<YouTubeVideoDetailScreen> {
   @override
   void dispose() {
     _controller.dispose();
+    _timer?.cancel();
     super.dispose();
+  }
+
+  void _startTimer() {
+    const updateInterval = Duration(seconds: 1);
+
+    _timer = Timer.periodic(updateInterval, (timer) {
+      if (_controller.value.isPlaying) {
+        final position = _controller.value.position;
+        rewardService.HeartbeatYouTube("", widget.youTubeVideo.id, position.inSeconds);
+        _onVideoProgress(position);
+      }
+    });
+  }
+
+  void _onVideoProgress(position) {
+
   }
 
   @override
@@ -63,8 +85,9 @@ class _YouTubeVideoDetailScreenState extends State<YouTubeVideoDetailScreen> {
         controller: _controller,
         showVideoProgressIndicator: true,
         progressIndicatorColor: Colors.blueAccent,
+
         onReady: () {
-          print('Player is ready.');
+          _startTimer();
         },
       ),
       builder: (context, player) =>  ScaffoldWave(
