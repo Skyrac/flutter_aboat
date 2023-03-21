@@ -7,6 +7,7 @@ import 'package:Talkaboat/services/videos/youtube/youtube-video.service.dart';
 import 'package:Talkaboat/utils/scaffold_wave.dart';
 import 'package:Talkaboat/widgets/podcasts/podcast-list-tile.widget.dart';
 import 'package:Talkaboat/widgets/searchbar.widget.dart';
+import 'package:Talkaboat/widgets/videos/youtube/youtube-video-detail.widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:debounce_throttle/debounce_throttle.dart';
@@ -48,6 +49,7 @@ class _SearchScreenState extends State<SearchScreen> {
   static const _pageSize = 20;
   int activeIndex = 0;
   final PagingController<int, dynamic> _pagingController = PagingController(firstPageKey: 0);
+
 
   @override
   void initState() {
@@ -118,9 +120,6 @@ class _SearchScreenState extends State<SearchScreen> {
       body: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(
-            height: 66,
-          ),
           SearchBar(
             initialSearch: widget.initialValue,
             placeholder: "",
@@ -169,36 +168,46 @@ class _SearchScreenState extends State<SearchScreen> {
         initialVideoId: item.id,
         flags: YoutubePlayerFlags(
           autoPlay: index == activeIndex && isWifi,
+          controlsVisibleAtStart: false,
+          hideControls: true,
           mute: true,
         ),
       );
-      return Column(
-        children: [
-          YoutubePlayer(
-            controller: youtubePlayerController,
-            aspectRatio: 16 / 9,
-            showVideoProgressIndicator: false,
-            onReady: () {
-              if (index != activeIndex) {
-                youtubePlayerController.pause();
-              }
-            },
+      return InkWell(
+        onTap: () {
+         Navigator.push(context, MaterialPageRoute(builder: (context) => YouTubeVideoDetailScreen(youTubeVideo: item)));
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(5.0),
+          child: Column(
+            children: [
+              YoutubePlayer(
+                controller: youtubePlayerController,
+                aspectRatio: 16 / 9,
+                showVideoProgressIndicator: false,
+                onReady: () {
+                  if (index != activeIndex) {
+                    youtubePlayerController.pause();
+                  }
+                },
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(item.title, style: Theme.of(context).textTheme.titleLarge),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                  Text(item.author),
+                  Text(item.duration)
+                ],),
+              ),
+              SizedBox(height: 20)
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(item.title, style: Theme.of(context).textTheme.titleLarge),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-              Text(item.author),
-              Text(item.duration)
-            ],),
-          ),
-          SizedBox(height: 20)
-        ],
+        ),
       );
     }
   }
