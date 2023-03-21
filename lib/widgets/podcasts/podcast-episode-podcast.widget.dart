@@ -2,7 +2,7 @@ import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/models/podcasts/podcast.model.dart';
 import 'package:Talkaboat/services/audio/podcast.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
-import 'package:Talkaboat/widgets/podcast-list.widget.dart';
+import 'package:Talkaboat/widgets/podcasts/podcast-list.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -74,10 +74,10 @@ class _PodcastEpisodePodcastState extends State<PodcastEpisodePodcast> {
         onSelected: (value) async {
           switch (value) {
             case "add_to_avorites":
-              await userService.addToFavorites(widget.podcastId);
+              await userService.addPodcastsToFavorites(widget.podcastId);
               break;
             case "remove_to_avorites":
-              await userService.removeFromFavorites(widget.podcastId);
+              await userService.removePodcastsFromFavorites(widget.podcastId);
               break;
           }
         },

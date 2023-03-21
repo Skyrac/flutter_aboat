@@ -4,7 +4,7 @@ import 'package:Talkaboat/services/web3/token.service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../models/podcasts/episode.model.dart';
+import '../../models/podcasts/episode.model.dart';
 
 class PodcastEpisodeSliver extends SliverPersistentHeaderDelegate {
   final double expandedHeight;

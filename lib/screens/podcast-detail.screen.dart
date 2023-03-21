@@ -5,8 +5,7 @@ import 'package:Talkaboat/services/hubs/chat/chat.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/widgets/chat-input.widget.dart';
 import 'package:Talkaboat/widgets/chat.widget.dart';
-import 'package:Talkaboat/widgets/episode-list-with-header.widget.dart';
-import 'package:Talkaboat/widgets/podcast-details.widget.dart';
+import 'package:Talkaboat/widgets/podcasts/podcast-details.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -16,7 +15,8 @@ import '../models/search/search_result.model.dart';
 import '../services/audio/podcast.service.dart';
 import '../themes/colors.dart';
 import '../utils/scaffold_wave.dart';
-import '../widgets/podcast-detail-sliver.widget.dart';
+import '../widgets/podcasts/episode-list-with-header.widget.dart';
+import '../widgets/podcasts/podcast-detail-sliver.widget.dart';
 
 class PodcastDetailScreen extends StatefulWidget {
   const PodcastDetailScreen({Key? key, required this.podcastSearchResult}) : super(key: key);
@@ -110,7 +110,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
                         icon: const Icon(Icons.favorite, color: Color.fromRGBO(99, 163, 253, 0.5), size: 36),
                         tooltip: '',
                         onPressed: () async {
-                          await userService.removeFromFavorites(widget.podcastSearchResult.id!);
+                          await userService.removePodcastsFromFavorites(widget.podcastSearchResult.id!);
                           setState(() {});
                         },
                       ),
@@ -121,7 +121,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
                         icon: const Icon(Icons.favorite_border, color: Color.fromRGBO(99, 163, 253, 0.5), size: 36),
                         tooltip: '',
                         onPressed: () async {
-                          await userService.addToFavorites(widget.podcastSearchResult.id!);
+                          await userService.addPodcastsToFavorites(widget.podcastSearchResult.id!);
                           setState(() {});
                         },
                       ),

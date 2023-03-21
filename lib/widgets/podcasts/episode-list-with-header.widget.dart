@@ -1,10 +1,11 @@
 import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/services/audio/podcast.service.dart';
-import 'package:Talkaboat/widgets/episode-list.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../models/search/search_result.model.dart';
+import '../../models/search/search_result.model.dart';
+import 'episode-list.widget.dart';
+
 
 class EpisodeHeaderList extends StatefulWidget {
   const EpisodeHeaderList({super.key, required this.podcastSearchResult, this.controller});

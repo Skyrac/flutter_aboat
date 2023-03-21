@@ -7,11 +7,23 @@ import '../screens/settings/settings.screen.dart';
 import '../services/user/user.service.dart';
 import '../injection/injector.dart';
 
-class HomeAppBarWidget extends StatelessWidget {
+
+
+class HomeAppBarWidget extends StatefulWidget {
   HomeAppBarWidget({Key? key, this.refresh, this.bottom}) : super(key: key);
   final Function? refresh;
   final PreferredSizeWidget? bottom;
+
+  @override
+  State<HomeAppBarWidget> createState() => _HomeAppBarWidgetState();
+}
+
+class _HomeAppBarWidgetState extends State<HomeAppBarWidget> {
   final userService = getIt<UserService>();
+
+  void _onItemSelected(CurrentContentData item) {
+    userService.changeSelectedView(item);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +37,7 @@ class HomeAppBarWidget extends StatelessWidget {
       ),
       leadingWidth: 35,
       titleSpacing: 10,
-      bottom: bottom,
+      bottom: widget.bottom,
       title: Padding(
         padding: const EdgeInsets.only(top: 8.0),
         child: Text(
@@ -35,6 +47,38 @@ class HomeAppBarWidget extends StatelessWidget {
         ),
       ),
       actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 5),
+          child: PopupMenuButton<CurrentContentData>(
+            itemBuilder: (BuildContext context) {
+              return userService.menuItems.map((CurrentContentData item) {
+                return PopupMenuItem<CurrentContentData>(
+                  value: item,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Icon(item.icon, color: item.color),
+                      Text(item.label.value),
+                    ],
+                  ),
+                );
+              }).toList();
+            },
+            onSelected: _onItemSelected,
+            icon: Stack(children: [
+              Icon(userService.currentView.icon, color: userService.currentView.color),
+              Positioned(
+                right: -5,
+                bottom: -6,
+                child: Icon(
+                  Icons.arrow_drop_down,
+                  color: Colors.lightBlueAccent,
+                  size: 16,
+                ),
+              ),
+            ]),
+          ),
+        ),
         Padding(
           padding: const EdgeInsets.only(right: 5),
           child: IconButton(
@@ -64,7 +108,7 @@ class HomeAppBarWidget extends StatelessWidget {
                 child: IconButton(
                   icon: Image.asset(
                     "assets/images/wallet.png",
-                    width: 25,
+                    width: 23,
                     height: 20,
                     fit: BoxFit.cover,
                   ),
@@ -102,7 +146,7 @@ class HomeAppBarWidget extends StatelessWidget {
                       type: PageTransitionType.rightToLeftWithFade,
                       duration: const Duration(milliseconds: 500),
                       reverseDuration: const Duration(milliseconds: 500),
-                      child: SettingsScreen(refresh: refresh)));
+                      child: SettingsScreen(refresh: widget.refresh)));
             },
           ),
         )

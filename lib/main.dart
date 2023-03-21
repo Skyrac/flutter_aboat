@@ -103,7 +103,9 @@ class _MyAppState extends State<MyApp> {
           home: AnimatedSplashScreen(
               duration: 2000,
               splash: const Image(width: 250, image: AssetImage('assets/images/talkaboat.png')),
-              nextScreen: const RootScreen(),
+              nextScreen: ChangeNotifierProvider(
+                create: (context) => userService,
+                  child: const RootScreen()),
               splashTransition: SplashTransition.fadeTransition,
               pageTransitionType: PageTransitionType.fade,
               backgroundColor: DefaultColors.secondaryColor.shade900)),

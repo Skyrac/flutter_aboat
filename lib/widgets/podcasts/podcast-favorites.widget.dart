@@ -4,11 +4,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
-import '../injection/injector.dart';
-import '../models/search/search_result.model.dart';
-import '../screens/login.screen.dart';
-import '../screens/podcast-detail.screen.dart';
-import '../services/user/user.service.dart';
+import '../../injection/injector.dart';
+import '../../models/search/search_result.model.dart';
+import '../../screens/login.screen.dart';
+import '../../screens/podcast-detail.screen.dart';
+import '../../services/user/user.service.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PodcastListFavoritesWidget extends StatefulWidget {

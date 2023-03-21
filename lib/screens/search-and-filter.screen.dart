@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../themes/colors.dart';
-import '../widgets/podcast-search.widget.dart';
+import '../widgets/podcasts/podcast-search.widget.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SearchAndFilterScreen extends StatefulWidget {

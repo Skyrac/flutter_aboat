@@ -120,7 +120,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
           switch (value) {
             case 'download':
               if (!userService.isInFavorites(entry.podcastId!)) {
-                await userService.addToFavorites(entry.podcastId!);
+                await userService.addPodcastsToFavorites(entry.podcastId!);
                 widget.refresh();
               }
               await FileDownloadService.cacheOrDelete(entry.audio!);
@@ -370,7 +370,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                           padding: const EdgeInsets.all(0),
                           onPressed: (() async {
                             if (!userService.isInFavorites(entry.podcastId!)) {
-                              await userService.addToFavorites(entry.podcastId!);
+                              await userService.addPodcastsToFavorites(entry.podcastId!);
                               refresh();
                             }
                             await FileDownloadService.cacheOrDelete(entry.audio!);

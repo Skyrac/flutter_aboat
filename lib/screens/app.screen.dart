@@ -19,7 +19,7 @@ import '../injection/injector.dart';
 import '../models/podcasts/episode.model.dart';
 import '../services/audio/audio-handler.services.dart';
 import '../themes/colors.dart';
-import '../widgets/mini-player.widget.dart';
+import '../widgets/podcasts/mini-player.widget.dart';
 
 class AppScreen extends StatefulWidget {
   const AppScreen({Key? key, required this.title}) : super(key: key);

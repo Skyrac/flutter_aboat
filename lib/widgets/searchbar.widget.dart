@@ -1,3 +1,4 @@
+import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/themes/colors_new.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -41,7 +42,7 @@ class LanguageModel {
 class _SearchBarState extends State<SearchBar> {
   final TextEditingController _editingController = TextEditingController();
   final podcastService = getIt<PodcastService>();
-
+  final userService = getIt<UserService>();
   late List<LanguageModel> list = List.empty();
   LanguageModel? dropdownValue;
   @override
@@ -60,7 +61,7 @@ class _SearchBarState extends State<SearchBar> {
         LanguageModel(Name: AppLocalizations.of(context)!.fr, Value: "fr"),
         LanguageModel(Name: AppLocalizations.of(context)!.es, Value: "es")
       ];
-      switch(podcastService.selectedLanguage) {
+      switch(userService.selectedLanguage) {
         case "de": dropdownValue = list[1]; break;
         case "en": dropdownValue = list[2]; break;
         case "fr": dropdownValue = list[3]; break;
@@ -135,7 +136,7 @@ class _SearchBarState extends State<SearchBar> {
             onChanged: (LanguageModel? selectedLanguage) {
               // This is called when the user selects an item.
 
-              podcastService.selectedLanguage = selectedLanguage?.Value;
+              userService.selectedLanguage = selectedLanguage?.Value;
               if (widget.onChanged != null) {
                 widget.onChanged!(_editingController.text, true);
               }

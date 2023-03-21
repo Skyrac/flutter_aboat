@@ -4,9 +4,10 @@ import 'package:Talkaboat/models/podcasts/podcast-rank.model.dart';
 import 'package:Talkaboat/models/podcasts/podcast.model.dart';
 import 'package:Talkaboat/screens/search.screen.dart';
 import 'package:Talkaboat/services/audio/podcast.service.dart';
+import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/utils/scaffold_wave.dart';
-import 'package:Talkaboat/widgets/podcast-favorites.widget.dart';
-import 'package:Talkaboat/widgets/podcast-list-horizontal.widget.dart';
+import 'package:Talkaboat/widgets/podcasts/podcast-favorites.widget.dart';
+import 'package:Talkaboat/widgets/podcasts/podcast-list-horizontal.widget.dart';
 import 'package:Talkaboat/widgets/searchbar.widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -23,10 +24,10 @@ class CategoryScreen extends StatefulWidget {
 
 class _CategoryScreenState extends State<CategoryScreen> {
   final podcastService = getIt<PodcastService>();
-
+  final userService = getIt<UserService>();
   @override
   void dispose() {
-    podcastService.selectedLanguage = null;
+    userService.selectedLanguage = null;
     ImageCache _imageCache = PaintingBinding.instance!.imageCache!;
 
     _imageCache.clear();

@@ -68,7 +68,7 @@ class _StormmMissionWidgetState extends State<StormmMissionWidget> {
         InkWell(
           onTap: () async =>
           {
-            await launchUrl(Uri.parse("https://t.me/talkaboat"))
+            await launchUrl(Uri.parse("https://t.me/talkaboat"), mode: LaunchMode.externalApplication)
           },
           child: Card(
             shadowColor: const Color.fromRGBO(99, 163, 253, 1.0),
@@ -109,7 +109,7 @@ class _StormmMissionWidgetState extends State<StormmMissionWidget> {
           child: Container(
             child: InkWell(borderRadius: BorderRadius.circular(10.0),
                 onTap: () async {
-                  await launchUrl(Uri.parse(mission.url));
+                  await launchUrl(Uri.parse(mission.url), mode: LaunchMode.externalApplication);
                 },
                 child: SizedBox(
                     width: 200,

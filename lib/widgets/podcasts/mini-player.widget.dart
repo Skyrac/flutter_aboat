@@ -1,5 +1,5 @@
 import 'package:Talkaboat/screens/podcast-episode.screen.dart';
-import 'package:Talkaboat/widgets/player-control.widget.dart';
+import 'package:Talkaboat/widgets/podcasts/player-control.widget.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -7,12 +7,12 @@ import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../injection/injector.dart';
-import '../models/podcasts/episode.model.dart';
-import '../services/audio/audio-handler.services.dart';
-import '../services/audio/media.state.dart';
-import '../services/state/state.service.dart';
-import '../utils/common.dart';
+import '../../injection/injector.dart';
+import '../../models/podcasts/episode.model.dart';
+import '../../services/audio/audio-handler.services.dart';
+import '../../services/audio/media.state.dart';
+import '../../services/state/state.service.dart';
+import '../../utils/common.dart';
 
 class MiniPlayerWidget extends StatefulWidget {
   const MiniPlayerWidget({Key? key, required this.episode, required this.navKey}) : super(key: key);

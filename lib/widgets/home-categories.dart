@@ -2,6 +2,7 @@ import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/models/podcasts/podcast-genre.model.dart';
 import 'package:Talkaboat/screens/podcast-category.screen.dart';
 import 'package:Talkaboat/services/audio/podcast.service.dart';
+import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
@@ -16,9 +17,10 @@ class HomeScreenCategoriesTab extends StatefulWidget {
 
 class _HomeScreenCategoriesTabState extends State<HomeScreenCategoriesTab> {
   final podcastService = getIt<PodcastService>();
+  final userService = getIt<UserService>();
   @override
   void dispose() {
-    podcastService.selectedLanguage = null;
+    userService.selectedLanguage = null;
     ImageCache _imageCache = PaintingBinding.instance!.imageCache!;
 
     _imageCache.clear();
@@ -26,8 +28,18 @@ class _HomeScreenCategoriesTabState extends State<HomeScreenCategoriesTab> {
     _imageCache.clearLiveImages();
     super.dispose();
   }
+  Widget buildNotImplementedYet(BuildContext context) {
+    return Column(children: [
+      SizedBox(height: 66,),
+      Text("Feature not yet implemented as '${userService.currentView.label.value}' is in alpha!")
+    ],);
+  }
+
   @override
   Widget build(BuildContext context) {
+    if(userService.currentView.label == ContentViews.Videos) {
+      return buildNotImplementedYet(context);
+    }
     return SingleChildScrollView(
       child: Column(children: [
         buildSearchField(context),

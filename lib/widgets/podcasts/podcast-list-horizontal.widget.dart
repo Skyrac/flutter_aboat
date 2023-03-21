@@ -1,5 +1,5 @@
 import 'package:Talkaboat/models/podcasts/podcast.model.dart';
-import 'package:Talkaboat/widgets/podcast-list.widget.dart';
+import 'package:Talkaboat/widgets/podcasts/podcast-list.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 

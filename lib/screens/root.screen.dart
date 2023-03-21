@@ -6,6 +6,7 @@ import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../services/ads/ad-manager.service.dart';
 
@@ -69,6 +70,6 @@ class _RootScreenState extends State<RootScreen> {
       return const LoginScreen(false);
     }
 
-    return const AppScreen(title: 'Talkaboat');
+    return Consumer<UserService>(builder: (context, service, child) { return AppScreen(title: 'Talkaboat'); });
   }
 }

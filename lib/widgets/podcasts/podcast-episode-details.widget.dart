@@ -112,7 +112,7 @@ class _PodcastEpisodeDetailsState extends State<PodcastEpisodeDetails> {
                                       ? ButtonEpisode(
                                           func: () async {
                                             if (!userService.isInFavorites(widget.episode.podcastId!)) {
-                                              await userService.addToFavorites(widget.episode.podcastId!);
+                                              await userService.addPodcastsToFavorites(widget.episode.podcastId!);
                                             }
                                             await FileDownloadService.cacheOrDelete(widget.episode.audio!);
                                             setState(() {});
@@ -124,7 +124,7 @@ class _PodcastEpisodeDetailsState extends State<PodcastEpisodeDetails> {
                                       : ButtonEpisode(
                                           func: () async {
                                             if (!userService.isInFavorites(widget.episode.podcastId!)) {
-                                              await userService.addToFavorites(widget.episode.podcastId!);
+                                              await userService.addPodcastsToFavorites(widget.episode.podcastId!);
                                             }
                                             await FileDownloadService.cacheOrDelete(widget.episode.audio!);
                                             setState(() {});

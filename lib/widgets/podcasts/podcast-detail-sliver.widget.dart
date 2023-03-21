@@ -5,8 +5,8 @@ import 'package:Talkaboat/widgets/login-button.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../models/search/search_result.model.dart';
-import 'bottom-sheets/claim.bottom-sheet.dart';
+import '../../models/search/search_result.model.dart';
+import '../bottom-sheets/claim.bottom-sheet.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PodcastDetailSliver extends SliverPersistentHeaderDelegate {

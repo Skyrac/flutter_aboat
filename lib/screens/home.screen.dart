@@ -4,7 +4,8 @@ import 'package:Talkaboat/services/state/state.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/utils/scaffold_wave.dart';
 import 'package:Talkaboat/widgets/home-categories.dart';
-import 'package:Talkaboat/widgets/home-suggested.widget.dart';
+import 'package:Talkaboat/widgets/podcasts/podcast-home-suggested.widget.dart';
+import 'package:Talkaboat/widgets/videos/video-home-suggested.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:Talkaboat/widgets/quests/quest-list.widget.dart';
 import '../widgets/home-app-bar.widget.dart';
@@ -90,12 +91,20 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         body: TabBarView(children: [
-          HomeScreenSuggestedTab(widget.selectTab),
+          GetSuggestedTab(),
           const HomeScreenCategoriesTab(),
           const HomeNewsScreenWidget(),
         ]),
       ),
     );
+  }
+
+  Widget GetSuggestedTab() {
+    if(userService.currentView.label == ContentViews.Podcasts) {
+      return PodcastHomeScreenSuggestedTab(widget.selectTab);
+    } else {
+      return VideoHomeScreenSuggestedTab(widget.selectTab);
+    }
   }
 }
 

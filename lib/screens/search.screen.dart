@@ -2,16 +2,19 @@ import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/models/podcasts/podcast-rank.model.dart';
 import 'package:Talkaboat/models/podcasts/podcast.model.dart';
 import 'package:Talkaboat/services/audio/podcast.service.dart';
+import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/utils/scaffold_wave.dart';
-import 'package:Talkaboat/widgets/podcast-list-tile.widget.dart';
+import 'package:Talkaboat/widgets/podcasts/podcast-list-tile.widget.dart';
 import 'package:Talkaboat/widgets/searchbar.widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class SearchScreen extends StatefulWidget {
+
+class SearchScreen  extends StatefulWidget  {
   const SearchScreen(
       {this.appBar,
       this.onlyGenre,
@@ -35,11 +38,12 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final podcastService = getIt<PodcastService>();
+  final userService = getIt<UserService>();
   final debouncer = Debouncer<String>(const Duration(milliseconds: 250), initialValue: "");
 
   static const _pageSize = 20;
 
-  final PagingController<int, Podcast> _pagingController = PagingController(firstPageKey: 0);
+  final PagingController<int, dynamic> _pagingController = PagingController(firstPageKey: 0);
 
   @override
   void initState() {
@@ -65,18 +69,27 @@ class _SearchScreenState extends State<SearchScreen> {
     try {
       final newItems = await (widget.customSearchFunc != null
           ? widget.customSearchFunc!(debouncer.value, _pageSize, pageKey)
-          : podcastService.search(debouncer.value,
-              amount: _pageSize, offset: pageKey, genre: widget.onlyGenre, rank: widget.onlyRank));
+          : searchByContentView(pageKey));
       final isLastPage = newItems.length < _pageSize;
       if (isLastPage) {
         _pagingController.appendLastPage(newItems);
       } else {
-        final nextPageKey = pageKey + newItems.length;
+        final int nextPageKey = pageKey + int.parse(newItems.length.toString());
         _pagingController.appendPage(newItems, nextPageKey);
       }
     } catch (error) {
       debugPrint("$error");
       _pagingController.error = error;
+    }
+  }
+
+  Future<dynamic> searchByContentView(pageKey) async {
+    if(userService.currentView.label == ContentViews.Podcasts) {
+      return await podcastService.search(debouncer.value,
+          amount: _pageSize, offset: pageKey, genre: widget.onlyGenre, rank: widget.onlyRank);
+    }
+    if(userService.currentView.label == ContentViews.Videos) {
+
     }
   }
 
@@ -87,7 +100,7 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return ScaffoldWave(
       physics: const NeverScrollableScrollPhysics(),
-      appBar: widget.appBar ?? buildAppbar(),
+      appBar: widget.appBar ?? buildAppbar(context),
       body: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -108,10 +121,10 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
           Flexible(
             flex: 1,
-            child: PagedListView<int, Podcast>(
+            child: PagedListView<int, dynamic>(
               scrollController: _controller,
               pagingController: _pagingController,
-              builderDelegate: PagedChildBuilderDelegate<Podcast>(
+              builderDelegate: PagedChildBuilderDelegate<dynamic>(
                 itemBuilder: (context, item, index) => Padding(
                   padding: const EdgeInsets.only(left: 10),
                   child: ClipRRect(
@@ -134,17 +147,17 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  AppBar buildAppbar() {
+  AppBar buildAppbar(BuildContext context) {
     return AppBar(
       backgroundColor: const Color.fromRGBO(29, 40, 58, 1),
-      title: const Text("Search"),
+      title: Text(AppLocalizations.of(context)!.search),
     );
   }
 
   @override
   void dispose() {
 
-    podcastService.selectedLanguage = null;
+    userService.selectedLanguage = null;
     ImageCache _imageCache = PaintingBinding.instance!.imageCache!;
     _imageCache.clear();
 

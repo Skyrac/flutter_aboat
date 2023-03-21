@@ -6,7 +6,7 @@ import '../models/search/search_result.model.dart';
 import '../services/user/user.service.dart';
 import '../utils/scaffold_wave.dart';
 import '../widgets/login-button.widget.dart';
-import '../widgets/podcast-list.widget.dart';
+import '../widgets/podcasts/podcast-list.widget.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LibraryScreen extends StatefulWidget {
@@ -33,7 +33,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
         onSelected: (value) async {
           switch (value) {
             case "remove":
-              await userService.removeFromFavorites(entry.id);
+              await userService.removePodcastsFromFavorites(entry.id);
               break;
           }
           setState(() {});

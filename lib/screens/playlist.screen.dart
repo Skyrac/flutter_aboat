@@ -142,6 +142,10 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if(userService.currentView.label == ContentViews.Videos) {
+      return ScaffoldWave(body: buildNotImplementedYet(context),
+          appBar: buildAppBar());
+    }
     return SafeArea(
         child: ScaffoldWave(
             appBar: AppBar(
@@ -163,6 +167,20 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
               ],
             ),
             body: userService.isConnected ? createPlaylistView() : const Center(child: LoginButton())));
+  }
+
+  AppBar buildAppBar() {
+    return AppBar(
+      backgroundColor: const Color.fromRGBO(29, 40, 58, 1),
+      title: const Text("Playlists"),
+    );
+  }
+
+  Widget buildNotImplementedYet(BuildContext context) {
+    return Column(children: [
+      SizedBox(height: 66,),
+      Text("Feature not yet implemented as '${userService.currentView.label.value}' is in alpha!")
+    ],);
   }
 
   createPlaylistView() => FutureBuilder(

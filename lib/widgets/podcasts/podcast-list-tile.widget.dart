@@ -175,13 +175,13 @@ class _PodcastListTileWidgetState extends State<PodcastListTileWidget> {
                         onSelected: (value) async {
                           switch (value) {
                             case "add_to_avorites":
-                              await userService.addToFavorites(widget.podcast.id!);
+                              await userService.addPodcastsToFavorites(widget.podcast.id!);
                               if (widget.stateChangeCb != null) {
                                 widget.stateChangeCb!();
                               }
                               break;
                             case "remove_to_avorites":
-                              await userService.removeFromFavorites(widget.podcast.id!);
+                              await userService.removePodcastsFromFavorites(widget.podcast.id!);
                               if (widget.stateChangeCb != null) {
                                 widget.stateChangeCb!();
                               }

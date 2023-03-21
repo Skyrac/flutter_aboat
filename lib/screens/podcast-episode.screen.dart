@@ -3,8 +3,8 @@ import 'package:Talkaboat/navigator_keys.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/widgets/chat-input.widget.dart';
 import 'package:Talkaboat/widgets/chat.widget.dart';
-import 'package:Talkaboat/widgets/podcast-episode-details.widget.dart';
-import 'package:Talkaboat/widgets/podcast-episode-podcast.widget.dart';
+import 'package:Talkaboat/widgets/podcasts/podcast-episode-details.widget.dart';
+import 'package:Talkaboat/widgets/podcasts/podcast-episode-podcast.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
@@ -20,7 +20,7 @@ import '../themes/colors.dart';
 import '../utils/common.dart';
 import '../utils/scaffold_wave.dart';
 import '../widgets/bottom-sheets/playlist.bottom-sheet.dart';
-import '../widgets/podcast-episode-sliver.widget.dart';
+import '../widgets/podcasts/podcast-episode-sliver.widget.dart';
 import 'login.screen.dart';
 
 class PodcastEpisodeScreen extends StatefulWidget {

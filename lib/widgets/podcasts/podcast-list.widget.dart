@@ -1,17 +1,17 @@
 import 'package:Talkaboat/models/podcasts/podcast.model.dart';
 import 'package:Talkaboat/navigator_keys.dart';
-import 'package:Talkaboat/widgets/podcast-list-tile.widget.dart';
+import 'package:Talkaboat/widgets/podcasts/podcast-list-tile.widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
-import '../injection/injector.dart';
-import '../models/search/search_result.model.dart';
-import '../screens/login.screen.dart';
-import '../screens/podcast-detail.screen.dart';
-import '../services/user/user.service.dart';
+import '../../injection/injector.dart';
+import '../../models/search/search_result.model.dart';
+import '../../screens/login.screen.dart';
+import '../../screens/podcast-detail.screen.dart';
+import '../../services/user/user.service.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PodcastListWidget extends StatefulWidget {

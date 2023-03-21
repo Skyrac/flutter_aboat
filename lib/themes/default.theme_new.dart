@@ -33,6 +33,12 @@ class NewDefaultTheme {
           hintStyle: TextStyle(color: NewDefaultColors.primaryColor.shade200),
         ),
         backgroundColor: Colors.transparent,
+        popupMenuTheme: PopupMenuThemeData(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          color: NewDefaultColors.secondaryColor.shade800,
+        ),
         bottomAppBarColor: NewDefaultColors.secondaryColor,
         dialogTheme: DialogTheme(backgroundColor: NewDefaultColors.secondaryColorAlphaBlend.shade600),
         dialogBackgroundColor: NewDefaultColors.secondaryColorAlphaBlend.shade600,

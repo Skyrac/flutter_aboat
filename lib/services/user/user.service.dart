@@ -32,10 +32,40 @@ import '../repositories/user.repository.dart';
 
 enum SocialLogin { Google, Facebook, Apple }
 
-class UserService {
+enum ContentViews {
+  Podcasts,
+  Videos
+}
+
+extension ContentViewsExtension on ContentViews {
+  String get value {
+    switch (this) {
+      case ContentViews.Podcasts: return "Podcasts";
+      case ContentViews.Videos: return "Videos";
+      default: return "";
+    }
+  }
+}
+
+class CurrentContentData {
+  final IconData icon;
+  final ContentViews label;
+  final Color color;
+
+  CurrentContentData({required this.icon, required this.label, required this.color});
+}
+class UserService extends ChangeNotifier {
+  final List<CurrentContentData> menuItems = [
+    CurrentContentData(icon: Icons.mic, label: ContentViews.Podcasts, color: Colors.purple),
+    CurrentContentData(icon: Icons.video_collection, label: ContentViews.Videos, color: Colors.red),
+  ];
+
+
+  late CurrentContentData currentView = menuItems[0];
   bool newUser = true;
   bool _guest = false;
   String token = "";
+  String? selectedLanguage;
   String firebaseToken = "";
   UserInfoData? userInfo;
   List<Podcast> favorites = List.empty();
@@ -57,6 +87,11 @@ class UserService {
   final rewardService = getIt<RewardService>();
   get availableToken => rewardService.value.vested;
   get lockedToken => rewardService.value.unvested;
+
+  void changeSelectedView(CurrentContentData newView) {
+    currentView = newView;
+    notifyListeners();
+  }
 
   Future<bool> socialLogin(SocialLogin socialType, BuildContext context) async {
     UserCredential? credential;
@@ -183,6 +218,7 @@ class UserService {
 
   setInitialValues() async {
     prefs = await SharedPreferences.getInstance();
+    currentView = menuItems[0];
     newUser = prefs.getBool('newUser') ?? true;
     String secToken = prefs.getString(TOKEN_IDENTIFIER) ?? "";
     if (secToken.isNotEmpty) {
@@ -253,11 +289,13 @@ class UserService {
       }
       //TODO: Vorschläge basierend auf den Vorzügen des Nutzers laden
     }
-    var podcasts = await PodcastRepository.getRandomPodcast(30, '');
-    debugPrint("$podcasts");
-    podcastProposalsHomeScreen[0] = podcasts.take(10).toList();
-    podcastProposalsHomeScreen[1] = podcasts.skip(10).take(10).toList();
-    podcastProposalsHomeScreen[2] = podcasts.skip(20).take(10).toList();
+    if(currentView.label == 'Podcasts') {
+      var podcasts = await PodcastRepository.getRandomPodcast(30, '');
+      debugPrint("$podcasts");
+      podcastProposalsHomeScreen[0] = podcasts.take(10).toList();
+      podcastProposalsHomeScreen[1] = podcasts.skip(10).take(10).toList();
+      podcastProposalsHomeScreen[2] = podcasts.skip(20).take(10).toList();
+    }
   }
 
   getFriends() async {
@@ -453,14 +491,14 @@ class UserService {
     }
   }
 
-  Future<List<Podcast>> removeFromFavorites(int id) async {
+  Future<List<Podcast>> removePodcastsFromFavorites(int id) async {
     if (await PodcastRepository.removeFromFavorites(id)) {
       favorites.removeWhere((item) => item.podcastId == id);
     }
     return favorites;
   }
 
-  Future<List<Podcast>> addToFavorites(int id) async {
+  Future<List<Podcast>> addPodcastsToFavorites(int id) async {
     if (await PodcastRepository.addToFavorites(id)) {
       return await getFavorites(refresh: true);
     }
@@ -469,9 +507,9 @@ class UserService {
 
   Future<List<Podcast>> toggleFavoritesEntry(id) async {
     if (isInFavorites(id)) {
-      return await removeFromFavorites(id);
+      return await removePodcastsFromFavorites(id);
     }
-    return await addToFavorites(id);
+    return await addPodcastsToFavorites(id);
   }
 
   Future<bool> createPlaylist(String text) async {

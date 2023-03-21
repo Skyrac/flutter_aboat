@@ -6,26 +6,26 @@ import 'package:Talkaboat/services/audio/podcast.service.dart';
 import 'package:Talkaboat/services/repositories/podcast.repository.dart';
 import 'package:Talkaboat/services/state/state.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
-import 'package:Talkaboat/widgets/podcast-favorites.widget.dart';
-import 'package:Talkaboat/widgets/podcast-list-horizontal.widget.dart';
-import 'package:Talkaboat/widgets/podcast-list.widget.dart';
+import 'package:Talkaboat/widgets/podcasts/podcast-favorites.widget.dart';
+import 'package:Talkaboat/widgets/podcasts/podcast-list-horizontal.widget.dart';
+import 'package:Talkaboat/widgets/podcasts/podcast-list.widget.dart';
 import 'package:Talkaboat/widgets/quests/quest-list.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import 'stormm-missions.widget.dart';
+import '../stormm-missions.widget.dart';
 
-class HomeScreenSuggestedTab extends StatefulWidget {
-  const HomeScreenSuggestedTab(this.selectTab, {Key? key}) : super(key: key);
+class PodcastHomeScreenSuggestedTab extends StatefulWidget {
+  const PodcastHomeScreenSuggestedTab(this.selectTab, {Key? key}) : super(key: key);
 
   final Function selectTab;
 
 
   @override
-  State<HomeScreenSuggestedTab> createState() => _HomeScreenSuggestedTabState();
+  State<PodcastHomeScreenSuggestedTab> createState() => _PodcastHomeScreenSuggestedTabState();
 }
 
-class _HomeScreenSuggestedTabState<T extends HomeScreenSuggestedTab> extends State<HomeScreenSuggestedTab>
+class _PodcastHomeScreenSuggestedTabState<T extends PodcastHomeScreenSuggestedTab> extends State<PodcastHomeScreenSuggestedTab>
     with WidgetsBindingObserver {
   final homeState = getIt<StateService>();
   final userService = getIt<UserService>();
@@ -256,7 +256,7 @@ class _HomeScreenSuggestedTabState<T extends HomeScreenSuggestedTab> extends Sta
                     }
                     return const Center(child: CircularProgressIndicator());
                   },
-                  future: PodcastRepository.getRandomPodcast(10, podcastService.selectedLanguage),
+                  future: PodcastRepository.getRandomPodcast(10, userService.selectedLanguage),
                 ))
     ]);
   }
