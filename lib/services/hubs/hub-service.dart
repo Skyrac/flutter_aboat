@@ -10,7 +10,7 @@ abstract class HubService {
   final useTestServer = false;
   final userService = getIt<UserService>();
   final testServerUrl = "http://192.168.10.177:5000/hubs/";
-  final serverUrl = "http://talkaboat.azurewebsites.net/hubs/";
+  final serverUrl = "http://api.talkaboat.online/hubs/";
   late final HttpConnectionOptions options;
   late final HubConnection connection;
   final hubName = "";
