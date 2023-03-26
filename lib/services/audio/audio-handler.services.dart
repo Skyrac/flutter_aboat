@@ -177,7 +177,15 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler with SeekHandler implement
   }
 
   AudioSource _itemToSource(MediaItem mediaItem) {
-    final audioSource = ProgressiveAudioSource(Uri.parse(mediaItem.id), duration: mediaItem.duration);
+    AudioSource audioSource;
+    if(mediaItem.id.contains('http')) {
+      audioSource = ProgressiveAudioSource(Uri.parse(mediaItem.id), duration: mediaItem.duration);
+      debugPrint("Progressive Audio Source");
+    } else {
+      audioSource = AudioSource.file(mediaItem.id);
+      debugPrint("File Audio Source");
+    }
+
     _mediaItemExpando[audioSource] = mediaItem;
     return audioSource;
   }
@@ -255,12 +263,10 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler with SeekHandler implement
     final podcastId = episode.podcastId;
     final Map<String, dynamic> extraMap = {"episodeId": episodeId, "podcastId": podcastId, "playTime": playTime};
     var file = (await FileDownloadService.getFile(episode.audio!))?.file.path;
-    debugPrint("FOUND FILE: ${file}");
     if (file != null && Platform.isIOS) {
       file = "file:$file";
     }
     var id = file ?? episode.audio!;
-    debugPrint(id);
     final mediaItem = MediaItem(
         id: id,
         duration: Duration(seconds: episode.audioLengthSec! as int),

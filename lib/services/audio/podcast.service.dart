@@ -1,6 +1,7 @@
 import 'package:Talkaboat/models/podcasts/podcast-genre.model.dart';
 import 'package:Talkaboat/models/podcasts/podcast-rank.model.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
+import 'package:Talkaboat/utils/preference-keys.const.dart';
 import 'package:flutter/material.dart';
 
 import '../../injection/injector.dart';
@@ -8,20 +9,21 @@ import '../../models/podcasts/episode.model.dart';
 import '../../models/podcasts/podcast.model.dart';
 import '../../models/response.model.dart';
 import '../repositories/podcast.repository.dart';
+import '../user/store.service.dart';
 
 class PodcastService {
   Podcast? podcast;
   final userService = getIt<UserService>();
+  final store = getIt<StoreService>();
   Map<Rank, List<Podcast>> randomRankPodcasts = {};
 
 
 
   Future<List<Episode>> getPodcastDetailEpisodes(podcastId, sort, amount) async {
-    if (podcast != null && podcast!.episodes != null && podcast!.episodes!.isNotEmpty && podcast!.podcastId == podcastId) {
-      podcast!.episodes!.sort((a, b) => a.pubDateMs!.compareTo(b.pubDateMs!) * (sort == "asc" ? 1 : -1));
-    } else {
-      await getPodcastDetails(podcastId, sort, amount);
-    }
+    final sortValue = await store.get(PreferenceKeys.sortState, (sort == "asc" ? 1 : -1));
+    sort = sortValue == 0 ? "asc" : "desc";
+    await getPodcastDetails(podcastId, sort, amount);
+
     return podcast?.episodes ?? List.empty();
   }
 
@@ -56,9 +58,8 @@ class PodcastService {
   }
 
   Future<Podcast> getPodcastDetails(int podcastId, String sort, int amount) async {
-    if (podcast == null || podcast!.podcastId != podcastId) {
-      podcast = await PodcastRepository.getPodcastDetails(podcastId, sort, amount, 0);
-    }
+    podcast = await PodcastRepository.getPodcastDetails(podcastId, sort, amount, 0);
+
     return podcast ?? Podcast();
   }
 

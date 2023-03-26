@@ -1,3 +1,4 @@
+import 'package:Talkaboat/services/device/connection-state.service.dart';
 import 'package:Talkaboat/services/hubs/chat/chat.service.dart';
 import 'package:Talkaboat/services/hubs/reward/reward-hub.service.dart';
 import 'package:Talkaboat/services/hubs/live/live-session.service.dart';
@@ -26,6 +27,7 @@ Future<void> configureDependencies() async {
         androidNotificationOngoing: true,
       )));
 
+  getIt.registerSingleton(ConnectionStateService());
   getIt.registerSingleton(StoreService());
   getIt.registerSingleton(SocialService());
   getIt.registerSingleton(RewardService());

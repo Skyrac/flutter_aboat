@@ -2,6 +2,7 @@ import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/screens/app.screen.dart';
 import 'package:Talkaboat/screens/login.screen.dart';
 import 'package:Talkaboat/screens/onboarding/onboarding.screen.dart';
+import 'package:Talkaboat/services/device/connection-state.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -19,6 +20,7 @@ class RootScreen extends StatefulWidget {
 
 class _RootScreenState extends State<RootScreen> {
   final userService = getIt<UserService>();
+  final connectionStateService = getIt<ConnectionStateService>();
   String _authStatus = 'Unknown';
 
   @override
@@ -66,10 +68,17 @@ class _RootScreenState extends State<RootScreen> {
     if (userService.newUser) {
       return const OnBoardingScreen();
     }
-    if (!userService.isConnected && !userService.guest) {
-      return const LoginScreen(false);
-    }
+    return StreamBuilder<bool>(
+      stream: connectionStateService.connectionStateStream,
+      builder: (context, snapshot) {
+        debugPrint("connection state: ${connectionStateService.isConnected}");
+        if (!userService.isConnected && !userService.guest && connectionStateService.isConnected) {
+          return const LoginScreen(false);
+        }
 
-    return Consumer<UserService>(builder: (context, service, child) { return AppScreen(title: 'Talkaboat'); });
-  }
+        return Consumer<UserService>(builder: (context, service, child) { return AppScreen(title: 'Talkaboat'); });
+
+      },
+    );
+    }
 }

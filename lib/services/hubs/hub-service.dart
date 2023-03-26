@@ -31,7 +31,7 @@ abstract class HubService {
         logger: transportProtLogger,
         transport: HttpTransportType.WebSockets,
         skipNegotiation: true,
-        logMessageContent: true);
+        logMessageContent: false);
     connection = HubConnectionBuilder()
         .withUrl((useTestServer && !isProduction ? testServerUrl : serverUrl) + hubName, options: options)
         .withAutomaticReconnect(retryDelays: [0, 1000, 2000, 4000, 8000, 16000, 32000])
@@ -41,11 +41,9 @@ abstract class HubService {
 
   connect() async {
     try {
-      debugPrint("current state ${connection.state}");
       await connection.start();
-      debugPrint("Connected to $hubName-hub");
     } catch (e) {
-      debugPrint("$e");
+
     }
   }
 
