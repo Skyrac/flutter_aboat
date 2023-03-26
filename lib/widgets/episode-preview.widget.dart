@@ -1,6 +1,8 @@
 import 'package:Talkaboat/navigator_keys.dart';
 import 'package:Talkaboat/services/downloading/file-downloader.service.dart';
+import 'package:Talkaboat/services/user/store.service.dart';
 import 'package:Talkaboat/utils/common.dart';
+import 'package:Talkaboat/utils/preference-keys.const.dart';
 import 'package:Talkaboat/widgets/file-behaviour/download-button.widget.dart';
 import 'package:Talkaboat/widgets/podcasts/podcast-episode-details.widget.dart';
 import 'package:audio_service/audio_service.dart';
@@ -35,6 +37,7 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
   late final audioHandler = getIt<AudioPlayerHandler>();
   final playlistSearchController = TextEditingController();
   final userService = getIt<UserService>();
+  final store = getIt<StoreService>();
   // void refresh() {
   //   setState(() {});
   // }
@@ -382,7 +385,11 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                           setState(() {
 
                           });
-                        }, finishAction: () { setState(() {
+                        }, finishAction: (isDownloaded) async {
+                          if(isDownloaded) {
+                            await store.set("${PreferenceKeys.episodeDetails}${widget.episode.id}", widget.episode.toJson());
+                          }
+                          setState(() {
 
                         });},)
                       ],

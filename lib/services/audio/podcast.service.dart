@@ -24,7 +24,15 @@ class PodcastService {
     sort = sortValue == 0 ? "asc" : "desc";
     await getPodcastDetails(podcastId, sort, amount);
 
-    return podcast?.episodes ?? List.empty();
+    final episodes = podcast?.episodes ?? List.empty();
+    for(var episode in episodes) {
+
+      final storedPlayTime = await store.get("${PreferenceKeys.episodePlaytime}${episode.id}", episode.playTime);
+      if(storedPlayTime != null && episode.playTime == null || episode.playTime == 0) {
+        episode.playTime = storedPlayTime;
+      }
+    }
+    return episodes;
   }
 
   Future<PodcastOwnershipMethods> getPodcastOwnershipMethods(int podcastId) async {

@@ -85,13 +85,11 @@ class _EpisodeHeaderListState extends State<EpisodeHeaderList> {
                   for(var episode in snapshot.data!) {
                     episode.podcast = widget.podcastSearchResult as Podcast;
                   }
-                  return Flexible(
-                      flex: 1,
-                      child: EpisodeList(
+                  return  EpisodeList(
                         podcastImage: widget.podcastSearchResult.image,
                         episodes: snapshot.data!,
                         controller: widget.controller,
-                      ));
+                      );
                 }
               }
               return const SizedBox(height: 105, child: Center(child: CircularProgressIndicator()));

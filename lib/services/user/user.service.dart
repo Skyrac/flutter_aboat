@@ -481,6 +481,9 @@ class UserService extends ChangeNotifier {
       }
       for (var entry in favorites) {
         var lastUpdateSeen = await store.get(PreferenceKeys.lastNotificationUpdate + entry.podcastId.toString(), 0);
+        if(await store.get("${PreferenceKeys.podcastDetails}${entry.podcastId}", "") == "") {
+          await store.set("${PreferenceKeys.podcastDetails}${entry.podcastId}", entry.toJson());
+        }
         if (lastUpdateSeen != null) {
           var date = DateTime.fromMillisecondsSinceEpoch(lastUpdateSeen);
           lastPodcastUpdateSeen[entry.podcastId!] = date;
@@ -502,6 +505,9 @@ class UserService extends ChangeNotifier {
 
   Future<List<Podcast>> addPodcastsToFavorites(int id) async {
     if (await PodcastRepository.addToFavorites(id)) {
+
+      var podcastDetails = await PodcastRepository.getPodcastDetails(id, "asc", 1, 0);
+      await store.set("${PreferenceKeys.podcastDetails}${id}", podcastDetails.toJson());
       return await getFavorites(refresh: true);
     }
     return favorites;

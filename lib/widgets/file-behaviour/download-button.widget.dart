@@ -8,6 +8,7 @@ class DownloadButton extends StatefulWidget {
   final String url;
   final clickAction;
   final finishAction;
+
   @override
   State<DownloadButton> createState() => _DownloadButtonState();
 }
@@ -67,6 +68,7 @@ class _DownloadButtonState extends State<DownloadButton> {
 
   Future<void> _removeFile(String url) async {
     await FileDownloadService.removeFile(url);
+
     setState(() {
       _isDownloaded = false;
     });
@@ -92,7 +94,7 @@ class _DownloadButtonState extends State<DownloadButton> {
             _isDownloaded = true;
           });
           if(widget.finishAction != null) {
-            widget.finishAction();
+            widget.finishAction(_isDownloaded);
           }
 
           // Use the downloaded file (e.g., play the MP3)
