@@ -1,4 +1,5 @@
 import 'package:Talkaboat/injection/injector.dart';
+import 'package:Talkaboat/models/podcasts/podcast.model.dart';
 import 'package:Talkaboat/services/audio/podcast.service.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -66,6 +67,9 @@ class _EpisodeHeaderListState extends State<EpisodeHeaderList> {
                   ));
             } else if (snapshot.hasData && snapshot.data != null) {
               // Extracting data from snapshot object
+              for(var episode in snapshot.data!) {
+                episode.podcast = widget.podcastSearchResult as Podcast;
+              }
               return Flexible(
                   flex: 1,
                   child: EpisodeList(

@@ -30,7 +30,9 @@ class FileDownloadService {
   }
 
   static removeFile(String url) async {
-    cachedFiles.remove(url);
+    if(cachedFiles.contains(url)) {
+      cachedFiles.remove(url);
+    }
     await DefaultCacheManager().removeFile(url);
   }
 

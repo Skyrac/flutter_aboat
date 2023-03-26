@@ -71,7 +71,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> with Single
   @override
   Widget build(BuildContext context) {
     Future.delayed(Duration.zero, () {
-      Provider.of<SelectEpisodePage>(context, listen: false).changeTrue();
+      Provider.of<SelectEpisodePage>(context, listen: false).changeTrue(widget.episode.id);
     });
     userService.UpdatePodcastVisitDate(widget.episode.podcastId);
     return WillPopScope(

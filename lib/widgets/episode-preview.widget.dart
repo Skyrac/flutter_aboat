@@ -1,6 +1,8 @@
 import 'package:Talkaboat/navigator_keys.dart';
 import 'package:Talkaboat/services/downloading/file-downloader.service.dart';
 import 'package:Talkaboat/utils/common.dart';
+import 'package:Talkaboat/widgets/file-behaviour/download-button.widget.dart';
+import 'package:Talkaboat/widgets/podcasts/podcast-episode-details.widget.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +13,7 @@ import 'package:page_transition/page_transition.dart';
 import '../injection/injector.dart';
 import '../models/podcasts/episode.model.dart';
 import '../screens/login.screen.dart';
+import '../screens/podcast-episode.screen.dart';
 import '../services/audio/audio-handler.services.dart';
 import '../services/user/user.service.dart';
 import 'bottom-sheets/playlist.bottom-sheet.dart';
@@ -234,25 +237,21 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
     final episodeTime = Duration(seconds: widget.episode.audioLengthSec!.toInt());
     return Container(
       padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
-      height: 105,
       width: MediaQuery.of(context).size.width,
-      child: RawMaterialButton(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-        onPressed: () async {
-          widget.onPlayEpisode();
-        },
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: audioHandler.isListeningEpisode(widget.episode.id) && playing
-                ? const Color.fromRGBO(188, 140, 75, 0.2)
-                : Colors.transparent,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: audioHandler.isListeningEpisode(widget.episode.id) && playing
+              ? const Color.fromRGBO(188, 140, 75, 0.2)
+              : Colors.transparent,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            InkWell(
+              onTap: () { widget.onPlayEpisode(); },
+              child: Container(
                 padding: const EdgeInsets.only(right: 5),
                 width: 100,
                 height: 100,
@@ -262,6 +261,8 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                       ClipRRect(
                           borderRadius: BorderRadius.circular(10),
                           child: SizedBox(
+                            height: 100,
+                              width: 100,
                               child: CachedNetworkImage(
                             imageUrl: widget.podcastImage  ?? 'https://picsum.photos/200',
                             fit: BoxFit.fill,
@@ -280,12 +281,25 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                   ),
                 ),
               ),
-              const SizedBox(
-                width: 10,
-              ),
-              SizedBox(
+            ),
+            const SizedBox(
+              width: 10,
+            ),
+            InkWell(
+              onTap: () {
+                Navigator.of(context).push(PageTransition(
+                    alignment: Alignment.bottomCenter,
+                    curve: Curves.bounceOut,
+                    type: PageTransitionType.rightToLeftWithFade,
+                    duration: const Duration(milliseconds: 500),
+                    reverseDuration: const Duration(milliseconds: 500),
+                    child: PodcastEpisodeScreen(episode: entry, position: Duration(seconds: int.parse(entry.playTime.toString())), isActiv: (screen) {
+
+                    })));
+              },
+              child: Container(
                 height: 105,
-                width: 218,
+                width: MediaQuery.of(context).size.width - 180,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -360,40 +374,25 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                             ])),
                           ],
                         ),
-                        RawMaterialButton(
-                          elevation: 0.0,
-                          focusElevation: 0.0,
-                          hoverElevation: 0.0,
-                          highlightElevation: 0,
-                          visualDensity: VisualDensity.compact,
-                          constraints: const BoxConstraints(minWidth: 0.0, minHeight: 0.0),
-                          padding: const EdgeInsets.all(0),
-                          onPressed: (() async {
-                            if (!userService.isInFavorites(entry.podcastId!)) {
-                              await userService.addPodcastsToFavorites(entry.podcastId!);
-                              refresh();
-                            }
-                            await FileDownloadService.cacheOrDelete(entry.audio!);
-                            setState(() {});
-                          }),
-                          child: FileDownloadService.containsFile(entry.audio!)
-                              ? Image.asset(
-                                  "assets/images/cloud_complete.png",
-                                  width: 25,
-                                )
-                              : Image.asset(
-                                  "assets/images/cloud.png",
-                                  width: 25,
-                                ),
-                        ),
+                        DownloadButton(url: entry.audio!, clickAction: () async {
+                          if (!userService.isInFavorites(entry.podcastId!)) {
+                            await userService.addPodcastsToFavorites(entry.podcastId!);
+                            refresh();
+                          }
+                          setState(() {
+
+                          });
+                        }, finishAction: () { setState(() {
+
+                        });},)
                       ],
                     ),
                   ],
                 ),
               ),
-              buildPopupButton(context, entry),
-            ],
-          ),
+            ),
+            buildPopupButton(context, entry),
+          ],
         ),
       ),
     );

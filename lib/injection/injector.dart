@@ -4,6 +4,7 @@ import 'package:Talkaboat/services/hubs/live/live-session.service.dart';
 import 'package:Talkaboat/services/quests/quest.service.dart';
 import 'package:Talkaboat/services/user/reward.service.dart';
 import 'package:Talkaboat/services/user/social.service.dart';
+import 'package:Talkaboat/services/user/store.service.dart';
 import 'package:Talkaboat/services/videos/youtube/youtube-video.service.dart';
 import 'package:Talkaboat/services/web3/token.service.dart';
 import 'package:audio_service/audio_service.dart';
@@ -25,6 +26,7 @@ Future<void> configureDependencies() async {
         androidNotificationOngoing: true,
       )));
 
+  getIt.registerSingleton(StoreService());
   getIt.registerSingleton(SocialService());
   getIt.registerSingleton(RewardService());
   getIt.registerSingleton(await UserService.init());

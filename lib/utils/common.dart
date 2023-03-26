@@ -611,15 +611,22 @@ class QueueState {
 }
 
 class SelectEpisodePage extends ChangeNotifier {
-  bool isSelectedPage = false;
-
-  void changeTrue() {
-    isSelectedPage = true;
+  int _episode = -1;
+  void changeTrue(episode) {
+    _episode = episode;
     notifyListeners();
   }
 
   void changeFalse() {
-    isSelectedPage = false;
+    _episode = -1;
     notifyListeners();
+  }
+
+  bool shouldPop(episode) {
+    return _episode != episode && episode >= 0;
+  }
+
+  bool isSelectedPage(episode) {
+    return _episode == episode;
   }
 }

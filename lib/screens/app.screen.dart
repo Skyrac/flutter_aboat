@@ -32,6 +32,8 @@ class AppScreen extends StatefulWidget {
 class _AppScreenState extends State<AppScreen> with RouteAware {
   final userService = getIt<UserService>();
   String _currentPage = "Home";
+
+  GlobalKey _tabControllerKey = GlobalKey();
   List<String> pageKeys = ["Home", "Live", "Favorites", "Playlist", "Social"];
 
   int currentTabIndex = 0;
@@ -46,7 +48,7 @@ class _AppScreenState extends State<AppScreen> with RouteAware {
 
   void _selectTab(String tabItem, int index) {
     if (tabItem == _currentPage) {
-      //_navigatorKeys[tabItem]?.currentState?.popUntil((route) => route.isFirst);
+      _navigatorKey().currentState?.popUntil((route) => route.isFirst);
     } else {
       setState(() {
         _currentPage = pageKeys[index];
@@ -177,11 +179,21 @@ class _AppScreenState extends State<AppScreen> with RouteAware {
   Widget build(BuildContext context) {
     audioPlayerHandler.setEpisodeRefreshFunction(setEpisode);
     return Scaffold(
-      body: NestedView(
-        navigatorKey: _navigatorKey(),
-        routeName: _currentPage,
-        setEpisode: setEpisode,
-        selectTab: _selectTab,
+      body: WillPopScope(
+        onWillPop: () async {
+
+          if (currentTabIndex != 0) {
+            _selectTab("Home", 0);
+            return false;
+          }
+          return true;
+        },
+        child: NestedView(
+          navigatorKey: _navigatorKey(),
+          routeName: _currentPage,
+          setEpisode: setEpisode,
+          selectTab: _selectTab,
+        ),
       ),
       bottomNavigationBar: Container(
         color: const Color.fromRGBO(15, 23, 41, 1),

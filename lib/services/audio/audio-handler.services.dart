@@ -167,8 +167,10 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler with SeekHandler implement
     _effectiveSequence.map((sequence) => sequence.map((source) => _mediaItemExpando[source]!).toList()).pipe(queue);
     AudioService.position.listen((event) async => {
       await positionUpdate(event, mediaItem.value),
-      episodes![_player.currentIndex!].playTime = event.inSeconds,
-      debugPrint("${episodes![_player.currentIndex!].playTime}")
+      if(episodes != null) {
+        episodes![_player.currentIndex!].playTime = event.inSeconds,
+        debugPrint("${episodes![_player.currentIndex!].playTime}")
+      },
     });
     playbackState.listen((PlaybackState state) async => await receiveUpdate(
         state, mediaItem.value, _player.position, episodes == null ? null : episodes![_player.currentIndex!]));
@@ -253,11 +255,12 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler with SeekHandler implement
     final podcastId = episode.podcastId;
     final Map<String, dynamic> extraMap = {"episodeId": episodeId, "podcastId": podcastId, "playTime": playTime};
     var file = (await FileDownloadService.getFile(episode.audio!))?.file.path;
+    debugPrint("FOUND FILE: ${file}");
     if (file != null && Platform.isIOS) {
       file = "file:$file";
     }
     var id = file ?? episode.audio!;
-
+    debugPrint(id);
     final mediaItem = MediaItem(
         id: id,
         duration: Duration(seconds: episode.audioLengthSec! as int),

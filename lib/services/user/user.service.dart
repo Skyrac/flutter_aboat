@@ -7,6 +7,7 @@ import 'package:Talkaboat/services/dynamiclinks/dynamic-links.service.dart';
 import 'package:Talkaboat/services/hubs/chat/chat.service.dart';
 import 'package:Talkaboat/services/user/reward.service.dart';
 import 'package:Talkaboat/services/user/social.service.dart';
+import 'package:Talkaboat/services/user/store.service.dart';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -24,6 +25,7 @@ import '../../models/playlist/playlist.model.dart';
 import '../../models/podcasts/podcast.model.dart';
 import '../../models/response.model.dart';
 import '../../models/user/user-info-model.dart';
+import '../../utils/preference-keys.const.dart';
 import '../hubs/reward/reward-hub.service.dart';
 import '../repositories/podcast.repository.dart';
 import '../repositories/social-media.repository.dart';
@@ -62,6 +64,7 @@ class UserService extends ChangeNotifier {
 
 
   late CurrentContentData currentView = menuItems[0];
+  final store = getIt<StoreService>();
   bool newUser = true;
   bool _guest = false;
   String token = "";
@@ -75,14 +78,11 @@ class UserService extends ChangeNotifier {
   DateTime? lastNotificationSeen;
   final friendService = getIt<SocialService>();
   Map<int, DateTime?> lastPodcastUpdateSeen = {};
-  late final SharedPreferences prefs;
   var isSignin = false;
   var baseLogin = false;
-  static const String TOKEN_IDENTIFIER = "aboat_token";
-  static const String LAST_NOTIFICATION_UPDATE = "last_update_seen";
-
   get isConnected => token.isNotEmpty && userInfo != null;
   get guest => _guest;
+
 
   final rewardService = getIt<RewardService>();
   get availableToken => rewardService.value.vested;
@@ -209,7 +209,7 @@ class UserService extends ChangeNotifier {
 
   finishIntroduction() async {
     newUser = false;
-    await prefs.setBool('newUser', false);
+    await store.set(PreferenceKeys.newUser, false);
   }
 
   loginAsGuest() async {
@@ -217,10 +217,9 @@ class UserService extends ChangeNotifier {
   }
 
   setInitialValues() async {
-    prefs = await SharedPreferences.getInstance();
     currentView = menuItems[0];
-    newUser = prefs.getBool('newUser') ?? true;
-    String secToken = prefs.getString(TOKEN_IDENTIFIER) ?? "";
+    newUser = await store.get(PreferenceKeys.newUser, true);
+    String secToken = await store.get(PreferenceKeys.tokenIdentifier, "");
     if (secToken.isNotEmpty) {
       token = secToken;
       debugPrint(token);
@@ -235,12 +234,13 @@ class UserService extends ChangeNotifier {
         if (user == null && !baseLogin) {
           token = "";
           firebaseToken = "";
-          await prefs.setString(TOKEN_IDENTIFIER, "");
+
+          await store.set(PreferenceKeys.tokenIdentifier, "");
         } else if (user != null && !baseLogin) {
           try {
             await loginWithFirebaseToken(user);
           } catch (ex) {
-            prefs.setString(TOKEN_IDENTIFIER, "");
+            //await store.set(PreferenceKeys.tokenIdentifier, "");
           }
         }
       });
@@ -282,7 +282,7 @@ class UserService extends ChangeNotifier {
         await rewardService.getRewards();
         await getFavorites(refresh: true);
         await getFriends();
-        var lastUpdate = prefs.getInt(LAST_NOTIFICATION_UPDATE);
+        var lastUpdate = await store.get(PreferenceKeys.lastNotificationUpdate, 0);
         if (lastUpdate != null) {
           lastNotificationSeen = DateTime.fromMillisecondsSinceEpoch(lastUpdate);
         }
@@ -316,13 +316,14 @@ class UserService extends ChangeNotifier {
 
   Future<String?> emailRegister(String email, String pin, String username, bool newsletter) async {
     try {
-      var response = await UserRepository.emailRegister(email, pin, username, newsletter, prefs.getString(DynamicLinkUtils.REFERAL_QUERY_PARAM));
+      var response = await UserRepository.emailRegister(email, pin, username, newsletter, await store.get(DynamicLinkUtils.REFERAL_QUERY_PARAM, ""));
       debugPrint("response ${response.toJson()}");
       if (response.data == null || response.data!.isEmpty) {
         return response.text ?? "false";
       }
       token = response.data ?? "";
-      prefs.setString(TOKEN_IDENTIFIER, token);
+
+      await store.set(PreferenceKeys.tokenIdentifier, token);
       await FirebaseAnalytics.instance.logSignUp(signUpMethod: "Email");
       if (token.isNotEmpty) {
 
@@ -350,7 +351,8 @@ class UserService extends ChangeNotifier {
     if (token.isEmpty) {
       return "false";
     }
-    prefs.setString(TOKEN_IDENTIFIER, token);
+
+    await store.set(PreferenceKeys.tokenIdentifier, token);
     if (token.isNotEmpty) {
       await getCoreData();
       await FirebaseAnalytics.instance.logLogin(loginMethod: "Email");
@@ -365,7 +367,7 @@ class UserService extends ChangeNotifier {
     }
     var response = await UserRepository.firebaseVerify(firebaseToken, pin);
     token = response.data ?? "";
-    prefs.setString(TOKEN_IDENTIFIER, token);
+    await store.set(PreferenceKeys.tokenIdentifier, token);
     if (response.data != null && response.data!.isNotEmpty) {
 
       await FirebaseAnalytics.instance.logLogin(loginMethod: "Firebase");
@@ -377,12 +379,12 @@ class UserService extends ChangeNotifier {
 
   Future<String?> firebaseRegister(String username, bool newsletter) async {
     try {
-      var response = await UserRepository.firebaseRegister(firebaseToken, username, newsletter, prefs.getString(DynamicLinkUtils.REFERAL_QUERY_PARAM));
+      var response = await UserRepository.firebaseRegister(firebaseToken, username, newsletter, await store.get(DynamicLinkUtils.REFERAL_QUERY_PARAM, ""));
       if (response.data == null || response.data!.isEmpty) {
         return response.text ?? "false";
       }
       token = response.data ?? "";
-      prefs.setString(TOKEN_IDENTIFIER, token);
+      await store.set(PreferenceKeys.tokenIdentifier, token);
       debugPrint("token: $token");
 
       await FirebaseAnalytics.instance.logSignUp(signUpMethod: "Firebase");
@@ -418,7 +420,7 @@ class UserService extends ChangeNotifier {
     } catch (ex) {
       debugPrint("$ex");
     }
-    await prefs.setString(TOKEN_IDENTIFIER, "");
+    await store.set(PreferenceKeys.tokenIdentifier, "");
   }
   //#endregion
 
@@ -478,7 +480,7 @@ class UserService extends ChangeNotifier {
         favorites = newFavorites;
       }
       for (var entry in favorites) {
-        var lastUpdateSeen = prefs.getInt(LAST_NOTIFICATION_UPDATE + entry.podcastId.toString());
+        var lastUpdateSeen = await store.get(PreferenceKeys.lastNotificationUpdate + entry.podcastId.toString(), 0);
         if (lastUpdateSeen != null) {
           var date = DateTime.fromMillisecondsSinceEpoch(lastUpdateSeen);
           lastPodcastUpdateSeen[entry.podcastId!] = date;
@@ -550,7 +552,7 @@ class UserService extends ChangeNotifier {
 
   void SetLastFavoritesNotifcationUpdate() async {
     lastNotificationSeen = DateTime.now().toUtc();
-    await prefs.setInt(LAST_NOTIFICATION_UPDATE, lastNotificationSeen!.millisecondsSinceEpoch);
+    await store.set(PreferenceKeys.lastNotificationUpdate, lastNotificationSeen!.millisecondsSinceEpoch);
   }
 
   bool unseenFavoritesNotifcationUpdates() {
@@ -581,7 +583,7 @@ class UserService extends ChangeNotifier {
       return;
     }
     lastPodcastUpdateSeen[id] = DateTime.now().toUtc();
-    await prefs.setInt(LAST_NOTIFICATION_UPDATE + id.toString(), lastPodcastUpdateSeen[id]!.millisecondsSinceEpoch);
+    await store.set(PreferenceKeys.lastNotificationUpdate + id.toString(), lastPodcastUpdateSeen[id]!.millisecondsSinceEpoch);
   }
 
   getProposals(int genre) {

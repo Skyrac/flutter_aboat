@@ -49,7 +49,7 @@ class _PodcastEpisodeDetailsState extends State<PodcastEpisodeDetails> {
                   stream: _mediaStateStream,
                   builder: (context, snapshot) {
                     final mediaState = snapshot.data;
-                    final duration = mediaState?.mediaItem?.duration ?? Duration.zero;
+                    final duration = Duration(seconds: int.parse(widget.episode.audioLengthSec?.toString() ?? "0"));
                     final position = mediaState?.position ?? widget.position;
                     return Column(
                       children: [
@@ -185,7 +185,7 @@ class _PodcastEpisodeDetailsState extends State<PodcastEpisodeDetails> {
                                         SizedBox(
                                           width: 250,
                                           child: Text(
-                                            mediaState?.mediaItem?.title ?? "",
+                                            widget.episode.title ?? "",
                                             textAlign: TextAlign.end,
                                           ),
                                         ),

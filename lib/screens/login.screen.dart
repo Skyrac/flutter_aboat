@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:Talkaboat/screens/app.screen.dart';
 import 'package:Talkaboat/themes/colors.dart';
@@ -208,6 +209,10 @@ class _LoginScreenState extends State<LoginScreen> {
           ],
         ),
       );
+
+  String _removeWhitespaces(text) {
+    return text.replaceAll(RegExp(r'\s'), '');
+  }
 
   socialButtonPressed(SocialLogin socialLogin) async {
     final navigator = Navigator.of(context);
@@ -555,171 +560,174 @@ class _LoginScreenState extends State<LoginScreen> {
         final bodyMediumTheme = Theme.of(context).textTheme.bodyMedium;
         return StatefulBuilder(builder: (context, setState) {
           return Container(
-            width: 150,
-            height: Localizations.localeOf(context).toString() == "de" ? 300 : 150,
+            width: 200,
             color: Colors.black12,
             child: Stack(alignment: Alignment.center, children: [
               Positioned(
                 top: 200,
                 child: Container(
-                  width: 300,
-                  height: Localizations.localeOf(context).toString() == "de" ? 300 : 260,
+                  width: min(MediaQuery.of(context).size.width * 0.8, 360),
                   decoration:
                       BoxDecoration(borderRadius: BorderRadius.circular(20), color: const Color.fromRGBO(48, 73, 123, 1)),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.only(top: 5),
-                        child: Center(
-                            child: Text(
-                          title,
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
-                        )),
-                      ),
-                      const SizedBox(
-                        height: 7,
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 23.5),
-                        child: Text.rich(TextSpan(children: [
-                          ...textBuilder(context),
-                          validateErrorTest != null && !isValid
-                              ? TextSpan(
-                                  text: validateErrorTest,
-                                  style: bodyMediumTheme?.copyWith(fontWeight: FontWeight.w600),
-                                )
-                              : const TextSpan()
-                        ])),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 22),
-                        alignment: Alignment.center,
-                        child: Card(
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                            child: Container(
-                              height: 40,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: const Color.fromRGBO(29, 40, 58, 1),
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: Color.fromRGBO(188, 140, 75, 1),
-                                    spreadRadius: 0,
-                                    blurRadius: 0,
-                                    offset: Offset(0, 1), // changes position of shadow
-                                  ),
-                                ],
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 10, right: 10),
-                                child: TextField(
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                        color: const Color.fromRGBO(164, 202, 255, 1),
-                                      ),
-                                  controller: textController,
-                                  onSubmitted: (text) {
-                                    Navigator.of(context).pop(text);
-                                  },
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    alignLabelWithHint: true,
-                                    hintText: hintText,
-                                    hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                        color: const Color.fromRGBO(135, 135, 135, 1), fontStyle: FontStyle.italic),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.only(top: 5),
+                          child: Center(
+                              child: Text(
+                            title,
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+                          )),
+                        ),
+                        const SizedBox(
+                          height: 7,
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 23.5),
+                          child: Text.rich(TextSpan(children: [
+                            ...textBuilder(context),
+                            validateErrorTest != null && !isValid
+                                ? TextSpan(
+                                    text: validateErrorTest,
+                                    style: bodyMediumTheme?.copyWith(fontWeight: FontWeight.w600),
+                                  )
+                                : const TextSpan()
+                          ])),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 22),
+                          alignment: Alignment.center,
+                          child: Card(
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              child: Container(
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: const Color.fromRGBO(29, 40, 58, 1),
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: Color.fromRGBO(188, 140, 75, 1),
+                                      spreadRadius: 0,
+                                      blurRadius: 0,
+                                      offset: Offset(0, 1), // changes position of shadow
+                                    ),
+                                  ],
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 10, right: 10),
+                                  child: TextField(
+                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                          color: const Color.fromRGBO(164, 202, 255, 1),
+                                        ),
+                                    controller: textController,
+                                    onSubmitted: (text) {
+                                      Navigator.of(context).pop(text);
+                                    },
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      alignLabelWithHint: true,
+                                      hintText: hintText,
+                                      hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                          color: const Color.fromRGBO(135, 135, 135, 1), fontStyle: FontStyle.italic),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            )),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      SizedBox(
-                          width: MediaQuery.of(context).size.width,
-                          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                            RawMaterialButton(
-                              onPressed: () {
-                                if (validate != null) {
-                                  bool _valid = validate(textController.text);
-                                  if (_valid) {
-                                    Navigator.of(context).pop(textController.text);
+                              )),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        SizedBox(
+                            width: MediaQuery.of(context).size.width,
+                            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                              RawMaterialButton(
+                                onPressed: () {
+
+                                  final text = _removeWhitespaces(textController.text);
+                                  if (validate != null) {
+                                    bool _valid = validate(text);
+                                    if (_valid) {
+                                      Navigator.of(context).pop(text);
+                                    } else {
+                                      setState(
+                                        () {
+                                          isValid = false;
+                                        },
+                                      );
+                                    }
                                   } else {
-                                    setState(
-                                      () {
-                                        isValid = false;
-                                      },
-                                    );
+                                    Navigator.of(context).pop(text);
                                   }
-                                } else {
-                                  Navigator.of(context).pop(textController.text);
-                                }
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  boxShadow: const [
-                                    BoxShadow(
-                                      color: Colors.black45,
-                                      spreadRadius: 1,
-                                      blurRadius: 5,
-                                      offset: Offset(0, 2),
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    boxShadow: const [
+                                      BoxShadow(
+                                        color: Colors.black45,
+                                        spreadRadius: 1,
+                                        blurRadius: 5,
+                                        offset: Offset(0, 2),
+                                      ),
+                                    ],
+                                    borderRadius: BorderRadius.circular(15),
+                                    color: const Color.fromRGBO(99, 163, 253, 1),
+                                    border: Border.all(color: const Color.fromRGBO(188, 140, 75, 0.25), width: 1.0), //
+                                  ),
+                                  height: 40,
+                                  width: 150,
+                                  child: Center(
+                                    child: Text(
+                                      AppLocalizations.of(context)!.confirm,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelLarge
+                                          ?.copyWith(color: const Color.fromRGBO(15, 23, 41, 1), fontWeight: FontWeight.w600),
                                     ),
-                                  ],
-                                  borderRadius: BorderRadius.circular(15),
-                                  color: const Color.fromRGBO(99, 163, 253, 1),
-                                  border: Border.all(color: const Color.fromRGBO(188, 140, 75, 0.25), width: 1.0), //
-                                ),
-                                height: 40,
-                                width: 150,
-                                child: Center(
-                                  child: Text(
-                                    AppLocalizations.of(context)!.confirm,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .labelLarge
-                                        ?.copyWith(color: const Color.fromRGBO(15, 23, 41, 1), fontWeight: FontWeight.w600),
                                   ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            RawMaterialButton(
-                              onPressed: () {
-                                Navigator.of(context).pop(null);
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  boxShadow: const [
-                                    BoxShadow(
-                                      color: Colors.black45,
-                                      spreadRadius: 1,
-                                      blurRadius: 5,
-                                      offset: Offset(0, 2),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              RawMaterialButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop(null);
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    boxShadow: const [
+                                      BoxShadow(
+                                        color: Colors.black45,
+                                        spreadRadius: 1,
+                                        blurRadius: 5,
+                                        offset: Offset(0, 2),
+                                      ),
+                                    ],
+                                    borderRadius: BorderRadius.circular(15),
+                                    color: const Color.fromRGBO(154, 0, 0, 1),
+                                    border: Border.all(color: const Color.fromRGBO(188, 140, 75, 0.25), width: 1.0), //
+                                  ),
+                                  height: 40,
+                                  width: 80,
+                                  child: Center(
+                                    child: Text(
+                                      AppLocalizations.of(context)!.cancel,
+                                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                                          color: const Color.fromRGBO(164, 202, 255, 1), fontWeight: FontWeight.w600),
                                     ),
-                                  ],
-                                  borderRadius: BorderRadius.circular(15),
-                                  color: const Color.fromRGBO(154, 0, 0, 1),
-                                  border: Border.all(color: const Color.fromRGBO(188, 140, 75, 0.25), width: 1.0), //
-                                ),
-                                height: 40,
-                                width: 80,
-                                child: Center(
-                                  child: Text(
-                                    AppLocalizations.of(context)!.cancel,
-                                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                                        color: const Color.fromRGBO(164, 202, 255, 1), fontWeight: FontWeight.w600),
                                   ),
                                 ),
-                              ),
-                            )
-                          ]))
-                    ],
+                              )
+                            ]))
+                      ],
+                    ),
                   ),
                 ),
               ),
