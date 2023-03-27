@@ -83,7 +83,15 @@ class _EpisodeHeaderListState extends State<EpisodeHeaderList> {
                 } else if (snapshot.hasData && snapshot.data != null) {
                   // Extracting data from snapshot object
                   for(var episode in snapshot.data!) {
-                    episode.podcast = widget.podcastSearchResult as Podcast;
+                    var podcast = Podcast.empty();
+                    podcast.title = widget.podcastSearchResult.title;
+                    podcast.description = widget.podcastSearchResult.description;
+                    podcast.id = widget.podcastSearchResult.id;
+                    podcast.podcastId = widget.podcastSearchResult.id;
+                    podcast.roomId = widget.podcastSearchResult.roomId;
+                    podcast.image = widget.podcastSearchResult.image;
+                    episode.roomId = widget.podcastSearchResult.roomId;
+                    episode.podcast = podcast;
                   }
                   return  EpisodeList(
                         podcastImage: widget.podcastSearchResult.image,

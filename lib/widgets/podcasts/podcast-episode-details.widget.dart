@@ -49,7 +49,7 @@ class _PodcastEpisodeDetailsState extends State<PodcastEpisodeDetails> {
                   stream: _mediaStateStream,
                   builder: (context, snapshot) {
                     final mediaState = snapshot.data;
-                    final duration = Duration(seconds: int.parse(widget.episode.audioLengthSec?.toString() ?? "0"));
+                    final duration = Duration(seconds: int.parse(widget.episode.audioLengthInSeconds?.toString() ?? "0"));
                     final position = mediaState?.position ?? widget.position;
                     return Column(
                       children: [
@@ -261,7 +261,7 @@ class _PodcastEpisodeDetailsState extends State<PodcastEpisodeDetails> {
                                         style: const TextStyle(fontWeight: FontWeight.w600),
                                       ),
                                     ),
-                                    buildCategoryBadges(context, episodeItem.genreIds ?? ""),
+                                    buildCategoryBadges(context, episodeItem.genres ?? ""),
                                     Container(
                                       alignment: Alignment.centerLeft,
                                       margin: const EdgeInsets.only(bottom: 10),

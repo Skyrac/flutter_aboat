@@ -205,7 +205,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> with SingleTi
   Widget createCustomScrollView(SearchResult podcastSearchResult) {
     final size = MediaQuery.of(context).size;
 
-    final tabs = createTabs(podcastSearchResult.id!, podcastSearchResult.roomId!, controller);
+    final tabs = createTabs(podcastSearchResult.id ?? 0, podcastSearchResult.roomId!, controller);
 
     return Stack(
       alignment: Alignment.bottomCenter,

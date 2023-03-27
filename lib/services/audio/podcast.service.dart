@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:Talkaboat/models/podcasts/podcast-genre.model.dart';
 import 'package:Talkaboat/models/podcasts/podcast-rank.model.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
@@ -8,6 +10,8 @@ import '../../injection/injector.dart';
 import '../../models/podcasts/episode.model.dart';
 import '../../models/podcasts/podcast.model.dart';
 import '../../models/response.model.dart';
+import '../../models/search/search_result.model.dart';
+import '../device/connection-state.service.dart';
 import '../repositories/podcast.repository.dart';
 import '../user/store.service.dart';
 
@@ -15,6 +19,7 @@ class PodcastService {
   Podcast? podcast;
   final userService = getIt<UserService>();
   final store = getIt<StoreService>();
+  final connectionState = getIt<ConnectionStateService>();
   Map<Rank, List<Podcast>> randomRankPodcasts = {};
 
 
@@ -66,9 +71,39 @@ class PodcastService {
   }
 
   Future<Podcast> getPodcastDetails(int podcastId, String sort, int amount) async {
-    podcast = await PodcastRepository.getPodcastDetails(podcastId, sort, amount, 0);
+    if(connectionState.isConnected) {
+      podcast = await PodcastRepository.getPodcastDetails(podcastId, sort, amount, 0);
+    } else {
+      final podcastRaw = await store.get("${PreferenceKeys.podcastDetails}${podcastId}", "");
 
-    return podcast ?? Podcast();
+      if(podcastRaw != "") {
+        podcast = Podcast.fromJson(jsonDecode(podcastRaw));
+        podcast?.episodes = await getStoredPodcastEpisodes(podcastId);
+      }
+    }
+    return podcast ?? Podcast.empty();
+  }
+
+  Future<List<Episode>> getStoredPodcastEpisodes(int podcastId) async {
+    var list = List<String>.empty();
+    final episodeListRaw = await store.get(
+        "${PreferenceKeys.storedEpisodes}${podcastId}",
+        jsonEncode(list));
+    if (episodeListRaw.isNotEmpty) {
+      list = List<String>.from((jsonDecode(
+          episodeListRaw) as List<dynamic>)
+          .map((dynamic item) => item.toString()));
+    }
+    var episodes = List<Episode>.empty(growable: true);
+    for(var episodeId in list) {
+      var episodeRaw = await store.get("${PreferenceKeys.episodeDetails}${episodeId}", "");
+      if(episodeRaw == "") {
+        continue;
+      }
+
+      episodes.add(Episode.fromJson(jsonDecode(episodeRaw)));
+    }
+    return episodes;
   }
 
   Future<List<Podcast>> getTopPodcastByGenre(int amount, int genre) {
@@ -90,7 +125,7 @@ class PodcastService {
     }
   }
 
-  Future<List<Podcast>> search(String search, {int? genre, int amount = 10, int offset = 0, Rank? rank}) {
+  Future<List<SearchResult>> search(String search, {int? genre, int amount = 10, int offset = 0, Rank? rank}) {
     return PodcastRepository.search(search, amount, offset, genre: genre, rank: rank, language: userService.selectedLanguage);
   }
 }

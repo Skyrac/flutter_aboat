@@ -77,7 +77,7 @@ class _PodcastDetailsState extends State<PodcastDetails> {
                           AppLocalizations.of(context)!.episodes,
                           style: const TextStyle(fontWeight: FontWeight.w600),
                         ),
-                        Text(snapshot.data!.totalEpisodes!.toString())
+                        Text("${snapshot.data!.totalEpisodes ?? 0}")
                       ],
                     ),
                   ),
@@ -107,7 +107,7 @@ class _PodcastDetailsState extends State<PodcastDetails> {
                       style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                   ),
-                  buildCategoryBadges(context, snapshot.data!.genreIds!),
+                  buildCategoryBadges(context, snapshot.data!.genres!),
                   Container(
                     alignment: Alignment.centerLeft,
                     margin: const EdgeInsets.only(bottom: 10),
@@ -120,8 +120,11 @@ class _PodcastDetailsState extends State<PodcastDetails> {
                   ),
                   Container(
                     margin: const EdgeInsets.only(bottom: 10),
+                    alignment: Alignment.centerLeft,
                     child: Text(
                       removeAllHtmlTags(snapshot.data!.description!),
+                      textAlign: TextAlign.left,
+                      textDirection: TextDirection.ltr,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: const Color.fromRGBO(99, 163, 253, 1)),
                     ),
                   )

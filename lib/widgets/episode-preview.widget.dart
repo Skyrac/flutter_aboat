@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:Talkaboat/navigator_keys.dart';
 import 'package:Talkaboat/services/downloading/file-downloader.service.dart';
 import 'package:Talkaboat/services/user/store.service.dart';
@@ -22,7 +24,10 @@ import 'bottom-sheets/playlist.bottom-sheet.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class EpisodePreviewWidget extends StatefulWidget {
-  const EpisodePreviewWidget(this.podcastImage, this.episode, this.direction, this.onPlayEpisode, this.refresh, {Key? key}) : super(key: key);
+  const EpisodePreviewWidget(this.podcastImage, this.episode, this.direction,
+      this.onPlayEpisode, this.refresh,
+      {Key? key})
+      : super(key: key);
   final String? podcastImage;
   final Episode episode;
   final Axis direction;
@@ -50,39 +55,50 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
     _imageCache.clearLiveImages();
     super.dispose();
   }
+
   popupMenu(BuildContext context, Episode entry) => <PopupMenuEntry<String>>[
         PopupMenuItem<String>(
             value: 'add',
             child: Container(
-                width: Localizations.localeOf(context).toString() == "de" ? 210 : 176,
+                width: Localizations.localeOf(context).toString() == "de"
+                    ? 210
+                    : 176,
                 height: 30,
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5),
                     color: const Color.fromRGBO(29, 40, 58, 0.97),
-                    border: Border.all(color: const Color.fromRGBO(188, 140, 75, 0.25))),
+                    border: Border.all(
+                        color: const Color.fromRGBO(188, 140, 75, 0.25))),
                 child: Row(
                   children: [
                     const SizedBox(
                       width: 10,
                     ),
-                    const Icon(Icons.format_list_bulleted, color: Color.fromRGBO(99, 163, 253, 1), size: 25),
+                    const Icon(Icons.format_list_bulleted,
+                        color: Color.fromRGBO(99, 163, 253, 1), size: 25),
                     const SizedBox(
                       width: 10,
                     ),
                     Text(AppLocalizations.of(context)!.addToPlaylist,
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(color: const Color.fromRGBO(99, 163, 253, 1))),
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(
+                                color: const Color.fromRGBO(99, 163, 253, 1))),
                   ],
                 ))),
         PopupMenuItem<String>(
             value: 'download',
             child: Container(
-                width: Localizations.localeOf(context).toString() == "de" ? 210 : 176,
+                width: Localizations.localeOf(context).toString() == "de"
+                    ? 210
+                    : 176,
                 height: 30,
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5),
                     color: const Color.fromRGBO(29, 40, 58, 0.97),
-                    border: Border.all(color: const Color.fromRGBO(188, 140, 75, 0.25))),
+                    border: Border.all(
+                        color: const Color.fromRGBO(188, 140, 75, 0.25))),
                 child: Row(
                   children: [
                     const SizedBox(
@@ -100,8 +116,11 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                         FileDownloadService.containsFile(entry.audio!)
                             ? AppLocalizations.of(context)!.delete
                             : AppLocalizations.of(context)!.download,
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(color: const Color.fromRGBO(99, 163, 253, 1))),
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(
+                                color: const Color.fromRGBO(99, 163, 253, 1))),
                   ],
                 ))),
       ];
@@ -112,8 +131,10 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
           side: BorderSide(color: Color.fromRGBO(188, 140, 75, 1)),
           borderRadius: BorderRadius.all(Radius.circular(10.0)),
         ),
-        constraints:
-            BoxConstraints.expand(width: Localizations.localeOf(context).toString() == "de" ? 230 : 196, height: 110),
+        constraints: BoxConstraints.expand(
+            width:
+                Localizations.localeOf(context).toString() == "de" ? 230 : 196,
+            height: 110),
         color: const Color.fromRGBO(15, 23, 41, 1),
         child: Container(
           padding: const EdgeInsets.fromLTRB(14, 30, 14, 30),
@@ -133,21 +154,27 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
               break;
             case "add":
               if (!userService.isConnected) {
-                NavigatorKeys.navigatorKeyMain.currentState!.push(PageTransition(
-                    alignment: Alignment.bottomCenter,
-                    curve: Curves.bounceOut,
-                    type: PageTransitionType.rightToLeftWithFade,
-                    duration: const Duration(milliseconds: 500),
-                    reverseDuration: const Duration(milliseconds: 500),
-                    child: LoginScreen(true, refreshParent: () => setState(() {}))));
+                NavigatorKeys.navigatorKeyMain.currentState!.push(
+                    PageTransition(
+                        alignment: Alignment.bottomCenter,
+                        curve: Curves.bounceOut,
+                        type: PageTransitionType.rightToLeftWithFade,
+                        duration: const Duration(milliseconds: 500),
+                        reverseDuration: const Duration(milliseconds: 500),
+                        child: LoginScreen(true,
+                            refreshParent: () => setState(() {}))));
               } else {
                 showModalBottomSheet(
                     isScrollControlled: true,
-                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+                    shape: const RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.vertical(top: Radius.circular(20))),
                     context: context,
                     builder: (context) => Container(
                           margin: const EdgeInsets.only(top: 24),
-                          child: FractionallySizedBox(heightFactor: 0.95, child: PlaylistBottomSheet(episodeToAdd: entry)),
+                          child: FractionallySizedBox(
+                              heightFactor: 0.95,
+                              child: PlaylistBottomSheet(episodeToAdd: entry)),
                         ));
               }
               break;
@@ -159,85 +186,108 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
         },
       );
 
-  Widget makeCard(context, Episode entry, Function refresh) => StreamBuilder<PlaybackState>(
-      stream: audioHandler.playbackState,
-      builder: (context, snapshot) {
-        final playbackState = snapshot.data;
-        final playing = playbackState?.playing ?? false;
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: Container(
-            child: widget.direction == Axis.horizontal
-                ? makeHorizontalListTile(context, entry, playing)
-                : makeVerticalListTile(context, entry, playing, refresh),
-          ),
-        );
-      });
+  Widget makeCard(context, Episode entry, Function refresh) =>
+      StreamBuilder<PlaybackState>(
+          stream: audioHandler.playbackState,
+          builder: (context, snapshot) {
+            final playbackState = snapshot.data;
+            final playing = playbackState?.playing ?? false;
+            return ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Container(
+                child: widget.direction == Axis.horizontal
+                    ? makeHorizontalListTile(context, entry, playing)
+                    : makeVerticalListTile(context, entry, playing, refresh),
+              ),
+            );
+          });
 
-  Widget makeHorizontalListTile(context, Episode entry, bool playing) => Padding(
-      padding: const EdgeInsets.all(10),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: audioHandler.isListeningEpisode(widget.episode.id) && playing
-              ? const Color.fromRGBO(188, 140, 75, 0.2)
-              : Colors.transparent,
-        ),
-        child: InkWell(
-            borderRadius: BorderRadius.circular(10),
-            onTap: () async {
-              await widget.onPlayEpisode();
-              setState(() {});
-            },
-            child: ClipRRect(
+  Widget makeHorizontalListTile(context, Episode entry, bool playing) =>
+      Padding(
+          padding: const EdgeInsets.all(10),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color:
+                  audioHandler.isListeningEpisode(widget.episode.id) && playing
+                      ? const Color.fromRGBO(188, 140, 75, 0.2)
+                      : Colors.transparent,
+            ),
+            child: InkWell(
                 borderRadius: BorderRadius.circular(10),
-                child: SizedBox(
-                  width: 120,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Stack(
+                onTap: () async {
+                  await widget.onPlayEpisode();
+                  setState(() {});
+                },
+                child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: SizedBox(
+                      width: 120,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: SizedBox(
-                                  height: 120,
-                                  child: Center(
-                                    child: Stack(
-                                      children: [
-                                        CachedNetworkImage(
-                                          imageUrl: widget.podcastImage ?? 'https://picsum.photos/200',
-                                          fit: BoxFit.fill,
-                                          placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
-                                          errorWidget: (context, url, error) => const Icon(Icons.error),
+                          Stack(
+                            children: [
+                              ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: SizedBox(
+                                      height: 120,
+                                      child: Center(
+                                        child: Stack(
+                                          children: [
+                                            CachedNetworkImage(
+                                              imageUrl: widget.podcastImage ??
+                                                  'https://picsum.photos/200',
+                                              fit: BoxFit.fill,
+                                              placeholder: (_, __) => const Center(
+                                                  child:
+                                                      CircularProgressIndicator()),
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      const Icon(Icons.error),
+                                            ),
+                                            Positioned.fill(
+                                                child: Center(
+                                                    child: audioHandler
+                                                                .isListeningEpisode(
+                                                                    widget
+                                                                        .episode
+                                                                        .id) &&
+                                                            playing
+                                                        ? Image.asset(
+                                                            "assets/images/pause.png",
+                                                            width: 25,
+                                                          )
+                                                        : Image.asset(
+                                                            "assets/images/play.png",
+                                                            width: 25))),
+                                          ],
                                         ),
-                                        Positioned.fill(
-                                            child: Center(
-                                                child: audioHandler.isListeningEpisode(widget.episode.id) && playing
-                                                    ? Image.asset(
-                                                        "assets/images/pause.png",
-                                                        width: 25,
-                                                      )
-                                                    : Image.asset("assets/images/play.png", width: 25))),
-                                      ],
-                                    ),
-                                  )))
+                                      )))
+                            ],
+                          ),
+                          Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 5, right: 5, top: 5),
+                              child: Text(entry.title!,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 2,
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium))
                         ],
                       ),
-                      Padding(
-                          padding: const EdgeInsets.only(left: 5, right: 5, top: 5),
-                          child: Text(entry.title!,
-                              overflow: TextOverflow.ellipsis, maxLines: 2, style: Theme.of(context).textTheme.titleMedium))
-                    ],
-                  ),
-                ))),
-      ));
+                    ))),
+          ));
 
-  Widget makeVerticalListTile(context, Episode entry, bool playing, Function refresh) {
-    final dt = DateTime.fromMillisecondsSinceEpoch(entry.pubDateMs?.toInt() ?? 0);
+  Widget makeVerticalListTile(
+      context, Episode entry, bool playing, Function refresh) {
+    final dt = DateTime.fromMillisecondsSinceEpoch(
+        entry.pubDateInMilliseconds?.toInt() ?? 0);
     var dateFormatted = DateFormat('dd.MM.yyyy').format(dt);
-    final remaining = Duration(seconds: (entry.audioLengthSec! - entry.playTime!).toInt());
-    final episodeTime = Duration(seconds: widget.episode.audioLengthSec!.toInt());
+    final remaining = Duration(
+        seconds: (entry.audioLengthInSeconds! - entry.playTime!).toInt());
+    final episodeTime =
+        Duration(seconds: widget.episode.audioLengthInSeconds!.toInt());
     return Container(
       padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
       width: MediaQuery.of(context).size.width,
@@ -253,7 +303,9 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             InkWell(
-              onTap: () { widget.onPlayEpisode(); },
+              onTap: () {
+                widget.onPlayEpisode();
+              },
               child: Container(
                 padding: const EdgeInsets.only(right: 5),
                 width: 100,
@@ -264,22 +316,28 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                       ClipRRect(
                           borderRadius: BorderRadius.circular(10),
                           child: SizedBox(
-                            height: 100,
+                              height: 100,
                               width: 100,
                               child: CachedNetworkImage(
-                            imageUrl: widget.podcastImage  ?? 'https://picsum.photos/200',
-                            fit: BoxFit.fill,
-                            placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
-                            errorWidget: (context, url, error) => const Icon(Icons.error),
-                          ))),
+                                imageUrl: widget.podcastImage ??
+                                    'https://picsum.photos/200',
+                                fit: BoxFit.fill,
+                                placeholder: (_, __) => const Center(
+                                    child: CircularProgressIndicator()),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.error),
+                              ))),
                       Positioned.fill(
                           child: Center(
-                              child: audioHandler.isListeningEpisode(widget.episode.id) && playing
+                              child: audioHandler.isListeningEpisode(
+                                          widget.episode.id) &&
+                                      playing
                                   ? Image.asset(
                                       "assets/images/pause.png",
                                       width: 25,
                                     )
-                                  : Image.asset("assets/images/play.png", width: 25))),
+                                  : Image.asset("assets/images/play.png",
+                                      width: 25))),
                     ],
                   ),
                 ),
@@ -296,9 +354,11 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                     type: PageTransitionType.rightToLeftWithFade,
                     duration: const Duration(milliseconds: 500),
                     reverseDuration: const Duration(milliseconds: 500),
-                    child: PodcastEpisodeScreen(episode: entry, position: Duration(seconds: int.parse(entry.playTime.toString())), isActiv: (screen) {
-
-                    })));
+                    child: PodcastEpisodeScreen(
+                        episode: entry,
+                        position: Duration(
+                            seconds: int.parse(entry.playTime.toString())),
+                        isActiv: (screen) {})));
               },
               child: Container(
                 height: 105,
@@ -313,7 +373,10 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                         entry.title!,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
-                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12),
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12),
                       ),
                     ),
                     Flexible(
@@ -321,7 +384,8 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                       child: Text(removeAllHtmlTags(entry.description!),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
-                          style: const TextStyle(color: Colors.white, fontSize: 12)),
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 12)),
                     ),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -331,20 +395,29 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            audioHandler.isListeningEpisode(widget.episode.id) && playing
+                            audioHandler.isListeningEpisode(
+                                        widget.episode.id) &&
+                                    playing
                                 ? Row(
                                     children: const [
-                                      Icon(Icons.play_arrow, color: Color.fromRGBO(188, 140, 75, 1), size: 18),
+                                      Icon(Icons.play_arrow,
+                                          color:
+                                              Color.fromRGBO(188, 140, 75, 1),
+                                          size: 18),
                                       SizedBox(
                                         width: 3,
                                       ),
-                                      Text('Playing', style: TextStyle(fontSize: 10)),
+                                      Text('Playing',
+                                          style: TextStyle(fontSize: 10)),
                                     ],
                                   )
                                 : remaining.inSeconds <= 0
                                     ? Row(
                                         children: const [
-                                          Icon(Icons.check, color: Color.fromRGBO(76, 175, 80, 1), size: 15),
+                                          Icon(Icons.check,
+                                              color: Color.fromRGBO(
+                                                  76, 175, 80, 1),
+                                              size: 15),
                                           SizedBox(
                                             width: 2,
                                           ),
@@ -357,7 +430,8 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                                     : const SizedBox(),
                             Container(
                               padding: const EdgeInsets.only(top: 3),
-                              child: Text(dateFormatted.toString(), style: const TextStyle(fontSize: 10)),
+                              child: Text(dateFormatted.toString(),
+                                  style: const TextStyle(fontSize: 10)),
                             ),
                           ],
                         ),
@@ -365,10 +439,14 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                           children: [
                             Text.rich(TextSpan(children: [
                               TextSpan(
-                                  text: remaining.inHours != 0 ? '${remaining.inHours % 60}hr ' : "",
+                                  text: remaining.inHours != 0
+                                      ? '${remaining.inHours % 60}hr '
+                                      : "",
                                   style: const TextStyle(fontSize: 10)),
                               TextSpan(
-                                  text: episodeTime.inMinutes != 0 ? '${episodeTime.inMinutes % 60}min ' : "",
+                                  text: episodeTime.inMinutes != 0
+                                      ? '${episodeTime.inMinutes % 60}min '
+                                      : "",
                                   style: const TextStyle(fontSize: 10)),
                               TextSpan(
                                 text: '${episodeTime.inSeconds % 60}sec',
@@ -377,23 +455,57 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                             ])),
                           ],
                         ),
-                        DownloadButton(url: entry.audio!, clickAction: () async {
-                          if (!userService.isInFavorites(entry.podcastId!)) {
-                            await userService.addPodcastsToFavorites(entry.podcastId!);
-                            refresh();
-                          }
-                          setState(() {
+                        DownloadButton(
+                          url: entry.audio!,
+                          clickAction: () async {
+                            if (!userService.isInFavorites(entry.podcastId!)) {
+                              await userService
+                                  .addPodcastsToFavorites(entry.podcastId!);
+                              refresh();
+                            }
+                            setState(() {});
+                          },
+                          finishAction: (isDownloaded) async {
+                            if (isDownloaded) {
+                              await store.set(
+                                  "${PreferenceKeys.episodeDetails}${widget.episode.id}",
+                                  jsonEncode(widget.episode));
+                              var list = List<String>.empty();
+                              final episodeListRaw = await store.get(
+                                  "${PreferenceKeys.storedEpisodes}${widget.episode.podcastId}",
+                                  jsonEncode(list));
+                              if (episodeListRaw.isNotEmpty) {
+                                list = List<String>.from((jsonDecode(
+                                        episodeListRaw) as List<dynamic>)
+                                    .map((dynamic item) => item.toString()));
+                              }
+                              list.add(widget.episode.id.toString());
+                              await store.set(
+                                  "${PreferenceKeys.storedEpisodes}${widget.episode.podcastId}",
+                                  jsonEncode(list));
+                            } else {
+                              await store.remove(
+                                  "${PreferenceKeys.episodeDetails}${widget.episode.id}");
+                              var list = List<String>.empty();
+                              final episodeListRaw = await store.get(
+                                  "${PreferenceKeys.storedEpisodes}${widget.episode.podcastId}",
+                                  jsonEncode(list));
+                              if (episodeListRaw.isNotEmpty) {
+                                list = List<String>.from((jsonDecode(
+                                        episodeListRaw) as List<dynamic>)
+                                    .map((dynamic item) => item.toString()));
+                              }
 
-                          });
-                        }, finishAction: (isDownloaded) async {
-                          if(isDownloaded) {
-                            await store.set("${PreferenceKeys.episodeDetails}${widget.episode.id}", widget.episode.toJson());
-                          } else {
-                            await store.remove("${PreferenceKeys.episodeDetails}${widget.episode.id}");
-                          }
-                          setState(() {
-
-                        });},)
+                              if (list.contains(widget.episode.id.toString())) {
+                                list.remove(widget.episode.id.toString());
+                                await store.set(
+                                    "${PreferenceKeys.storedEpisodes}${widget.episode.podcastId}",
+                                    jsonEncode(list));
+                              }
+                            }
+                            setState(() {});
+                          },
+                        )
                       ],
                     ),
                   ],

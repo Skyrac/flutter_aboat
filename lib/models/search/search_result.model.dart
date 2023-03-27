@@ -1,6 +1,8 @@
 class SearchResult {
   int? id;
   int? roomId;
+  int? totalEpisodes;
+  int? rank;
   String? title;
   String? image;
   String? description;
@@ -11,6 +13,7 @@ class SearchResult {
     this.image,
     this.description,
     this.roomId,
+    this.totalEpisodes
   });
 
   SearchResult.fromJson(Map<String, dynamic> json) {
@@ -19,6 +22,8 @@ class SearchResult {
     image = json['image'];
     description = json['description'];
     roomId = json['roomId'];
+    totalEpisodes = json['totalEpisodes'];
+    rank = json['rank'];
   }
 
   Map<String, dynamic> toJson() {
@@ -28,6 +33,8 @@ class SearchResult {
     data['image'] = image;
     data['description'] = description;
     data['roomId'] = roomId;
+    data['totalEpisodes'] = totalEpisodes;
+    data['rank'] = rank;
     return data;
   }
 }

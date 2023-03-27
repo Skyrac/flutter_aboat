@@ -2,6 +2,7 @@ import 'package:Talkaboat/services/device/connection-state.service.dart';
 import 'package:Talkaboat/services/hubs/chat/chat.service.dart';
 import 'package:Talkaboat/services/hubs/reward/reward-hub.service.dart';
 import 'package:Talkaboat/services/hubs/live/live-session.service.dart';
+import 'package:Talkaboat/services/offline/offline-mode.service.dart';
 import 'package:Talkaboat/services/quests/quest.service.dart';
 import 'package:Talkaboat/services/user/reward.service.dart';
 import 'package:Talkaboat/services/user/social.service.dart';
@@ -28,6 +29,7 @@ Future<void> configureDependencies() async {
       )));
 
   getIt.registerSingleton(ConnectionStateService());
+  getIt.registerSingleton(OfflineService());
   getIt.registerSingleton(StoreService());
   getIt.registerSingleton(SocialService());
   getIt.registerSingleton(RewardService());

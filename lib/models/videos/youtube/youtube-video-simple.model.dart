@@ -13,7 +13,7 @@ class YoutubeVideoSimple {
 
   YoutubeVideoSimple(this.id,this.url,this.title,this.thumbnailUrl,this.duration,this.author,);
 
-  factory YoutubeVideoSimple.fromJson(Map<String, dynamic> json) => _$YoutubeVideoFromJson(json);
+  factory YoutubeVideoSimple.fromJson(Map<String, dynamic> json) => _$YoutubeVideoSimpleFromJson(json);
 
-  Map<String, dynamic> toJson() => _$YoutubeVideoToJson(this);
+  Map<String, dynamic> toJson() => _$YoutubeVideoSimpleToJson(this);
 }

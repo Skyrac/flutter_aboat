@@ -5,15 +5,20 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 
 import '../../configuration/dio.config.dart';
+import '../../injection/injector.dart';
 import '../../models/response.model.dart';
 import '../../models/rewards/reward-detail.model.dart';
 import '../../models/rewards/reward.model.dart';
 import '../../models/user/user-info-model.dart';
+import '../device/connection-state.service.dart';
 
 class UserRepository {
   UserRepository._();
-
+  static final connectionStateService = getIt<ConnectionStateService>();
   static Future<String?> requestEmailLogin(String email) async {
+    if(!connectionStateService.isConnected) {
+      return null;
+    }
     try {
       var response = await dio.post<String>('/v1/user/login/email/$email');
       var convertedData = response.data;
@@ -26,6 +31,9 @@ class UserRepository {
   }
 
   static Future<String> emailLogin(String email, String pin) async {
+    if(!connectionStateService.isConnected) {
+      return "";
+    }
     try {
       var response = await dio
           .post<String>('/v1/user/login/email', data: {"address": email, "signature": pin});
@@ -47,6 +55,9 @@ class UserRepository {
   }
 
   static Future<UserInfoData> getUserInfo() async {
+    if(!connectionStateService.isConnected) {
+      return UserInfoData();
+    }
     try {
       var response = await dio.get<String>('/v1/user/profile');
       debugPrint(response.data);
@@ -60,6 +71,9 @@ class UserRepository {
   }
 
   static Future<Reward> getUserRewards() async {
+    if(!connectionStateService.isConnected) {
+      return Reward();
+    }
     try {
       var response = await dio.get<String>('/v1/user/reward');
       var convertedData = Reward.fromJson(json.decode(response.data!));
@@ -70,6 +84,9 @@ class UserRepository {
   }
 
   static Future<List<RewardDetail>> getDetailedUserRewards() async {
+    if(!connectionStateService.isConnected) {
+      return List.empty();
+    }
     try {
       var response = await dio.get<String>('/v1/user/reward/detail');
       return List<RewardDetail>.from(json.decode(response.data!).map((model) => RewardDetail.fromJson(model)));

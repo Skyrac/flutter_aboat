@@ -26,6 +26,7 @@ import '../../models/podcasts/podcast.model.dart';
 import '../../models/response.model.dart';
 import '../../models/user/user-info-model.dart';
 import '../../utils/preference-keys.const.dart';
+import '../device/connection-state.service.dart';
 import '../hubs/reward/reward-hub.service.dart';
 import '../repositories/podcast.repository.dart';
 import '../repositories/social-media.repository.dart';
@@ -65,6 +66,7 @@ class UserService extends ChangeNotifier {
 
   late CurrentContentData currentView = menuItems[0];
   final store = getIt<StoreService>();
+  final connectionState = getIt<ConnectionStateService>();
   bool newUser = true;
   bool _guest = false;
   String token = "";
@@ -224,6 +226,8 @@ class UserService extends ChangeNotifier {
       token = secToken;
       debugPrint(token);
       baseLogin = true;
+    } else {
+      await getCoreData();
     }
 
     try {
@@ -266,6 +270,7 @@ class UserService extends ChangeNotifier {
 
   static Future<UserService> init() async {
     var userService = UserService();
+    await userService.connectionState.checkInitialConnection();
     await userService.setInitialValues();
     return userService;
   }
@@ -274,6 +279,7 @@ class UserService extends ChangeNotifier {
     debugPrint("Get Core Data");
     if (token.isNotEmpty) {
       await getUserInfo();
+
       Future.microtask(() => getIt<RewardHubService>().connect());
       Future.microtask(() => getIt<ChatService>().connect());
       if (userInfo != null) {
@@ -281,7 +287,6 @@ class UserService extends ChangeNotifier {
         _guest = false;
         await rewardService.getRewards();
         await getFavorites(refresh: true);
-        await getFriends();
         var lastUpdate = await store.get(PreferenceKeys.lastNotificationUpdate, 0);
         if (lastUpdate != null) {
           lastNotificationSeen = DateTime.fromMillisecondsSinceEpoch(lastUpdate);
@@ -289,7 +294,7 @@ class UserService extends ChangeNotifier {
       }
       //TODO: Vorschläge basierend auf den Vorzügen des Nutzers laden
     }
-    if(currentView.label == 'Podcasts') {
+    if(currentView.label == 'Podcasts' && connectionState.isConnected) {
       var podcasts = await PodcastRepository.getRandomPodcast(30, '');
       debugPrint("$podcasts");
       podcastProposalsHomeScreen[0] = podcasts.take(10).toList();
@@ -303,13 +308,21 @@ class UserService extends ChangeNotifier {
   }
 
   Future<bool> getUserInfo() async {
-    debugPrint("Get User Info");
-    userInfo = await UserRepository.getUserInfo();
-    userInfo!.userId = int.parse(Jwt.parseJwt(token)["nameid"]);
-    await FirebaseAnalytics.instance.setUserId(id: "${userInfo!.userId}");
+    if(connectionState.isConnected) {
+      userInfo = await UserRepository.getUserInfo();
+      userInfo!.userId = int.parse(Jwt.parseJwt(token)["nameid"]);
+      store.set(PreferenceKeys.user, jsonEncode(userInfo));
+    } else {
+      final userInfoRaw = await store.get(PreferenceKeys.user, "");
+      if(userInfoRaw != "") {
+        userInfo = UserInfoData.fromJson(jsonDecode(userInfoRaw));
+      }
+    }
     if (userInfo == null || userInfo!.userName == null) {
       return false;
     }
+
+    await FirebaseAnalytics.instance.setUserId(id: "${userInfo!.userId}");
     return true;
   }
 
@@ -425,7 +438,15 @@ class UserService extends ChangeNotifier {
 
   //#region Playlist
   Future<List<Playlist>> getPlaylists() async {
-    var newPlaylists = await PodcastRepository.getPlaylists();
+    List<Playlist> newPlaylists = List<Playlist>.empty();
+    if(connectionState.isConnected) {
+      newPlaylists = await PodcastRepository.getPlaylists();
+      await store.set(PreferenceKeys.playlists, jsonEncode(newPlaylists));
+    } else {
+      final playlistsRaw = await store.get(PreferenceKeys.playlists, jsonEncode(newPlaylists));
+      newPlaylists = List<Playlist>.from((jsonDecode(playlistsRaw) as List<dynamic>)
+          .map((dynamic item) => Playlist.fromJson(item)));
+    }
     for (final playlist in newPlaylists) {
       playlist.tracks!.sort((trackA, trackB) => trackA.position!.compareTo(trackB.position!));
     }
@@ -475,7 +496,15 @@ class UserService extends ChangeNotifier {
   Future<List<Podcast>> getFavorites({refresh = false}) async {
     try {
       if (refresh) {
-        var newFavorites = await PodcastRepository.getUserFavorites();
+        List<Podcast> newFavorites = List<Podcast>.empty();
+        if(connectionState.isConnected) {
+          newFavorites = await PodcastRepository.getUserFavorites();
+          await store.set(PreferenceKeys.favorites, jsonEncode(newFavorites));
+        } else {
+          final favoritesRaw = await store.get(PreferenceKeys.favorites, jsonEncode(newFavorites));
+          newFavorites = List<Podcast>.from((jsonDecode(favoritesRaw) as List<dynamic>)
+              .map((dynamic item) => Podcast.fromJson(item)));
+        }
         favorites = newFavorites;
       }
       for (var entry in favorites) {

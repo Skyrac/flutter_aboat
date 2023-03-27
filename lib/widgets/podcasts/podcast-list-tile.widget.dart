@@ -9,9 +9,11 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../models/search/search_result.model.dart';
+
 class PodcastListTileWidget extends StatefulWidget {
   const PodcastListTileWidget(this.podcast, {this.stateChangeCb, Key? key}) : super(key: key);
-  final Podcast podcast;
+  final SearchResult podcast;
   final void Function()? stateChangeCb;
   @override
   State<PodcastListTileWidget> createState() => _PodcastListTileWidgetState();
@@ -30,7 +32,7 @@ class _PodcastListTileWidgetState extends State<PodcastListTileWidget> {
     super.dispose();
   }
 
-  popupMenu(BuildContext context, Podcast entry) {
+  popupMenu(BuildContext context, SearchResult entry) {
     if (!userService.isConnected) {
       return <PopupMenuItem<String>>[];
     }
@@ -140,26 +142,26 @@ class _PodcastListTileWidgetState extends State<PodcastListTileWidget> {
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
                   const Spacer(),
-                  Row(children: [
-                    Text(
-                      AppLocalizations.of(context)!.episodesParam(widget.podcast.totalEpisodes!),
-                      maxLines: 1,
+                   Row(children: [
+                     Text(
+                       AppLocalizations.of(context)!.episodesParam(widget.podcast.totalEpisodes!),
+                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
-                    // TODO: use rank
-                    ...(widget.podcast.totalEpisodes! < 5
-                        ? [
-                            Text(" - ",
-                                maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleSmall),
-                            const Image(
-                              image: AssetImage("assets/icons/icon_fire.png"),
-                            ),
-                            Text(" ${AppLocalizations.of(context)!.reward} x1.5",
-                                maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleSmall),
-                          ]
-                        : [])
-                  ]),
+                  // TODO: use rank
+                   ...(widget.podcast.rank == 0
+                       ? [
+                           Text(" - ",
+                               maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleSmall),
+                           const Image(
+                             image: AssetImage("assets/icons/icon_fire.png"),
+                           ),
+                           Text(" ${AppLocalizations.of(context)!.reward} x1.5",
+                               maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleSmall),
+                         ]
+                       : [])
+                   ]),
                 ]),
               ),
             ),

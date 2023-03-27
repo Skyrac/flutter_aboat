@@ -273,7 +273,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler with SeekHandler implement
 
   Future<MediaItem> convertEpisodeToMediaItem(Episode episode) async {
     var playTime = episode.playTime!;
-    if (episode.audioLengthSec == null || episode.audioLengthSec! <= 0 || episode.audioLengthSec! < episode.playTime! + 60) {
+    if (episode.audioLengthInSeconds == null || episode.audioLengthInSeconds! <= 0 || episode.audioLengthInSeconds! < episode.playTime! + 60) {
       playTime = 0;
     }
     final episodeId = episode.episodeId;
@@ -286,7 +286,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler with SeekHandler implement
     var id = file ?? episode.audio!;
     final mediaItem = MediaItem(
         id: id,
-        duration: Duration(seconds: episode.audioLengthSec! as int),
+        duration: Duration(seconds: episode.audioLengthInSeconds! as int),
         album: episode.podcast != null && episode.podcast!.title != null ? episode.podcast!.title! : '',
         artUri: Uri.parse(episode.image ?? episode.podcast?.image ?? ''),
         title: episode.title!,
@@ -338,7 +338,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler with SeekHandler implement
   Future<void> skipToQueueItem(int index) async {
     if (index < 0 || index >= _playlist.children.length) return;
     final episode = episodes![index];
-    if (episode.audioLengthSec == null || episode.audioLengthSec! <= 0 || episode.playTime == null || episode.audioLengthSec! < episode.playTime! + 60) {
+    if (episode.audioLengthInSeconds == null || episode.audioLengthInSeconds! <= 0 || episode.playTime == null || episode.audioLengthInSeconds! < episode.playTime! + 60) {
       episode.playTime = 0;
     }
     // This jumps to the beginning of the queue item at [index].

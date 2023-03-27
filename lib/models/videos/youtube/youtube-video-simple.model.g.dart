@@ -6,7 +6,8 @@ part of 'youtube-video-simple.model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-YoutubeVideoSimple _$YoutubeVideoFromJson(Map<String, dynamic> json) => YoutubeVideoSimple(
+YoutubeVideoSimple _$YoutubeVideoSimpleFromJson(Map<String, dynamic> json) =>
+    YoutubeVideoSimple(
       json['id'] as String,
       json['url'] as String,
       json['title'] as String,
@@ -15,7 +16,7 @@ YoutubeVideoSimple _$YoutubeVideoFromJson(Map<String, dynamic> json) => YoutubeV
       json['author'] as String,
     );
 
-Map<String, dynamic> _$YoutubeVideoToJson(YoutubeVideoSimple instance) =>
+Map<String, dynamic> _$YoutubeVideoSimpleToJson(YoutubeVideoSimple instance) =>
     <String, dynamic>{
       'id': instance.id,
       'url': instance.url,

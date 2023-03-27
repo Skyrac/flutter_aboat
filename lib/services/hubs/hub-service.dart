@@ -42,6 +42,9 @@ abstract class HubService {
   }
 
   connect() async {
+    if(!connectionStateService.isConnected) {
+      return;
+    }
     try {
       await connection.start();
     } catch (e) {

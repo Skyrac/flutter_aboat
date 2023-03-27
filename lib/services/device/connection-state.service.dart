@@ -12,14 +12,11 @@ class ConnectionStateService {
     _connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
       _checkConnection(result);
     });
-
-    // Check the initial connection status
-    _checkInitialConnection();
   }
 
   Stream<bool> get connectionStateStream => _connectionStateController.stream;
 
-  Future<void> _checkInitialConnection() async {
+  Future<void> checkInitialConnection() async {
     final initialResult = await _connectivity.checkConnectivity();
     _checkConnection(initialResult);
   }

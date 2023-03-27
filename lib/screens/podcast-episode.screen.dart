@@ -206,7 +206,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> with Single
 
   Widget createCustomScrollView(SearchResult podcastSearchResult) {
     final size = MediaQuery.of(context).size;
-    final tabs = createTabs(widget.episode, podcastSearchResult.roomId!, widget.position, controller);
+    final tabs = createTabs(widget.episode, podcastSearchResult.roomId ?? -1, widget.position, controller);
 
     return Stack(
       alignment: Alignment.bottomCenter,
@@ -223,7 +223,7 @@ class _PodcastEpisodeScreenState extends State<PodcastEpisodeScreen> with Single
         ]),
         tabController.index == 2
             ? ChatInput(
-                roomId: podcastSearchResult.roomId!,
+                roomId: widget.episode.roomId!,
                 focusNode: focusNode,
                 messageType: 2,
                 replyMessage: replyMessage,

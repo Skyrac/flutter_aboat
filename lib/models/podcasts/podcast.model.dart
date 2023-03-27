@@ -1,142 +1,94 @@
+import 'package:Talkaboat/models/podcasts/podcast_reward_dto.dart';
+import 'package:flutter/material.dart';
+import 'package:json_annotation/json_annotation.dart';
+
 import '../search/search_result.model.dart';
 import 'episode.model.dart';
 
+part 'podcast.model.g.dart';
+
+@JsonSerializable()
 class Podcast extends SearchResult {
   int? podcastId;
-  String? genreIds;
-  String? thumbnail;
-  String? titleOriginal;
-  String? listennotesUrl;
-  String? titleHighlighted;
-  String? publisherOriginal;
-  String? publisherHighlighted;
+  String? image;
+  String? genres;
   String? rss;
-  String? type;
   String? email;
   List<Episode>? episodes;
+  String? title;
   String? country;
   String? website;
   String? language;
-  int? itunesId;
   String? publisher;
-  bool? isClaimed;
+  String? description;
+  String? shortDescription;
   int? totalEpisodes;
   bool? explicitContent;
-  int? latestPubDateMs;
-  int? earliestPubDateMs;
+  int? latestPubDate;
+  int? roomId;
   int? rank;
   DateTime? lastUpdate;
+  List<PodcastRewardDto>? rewardTokens;
 
   Podcast(
-      {this.podcastId,
-      super.id,
-      super.image,
-      this.genreIds,
-      this.thumbnail,
-      this.titleOriginal,
-      this.listennotesUrl,
-      this.titleHighlighted,
-      this.publisherOriginal,
-      this.publisherHighlighted,
-      this.rss,
-      this.type,
-      this.email,
-      this.episodes,
-      super.title,
-      this.country,
-      this.website,
-      this.language,
-      this.itunesId,
-      this.publisher,
-      this.isClaimed,
-      super.description,
-      this.totalEpisodes,
-      this.explicitContent,
-      this.latestPubDateMs,
-      this.earliestPubDateMs,
-      this.lastUpdate});
+    this.podcastId,
+    this.image,
+    this.genres,
+    this.rss,
+    this.email,
+    this.episodes,
+    this.title,
+    this.country,
+    this.website,
+    this.language,
+    this.publisher,
+    this.description,
+    this.shortDescription,
+    this.totalEpisodes,
+    this.explicitContent,
+    this.latestPubDate,
+    this.roomId,
+    this.rank,
+    this.lastUpdate,
+    this.rewardTokens,
+  );
 
-  Podcast.fromJson(Map<String, dynamic> json) {
-    if (json['podcastId'] != null) {
-      podcastId = json['podcastId'];
-      id = json['podcastId'];
-    } else {
-      podcastId = json['id'];
-      id = json['id'];
-    }
-    roomId = json['roomId'];
-    image = json['image'];
-    genreIds = json['genres'];
-    thumbnail = json['thumbnail'];
-    titleOriginal = json['title'];
-    listennotesUrl = json['listennotes_url'];
-    titleHighlighted = json['title_highlighted'];
-    publisherOriginal = json['publisher_original'];
-    publisherHighlighted = json['publisher_highlighted'];
-    rss = json['rss'];
-    type = json['type'];
-    email = json['email'];
-
-    totalEpisodes = json['totalEpisodes'];
-    if (json['episodes'] != null) {
-      if (json["episodes"].runtimeType == int) {
-        totalEpisodes = json["episodes"];
-      } else {
-        episodes = [];
-        json['episodes'].forEach((v) {
-          episodes!.add(Episode.fromJson(v));
-        });
-      }
-    }
-    rank = json['rank'];
-    title = json['title'];
-    country = json['country'];
-    website = json['website'];
-    language = json['language'];
-    itunesId = json['itunes_id'];
-    publisher = json['publisher'];
-    isClaimed = json['is_claimed'];
-    description = json['description'];
-    explicitContent = json['explicitContent'];
-    latestPubDateMs = json['latestPubDate'];
-    earliestPubDateMs = json['earliest_pub_date_ms'];
-    lastUpdate = json['lastUpdate'] != null ? DateTime.parse(json['lastUpdate']) : null;
+  factory Podcast.fromJson(Map<String, dynamic> json) {
+    var podcast = _$PodcastFromJson(json);
+    podcast.id = podcast.podcastId;
+    return podcast;
   }
 
   @override
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['podcastId'] = podcastId;
-    data['id'] = podcastId;
-    data['roomId'] = roomId;
-    data['image'] = image;
-    data['genres'] = genreIds;
-    data['thumbnail'] = thumbnail;
-    data['title_original'] = titleOriginal;
-    data['listennotes_url'] = listennotesUrl;
-    data['title_highlighted'] = titleHighlighted;
-    data['publisher_original'] = publisherOriginal;
-    data['publisher_highlighted'] = publisherHighlighted;
-    data['rss'] = rss;
-    data['type'] = type;
-    data['email'] = email;
-    if (episodes != null) {
-      data['episodes'] = episodes!.map((v) => v.toJson()).toList();
-    }
-    data['rank'] = rank;
-    data['title'] = title;
-    data['country'] = country;
-    data['website'] = website;
-    data['language'] = language;
-    data['itunes_id'] = itunesId;
-    data['publisher'] = publisher;
-    data['is_claimed'] = isClaimed;
-    data['description'] = description;
-    data['total_episodes'] = totalEpisodes;
-    data['explicit_content'] = explicitContent;
-    data['latestPubDate'] = latestPubDateMs;
-    data['earliest_pub_date_ms'] = earliestPubDateMs;
-    data['lastUpdate'] = lastUpdate.toString();
-    return data;
+    var map = _$PodcastToJson(this);
+    map['id'] = podcastId;
+    debugPrint(map["id"].toString());
+    return map;
+  }
+
+  static Podcast empty() {
+    return Podcast(
+      0, // Default podcastId
+      'default_image.png', // Default image
+      '1,2,3', // Default genres
+      'http://example.com/rss', // Default RSS
+      'default@example.com', // Default email
+      [], // Default empty episodes list
+      'Default Title', // Default title
+      'Default Country', // Default country
+      'http://example.com', // Default website
+      'en', // Default language
+      'Default Publisher', // Default publisher
+      'Default description', // Default description
+      'Default short description', // Default short description
+      0, // Default totalEpisodes
+      false, // Default explicitContent
+      0, // Default latestPubDate
+      0, // Default roomId
+      0, // Default rank
+      DateTime.now(), // Default lastUpdate
+      [], // Default empty rewardTokens list
+    );
   }
 }

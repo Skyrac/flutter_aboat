@@ -18,6 +18,7 @@ import 'package:provider/provider.dart';
 import '../injection/injector.dart';
 import '../models/podcasts/episode.model.dart';
 import '../services/audio/audio-handler.services.dart';
+import '../services/device/connection-state.service.dart';
 import '../themes/colors.dart';
 import '../widgets/podcasts/mini-player.widget.dart';
 
@@ -32,6 +33,7 @@ class AppScreen extends StatefulWidget {
 class _AppScreenState extends State<AppScreen> with RouteAware {
   final userService = getIt<UserService>();
   final audioPlayer = getIt<AudioPlayerHandler>();
+  final connectionState = getIt<ConnectionStateService>();
   String _currentPage = "Home";
 
   GlobalKey _tabControllerKey = GlobalKey();
@@ -130,40 +132,50 @@ class _AppScreenState extends State<AppScreen> with RouteAware {
   }
 
   checkUpdates(context) async {
-    final remoteConfig = FirebaseRemoteConfig.instance;
-    await remoteConfig.setConfigSettings(RemoteConfigSettings(
-      fetchTimeout: const Duration(minutes: 1),
-      minimumFetchInterval: const Duration(hours: 1),
-    ));
-    await remoteConfig.fetchAndActivate();
+    if(!connectionState.isConnected) {
+      return;
+    }
+    try {
+      final remoteConfig = FirebaseRemoteConfig.instance;
+      await remoteConfig.setConfigSettings(RemoteConfigSettings(
+        fetchTimeout: const Duration(minutes: 1),
+        minimumFetchInterval: const Duration(hours: 1),
+      ));
+      await remoteConfig.fetchAndActivate();
 
-    final requiredBuildNumber = remoteConfig.getInt(Platform.isAndroid ? 'androidBuildNumber' : 'iosBuildNumber');
-    var packageInfo = await PackageInfo.fromPlatform();
-    final currentBuildNumber = int.parse(packageInfo.buildNumber);
-    if (currentBuildNumber < requiredBuildNumber) {
-      showDialog(
-          context: context,
-          builder: (_) => AlertDialog(
-                title: Text(AppLocalizations.of(context)!.updateRequired),
-                content: Text(AppLocalizations.of(context)!.pleaseUpdateYourApp),
-                elevation: 8,
-                actions: [
-                  TextButton(
-                      onPressed: () {
-                        OpenStore.instance.open(
-                          appStoreId: '1637833839', // AppStore id of your app
-                          androidAppBundleId: 'com.aboat.talkaboat', // Android app bundle package name
-                        );
-                      },
-                      child: Text(AppLocalizations.of(context)!.update)),
-                  TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: Text(AppLocalizations.of(context)!.later))
-                ],
-              ),
-          barrierDismissible: true);
+      final requiredBuildNumber = remoteConfig.getInt(
+          Platform.isAndroid ? 'androidBuildNumber' : 'iosBuildNumber');
+      var packageInfo = await PackageInfo.fromPlatform();
+      final currentBuildNumber = int.parse(packageInfo.buildNumber);
+      if (currentBuildNumber < requiredBuildNumber) {
+        showDialog(
+            context: context,
+            builder: (_) =>
+                AlertDialog(
+                  title: Text(AppLocalizations.of(context)!.updateRequired),
+                  content: Text(
+                      AppLocalizations.of(context)!.pleaseUpdateYourApp),
+                  elevation: 8,
+                  actions: [
+                    TextButton(
+                        onPressed: () {
+                          OpenStore.instance.open(
+                            appStoreId: '1637833839', // AppStore id of your app
+                            androidAppBundleId: 'com.aboat.talkaboat', // Android app bundle package name
+                          );
+                        },
+                        child: Text(AppLocalizations.of(context)!.update)),
+                    TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text(AppLocalizations.of(context)!.later))
+                  ],
+                ),
+            barrierDismissible: true);
+      }
+    } catch(exception) {
+
     }
   }
 

@@ -10,6 +10,7 @@ import '../../models/playlist/playlist.model.dart';
 import '../../models/podcasts/episode.model.dart';
 import '../../models/podcasts/podcast.model.dart';
 import '../../models/response.model.dart';
+import '../../models/search/search_result.model.dart';
 
 class PodcastRepository {
   PodcastRepository._();
@@ -136,7 +137,7 @@ class PodcastRepository {
     }
   }
 
-  static Future<List<Podcast>> search(String search, int amount, int offset, {int? genre, Rank? rank, String? language}) async {
+  static Future<List<SearchResult>> search(String search, int amount, int offset, {int? genre, Rank? rank, String? language}) async {
     try {
       final body = {"amount": amount, "offset": offset, "queue": search};
       if (genre != null) {
@@ -149,12 +150,12 @@ class PodcastRepository {
         body["Language"] = language;
       }
       var response = await dio.post<String>('$API/search', data: body);
-      debugPrint(response.data);
-      var list = List<Podcast>.from(json.decode(response.data!).map((data) => Podcast.fromJson(data)));
+      debugPrint("Search Results: ${response.data}");
+      var list = List<SearchResult>.from(json.decode(response.data!).map((data) => SearchResult.fromJson(data)));
+      debugPrint("Search Results List: ${list}");
       return list;
     } catch (e) {
       debugPrint("$e");
-      debugPrint((e as DioError).response?.data);
       return List.empty();
     }
   }
