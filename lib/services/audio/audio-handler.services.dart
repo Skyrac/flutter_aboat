@@ -264,7 +264,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler with SeekHandler implement
     final Map<String, dynamic> extraMap = {"episodeId": episodeId, "podcastId": podcastId, "playTime": playTime};
     var file = (await FileDownloadService.getFile(episode.audio!))?.file.path;
     if (file != null && Platform.isIOS) {
-      file = "file:$file";
+      //file = "file:$file";
     }
     var id = file ?? episode.audio!;
     final mediaItem = MediaItem(

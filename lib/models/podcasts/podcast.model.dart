@@ -136,7 +136,7 @@ class Podcast extends SearchResult {
     data['explicit_content'] = explicitContent;
     data['latestPubDate'] = latestPubDateMs;
     data['earliest_pub_date_ms'] = earliestPubDateMs;
-    data['lastUpdate'] = lastUpdate;
+    data['lastUpdate'] = lastUpdate.toString();
     return data;
   }
 }

@@ -1,8 +1,11 @@
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class StoreService {
-  Future<void> set(String key, dynamic value) async {
+  Future<void> set<T>(String key, T value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    debugPrint("Stored value for ${key}: ${value}");
     if (value is int) {
       await prefs.setInt(key, value);
     } else if (value is double) {
@@ -14,6 +17,7 @@ class StoreService {
     }else if (value is bool) {
       await prefs.setBool(key, value);
     } else {
+      debugPrint("Error storing value for ${key}: ${value}");
       throw Exception('Unsupported value type');
     }
   }
@@ -23,6 +27,16 @@ class StoreService {
     if(!prefs.containsKey(key)) {
       return defaultValue;
     }
-    return prefs.get(key) as T ?? defaultValue;
+    final value = prefs.get(key) as T ?? defaultValue;
+    debugPrint("Got stored value for ${key}: ${value}");
+    return value;
+  }
+
+  Future<void> remove(String key) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if(!prefs.containsKey(key)) {
+      return;
+    }
+    prefs.remove(key);
   }
 }

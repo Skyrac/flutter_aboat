@@ -235,7 +235,7 @@ class UserService extends ChangeNotifier {
           token = "";
           firebaseToken = "";
 
-          await store.set(PreferenceKeys.tokenIdentifier, "");
+          //await store.set(PreferenceKeys.tokenIdentifier, "");
         } else if (user != null && !baseLogin) {
           try {
             await loginWithFirebaseToken(user);
@@ -308,7 +308,6 @@ class UserService extends ChangeNotifier {
     userInfo!.userId = int.parse(Jwt.parseJwt(token)["nameid"]);
     await FirebaseAnalytics.instance.setUserId(id: "${userInfo!.userId}");
     if (userInfo == null || userInfo!.userName == null) {
-      logout();
       return false;
     }
     return true;
@@ -482,7 +481,7 @@ class UserService extends ChangeNotifier {
       for (var entry in favorites) {
         var lastUpdateSeen = await store.get(PreferenceKeys.lastNotificationUpdate + entry.podcastId.toString(), 0);
         if(await store.get("${PreferenceKeys.podcastDetails}${entry.podcastId}", "") == "") {
-          await store.set("${PreferenceKeys.podcastDetails}${entry.podcastId}", entry.toJson());
+          await store.set("${PreferenceKeys.podcastDetails}${entry.podcastId}", jsonEncode(entry));
         }
         if (lastUpdateSeen != null) {
           var date = DateTime.fromMillisecondsSinceEpoch(lastUpdateSeen);
@@ -498,6 +497,7 @@ class UserService extends ChangeNotifier {
 
   Future<List<Podcast>> removePodcastsFromFavorites(int id) async {
     if (await PodcastRepository.removeFromFavorites(id)) {
+      await store.remove("${PreferenceKeys.podcastDetails}${id}");
       favorites.removeWhere((item) => item.podcastId == id);
     }
     return favorites;
@@ -507,7 +507,7 @@ class UserService extends ChangeNotifier {
     if (await PodcastRepository.addToFavorites(id)) {
 
       var podcastDetails = await PodcastRepository.getPodcastDetails(id, "asc", 1, 0);
-      await store.set("${PreferenceKeys.podcastDetails}${id}", podcastDetails.toJson());
+      await store.set("${PreferenceKeys.podcastDetails}${id}", jsonEncode(podcastDetails.toJson()));
       return await getFavorites(refresh: true);
     }
     return favorites;

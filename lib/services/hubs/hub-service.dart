@@ -1,4 +1,5 @@
 import 'package:Talkaboat/injection/injector.dart';
+import 'package:Talkaboat/services/device/connection-state.service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:signalr_netcore/signalr_client.dart';
 import 'package:logging/logging.dart';
@@ -9,6 +10,7 @@ abstract class HubService {
   final isProduction = const String.fromEnvironment('IS_PRODUCTION') == '1';
   final useTestServer = false;
   final userService = getIt<UserService>();
+  final connectionStateService = getIt<ConnectionStateService>();
   final testServerUrl = "http://192.168.10.177:5000/hubs/";
   final serverUrl = "http://api.talkaboat.online/hubs/";
   late final HttpConnectionOptions options;
@@ -52,7 +54,7 @@ abstract class HubService {
   }
 
   Future<bool> checkConnection() async {
-    if (!userService.isConnected) {
+    if (!userService.isConnected || !connectionStateService.isConnected) {
       return false;
     }
     var state = connection.state;

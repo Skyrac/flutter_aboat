@@ -88,20 +88,21 @@ class _MiniPlayerWidgetState extends State<MiniPlayerWidget> {
                       if(validator.isSelectedPage(widget.episode!.id!)) {
                         return;
                       }
-                      Navigator.of(context).push(PageTransition(
-                          alignment: Alignment.bottomCenter,
-                          curve: Curves.bounceOut,
-                          type: PageTransitionType.rightToLeftWithFade,
-                          duration: const Duration(milliseconds: 500),
-                          reverseDuration: const Duration(milliseconds: 500),
-                          child: PodcastEpisodeScreen(
-                            episode: widget.episode!,
-                            position: position,
-                            isActiv: (screen) {
-                              setState(() {
-                                isPodcastEpisodeActiv = screen;
-                              });
-                            },
+                      widget.navKey.currentState!.push(
+                          PageTransition(
+                              alignment: Alignment.bottomCenter,
+                              curve: Curves.bounceOut,
+                              type: PageTransitionType.rightToLeftWithFade,
+                              duration: const Duration(milliseconds: 1),
+                              reverseDuration: const Duration(milliseconds: 1),
+                              child: PodcastEpisodeScreen(
+                                episode: widget.episode!,
+                                position: position,
+                                isActiv: (screen) {
+                                  setState(() {
+                                    isPodcastEpisodeActiv = screen;
+                                  });
+                                },
                           )));
                     }),
                     child: Row(

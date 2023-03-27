@@ -1,13 +1,16 @@
 import 'package:Talkaboat/services/hubs/reward/reward-hub.service.dart';
+import 'package:Talkaboat/utils/preference-keys.const.dart';
 import 'package:audio_service/audio_service.dart';
 import '../../injection/injector.dart';
 import '../../models/podcasts/episode.model.dart';
+import '../user/store.service.dart';
 
 int heartbeatCounter = 0;
 const heartbeatLimit = 10;
 MediaItem? currentlyPlayingMediaItem;
 Function? setEpisode;
 RewardHubService _rewardHub = getIt<RewardHubService>();
+StoreService _store = getIt<StoreService>();
 
 Future<void> receiveUpdate(PlaybackState state, MediaItem? currentMediaItem, Duration position, Episode? episode) async {
   currentlyPlayingMediaItem = currentMediaItem;
@@ -39,6 +42,7 @@ Future<void> positionUpdate(Duration position, MediaItem? currentMediaItem) asyn
       currentMediaItem.extras!["playTime"] = playTime;
       int podcastId = currentMediaItem.extras!["podcastId"] ?? 0;
       int episodeId = currentMediaItem.extras!["episodeId"] ?? 0;
+      await _store.set("${PreferenceKeys.episodePlaytime}${episodeId}", playTime);
       await _rewardHub.Heartbeat(podcastId, episodeId, playTime);
     }
   }

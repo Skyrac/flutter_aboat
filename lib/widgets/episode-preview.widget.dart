@@ -388,6 +388,8 @@ class _EpisodePreviewWidgetState extends State<EpisodePreviewWidget> {
                         }, finishAction: (isDownloaded) async {
                           if(isDownloaded) {
                             await store.set("${PreferenceKeys.episodeDetails}${widget.episode.id}", widget.episode.toJson());
+                          } else {
+                            await store.remove("${PreferenceKeys.episodeDetails}${widget.episode.id}");
                           }
                           setState(() {
 
