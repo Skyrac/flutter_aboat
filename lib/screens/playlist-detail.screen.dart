@@ -296,7 +296,7 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                         iconSize: 50.0,
                         onPressed: (() async {
                           await audioHandler
-                              .updateEpisodeQueue(widget.playlist.tracks!.map((track) => track.episode!).toList(), index: 0);
+                              .updateEpisodeQueue(context, widget.playlist.tracks!.map((track) => track.episode!).toList(), index: 0);
                         }),
                       ),
                     )
@@ -372,7 +372,7 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
               child: Center(
                 child: InkWell(
                   onTap: (() async {
-                    await audioHandler.updateEpisodeQueue(widget.playlist.tracks!.map((track) => track.episode!).toList(),
+                    await audioHandler.updateEpisodeQueue(context, widget.playlist.tracks!.map((track) => track.episode!).toList(),
                         index: index);
                   }),
                   child: Row(children: [

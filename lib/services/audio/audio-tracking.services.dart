@@ -1,9 +1,11 @@
 import 'package:Talkaboat/services/hubs/reward/reward-hub.service.dart';
 import 'package:Talkaboat/utils/preference-keys.const.dart';
 import 'package:audio_service/audio_service.dart';
+import 'package:provider/provider.dart';
 import '../../injection/injector.dart';
 import '../../models/podcasts/episode.model.dart';
 import '../user/store.service.dart';
+import 'audio-handler.services.dart';
 
 int heartbeatCounter = 0;
 const heartbeatLimit = 10;

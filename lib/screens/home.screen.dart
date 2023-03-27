@@ -23,37 +23,11 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final homeState = getIt<StateService>();
   final userService = getIt<UserService>();
   final questService = getIt<QuestService>();
 
-  Widget createTaskBar(BuildContext context, String title) {
-    if (!userService.isConnected) {
-      return Container();
-    }
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Padding(
-          padding: const EdgeInsets.only(left: 10),
-          child: Row(
-            children: [
-              Text(title, style: Theme.of(context).textTheme.titleLarge),
-              IconButton(
-                  onPressed: () {
-                    setState(() {});
-                  },
-                  icon: const Icon(Icons.refresh))
-            ],
-          )),
-      const SizedBox(
-          height: 224,
-          child: QuestListWidget(
-            direction: Axis.horizontal,
-          ))
-    ]);
-  }
-
   refresh() {
-    setState(() {});
+    //setState(() {});
   }
 
   @override

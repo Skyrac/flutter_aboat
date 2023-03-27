@@ -124,8 +124,7 @@ class _VideoHomeScreenSuggestedTabState<T extends VideoHomeScreenSuggestedTab> e
       SizedBox(
           height: 224,
           child: QuestListWidget(
-            direction: Axis.horizontal,
-            checkUpdate: r,
+            direction: Axis.horizontal
           ))
     ]);
   }

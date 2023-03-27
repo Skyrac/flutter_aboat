@@ -172,7 +172,7 @@ class _PodcastListWidgetState extends State<PodcastListWidget> {
             Center(
               child: SizedBox(
                   width: 110,
-                  height: 150,
+                  height: 160,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

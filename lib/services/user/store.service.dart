@@ -5,7 +5,6 @@ class StoreService {
   Future<void> set<T>(String key, T value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    debugPrint("Stored value for ${key}: ${value}");
     if (value is int) {
       await prefs.setInt(key, value);
     } else if (value is double) {
@@ -28,7 +27,6 @@ class StoreService {
       return defaultValue;
     }
     final value = prefs.get(key) as T ?? defaultValue;
-    debugPrint("Got stored value for ${key}: ${value}");
     return value;
   }
 

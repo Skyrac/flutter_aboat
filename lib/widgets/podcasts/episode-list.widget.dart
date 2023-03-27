@@ -61,7 +61,7 @@ class _EpisodeListState extends State<EpisodeList> {
     if (audioPlayer.isListeningEpisode(selectedEpisode.episodeId)) {
       audioPlayer.togglePlaybackState();
     } else {
-      await audioPlayer.updateEpisodeQueue(data, index: index);
+      await audioPlayer.updateEpisodeQueue(context, data, index: index);
     }
   }
 

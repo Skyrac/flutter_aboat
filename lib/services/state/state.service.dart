@@ -13,8 +13,15 @@ class StateService {
   }
 
   openDetailPlayer() {
+    if(isDetailPlayerOpen) return;
     isDetailPlayerOpen = true;
     if (miniplayerFunction != null) {
+      miniplayerFunction!();
+    }
+  }
+
+  updateEpisode() {
+    if(isDetailPlayerOpen && miniplayerFunction != null) {
       miniplayerFunction!();
     }
   }

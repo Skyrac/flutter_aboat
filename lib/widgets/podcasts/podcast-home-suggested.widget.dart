@@ -27,14 +27,12 @@ class PodcastHomeScreenSuggestedTab extends StatefulWidget {
 
 class _PodcastHomeScreenSuggestedTabState<T extends PodcastHomeScreenSuggestedTab> extends State<PodcastHomeScreenSuggestedTab>
     with WidgetsBindingObserver {
-  final homeState = getIt<StateService>();
   final userService = getIt<UserService>();
   final podcastService = getIt<PodcastService>();
 
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
-    debugPrint("Init");
     AdManager.preLoadAd(false);
     super.initState();
   }
@@ -150,33 +148,9 @@ class _PodcastHomeScreenSuggestedTabState<T extends PodcastHomeScreenSuggestedTa
     if (!userService.isConnected) {
       return Container();
     }
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Padding(
-          padding: const EdgeInsets.only(left: 10),
-          child: Row(
-            children: [
-              Text(title, style: Theme.of(context).textTheme.titleLarge),
-              IconButton(
-                  onPressed: () {
-                    setState(() {
-                    });
-                    setState(() {
-                      r = !r;
-                    });
-                  },
-                  icon: const Icon(Icons.refresh))
-            ],
-          )),
-      SizedBox(
-          height: 224,
-          child: QuestListWidget(
-            direction: Axis.horizontal,
-            checkUpdate: r,
-          ))
-    ]);
+    return  QuestListWidget(
+            direction: Axis.horizontal);
   }
-
-  bool r = false;
 
   Widget createFavoritesList(BuildContext context) {
     return Padding(
@@ -250,7 +224,7 @@ class _PodcastHomeScreenSuggestedTabState<T extends PodcastHomeScreenSuggestedTa
                         if (snapshot.data != null && snapshot.data!.isNotEmpty) {
                           userService.podcastProposalsHomeScreen[genre] = snapshot.data!;
                           debugPrint("${snapshot.data}");
-                          return PodcastListWidget(direction: Axis.horizontal, searchResults: homeState.map[genre]!);
+                          return PodcastListWidget(direction: Axis.horizontal, searchResults: userService.podcastProposalsHomeScreen[genre]!);
                         }
                       }
                     }

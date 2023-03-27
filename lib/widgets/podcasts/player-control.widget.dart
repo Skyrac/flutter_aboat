@@ -1,5 +1,6 @@
 import 'package:Talkaboat/screens/search.screen.dart';
 import 'package:Talkaboat/services/user/reward.service.dart';
+import 'package:Talkaboat/widgets/wallet/wallet.screen.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
@@ -21,7 +22,6 @@ class _PlayerControlWidgetState extends State<PlayerControlWidget> with SingleTi
   late AnimationController _controller;
   final userService = getIt<UserService>();
   final rewardService = getIt<RewardService>();
-  final stateService = getIt<StateService>();
   @override
   void initState() {
     _controller = AnimationController(
@@ -131,7 +131,7 @@ class _PlayerControlWidgetState extends State<PlayerControlWidget> with SingleTi
                               type: PageTransitionType.rightToLeftWithFade,
                               duration: const Duration(milliseconds: 500),
                               reverseDuration: const Duration(milliseconds: 500),
-                              child: const SearchScreen()));
+                              child: const WalletScreen()));
                     },
                   ),
                 ],

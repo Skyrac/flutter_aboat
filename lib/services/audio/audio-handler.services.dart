@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:Talkaboat/services/downloading/file-downloader.service.dart';
@@ -5,6 +6,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../models/podcasts/episode.model.dart';
@@ -15,17 +17,30 @@ import 'audio-tracking.services.dart';
 ///
 /// This class exposes the interface and not the implementation.
 abstract class AudioPlayerHandler implements AudioHandler {
+  get currentPlayingEpisode;
   Stream<QueueState> get queueState;
   Future<void> moveQueueItem(int currentIndex, int newIndex);
   ValueStream<double> get volume;
   Future<void> setVolume(double volume);
   ValueStream<double> get speed;
-  Future<void> updateEpisodeQueue(List<Episode> episodes, {int index = 0});
+  Future<void> updateEpisodeQueue(context, List<Episode> episodes, {int index = 0});
   bool isListeningEpisode(episodeId);
   bool isListeningPodcast(podcastId);
   void setEpisodeRefreshFunction(Function setEpisode) {}
 
   void togglePlaybackState() {}
+}
+
+class AudioPlayerNotifier extends ChangeNotifier {
+  Episode? _currentEpisode;
+
+  get episode => _currentEpisode;
+
+  void updateEpisode(Episode episode) {
+    _currentEpisode = episode;
+    debugPrint(jsonEncode(episode));
+    notifyListeners();
+  }
 }
 
 /// The implementation of [AudioPlayerHandler].
@@ -168,22 +183,24 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler with SeekHandler implement
     AudioService.position.listen((event) async => {
       await positionUpdate(event, mediaItem.value),
       if(episodes != null) {
-        episodes![_player.currentIndex!].playTime = event.inSeconds,
-        debugPrint("${episodes![_player.currentIndex!].playTime}")
+        episodes![_player.currentIndex!].playTime = event.inSeconds
       },
     });
-    playbackState.listen((PlaybackState state) async => await receiveUpdate(
-        state, mediaItem.value, _player.position, episodes == null ? null : episodes![_player.currentIndex!]));
+    playbackState.listen((PlaybackState state) async {
+      currentEpisode = episodes == null ? null : episodes![_player.currentIndex!];
+      await receiveUpdate(
+        state, mediaItem.value, _player.position, currentEpisode);
+      });
   }
+
+  get currentPlayingEpisode => currentEpisode;
 
   AudioSource _itemToSource(MediaItem mediaItem) {
     AudioSource audioSource;
     if(mediaItem.id.contains('http')) {
       audioSource = ProgressiveAudioSource(Uri.parse(mediaItem.id), duration: mediaItem.duration);
-      debugPrint("Progressive Audio Source");
     } else {
       audioSource = AudioSource.file(mediaItem.id);
-      debugPrint("File Audio Source");
     }
 
     _mediaItemExpando[audioSource] = mediaItem;
@@ -278,12 +295,14 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler with SeekHandler implement
   }
 
   @override
-  Future<void> updateEpisodeQueue(List<Episode> episodes, {int index = 0}) async {
+  Future<void> updateEpisodeQueue(context, List<Episode> episodes, {int index = 0}) async {
     if(this.episodes == episodes) {
       await skipToQueueItem(index);
     } else {
       this.episodes = episodes;
       currentEpisode = episodes[index];
+      final audioPlayerNotifier = Provider.of<AudioPlayerNotifier>(context, listen: false);
+      audioPlayerNotifier.updateEpisode(currentEpisode!);
       await updateQueue(
           (await Future.wait(
               episodes.map((episode) async => await convertEpisodeToMediaItem(

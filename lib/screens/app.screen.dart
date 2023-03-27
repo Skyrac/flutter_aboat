@@ -31,6 +31,7 @@ class AppScreen extends StatefulWidget {
 
 class _AppScreenState extends State<AppScreen> with RouteAware {
   final userService = getIt<UserService>();
+  final audioPlayer = getIt<AudioPlayerHandler>();
   String _currentPage = "Home";
 
   GlobalKey _tabControllerKey = GlobalKey();
@@ -40,9 +41,11 @@ class _AppScreenState extends State<AppScreen> with RouteAware {
   Episode? episode;
 
   Episode? setEpisode(Episode episode) {
-    setState(() {
-      this.episode = episode;
-    });
+    episode = audioPlayer.currentPlayingEpisode;
+    if(episode != null) {
+      final audioPlayerNotifier = Provider.of<AudioPlayerNotifier>(context, listen: false);
+      audioPlayerNotifier.updateEpisode(episode);
+    }
     return this.episode;
   }
 
@@ -202,7 +205,7 @@ class _AppScreenState extends State<AppScreen> with RouteAware {
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                MiniPlayerWidget(episode: episode, navKey: _navigatorKey()),
+                Consumer<AudioPlayerNotifier>(builder: (context, state, child) { return MiniPlayerWidget(episode: state.episode, navKey: _navigatorKey()); }),
                 orientation == Orientation.portrait ? ClipRRect(
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(20.0),
