@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter/material.dart';
+import 'package:dart_ping/dart_ping.dart';
 
 class ConnectionStateService {
   final Connectivity _connectivity = Connectivity();
@@ -18,23 +18,56 @@ class ConnectionStateService {
 
   Future<void> checkInitialConnection() async {
     final initialResult = await _connectivity.checkConnectivity();
-    _checkConnection(initialResult);
+    await _checkConnection(initialResult);
   }
 
-  void _checkConnection(ConnectivityResult result) {
+  Future<void> _checkConnection(ConnectivityResult result) async {
     if (result == ConnectivityResult.none) {
       if(!isConnected) {
         return;
       }
       isConnected = false;
-      _connectionStateController.add(false);
     } else {
-      if(isConnected) {
-        return;
+      if(!await _isLatencyAcceptable()) {
+        if(!isConnected) {
+          return;
+        }
+        isConnected = false;
+      } else {
+        if (isConnected) {
+          return;
+        }
+        isConnected = true;
       }
-      isConnected = true;
-      _connectionStateController.add(true);
     }
+
+    _connectionStateController.add(isConnected);
+  }
+
+  Future<bool> _isLatencyAcceptable() async {
+    final String ipAddress = '8.8.8.8'; // Google Public DNS server
+    final ping = Ping(ipAddress, count: 3);
+
+    try {
+      final List<double> latencies = [];
+      await for (PingData pingData in ping.stream) {
+        if (pingData.response != null) {
+          latencies.add(pingData.response!.time?.inMilliseconds.toDouble() ?? 500);
+        }
+      }
+
+      if (latencies.isNotEmpty) {
+        final double averageLatency = latencies.reduce((a, b) => a + b) / latencies.length;
+        // Set a threshold for the latency (e.g., 200ms)
+        if (averageLatency < 200) {
+          return true;
+        }
+      }
+    } catch (e) {
+      // Error during the latency test
+    }
+
+    return false;
   }
 
   void dispose() {

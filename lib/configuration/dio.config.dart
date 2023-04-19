@@ -7,8 +7,9 @@ import '../services/user/user.service.dart';
 var options = BaseOptions(
   //baseUrl: "http://192.168.10.177:5000/",
   baseUrl: 'https://api.talkaboat.online/',
-  connectTimeout: 5000,
-  receiveTimeout: 15000
+  connectTimeout: 10000,
+  receiveTimeout: 45000,
+  sendTimeout: 15000
 );
 
 var cacheOptions = CacheOptions(
@@ -64,4 +65,5 @@ void configDio() {
     // you can resolve a `Response` object eg: `handler.resolve(response)`.
   }));
   dio.interceptors.add(DioCacheInterceptor(options: cacheOptions));
+
 }

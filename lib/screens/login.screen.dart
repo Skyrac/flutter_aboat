@@ -309,6 +309,7 @@ class _LoginScreenState extends State<LoginScreen> {
     var isUsernameValid = false;
     while (!isUsernameValid) {
       final username = await showUsernameDialog(context, theme, rejectedUsername);
+      debugPrint(username);
       if (username != null) {
         setState(() {
           isLoading = true;

@@ -16,13 +16,10 @@ class UserRepository {
   UserRepository._();
   static final connectionStateService = getIt<ConnectionStateService>();
   static Future<String?> requestEmailLogin(String email) async {
-    if(!connectionStateService.isConnected) {
-      return null;
-    }
     try {
       var response = await dio.post<String>('/v1/user/login/email/$email');
       var convertedData = response.data;
-      debugPrint(convertedData);
+      debugPrint("Request Email Login Not Connected");
       return convertedData;
     } catch (e) {
       debugPrint("$e");
@@ -31,9 +28,6 @@ class UserRepository {
   }
 
   static Future<String> emailLogin(String email, String pin) async {
-    if(!connectionStateService.isConnected) {
-      return "";
-    }
     try {
       var response = await dio
           .post<String>('/v1/user/login/email', data: {"address": email, "signature": pin});

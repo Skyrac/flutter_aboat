@@ -4,6 +4,7 @@ import 'package:Talkaboat/l10n/l10n.dart';
 import 'package:Talkaboat/navigator_keys.dart';
 import 'package:Talkaboat/screens/root.screen.dart';
 import 'package:Talkaboat/services/ads/ad-manager.service.dart';
+import 'package:Talkaboat/services/audio/audio-handler.services.dart';
 import 'package:Talkaboat/services/dynamiclinks/dynamic-links.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
 import 'package:Talkaboat/themes/colors.dart';
@@ -116,6 +117,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       providers: [
         ChangeNotifierProvider(
           create: (context) => SelectEpisodePage(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => AudioPlayerNotifier(),
         )
       ],
       child: MaterialApp(

@@ -328,6 +328,7 @@ class UserService extends ChangeNotifier {
 
   Future<String?> emailRegister(String email, String pin, String username, bool newsletter) async {
     try {
+      debugPrint("Email Register Proceed");
       var response = await UserRepository.emailRegister(email, pin, username, newsletter, await store.get(DynamicLinkUtils.REFERAL_QUERY_PARAM, ""));
       debugPrint("response ${response.toJson()}");
       if (response.data == null || response.data!.isEmpty) {
@@ -341,7 +342,7 @@ class UserService extends ChangeNotifier {
 
         await FirebaseAnalytics.instance.logLogin(loginMethod: "Email");
         await getCoreData();
-        return userInfo != null ? null : "false";
+        return userInfo != null ? null : "true";
       }
       return "false";
     } catch (_) {

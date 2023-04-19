@@ -64,25 +64,28 @@ class _RootScreenState extends State<RootScreen> {
     print("UUID: $uuid");
   }
 
+  refresh() {
+    setState(() {
+
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     if (userService.newUser) {
       return const OnBoardingScreen();
     }
-    return ChangeNotifierProvider(
-      create: (context) => AudioPlayerNotifier(),
-      child: StreamBuilder<bool>(
+    return StreamBuilder<bool>(
         stream: connectionStateService.connectionStateStream,
         builder: (context, snapshot) {
           debugPrint("connection state: ${connectionStateService.isConnected}");
-          if (!userService.isConnected && !userService.guest && connectionStateService.isConnected) {
+          if (!userService.isConnected && !userService.guest) {
             return const LoginScreen(false);
           }
 
           return Consumer<UserService>(builder: (context, service, child) { return AppScreen(title: 'Talkaboat'); });
 
         },
-      ),
-    );
+      );
     }
 }
