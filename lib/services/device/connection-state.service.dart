@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:dart_ping/dart_ping.dart';
 
 class ConnectionStateService {
   final Connectivity _connectivity = Connectivity();
@@ -45,12 +44,13 @@ class ConnectionStateService {
   }
 
   Future<bool> _isLatencyAcceptable() async {
+    return true;
     final String ipAddress = '8.8.8.8'; // Google Public DNS server
-    final ping = Ping(ipAddress, count: 3);
+    final ping = null;//Ping(ipAddress, count: 3);
 
     try {
       final List<double> latencies = [];
-      await for (PingData pingData in ping.stream) {
+      await for (dynamic pingData in ping.stream) {
         if (pingData.response != null) {
           latencies.add(pingData.response!.time?.inMilliseconds.toDouble() ?? 500);
         }
