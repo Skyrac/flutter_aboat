@@ -4,8 +4,8 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
-Widget buildCategoryBadges(BuildContext context, String genres) {
-  final genreList = genres.split(",").asMap().entries;
+Widget buildCategoryBadges(BuildContext context, String? genres) {
+  final genreList = genres?.split(",").asMap().entries ?? [ ];
   return Align(
     alignment: Alignment.centerLeft,
     child: SizedBox(

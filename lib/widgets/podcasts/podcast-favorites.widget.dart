@@ -14,7 +14,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 class PodcastListFavoritesWidget extends StatefulWidget {
   const PodcastListFavoritesWidget({Key? key, required this.searchResults, this.trailing, this.checkUpdate})
       : super(key: key);
-  final List<Podcast?> searchResults;
+  final List<SearchResult?> searchResults;
   final Function? trailing;
   final bool? checkUpdate;
   @override
@@ -67,7 +67,7 @@ class _PodcastListFavoritesWidgetState extends State<PodcastListFavoritesWidget>
         },
       );
 
-  Widget makeListBuilder(context, List<Podcast?> data) => GridView.count(
+  Widget makeListBuilder(context, List<SearchResult?> data) => GridView.count(
       crossAxisCount: 2,
       semanticChildCount: data.length,
       childAspectRatio: 175 / 65,
@@ -81,7 +81,7 @@ class _PodcastListFavoritesWidgetState extends State<PodcastListFavoritesWidget>
         }
       }));
 
-  Widget makeCard(context, Podcast entry) => Stack(children: [
+  Widget makeCard(context, SearchResult entry) => Stack(children: [
         makeVerticalListTile(context, entry),
         widget.checkUpdate != null && widget.checkUpdate!
             ? userService.unseenPodcastNotifcationUpdates(entry.id!)
@@ -90,7 +90,7 @@ class _PodcastListFavoritesWidgetState extends State<PodcastListFavoritesWidget>
             : const SizedBox(),
       ]);
 
-  Widget makeVerticalListTile(context, Podcast entry) => SizedBox(
+  Widget makeVerticalListTile(context, SearchResult entry) => SizedBox(
       width: 175,
       height: 65,
       child: ListTile(

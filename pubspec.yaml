@@ -15,7 +15,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.13+71
+version: 1.0.13+72
 # Major.Minor.Patch+VersionCode
 
 environment:
@@ -36,7 +36,7 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
-  dio: ^4.0.6
+  dio: ^5.1.1
   audio_service: ^0.18.9
   just_audio: ^0.9.31
   get_it: ^7.2.0
@@ -44,26 +44,26 @@ dependencies:
   page_transition: ^2.0.9
   jiffy: ^5.0.0
   dio_cache_interceptor: ^3.3.1
-  firebase_auth: ^3.6.2
-  flutter_facebook_auth: ^4.4.1+1
+  firebase_auth: ^4.4.2
+  flutter_facebook_auth: ^5.0.8
   get: ^4.6.5
-  google_sign_in: ^5.4.2
+  google_sign_in: ^6.1.0
   shared_preferences: ^2.0.15
   sign_in_with_apple: ^4.1.0
-  firebase_core: ^1.20.0
+  firebase_core: ^2.10.0
   curved_navigation_bar: ^1.0.3
   social_login_buttons: ^1.0.6+2
   cached_network_image: ^3.2.3
-  url_launcher: 6.1.6
-  share_plus: ^4.0.10
+  url_launcher: ^6.1.10
+  share_plus: ^6.3.2
   debounce_throttle: ^2.0.0
   introduction_screen: ^3.0.2
   google_mobile_ads: ^2.0.1
-  firebase_remote_config: ^2.0.14
-  firebase_analytics: ^9.3.1
-  package_info_plus: ^1.4.3+1
-  open_store: ^0.2.4
-  google_fonts: ^3.0.1
+  firebase_remote_config: ^4.0.1
+  firebase_analytics: ^10.2.1
+  package_info_plus: ^3.1.0
+  open_store: ^0.5.0
+  google_fonts: ^4.0.3
   rxdart: ^0.27.5
   md2_tab_indicator: ^1.0.2
   infinite_scroll_pagination: ^3.2.0
@@ -75,7 +75,7 @@ dependencies:
       url: https://github.com/daubit/signalr_client.git
       ref: master # branch name
   agora_rtc_engine: 6.1.0
-  permission_handler: ^9.2.0
+  permission_handler: ^10.2.0
   json_annotation: ^4.7.0
   swipe_to: ^1.0.2
   audio_session: ^0.1.11
@@ -90,7 +90,7 @@ dependencies:
   provider: ^6.0.5
   scrollview_observer: ^1.9.1
   duration: ^3.0.12
-  firebase_dynamic_links: ^4.3.11
+  firebase_dynamic_links: ^5.1.1
   tweet_ui: ^4.0.4
   better_player: ^0.0.83
   app_tracking_transparency: ^2.0.3
@@ -101,7 +101,7 @@ dev_dependencies:
   build_runner: ^2.0.0
   json_serializable: ^6.0.0
   dependency_validator: ^3.0.0
-  flutter_launcher_icons: ^0.9.2
+  flutter_launcher_icons: ^0.12.0
   flutter_test:
     sdk: flutter
 

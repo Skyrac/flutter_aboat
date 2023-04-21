@@ -3,12 +3,14 @@ import 'package:Talkaboat/widgets/podcasts/podcast-list.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../models/search/search_result.model.dart';
+
 class PodcastListHorizontal extends StatelessWidget {
   const PodcastListHorizontal({this.data, this.future, this.title, this.multiplier, this.seeAllCb, Key? key})
       : super(key: key);
 
-  final Future<List<Podcast>>? future;
-  final List<Podcast>? data;
+  final Future<List<SearchResult>>? future;
+  final List<SearchResult>? data;
   final String? title;
   final String? multiplier;
   final void Function()? seeAllCb;
@@ -56,7 +58,7 @@ class PodcastListHorizontal extends StatelessWidget {
     return Container();
   }
 
-  Widget buildView(BuildContext context, List<Podcast> data) {
+  Widget buildView(BuildContext context, List<SearchResult> data) {
     List<Widget> flame = multiplier != null
         ? <Widget>[
             const SizedBox(

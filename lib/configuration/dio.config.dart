@@ -7,9 +7,9 @@ import '../services/user/user.service.dart';
 var options = BaseOptions(
   //baseUrl: "http://192.168.10.177:5000/",
   baseUrl: 'https://api.talkaboat.online/',
-  connectTimeout: 10000,
-  receiveTimeout: 45000,
-  sendTimeout: 15000
+  connectTimeout: const Duration(milliseconds: 10000),
+  receiveTimeout: const Duration(milliseconds: 45000),
+  sendTimeout: const Duration(milliseconds: 15000)
 );
 
 var cacheOptions = CacheOptions(

@@ -9,16 +9,18 @@ import agora_rtc_engine
 import audio_service
 import audio_session
 import connectivity_plus
+import facebook_auth_desktop
 import firebase_analytics
 import firebase_auth
 import firebase_core
 import firebase_remote_config
+import flutter_secure_storage_macos
 import iris_event
 import just_audio
-import package_info_plus_macos
-import path_provider_macos
-import share_plus_macos
-import shared_preferences_macos
+import package_info_plus
+import path_provider_foundation
+import share_plus
+import shared_preferences_foundation
 import sign_in_with_apple
 import sqflite
 import url_launcher_macos
@@ -29,10 +31,12 @@ func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
   AudioServicePlugin.register(with: registry.registrar(forPlugin: "AudioServicePlugin"))
   AudioSessionPlugin.register(with: registry.registrar(forPlugin: "AudioSessionPlugin"))
   ConnectivityPlugin.register(with: registry.registrar(forPlugin: "ConnectivityPlugin"))
+  FacebookAuthDesktopPlugin.register(with: registry.registrar(forPlugin: "FacebookAuthDesktopPlugin"))
   FLTFirebaseAnalyticsPlugin.register(with: registry.registrar(forPlugin: "FLTFirebaseAnalyticsPlugin"))
   FLTFirebaseAuthPlugin.register(with: registry.registrar(forPlugin: "FLTFirebaseAuthPlugin"))
   FLTFirebaseCorePlugin.register(with: registry.registrar(forPlugin: "FLTFirebaseCorePlugin"))
   FLTFirebaseRemoteConfigPlugin.register(with: registry.registrar(forPlugin: "FLTFirebaseRemoteConfigPlugin"))
+  FlutterSecureStoragePlugin.register(with: registry.registrar(forPlugin: "FlutterSecureStoragePlugin"))
   IrisEventPlugin.register(with: registry.registrar(forPlugin: "IrisEventPlugin"))
   JustAudioPlugin.register(with: registry.registrar(forPlugin: "JustAudioPlugin"))
   FLTPackageInfoPlusPlugin.register(with: registry.registrar(forPlugin: "FLTPackageInfoPlusPlugin"))

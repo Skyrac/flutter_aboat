@@ -107,7 +107,7 @@ class _PodcastDetailsState extends State<PodcastDetails> {
                       style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                   ),
-                  buildCategoryBadges(context, snapshot.data!.genres!),
+                  buildCategoryBadges(context, snapshot.data!.genres),
                   Container(
                     alignment: Alignment.centerLeft,
                     margin: const EdgeInsets.only(bottom: 10),

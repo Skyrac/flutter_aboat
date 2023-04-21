@@ -2,6 +2,7 @@ import 'package:Talkaboat/injection/injector.dart';
 import 'package:Talkaboat/models/podcasts/podcast-genre.model.dart';
 import 'package:Talkaboat/models/podcasts/podcast-rank.model.dart';
 import 'package:Talkaboat/models/podcasts/podcast.model.dart';
+import 'package:Talkaboat/models/search/search_result.model.dart';
 import 'package:Talkaboat/screens/search.screen.dart';
 import 'package:Talkaboat/services/audio/podcast.service.dart';
 import 'package:Talkaboat/services/user/user.service.dart';
@@ -75,7 +76,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                 );
               }
               // Extracting data from snapshot object
-              final allData = snapshot.data as List<List<Podcast>>;
+              final allData = snapshot.data as List<List<SearchResult>>;
               final top10 = allData[0];
               final newcomers = allData[1];
               final receiver = allData[2];
@@ -90,7 +91,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
   }
 
   Widget buildLists(
-      BuildContext context, List<Podcast> top10, List<Podcast> newcomers, List<Podcast> receivers, List<Podcast> hodlers) {
+      BuildContext context, List<SearchResult> top10, List<SearchResult> newcomers, List<SearchResult> receivers, List<SearchResult> hodlers) {
     return Column(
       children: [
         SearchBar(
