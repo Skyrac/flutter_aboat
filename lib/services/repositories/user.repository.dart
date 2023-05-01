@@ -112,7 +112,9 @@ class UserRepository {
 
   static Future<ResponseModel> firebaseLogin(String userIdToken) async {
     var data = ResponseModel(status: 0, text: userIdToken);
-    var response = await dio.post<String>('/v1/user/login/firebase', data: data);
+    debugPrint("firebaseLogin ${data}");
+    var response = await dio.post<String>('/v1/user/login/firebase', data: data.toJson());
+    debugPrint("firebaseLogin response ${response}");
     var convertedData = ResponseModel.fromJson(json.decode(response.data!));
     debugPrint("firebaseLogin: ${convertedData.toJson()}");
     return convertedData;
